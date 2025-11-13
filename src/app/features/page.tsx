@@ -4,7 +4,7 @@ import { CodeBlock } from '@/components/ui/code-block';
 const guideContent = {
   title: 'Implementing Drag and Drop',
   description:
-    'Lets build an intuitive drag-and-drop interface. This feature allows users to move items around, reorder lists, or upload files with a simple click and drag. Its a great way to make your app more interactive and user-friendly.',
+    "Let's build an intuitive drag-and-drop interface. This feature allows users to move items around, reorder lists, or upload files with a simple click and drag. It's a great way to make your app more interactive and user-friendly.",
   steps: [
     {
       title: 'Step 1: Setting Up Your Draggable Items',
