@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 // A simple hash function for demonstration
@@ -53,7 +52,7 @@ export function HashMapVisualization() {
   const handleRemove = () => {
     if (!key) return;
     setEntries(prev => prev.filter(e => e.key !== key));
-    setLastAction({ type: 'remove', key, simpleHash(key, TABLE_SIZE) });
+    setLastAction({ type: 'remove', key, hash: simpleHash(key, TABLE_SIZE) });
   };
   
   const handleFind = () => {
@@ -96,24 +95,19 @@ export function HashMapVisualization() {
         <div className="w-2/3 flex flex-col gap-2">
            <p className="text-slate-400 mb-2">Internal Array:</p>
           {buckets.map((bucket, index) => (
-            <motion.div
+            <div
               key={index}
-              animate={{
-                backgroundColor: lastAction?.hash === index ? ['hsl(var(--primary))', 'hsl(var(--card))'] : 'hsl(var(--card))'
+              style={{
+                backgroundColor: lastAction?.hash === index ? 'hsl(var(--primary))' : 'hsl(var(--card))',
+                transition: 'background-color 1.5s ease'
               }}
-              transition={{ duration: 1.5 }}
               className="flex items-center gap-2 bg-card p-1 rounded border border-slate-700/50"
             >
               <div className="bg-slate-700 text-slate-300 font-bold text-xs w-6 h-6 flex items-center justify-center rounded-sm flex-shrink-0">{index}</div>
               <div className="flex flex-wrap gap-1 min-h-[24px]">
-                <AnimatePresence>
                 {bucket.map((entry) => (
-                   <motion.div
+                   <div
                     key={entry.key}
-                    layout
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.5 }}
                     className={cn(
                       "flex items-center text-xs rounded-sm px-1.5 py-0.5",
                       lastAction?.type === 'find' && lastAction.key === entry.key ? "bg-yellow-400/30 ring-2 ring-yellow-400" : "bg-slate-800"
@@ -121,11 +115,10 @@ export function HashMapVisualization() {
                    >
                      <span className="text-cyan-300 mr-1">{`'${entry.key}':`}</span>
                      <span className="text-yellow-300">{`'${entry.value}'`}</span>
-                   </motion.div>
+                   </div>
                 ))}
-                </AnimatePresence>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
