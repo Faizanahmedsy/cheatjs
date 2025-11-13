@@ -1,4 +1,3 @@
-import { Header } from "@/components/Header";
 import { CheatsheetCard } from "@/components/CheatsheetCard";
 import { cheatsheets } from "@/lib/cheatsheets";
 import { Github, Linkedin, Mail, FileText } from "lucide-react";
@@ -22,25 +21,11 @@ export default function Home() {
         <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full filter blur-3xl opacity-20"></div>
         <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-green-500/10 rounded-full filter blur-3xl opacity-20"></div>
         
-        <Header />
-
         <main className="container mx-auto px-4 py-16 relative z-10">
-          <div className="text-center mb-16">
-            <h1 className="text-5xl md:text-7xl font-bold mb-4">
-              Hi there, I'm Faizan
-            </h1>
-            <p className="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto">
-              I'm a product-minded Software Engineer with a passion for building{" "}
-              <span className="highlight-cyan">scalable</span>,{" "}
-              <span className="highlight-green">user friendly</span> and{" "}
-              <span className="highlight-yellow">beautiful</span> SaaS products and Web applications.
-            </p>
-          </div>
-
           <div className="space-y-12">
             <div>
-              <h2 className="text-2xl font-bold mb-6 text-center">
-                Problem Solving
+              <h2 className="text-2xl font-bold mb-6 text-center text-cyan-300">
+                React
               </h2>
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {problemSolvingSnippets?.map((snippet) => (
@@ -50,8 +35,8 @@ export default function Home() {
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold mb-6 text-center">
-                2.5+ Years of Production Experience
+              <h2 className="text-2xl font-bold mb-6 text-center text-green-300">
+                Next.js
               </h2>
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {experienceSnippets?.map((snippet) => (
@@ -61,8 +46,8 @@ export default function Home() {
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold mb-6 text-center">
-                Architectural Impact
+              <h2 className="text-2xl font-bold mb-6 text-center text-yellow-300">
+                Frontend Concepts
               </h2>
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {otherSnippets?.map((snippet) => (
