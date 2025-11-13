@@ -3,7 +3,8 @@
 import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export function CodeBlock({
   code,
@@ -31,7 +32,7 @@ export function CodeBlock({
 
   return (
     <div className="relative rounded-md bg-slate-900/70 text-sm font-code shadow-inner border border-slate-700/80">
-      <div className="absolute top-2 right-2">
+      <div className="absolute top-2 right-2 z-10">
         <Button
           variant="ghost"
           size="icon"
@@ -46,9 +47,18 @@ export function CodeBlock({
           )}
         </Button>
       </div>
-      <pre className="p-4 overflow-x-auto">
-        <code className={cn("language-", language)}>{code}</code>
-      </pre>
+      <SyntaxHighlighter 
+        language={language} 
+        style={vscDarkPlus} 
+        customStyle={{ background: 'transparent', margin: 0, padding: '1rem' }}
+        codeTagProps={{
+          style: {
+            fontFamily: 'inherit'
+          }
+        }}
+        >
+        {code}
+      </SyntaxHighlighter>
     </div>
   );
 }
