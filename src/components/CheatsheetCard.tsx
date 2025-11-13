@@ -1,3 +1,5 @@
+'use client';
+
 import { CodeBlock } from "@/components/ui/code-block";
 import type { Snippet } from "@/lib/cheatsheets";
 import { cn } from "@/lib/utils";

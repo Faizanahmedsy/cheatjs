@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 // A simple hash function for demonstration
 const simpleHash = (key: string, tableSize: number) => {
@@ -52,7 +53,7 @@ export function HashMapVisualization() {
   const handleRemove = () => {
     if (!key) return;
     setEntries(prev => prev.filter(e => e.key !== key));
-    setLastAction({ type: 'remove', key, hash: simpleHash(key, TABLE_SIZE) });
+    setLastAction({ type: 'remove', key, simpleHash(key, TABLE_SIZE) });
   };
   
   const handleFind = () => {

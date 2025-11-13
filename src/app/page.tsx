@@ -4,12 +4,17 @@ import { CheatsheetCard } from "@/components/CheatsheetCard";
 import { cheatsheets } from "@/lib/cheatsheets";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const categoryTab = searchParams.get('category') ?? 'React';
   const reactTab = searchParams.get('level') ?? 'Beginner';
@@ -61,7 +66,7 @@ export default function Home() {
             </TabsList>
             
             <TabsContent value="React">
-              <Tabs value={reactTab} onValueChange={setReactTab} className="w-full">
+              {isClient && <Tabs value={reactTab} onValueChange={setReactTab} className="w-full">
                 <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 bg-slate-800/50 border border-slate-700/50 mb-8">
                   <TabsTrigger value="Beginner" className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300">Beginner</TabsTrigger>
                   <TabsTrigger value="Intermediate" className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300">Intermediate</TabsTrigger>
@@ -88,12 +93,12 @@ export default function Home() {
                     ))}
                   </div>
                 </TabsContent>
-              </Tabs>
+              </Tabs>}
             </TabsContent>
             
             <TabsContent value="Next.js">
               <div className="grid gap-6 md:grid-cols-2">
-                 {cheatsheets.find(c => c.name === 'Next.js')?.snippets.map((snippet) => (
+                 {isClient && cheatsheets.find(c => c.name === 'Next.js')?.snippets.map((snippet) => (
                   <CheatsheetCard key={snippet.title} snippet={snippet} color="green" />
                 ))}
               </div>
@@ -101,7 +106,7 @@ export default function Home() {
 
             <TabsContent value="Frontend Concepts">
               <div className="grid gap-6 md:grid-cols-2">
-                {cheatsheets.find(c => c.name === 'Frontend Concepts')?.snippets.map((snippet) => (
+                {isClient && cheatsheets.find(c => c.name === 'Frontend Concepts')?.snippets.map((snippet) => (
                   <CheatsheetCard key={snippet.title} snippet={snippet} color="yellow" />
                 ))}
               </div>
@@ -109,7 +114,7 @@ export default function Home() {
             
             <TabsContent value="DSA">
               <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-                {dsaCategory?.snippets?.map((snippet) => (
+                {isClient && dsaCategory?.snippets?.map((snippet) => (
                   <CheatsheetCard key={snippet.title} snippet={snippet} color="red" />
                 ))}
               </div>
