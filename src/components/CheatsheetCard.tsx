@@ -8,6 +8,7 @@ import { ArrayVisualization } from "./visualizations/ArrayVisualization";
 import { StackVisualization } from "./visualizations/StackVisualization";
 import { QueueVisualization } from "./visualizations/QueueVisualization";
 import { LinkedListVisualization } from "./visualizations/LinkedListVisualization";
+import { BinarySearchTreeVisualization } from "./visualizations/BinarySearchTreeVisualization";
 
 const colorVariants = {
   cyan: "bg-cyan-400/20 text-cyan-300",
@@ -22,6 +23,7 @@ const visualizationComponents: { [key: string]: React.ComponentType<any> } = {
   'Stack': StackVisualization,
   'Queue': QueueVisualization,
   'LinkedList': LinkedListVisualization,
+  'BinarySearchTree': BinarySearchTreeVisualization,
 };
 
 export function CheatsheetCard({

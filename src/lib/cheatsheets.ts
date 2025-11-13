@@ -1,4 +1,4 @@
-import { FileCode, ToyBrick, Zap, Share2, Component } from 'lucide-react';
+import { FileCode, ToyBrick, Zap, Share2, Component, Puzzle } from 'lucide-react';
 import type { ElementType } from 'react';
 
 export type Snippet = {
@@ -780,6 +780,57 @@ myMap.delete('age');
 console.log(myMap.size); // 2
 `,
         language: 'javascript'
+      },
+      {
+        title: 'Binary Search Tree',
+        description: "A Binary Search Tree (BST) is a node-based binary tree data structure which has the following properties: the left subtree of a node contains only nodes with keys lesser than the node's key; the right subtree of a node contains only nodes with keys greater than the node's key; the left and right subtree each must also be a binary search tree.",
+        visualization: 'BinarySearchTree',
+        pros: [
+          "Fast search, insertion, and deletion on average: O(log n).",
+          "Keeps elements in sorted order, allowing for efficient range queries.",
+        ],
+        cons: [
+          "Can become unbalanced, degrading performance to O(n) in the worst case (essentially becoming a linked list).",
+          "No O(1) access to elements.",
+        ],
+        code: `class Node {
+  constructor(data) {
+    this.data = data;
+    this.left = null;
+    this.right = null;
+  }
+}
+
+class BinarySearchTree {
+  constructor() {
+    this.root = null;
+  }
+
+  insert(data) {
+    const newNode = new Node(data);
+    if (this.root === null) {
+      this.root = newNode;
+    } else {
+      this.insertNode(this.root, newNode);
+    }
+  }
+
+  insertNode(node, newNode) {
+    if (newNode.data < node.data) {
+      if (node.left === null) {
+        node.left = newNode;
+      } else {
+        this.insertNode(node.left, newNode);
+      }
+    } else {
+      if (node.right === null) {
+        node.right = newNode;
+      } else {
+        this.insertNode(node.right, newNode);
+      }
+    }
+  }
+}`
       }
     ]
   }
