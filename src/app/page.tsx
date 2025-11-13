@@ -15,6 +15,7 @@ export default function Home() {
   const reactTab = searchParams.get('level') ?? 'Beginner';
 
   const reactCategory = cheatsheets.find(c => c.name === 'React');
+  const dsaCategory = cheatsheets.find(c => c.name === 'DSA');
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -52,10 +53,11 @@ export default function Home() {
           </div>
 
           <Tabs value={categoryTab} onValueChange={setCategoryTab} className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 bg-slate-800/50 border border-slate-700/50 mb-8">
+            <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 bg-slate-800/50 border border-slate-700/50 mb-8">
               <TabsTrigger value="React" className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300">React</TabsTrigger>
               <TabsTrigger value="Next.js" className="data-[state=active]:bg-slate-700 data-[state=active]:text-green-300">Next.js</TabsTrigger>
               <TabsTrigger value="Frontend Concepts" className="data-[state=active]:bg-slate-700 data-[state=active]:text-yellow-300">Frontend Concepts</TabsTrigger>
+              <TabsTrigger value="DSA" className="data-[state=active]:bg-slate-700 data-[state=active]:text-red-300">DSA</TabsTrigger>
             </TabsList>
             
             <TabsContent value="React">
@@ -104,6 +106,15 @@ export default function Home() {
                 ))}
               </div>
             </TabsContent>
+            
+            <TabsContent value="DSA">
+              <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
+                {dsaCategory?.snippets?.map((snippet) => (
+                  <CheatsheetCard key={snippet.title} snippet={snippet} color="red" />
+                ))}
+              </div>
+            </TabsContent>
+
           </Tabs>
         </main>
 
@@ -129,7 +140,7 @@ export default function Home() {
             </a>
             .
           </p>
-          <p className="mt-2">Built with Next.js & Tailwind CSS.</p>
+          <p className="mt-2">Built with Next.js &amp; Tailwind CSS.</p>
         </footer>
       </div>
     </div>

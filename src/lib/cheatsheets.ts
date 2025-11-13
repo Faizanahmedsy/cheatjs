@@ -1,4 +1,4 @@
-import { FileCode, ToyBrick, Zap } from 'lucide-react';
+import { FileCode, ToyBrick, Zap, Share2 } from 'lucide-react';
 import type { ElementType } from 'react';
 
 export type Snippet = {
@@ -6,6 +6,9 @@ export type Snippet = {
   description: string;
   code: string;
   language: string;
+  visualization?: string; // e.g., 'HashMap'
+  pros?: string[];
+  cons?: string[];
 };
 
 export type SubCategory = {
@@ -581,4 +584,46 @@ app.get('/api/data', (req, res) => {
       },
     ],
   },
+  {
+    name: 'DSA',
+    icon: Share2,
+    snippets: [
+      {
+        title: 'Hash Map (Object/Map)',
+        description: "A Hash Map is a data structure that stores key-value pairs. It uses a 'hash function' to compute an index into an array of buckets or slots, from which the desired value can be found. This allows for very fast lookups, insertions, and deletions.",
+        visualization: 'HashMap',
+        pros: [
+          "Fast Lookups: Average time complexity of O(1) for get, set, and delete.",
+          "Flexible Keys: In JavaScript, Maps can use any value as a key (objects, functions), not just strings.",
+        ],
+        cons: [
+          "Potential for Collisions: If two keys hash to the same index, performance can degrade.",
+          "Unordered: In traditional hash maps (and JS Objects), keys are not stored in any particular order.",
+        ],
+        code: `// In JavaScript, you can use Objects or the Map class.
+// Map is generally preferred for dedicated hash maps.
+
+const myMap = new Map();
+
+// Set values
+myMap.set('name', 'Alice');
+myMap.set('age', 30);
+myMap.set({ id: 1 }, 'An object key!');
+
+// Get values
+console.log(myMap.get('name')); // "Alice"
+
+// Check for a key
+console.log(myMap.has('age')); // true
+
+// Delete a key
+myMap.delete('age');
+
+// Get the size
+console.log(myMap.size); // 2
+`,
+        language: 'javascript'
+      }
+    ]
+  }
 ];
