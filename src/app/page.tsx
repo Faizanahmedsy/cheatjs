@@ -28,7 +28,7 @@ export default function Home() {
             </TabsList>
             
             <TabsContent value="React">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-6 md:grid-cols-2">
                 {cheatsheets.find(c => c.name === 'React')?.snippets.map((snippet) => (
                   <CheatsheetCard key={snippet.title} snippet={snippet} color="cyan" />
                 ))}
@@ -36,7 +36,7 @@ export default function Home() {
             </TabsContent>
             
             <TabsContent value="Next.js">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-6 md:grid-cols-2">
                  {cheatsheets.find(c => c.name === 'Next.js')?.snippets.map((snippet) => (
                   <CheatsheetCard key={snippet.title} snippet={snippet} color="green" />
                 ))}
@@ -44,7 +44,7 @@ export default function Home() {
             </TabsContent>
 
             <TabsContent value="Frontend Concepts">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-6 md:grid-cols-2">
                 {cheatsheets.find(c => c.name === 'Frontend Concepts')?.snippets.map((snippet) => (
                   <CheatsheetCard key={snippet.title} snippet={snippet} color="yellow" />
                 ))}
