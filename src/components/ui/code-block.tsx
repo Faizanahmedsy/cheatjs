@@ -30,16 +30,13 @@ export function CodeBlock({
   };
 
   return (
-    <div className="relative rounded-lg bg-slate-900/70 text-sm text-slate-50 font-code shadow-lg h-full border border-slate-800">
-      <div className="flex justify-between items-center px-4 py-2 border-b border-slate-700/50">
-        <span className="text-xs uppercase font-semibold text-slate-400">
-          {language}
-        </span>
+    <div className="relative rounded-md bg-slate-900/70 text-sm font-code shadow-inner border border-slate-700/80">
+      <div className="absolute top-2 right-2">
         <Button
           variant="ghost"
           size="icon"
           onClick={handleCopy}
-          className="text-slate-400 hover:text-white hover:bg-slate-800 h-8 w-8"
+          className="text-slate-400 hover:text-white hover:bg-slate-700/50 h-7 w-7"
           aria-label="Copy code to clipboard"
         >
           {copied ? (
@@ -49,7 +46,7 @@ export function CodeBlock({
           )}
         </Button>
       </div>
-      <pre className="p-4 overflow-x-auto h-full">
+      <pre className="p-4 overflow-x-auto">
         <code className={cn("language-", language)}>{code}</code>
       </pre>
     </div>
