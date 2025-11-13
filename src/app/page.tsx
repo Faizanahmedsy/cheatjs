@@ -3,13 +3,36 @@
 import { CheatsheetCard } from "@/components/CheatsheetCard";
 import { cheatsheets } from "@/lib/cheatsheets";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useQueryState } from 'nuqs';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useCallback } from "react";
 
 export default function Home() {
-  const [categoryTab, setCategoryTab] = useQueryState('category', {defaultValue: 'React'});
-  const [reactTab, setReactTab] = useQueryState('level', {defaultValue: 'Beginner'});
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const categoryTab = searchParams.get('category') ?? 'React';
+  const reactTab = searchParams.get('level') ?? 'Beginner';
 
   const reactCategory = cheatsheets.find(c => c.name === 'React');
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set(name, value)
+      return params.toString()
+    },
+    [searchParams]
+  )
+
+  const setCategoryTab = (value: string) => {
+    router.push(pathname + '?' + createQueryString('category', value));
+  };
+
+  const setReactTab = (value: string) => {
+    router.push(pathname + '?' + createQueryString('level', value));
+  };
+
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-50 font-sans">
