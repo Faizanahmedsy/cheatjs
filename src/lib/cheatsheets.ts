@@ -20,21 +20,79 @@ export const cheatsheets: Category[] = [
     icon: ToyBrick,
     snippets: [
       {
-        title: 'useState Hook',
-        description: 'Declare a state variable in a function component.',
-        code: `// Import the useState hook from React
-import { useState } from 'react';
+        title: 'What is React?',
+        description:
+          "Imagine building with LEGOs. Instead of building a whole castle at once, you build small parts like a tower or a wall, and then put them together. React lets you build a website like that, using small, reusable 'pieces' called components.",
+        code: `// Think of this as your main LEGO castle
+function Castle() {
+  return (
+    <div>
+      <Wall />  // One LEGO piece
+      <Tower /> // Another LEGO piece
+    </div>
+  );
+}
 
-// Define a function component
+// This is your LEGO wall piece
+function Wall() {
+  return <p>This is a sturdy wall.</p>;
+}
+
+// This is your LEGO tower piece
+function Tower() {
+  return <p>This is a tall tower.</p>;
+}`,
+        language: 'jsx',
+      },
+      {
+        title: 'Components',
+        description:
+          "Components are like special LEGO bricks. You can build a 'Button' brick or a 'ProfilePicture' brick, and then use them anywhere you want in your app, as many times as you like. It keeps your code organized!",
+        code: `// This is a reusable Button component
+function MyButton() {
+  return <button>Click Me!</button>;
+}
+
+// You can use your special button anywhere
+function App() {
+  return (
+    <div>
+      <p>Here is a button:</p>
+      <MyButton />
+      <p>Here is another one:</p>
+      <MyButton />
+    </div>
+  );
+}`,
+        language: 'jsx',
+      },
+      {
+        title: 'JSX',
+        description:
+          'JSX is a special way of writing HTML inside your JavaScript. It looks like HTML, but it lets you add JavaScript logic right in your layout, making it easy to create dynamic content.',
+        code: `// This is JSX! It looks like HTML in JavaScript.
+const name = 'Faizan';
+const greeting = <h1>Hello, {name}!</h1>;
+// We can use a JavaScript variable right inside our "HTML".
+
+// It renders as: <h1>Hello, Faizan!</h1>`,
+        language: 'jsx',
+      },
+      {
+        title: 'useState Hook',
+        description:
+          "useState is like a component's memory. It lets your component remember things, like how many times a button has been clicked. When the state changes, React automatically re-renders the component to show the new value.",
+        code: `import { useState } from 'react';
+
 function Counter() {
-  // Declare a state variable 'count' and a function 'setCount' to update it
+  // 'count' is the memory, it starts at 0.
+  // 'setCount' is how you update the memory.
   const [count, setCount] = useState(0);
 
-  // Return JSX to render
   return (
     <div>
       <p>You clicked {count} times</p>
-      {/* Update state on button click */}
+      {/* This click updates the memory */}
       <button onClick={() => setCount(count + 1)}>
         Click me
       </button>
@@ -44,39 +102,90 @@ function Counter() {
         language: 'jsx',
       },
       {
-        title: 'useEffect Hook',
-        description: 'Perform side effects in function components.',
-        code: `// Import hooks from React
-import { useState, useEffect } from 'react';
+        title: 'Event Handling',
+        description:
+          'React can listen for user actions, like clicks, typing, or hovering. You give an HTML element a special prop like `onClick` and tell it which function to run when the event happens.',
+        code: `function AlertButton() {
+  // This function will run when the button is clicked
+  function handleClick() {
+    alert('You clicked the button!');
+  }
 
-function Timer() {
-  // State for the timer
-  const [seconds, setSeconds] = useState(0);
-
-  // useEffect runs after every render
-  useEffect(() => {
-    // Set up an interval
-    const interval = setInterval(() => {
-      setSeconds(seconds => seconds + 1);
-    }, 1000);
-    // Cleanup function runs on component unmount
-    return () => clearInterval(interval);
-  }, []); // Empty dependency array means it runs only once
-
-  return <div>Timer: {seconds}s</div>;
+  // We tell the button to listen for a 'click'
+  // and run our handleClick function.
+  return <button onClick={handleClick}>Click for an alert</button>;
 }`,
         language: 'jsx',
       },
       {
-        title: 'useContext Hook',
-        description: 'Access context without nesting consumers.',
-        code: `// Create a context object
-const ThemeContext = React.createContext('light');
+        title: 'Conditional Rendering',
+        description:
+          'This is like playing peek-a-boo. You can show or hide things based on a condition. If a user is logged in, show their profile. If not, show a login button.',
+        code: `function Greeting({ isLoggedIn }) {
+  // If isLoggedIn is true...
+  if (isLoggedIn) {
+    // ...show the welcome message.
+    return <p>Welcome back!</p>;
+  }
+  // Otherwise...
+  // ...show the login prompt.
+  return <p>Please log in.</p>;
+}
 
-function ThemedButton() {
-  // Consume the context value
-  const theme = useContext(ThemeContext);
-  return <button className={theme}>I'm a {theme} button</button>;
+// Using the component:
+<Greeting isLoggedIn={true} /> // Shows "Welcome back!"
+<Greeting isLoggedIn={false} /> // Shows "Please log in."
+`,
+        language: 'jsx',
+      },
+      {
+        title: 'Handling Forms',
+        description:
+          "React can control what's inside form inputs like text boxes. You use state to 'remember' what the user is typing, and update the state every time they type a new character.",
+        code: `import { useState } from 'react';
+
+function NameForm() {
+  // Use state to remember the value in the input
+  const [name, setName] = useState('');
+
+  return (
+    <form>
+      <label>
+        Name:
+        <input
+          type="text"
+          value={name}
+          // When the user types, update the state
+          onChange={e => setName(e.target.value)}
+        />
+      </label>
+      <p>Your name is: {name}</p>
+    </form>
+  );
+}`,
+        language: 'jsx',
+      },
+      {
+        title: 'useEffect Hook',
+        description:
+          'useEffect lets your component do something *after* it has been rendered, like fetching data from the internet or setting up a timer. It helps manage side effects that are not directly related to rendering.',
+        code: `import { useState, useEffect } from 'react';
+
+function Timer() {
+  const [seconds, setSeconds] = useState(0);
+
+  // This effect runs once after the first render
+  useEffect(() => {
+    // This code runs *after* the component is on the screen
+    const intervalId = setInterval(() => {
+      setSeconds(currentSeconds => currentSeconds + 1);
+    }, 1000);
+
+    // This is a cleanup function. It runs when the component disappears.
+    return () => clearInterval(intervalId);
+  }, []); // The empty [] means "only run this once".
+
+  return <div>Timer: {seconds} seconds</div>;
 }`,
         language: 'jsx',
       },
