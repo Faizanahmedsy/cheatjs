@@ -1,3 +1,4 @@
+
 import { FileCode, ToyBrick, Zap, Share2, Component, Puzzle } from 'lucide-react';
 import type { ElementType } from 'react';
 
@@ -365,10 +366,7 @@ export async function getStaticProps(context) {
           {
             title: 'Responsive Design',
             description: 'Use mobile-first responsive breakpoints in Tailwind to ensure your app looks great on all screen sizes. Design for mobile, then add styles for larger screens.',
-            code: `// This div is a single column on mobile, and a 3-column grid on larger screens.
-// 'grid-cols-1' is the default for small screens (mobile-first).
-// 'md:grid-cols-3' applies only on medium screens and up (md = 768px).
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            code: `<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
   <div>Column 1</div>
   <div>Column 2</div>
   <div>Column 3</div>
@@ -587,20 +585,23 @@ app.get('/api/data', (req, res) => {
   {
     name: 'DSA',
     icon: Share2,
-    snippets: [
+    subCategories: [
       {
-        title: 'Array',
-        description: "The simplest data structure, an array is a collection of items stored at contiguous memory locations. It's great for fast access to elements at a specific position (known as an 'index').",
-        visualization: 'Array',
-        pros: [
-          "Fast access: O(1) time complexity to access any element by its index.",
-          "Memory efficient: Stores elements contiguously, which can be cache-friendly.",
-        ],
-        cons: [
-          "Slow insertion/deletion: Adding or removing elements from the beginning or middle is slow (O(n)) because subsequent elements need to be shifted.",
-          "Fixed size (in many languages): In languages like Java/C++, arrays have a fixed size, requiring a new array to be created for resizing.",
-        ],
-        code: `// JavaScript arrays are dynamic and can hold multiple types.
+        name: 'Visualizations',
+        snippets: [
+          {
+            title: 'Array',
+            description: "The simplest data structure, an array is a collection of items stored at contiguous memory locations. It's great for fast access to elements at a specific position (known as an 'index').",
+            visualization: 'Array',
+            pros: [
+              "Fast access: O(1) time complexity to access any element by its index.",
+              "Memory efficient: Stores elements contiguously, which can be cache-friendly.",
+            ],
+            cons: [
+              "Slow insertion/deletion: Adding or removing elements from the beginning or middle is slow (O(n)) because subsequent elements need to be shifted.",
+              "Fixed size (in many languages): In languages like Java/C++, arrays have a fixed size, requiring a new array to be created for resizing.",
+            ],
+            code: `// JavaScript arrays are dynamic and can hold multiple types.
 const fruits = ['Apple', 'Banana', 'Cherry'];
 
 // Access by index (O(1))
@@ -619,21 +620,21 @@ fruits.unshift('Apricot');
 for (const fruit of fruits) {
   console.log(fruit);
 }`,
-        language: 'javascript'
-      },
-      {
-        title: 'Stack',
-        description: "A Stack is a linear data structure that follows a Last-In, First-Out (LIFO) principle. Think of it like a stack of plates: you add a new plate to the top, and you also remove a plate from the top.",
-        visualization: 'Stack',
-        pros: [
-          "Fast operations: Push (add) and Pop (remove) are very fast (O(1)).",
-          "Simple to implement: Can be easily built using an array or a linked list.",
-          "Used in many algorithms: Essential for call stacks, parsing expressions, and backtracking (e.g., maze solving).",
-        ],
-        cons: [
-          "Limited access: You can only access the top element.",
-        ],
-        code: `// You can easily implement a Stack in JS using an array.
+            language: 'javascript'
+          },
+          {
+            title: 'Stack',
+            description: "A Stack is a linear data structure that follows a Last-In, First-Out (LIFO) principle. Think of it like a stack of plates: you add a new plate to the top, and you also remove a plate from the top.",
+            visualization: 'Stack',
+            pros: [
+              "Fast operations: Push (add) and Pop (remove) are very fast (O(1)).",
+              "Simple to implement: Can be easily built using an array or a linked list.",
+              "Used in many algorithms: Essential for call stacks, parsing expressions, and backtracking (e.g., maze solving).",
+            ],
+            cons: [
+              "Limited access: You can only access the top element.",
+            ],
+            code: `// You can easily implement a Stack in JS using an array.
 class Stack {
   constructor() {
     this.items = [];
@@ -660,22 +661,22 @@ class Stack {
     return this.items.length === 0;
   }
 }`,
-        language: 'javascript'
-      },
-       {
-        title: 'Queue',
-        description: "A Queue is a linear data structure that follows a First-In, First-Out (FIFO) principle. It's like a checkout line at a grocery store: the first person to get in line is the first person to be served.",
-        visualization: 'Queue',
-        pros: [
-          "Fast operations: Enqueue (add) and Dequeue (remove) are very fast (O(1)).",
-          "Fairness: Maintains the order of elements, which is useful for processing tasks in sequence.",
-          "Used in many scenarios: Breadth-First Search (BFS) in graphs, task scheduling, and handling requests.",
-        ],
-        cons: [
-          "Limited access: You can only access the front and back elements.",
-          "Array-based implementation can be inefficient for dequeue if not careful (O(n) if using `shift`)."
-        ],
-        code: `// A simple Queue implementation in JS.
+            language: 'javascript'
+          },
+          {
+            title: 'Queue',
+            description: "A Queue is a linear data structure that follows a First-In, First-Out (FIFO) principle. It's like a checkout line at a grocery store: the first person to get in line is the first person to be served.",
+            visualization: 'Queue',
+            pros: [
+              "Fast operations: Enqueue (add) and Dequeue (remove) are very fast (O(1)).",
+              "Fairness: Maintains the order of elements, which is useful for processing tasks in sequence.",
+              "Used in many scenarios: Breadth-First Search (BFS) in graphs, task scheduling, and handling requests.",
+            ],
+            cons: [
+              "Limited access: You can only access the front and back elements.",
+              "Array-based implementation can be inefficient for dequeue if not careful (O(n) if using `shift`)."
+            ],
+            code: `// A simple Queue implementation in JS.
 class Queue {
   constructor() {
     this.items = [];
@@ -703,21 +704,21 @@ class Queue {
     return this.items.length === 0;
   }
 }`,
-        language: 'javascript'
-      },
-      {
-        title: 'Linked List',
-        description: "A Linked List is a linear data structure where elements are not stored at contiguous memory locations. Instead, each element (a 'node') contains a pointer to the next element in the sequence.",
-        visualization: 'LinkedList',
-        pros: [
-          "Efficient insertion/deletion: Adding or removing nodes is fast (O(1)) if you have a reference to the node, as it only requires changing a few pointers.",
-          "Dynamic size: Can grow and shrink easily without needing to reallocate the entire structure.",
-        ],
-        cons: [
-          "Slow access: To find an element, you must traverse the list from the beginning (O(n)).",
-          "Extra memory: Each node requires extra memory to store its pointer(s).",
-        ],
-        code: `class Node {
+            language: 'javascript'
+          },
+          {
+            title: 'Linked List',
+            description: "A Linked List is a linear data structure where elements are not stored at contiguous memory locations. Instead, each element (a 'node') contains a pointer to the next element in the sequence.",
+            visualization: 'LinkedList',
+            pros: [
+              "Efficient insertion/deletion: Adding or removing nodes is fast (O(1)) if you have a reference to the node, as it only requires changing a few pointers.",
+              "Dynamic size: Can grow and shrink easily without needing to reallocate the entire structure.",
+            ],
+            cons: [
+              "Slow access: To find an element, you must traverse the list from the beginning (O(n)).",
+              "Extra memory: Each node requires extra memory to store its pointer(s).",
+            ],
+            code: `class Node {
   constructor(data) {
     this.data = data;
     this.next = null;
@@ -743,21 +744,21 @@ class LinkedList {
     current.next = newNode;
   }
 }`,
-        language: 'javascript'
-      },
-      {
-        title: 'Hash Map (Object/Map)',
-        description: "A Hash Map is a data structure that stores key-value pairs. It uses a 'hash function' to compute an index into an array of buckets or slots, from which the desired value can be found. This allows for very fast lookups, insertions, and deletions.",
-        visualization: 'HashMap',
-        pros: [
-          "Fast Lookups: Average time complexity of O(1) for get, set, and delete.",
-          "Flexible Keys: In JavaScript, Maps can use any value as a key (objects, functions), not just strings.",
-        ],
-        cons: [
-          "Potential for Collisions: If two keys hash to the same index, performance can degrade.",
-          "Unordered: In traditional hash maps (and JS Objects), keys are not stored in any particular order.",
-        ],
-        code: `// In JavaScript, you can use Objects or the Map class.
+            language: 'javascript'
+          },
+          {
+            title: 'Hash Map (Object/Map)',
+            description: "A Hash Map is a data structure that stores key-value pairs. It uses a 'hash function' to compute an index into an array of buckets or slots, from which the desired value can be found. This allows for very fast lookups, insertions, and deletions.",
+            visualization: 'HashMap',
+            pros: [
+              "Fast Lookups: Average time complexity of O(1) for get, set, and delete.",
+              "Flexible Keys: In JavaScript, Maps can use any value as a key (objects, functions), not just strings.",
+            ],
+            cons: [
+              "Potential for Collisions: If two keys hash to the same index, performance can degrade.",
+              "Unordered: In traditional hash maps (and JS Objects), keys are not stored in any particular order.",
+            ],
+            code: `// In JavaScript, you can use Objects or the Map class.
 // Map is generally preferred for dedicated hash maps.
 
 const myMap = new Map();
@@ -779,21 +780,21 @@ myMap.delete('age');
 // Get the size
 console.log(myMap.size); // 2
 `,
-        language: 'javascript'
-      },
-      {
-        title: 'Binary Search Tree',
-        description: "A Binary Search Tree (BST) is a node-based binary tree data structure which has the following properties: the left subtree of a node contains only nodes with keys lesser than the node's key; the right subtree of a node contains only nodes with keys greater than the node's key; the left and right subtree each must also be a binary search tree.",
-        visualization: 'BinarySearchTree',
-        pros: [
-          "Fast search, insertion, and deletion on average: O(log n).",
-          "Keeps elements in sorted order, allowing for efficient range queries.",
-        ],
-        cons: [
-          "Can become unbalanced, degrading performance to O(n) in the worst case (essentially becoming a linked list).",
-          "No O(1) access to elements.",
-        ],
-        code: `class Node {
+            language: 'javascript'
+          },
+          {
+            title: 'Binary Search Tree',
+            description: "A Binary Search Tree (BST) is a node-based binary tree data structure which has the following properties: the left subtree of a node contains only nodes with keys lesser than the node's key; the right subtree of a node contains only nodes with keys greater than the node's key; the left and right subtree each must also be a binary search tree.",
+            visualization: 'BinarySearchTree',
+            pros: [
+              "Fast search, insertion, and deletion on average: O(log n).",
+              "Keeps elements in sorted order, allowing for efficient range queries.",
+            ],
+            cons: [
+              "Can become unbalanced, degrading performance to O(n) in the worst case (essentially becoming a linked list).",
+              "No O(1) access to elements.",
+            ],
+            code: `class Node {
   constructor(data) {
     this.data = data;
     this.left = null;
@@ -831,6 +832,18 @@ class BinarySearchTree {
     }
   }
 }`
+            ,
+            language: 'javascript'
+          }
+        ]
+      },
+      {
+        name: 'Algorithms',
+        snippets: []
+      },
+      {
+        name: 'Patterns',
+        snippets: []
       }
     ]
   }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { CheatsheetCard } from "@/components/CheatsheetCard";
@@ -18,6 +19,7 @@ export default function Home() {
 
   const categoryTab = searchParams.get('category') ?? 'React';
   const reactTab = searchParams.get('level') ?? 'Beginner';
+  const dsaTab = searchParams.get('dsa') ?? 'Visualizations';
 
   const reactCategory = cheatsheets.find(c => c.name === 'React');
   const dsaCategory = cheatsheets.find(c => c.name === 'DSA');
@@ -39,6 +41,9 @@ export default function Home() {
     router.push(pathname + '?' + createQueryString('level', value));
   };
 
+  const setDsaTab = (value: string) => {
+    router.push(pathname + '?' + createQueryString('dsa', value));
+  };
 
   return (
     <div className="min-h-full bg-slate-900 text-slate-50 font-sans">
@@ -113,11 +118,26 @@ export default function Home() {
             </TabsContent>
             
             <TabsContent value="DSA">
-              <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-                {isClient && dsaCategory?.snippets?.map((snippet) => (
-                  <CheatsheetCard key={snippet.title} snippet={snippet} color="red" />
-                ))}
-              </div>
+              {isClient && <Tabs value={dsaTab} onValueChange={setDsaTab} className="w-full">
+                <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 bg-slate-800/50 border border-slate-700/50 mb-8">
+                  <TabsTrigger value="Visualizations" className="data-[state=active]:bg-slate-700 data-[state=active]:text-red-300">Visualizations</TabsTrigger>
+                  <TabsTrigger value="Algorithms" className="data-[state=active]:bg-slate-700 data-[state=active]:text-red-300">Algorithms</TabsTrigger>
+                  <TabsTrigger value="Patterns" className="data-[state=active]:bg-slate-700 data-[state=active]:text-red-300">Patterns</TabsTrigger>
+                </TabsList>
+                <TabsContent value="Visualizations">
+                  <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
+                    {dsaCategory?.subCategories?.find(sc => sc.name === 'Visualizations')?.snippets.map((snippet) => (
+                      <CheatsheetCard key={snippet.title} snippet={snippet} color="red" />
+                    ))}
+                  </div>
+                </TabsContent>
+                <TabsContent value="Algorithms">
+                   <div className="text-center text-slate-400">Content for Algorithms coming soon!</div>
+                </TabsContent>
+                <TabsContent value="Patterns">
+                  <div className="text-center text-slate-400">Content for Patterns coming soon!</div>
+                </TabsContent>
+              </Tabs>}
             </TabsContent>
 
           </Tabs>
