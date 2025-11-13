@@ -1,35 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import {
-  MousePointer2,
-  Lock,
-  Sheet,
-  Paintbrush,
-  Puzzle,
-} from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
-
-const sidebarNavLinks = [
-  {
-    href: '/features',
-    label: 'Drag and Drop',
-    icon: MousePointer2,
-    active: true,
-  },
-  { href: '#', label: 'Role-based Auth', icon: Lock },
-  { href: '#', label: 'Spreadsheet UI', icon: Sheet },
-  { href: '#', label: 'Drawing UI', icon: Paintbrush },
-  { href: '#', label: 'Other Features', icon: Puzzle },
-];
+import { features } from '@/lib/features';
 
 export default function FeaturesLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentTopic = searchParams.get('topic') || 'drag-and-drop';
 
   return (
     <div className="flex h-[calc(100vh-3.5rem)]">
@@ -38,15 +20,16 @@ export default function FeaturesLayout({
           <p className="px-3 text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">
             Features
           </p>
-          {sidebarNavLinks.map((link) => {
+          {features.map((link) => {
             const Icon = link.icon;
+            const isActive = currentTopic === link.id;
             return (
               <Link
-                key={link.label}
+                key={link.id}
                 href={link.href}
                 className={cn(
                   'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  link.active
+                  isActive
                     ? 'bg-slate-800 text-cyan-300'
                     : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
                 )}
