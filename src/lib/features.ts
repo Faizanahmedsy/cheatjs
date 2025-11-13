@@ -1037,6 +1037,65 @@ peerConnection.ontrack = event => {
 // all the logic for sorting, filtering, and pagination, but you
 // control the rendering and styling completely. This is great for custom spreadsheets.`,
           language: 'bash'
+        },
+        {
+          title: 'Step 2: Define Columns and Data',
+          explanation: 'Define the structure of your table by creating a `columns` array. Then, create your data array. The `accessorKey` in each column definition links it to a property in your data objects.',
+          code: `import { useReactTable, getCoreRowModel } from '@tanstack/react-table';
+
+const columns = [
+  { accessorKey: 'firstName', header: 'First Name' },
+  { accessorKey: 'lastName', header: 'Last Name' },
+  { accessorKey: 'age', header: 'Age' },
+];
+
+const data = [
+  { firstName: 'Tanner', lastName: 'Linsley', age: 33 },
+  { firstName: 'John', lastName: 'Doe', age: 45 },
+];
+`,
+          language: 'javascript'
+        },
+        {
+          title: 'Step 3: Create the Table Instance and Render It',
+          explanation: 'Use the `useReactTable` hook to create a table instance. Then, you can map over the rows and cells provided by the instance to render your `<table>` element.',
+          code: `function Spreadsheet() {
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  return (
+    <table>
+      <thead>
+        {table.getHeaderGroups().map(headerGroup => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map(header => (
+              <th key={header.id}>
+                {header.isPlaceholder ? null : header.column.columnDef.header}
+              </th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody>
+        {table.getRowModel().rows.map(row => (
+          <tr key={row.id}>
+            {row.getVisibleCells().map(cell => (
+              <td key={cell.id}>
+                {/* Render the cell's content */}
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+`,
+          language: 'jsx'
         }
       ],
     },
@@ -1059,6 +1118,59 @@ peerConnection.ontrack = event => {
 // pressure-sensitive freehand strokes, making drawing feel
 // very natural, even with a mouse.`,
           language: 'bash'
+        },
+        {
+          title: 'Step 2: Capture Pointer Events',
+          explanation: 'To create a drawing, you need to listen for pointer events (mouse, touch, or pen) on your canvas area. When a user presses down, you start a new line. As they move, you add points to that line.',
+          code: `const [points, setPoints] = useState([]);
+
+function handlePointerDown(e) {
+  setPoints([[e.pageX, e.pageY, e.pressure]]);
+}
+
+function handlePointerMove(e) {
+  if (e.buttons !== 1) return;
+  setPoints([...points, [e.pageX, e.pageY, e.pressure]]);
+}
+
+return (
+  <div
+    onPointerDown={handlePointerDown}
+    onPointerMove={handlePointerMove}
+    style={{ touchAction: 'none' }}
+  />
+);`,
+          language: 'jsx'
+        },
+        {
+          title: 'Step 3: Render the Stroke',
+          explanation: 'Use the `getStroke` function from `perfect-freehand` to turn your array of points into an SVG path data string. Then, render this path inside an `<svg>` element.',
+          code: `import getStroke from 'perfect-freehand';
+
+// Function to convert points to an SVG path
+function getSvgPathFromStroke(stroke) {
+  if (!stroke.length) return ''
+  const d = stroke.reduce(
+    (acc, [x0, y0], i, arr) => {
+      const [x1, y1] = arr[(i + 1) % arr.length]
+      acc.push('Q', x0, y0, (x0 + x1) / 2, (y0 + y1) / 2)
+      return acc
+    },
+    ['M', ...stroke[0]]
+  )
+  d.push('Z')
+  return d.join(' ')
+}
+
+const stroke = getStroke(points, { size: 16 });
+const pathData = getSvgPathFromStroke(stroke);
+
+return (
+  <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+    <path d={pathData} />
+  </svg>
+);`,
+          language: 'jsx'
         }
       ],
     },
@@ -1140,6 +1252,26 @@ function MyComponent({ user }) {
           title: 'Code Highlighting',
           explanation: 'Includes a beautiful, server-rendered code highlighting component using `react-syntax-highlighter` to make your code snippets pop.',
           code: `<CodeBlock code={someCodeString} language="jsx" />`,
+          language: 'jsx'
+        },
+        {
+          title: 'UI Components with ShadCN',
+          explanation: 'Utilizes ShadCN UI for a set of reusable, accessible, and themeable components that you can easily customize.',
+          code: `import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+
+// Easy to use, pre-styled components
+<Card>
+  <Button>Click Me</Button>
+</Card>`,
+          language: 'jsx'
+        },
+        {
+          title: 'Tailwind CSS for Styling',
+          explanation: 'All styling is handled with Tailwind CSS, a utility-first framework that makes it fast and easy to build custom designs without leaving your HTML.',
+          code: `<div className="p-4 bg-slate-800 rounded-lg text-white">
+  Styled with Tailwind!
+</div>`,
           language: 'jsx'
         }
       ],
