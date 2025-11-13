@@ -35,7 +35,7 @@ export default function Home() {
 
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-50 font-sans">
+    <div className="min-h-full bg-slate-900 text-slate-50 font-sans">
       <div className="relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-cyan-900/10 via-slate-900 to-slate-900 opacity-50 z-0"></div>
         <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-cyan-500/5 rounded-full filter blur-3xl opacity-20"></div>
