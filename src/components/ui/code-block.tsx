@@ -30,8 +30,8 @@ export function CodeBlock({
   };
 
   return (
-    <div className="relative rounded-lg bg-slate-900 text-sm text-slate-50 font-code shadow-lg h-full">
-      <div className="flex justify-between items-center px-4 py-2 border-b border-slate-700">
+    <div className="relative rounded-lg bg-slate-900/70 text-sm text-slate-50 font-code shadow-lg h-full border border-slate-800">
+      <div className="flex justify-between items-center px-4 py-2 border-b border-slate-700/50">
         <span className="text-xs uppercase font-semibold text-slate-400">
           {language}
         </span>
