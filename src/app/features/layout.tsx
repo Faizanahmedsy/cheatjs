@@ -17,7 +17,6 @@ import {
   Lock,
   Sheet,
   Paintbrush,
-  Pencil,
   Puzzle,
 } from 'lucide-react';
 
