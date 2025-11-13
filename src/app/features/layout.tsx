@@ -26,50 +26,52 @@ export default function FeaturesLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Features</SidebarGroupLabel>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  tooltip="Drag and drop functionality"
-                  isActive
-                >
-                  <MousePointer2 />
-                  Drag and Drop
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Role-based access control">
-                  <Lock />
-                  Role-based Auth
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Spreadsheet-like UI">
-                  <Sheet />
-                  Spreadsheet UI
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Interactive drawing canvas">
-                  <Paintbrush />
-                  Drawing UI
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Other cool stuff">
-                  <Puzzle />
-                  Other Features
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-        </SidebarContent>
-      </Sidebar>
-      <SidebarInset>{children}</SidebarInset>
-    </SidebarProvider>
+    <div className="relative flex h-[calc(100vh-3.5rem)]">
+      <SidebarProvider>
+        <Sidebar>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupLabel>Features</SidebarGroupLabel>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    tooltip="Drag and drop functionality"
+                    isActive
+                  >
+                    <MousePointer2 />
+                    Drag and Drop
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton tooltip="Role-based access control">
+                    <Lock />
+                    Role-based Auth
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton tooltip="Spreadsheet-like UI">
+                    <Sheet />
+                    Spreadsheet UI
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton tooltip="Interactive drawing canvas">
+                    <Paintbrush />
+                    Drawing UI
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton tooltip="Other cool stuff">
+                    <Puzzle />
+                    Other Features
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+        <SidebarInset>{children}</SidebarInset>
+      </SidebarProvider>
+    </div>
   );
 }
