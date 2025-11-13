@@ -323,10 +323,88 @@ function Todos() {
         name: 'Advanced',
         snippets: [
           {
-            title: 'Coming Soon!',
-            description: 'Advanced React topics will be added here soon. Stay tuned!',
-            code: `// More content is on the way!`,
+            title: 'Rendering Strategies',
+            description: 'Different ways to render your app. CSR is standard React. Next.js enables SSR and SSG for better performance and SEO.',
+            code: `// Client-Side Rendering (CSR): Browser builds the page. Good for web apps.
+// Standard \`create-react-app\` is CSR.
+
+// Server-Side Rendering (SSR): Server builds page on each request. Good for dynamic, user-specific content.
+// In Next.js (pages router):
+export async function getServerSideProps(context) {
+  const data = await fetch(...); // Fetch data on each request
+  return { props: { data } };
+}
+
+// Static Site Generation (SSG): Page is built once at build time. Super fast. Good for blogs, marketing pages.
+// In Next.js (pages router):
+export async function getStaticProps(context) {
+  const data = await fetch(...); // Fetch data at build time
+  return { props: { data } };
+}`,
             language: 'javascript'
+          },
+          {
+            title: 'Pixel-Perfect Figma to Code',
+            description: 'To perfectly match a Figma design, pay close attention to spacing, typography, colors, and layout. Use a design system or a UI library like ShadCN to maintain consistency.',
+            code: `// 1. Use variables for colors, fonts, and spacing (like in globals.css).
+// 2. Measure everything in Figma: padding, margin, font size, line height.
+// 3. Use Tailwind CSS to apply those exact measurements.
+// 4. Use flexbox and grid for layouts. 'gap' is your best friend.
+
+// Example of a button from a Figma design:
+// Figma says: 12px padding top/bottom, 24px left/right, 16px font, bold, color #5A67D8
+<button className="py-3 px-6 bg-[#5A67D8] text-white font-bold text-base rounded-lg">
+  Click Me
+</button>
+// py-3 = 12px, px-6 = 24px, text-base = 16px`,
+            language: 'jsx'
+          },
+          {
+            title: 'Responsive Design',
+            description: 'Use mobile-first responsive breakpoints in Tailwind to ensure your app looks great on all screen sizes. Design for mobile, then add styles for larger screens.',
+            code: `// This div is a single column on mobile, and a 3-column grid on larger screens.
+// 'grid-cols-1' is the default for small screens (mobile-first).
+// 'md:grid-cols-3' applies only on medium screens and up (md = 768px).
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div>Column 1</div>
+  <div>Column 2</div>
+  <div>Column 3</div>
+</div>
+
+// You can hide elements on certain screens too.
+// 'hidden' hides it by default.
+// 'lg:block' makes it visible on large screens.
+<div className="hidden lg:block">
+  Only visible on large screens.
+</div>`,
+            language: 'jsx'
+          },
+          {
+            title: 'Advanced State Management',
+            description: "For complex apps, state can get tricky. Beyond component state (useState), you can use Context API for 'prop drilling' or a dedicated library like Zustand or Redux for a central, global state.",
+            code: `// React Context for avoiding prop drilling
+// Create a context
+const ThemeContext = React.createContext('light');
+
+function App() {
+  // Use the Provider to pass the value down
+  return (
+    <ThemeContext.Provider value="dark">
+      <Toolbar />
+    </ThemeContext.Provider>
+  );
+}
+
+// A component in the middle doesn't need to know about the theme.
+function Toolbar() { return <ThemedButton />; }
+
+function ThemedButton() {
+  // Use the Consumer to read the value from the context.
+  const theme = useContext(ThemeContext);
+  return <button className={theme}>I am {theme}</button>;
+}
+`,
+            language: 'jsx'
           }
         ]
       }
