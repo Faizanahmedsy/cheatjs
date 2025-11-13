@@ -1,8 +1,14 @@
+'use client';
+
 import { CheatsheetCard } from "@/components/CheatsheetCard";
 import { cheatsheets } from "@/lib/cheatsheets";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useQueryState } from 'nuqs';
 
 export default function Home() {
+  const [categoryTab, setCategoryTab] = useQueryState('category', {defaultValue: 'React'});
+  const [reactTab, setReactTab] = useQueryState('level', {defaultValue: 'Beginner'});
+
   const reactCategory = cheatsheets.find(c => c.name === 'React');
 
   return (
@@ -22,7 +28,7 @@ export default function Home() {
             </p>
           </div>
 
-          <Tabs defaultValue="React" className="w-full">
+          <Tabs value={categoryTab} onValueChange={setCategoryTab} className="w-full">
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 bg-slate-800/50 border border-slate-700/50 mb-8">
               <TabsTrigger value="React" className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300">React</TabsTrigger>
               <TabsTrigger value="Next.js" className="data-[state=active]:bg-slate-700 data-[state=active]:text-green-300">Next.js</TabsTrigger>
@@ -30,7 +36,7 @@ export default function Home() {
             </TabsList>
             
             <TabsContent value="React">
-              <Tabs defaultValue="Beginner" className="w-full">
+              <Tabs value={reactTab} onValueChange={setReactTab} className="w-full">
                 <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 bg-slate-800/50 border border-slate-700/50 mb-8">
                   <TabsTrigger value="Beginner" className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300">Beginner</TabsTrigger>
                   <TabsTrigger value="Intermediate" className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300">Intermediate</TabsTrigger>

@@ -1,0 +1,30 @@
+diff --git a/node_modules/nuqs/dist/chunk-K333Y2LZ.mjs b/node_modules/nuqs/dist/chunk-K333Y2LZ.mjs
+index 9a6b412..030a599 100644
+--- a/node_modules/nuqs/dist/chunk-K333Y2LZ.mjs
++++ b/node_modules/nuqs/dist/chunk-K333Y2LZ.mjs
+@@ -1,7 +1,7 @@
+ // src/useQueryState.ts
+ import { useReducer, useMemo as useMemo2, useCallback, useRef as useRef2, startTransition } from "react";
+-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+-import { useEffect, useLayoutEffect, useRef } from "react";
++import { usePathname, useRouter, useSearchParams, useServerInsertedHTML } from "next/navigation";
++import { useEffect, useLayoutEffect, useRef, Suspense } from "react";
+ 
+ // src/defs.ts
+ var FLUSH_RATE_LIMIT_MS = 100;
+@@ -49,6 +49,15 @@
+   return reducer;
+ }
+ function useQueryState(key, options) {
++  if (typeof window === "undefined") {
++    const [state, setState] = useQueryStateServer(key, options);
++    useServerInsertedHTML(() => {
++      return /* @__PURE__ */ React.createElement(Suspense, {
++        fallback: null
++      });
++    });
++    return [state, setState];
++  }
+   const {
+     history = "replace",
+     scroll = false,
