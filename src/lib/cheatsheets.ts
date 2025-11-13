@@ -8,22 +8,31 @@ export type Snippet = {
   language: string;
 };
 
+export type SubCategory = {
+  name: string;
+  snippets: Snippet[];
+}
+
 export type Category = {
   name: string;
   icon: ElementType;
-  snippets: Snippet[];
+  snippets?: Snippet[];
+  subCategories?: SubCategory[];
 };
 
 export const cheatsheets: Category[] = [
   {
     name: 'React',
     icon: ToyBrick,
-    snippets: [
+    subCategories: [
       {
-        title: 'What is React?',
-        description:
-          "Imagine building with LEGOs. Instead of building a whole castle at once, you build small parts like a tower or a wall, and then put them together. React lets you build a website like that, using small, reusable 'pieces' called components.",
-        code: `// Think of this as your main LEGO castle
+        name: 'Beginner',
+        snippets: [
+          {
+            title: 'What is React?',
+            description:
+              "Imagine building with LEGOs. Instead of building a whole castle at once, you build small parts like a tower or a wall, and then put them together. React lets you build a website like that, using small, reusable 'pieces' called components.",
+            code: `// Think of this as your main LEGO castle
 function Castle() {
   return (
     <div>
@@ -42,13 +51,13 @@ function Wall() {
 function Tower() {
   return <p>This is a tall tower.</p>;
 }`,
-        language: 'jsx',
-      },
-      {
-        title: 'Components',
-        description:
-          "Components are like special LEGO bricks. You can build a 'Button' brick or a 'ProfilePicture' brick, and then use them anywhere you want in your app, as many times as you like. It keeps your code organized!",
-        code: `// This is a reusable Button component
+            language: 'jsx',
+          },
+          {
+            title: 'Components',
+            description:
+              "Components are like special LEGO bricks. You can build a 'Button' brick or a 'ProfilePicture' brick, and then use them anywhere you want in your app, as many times as you like. It keeps your code organized!",
+            code: `// This is a reusable Button component
 function MyButton() {
   return <button>Click Me!</button>;
 }
@@ -64,25 +73,25 @@ function App() {
     </div>
   );
 }`,
-        language: 'jsx',
-      },
-      {
-        title: 'JSX',
-        description:
-          'JSX is a special way of writing HTML inside your JavaScript. It looks like HTML, but it lets you add JavaScript logic right in your layout, making it easy to create dynamic content.',
-        code: `// This is JSX! It looks like HTML in JavaScript.
+            language: 'jsx',
+          },
+          {
+            title: 'JSX',
+            description:
+              'JSX is a special way of writing HTML inside your JavaScript. It looks like HTML, but it lets you add JavaScript logic right in your layout, making it easy to create dynamic content.',
+            code: `// This is JSX! It looks like HTML in JavaScript.
 const name = 'Faizan';
 const greeting = <h1>Hello, {name}!</h1>;
 // We can use a JavaScript variable right inside our "HTML".
 
 // It renders as: <h1>Hello, Faizan!</h1>`,
-        language: 'jsx',
-      },
-      {
-        title: 'useState Hook',
-        description:
-          "useState is like a component's memory. It lets your component remember things, like how many times a button has been clicked. When the state changes, React automatically re-renders the component to show the new value.",
-        code: `import { useState } from 'react';
+            language: 'jsx',
+          },
+          {
+            title: 'useState Hook',
+            description:
+              "useState is like a component's memory. It lets your component remember things, like how many times a button has been clicked. When the state changes, React automatically re-renders the component to show the new value.",
+            code: `import { useState } from 'react';
 
 function Counter() {
   // 'count' is the memory, it starts at 0.
@@ -99,13 +108,13 @@ function Counter() {
     </div>
   );
 }`,
-        language: 'jsx',
-      },
-      {
-        title: 'Event Handling',
-        description:
-          'React can listen for user actions, like clicks, typing, or hovering. You give an HTML element a special prop like `onClick` and tell it which function to run when the event happens.',
-        code: `function AlertButton() {
+            language: 'jsx',
+          },
+          {
+            title: 'Event Handling',
+            description:
+              'React can listen for user actions, like clicks, typing, or hovering. You give an HTML element a special prop like `onClick` and tell it which function to run when the event happens.',
+            code: `function AlertButton() {
   // This function will run when the button is clicked
   function handleClick() {
     alert('You clicked the button!');
@@ -115,13 +124,13 @@ function Counter() {
   // and run our handleClick function.
   return <button onClick={handleClick}>Click for an alert</button>;
 }`,
-        language: 'jsx',
-      },
-      {
-        title: 'Conditional Rendering',
-        description:
-          'This is like playing peek-a-boo. You can show or hide things based on a condition. If a user is logged in, show their profile. If not, show a login button.',
-        code: `function Greeting({ isLoggedIn }) {
+            language: 'jsx',
+          },
+          {
+            title: 'Conditional Rendering',
+            description:
+              'This is like playing peek-a-boo. You can show or hide things based on a condition. If a user is logged in, show their profile. If not, show a login button.',
+            code: `function Greeting({ isLoggedIn }) {
   // If isLoggedIn is true...
   if (isLoggedIn) {
     // ...show the welcome message.
@@ -136,13 +145,13 @@ function Counter() {
 <Greeting isLoggedIn={true} /> // Shows "Welcome back!"
 <Greeting isLoggedIn={false} /> // Shows "Please log in."
 `,
-        language: 'jsx',
-      },
-      {
-        title: 'Handling Forms',
-        description:
-          "React can control what's inside form inputs like text boxes. You use state to 'remember' what the user is typing, and update the state every time they type a new character.",
-        code: `import { useState } from 'react';
+            language: 'jsx',
+          },
+          {
+            title: 'Handling Forms',
+            description:
+              "React can control what's inside form inputs like text boxes. You use state to 'remember' what the user is typing, and update the state every time they type a new character.",
+            code: `import { useState } from 'react';
 
 function NameForm() {
   // Use state to remember the value in the input
@@ -163,13 +172,13 @@ function NameForm() {
     </form>
   );
 }`,
-        language: 'jsx',
-      },
-      {
-        title: 'useEffect Hook',
-        description:
-          'useEffect lets your component do something *after* it has been rendered, like fetching data from the internet or setting up a timer. It helps manage side effects that are not directly related to rendering.',
-        code: `import { useState, useEffect } from 'react';
+            language: 'jsx',
+          },
+          {
+            title: 'useEffect Hook',
+            description:
+              'useEffect lets your component do something *after* it has been rendered, like fetching data from the internet or setting up a timer. It helps manage side effects that are not directly related to rendering.',
+            code: `import { useState, useEffect } from 'react';
 
 function Timer() {
   const [seconds, setSeconds] = useState(0);
@@ -187,8 +196,140 @@ function Timer() {
 
   return <div>Timer: {seconds} seconds</div>;
 }`,
-        language: 'jsx',
+            language: 'jsx',
+          },
+        ]
       },
+      {
+        name: 'Intermediate',
+        snippets: [
+          {
+            title: 'Styling with Tailwind CSS',
+            description: 'Tailwind CSS lets you write utility classes directly in your JSX for rapid styling, without leaving your HTML.',
+            code: `// No need for a separate CSS file for styling this component.
+// Classes like 'bg-blue-500', 'text-white', and 'p-2' are from Tailwind.
+function TailwindButton() {
+  return (
+    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      I'm styled with Tailwind!
+    </button>
+  );
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'Using ShadCN UI',
+            description: 'ShadCN UI provides beautifully designed, accessible components that you can easily copy and paste into your project.',
+            code: `// Import a pre-built component from your project's ui folder.
+import { Button } from "@/components/ui/button";
+
+// Use it like any other React component.
+function ShadcnExample() {
+  return (
+    <div>
+      <Button variant="destructive">Destructive Button</Button>
+      <Button variant="outline">Outline Button</Button>
+    </div>
+  )
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'Forms with React Hook Form',
+            description: 'React Hook Form makes form validation and state management simple and performant by using React hooks.',
+            code: `import { useForm } from "react-hook-form";
+
+function MyForm() {
+  // register: connects an input to the form
+  // handleSubmit: runs your code only if validation passes
+  // formState: { errors } contains validation errors
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  
+  // This function runs on successful submission
+  const onSubmit = (data) => console.log(data);
+
+  return (
+    // Pass your submit handler to handleSubmit
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {/* Register the input with a name and validation rules */}
+      <input defaultValue="test" {...register("example", { required: true })} />
+      {/* Show an error if the 'required' rule fails */}
+      {errors.example && <span>This field is required</span>}
+      
+      <input type="submit" />
+    </form>
+  );
+}`,
+            language: 'jsx'
+          },
+          {
+            title: 'State Management with Zustand',
+            description: "Zustand is a small, fast, and simple state management solution. It's like a global useState that any component can access.",
+            code: `import { create } from 'zustand';
+
+// Create a 'store' to hold your global state.
+const useBearStore = create((set) => ({
+  bears: 0,
+  increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
+  removeAllBears: () => set({ bears: 0 }),
+}))
+
+function BearCounter() {
+  // Use the hook to get the state from the store.
+  const bears = useBearStore((state) => state.bears)
+  return <h1>{bears} around here ...</h1>
+}
+
+function Controls() {
+  // You can also get the actions from the store.
+  const increasePopulation = useBearStore((state) => state.increasePopulation)
+  return <button onClick={increasePopulation}>one up</button>
+}`,
+            language: 'jsx'
+          },
+          {
+            title: 'Data Fetching with TanStack Query',
+            description: 'TanStack Query (formerly React Query) simplifies fetching, caching, and updating data from a server in your React applications.',
+            code: `import { useQuery } from '@tanstack/react-query';
+
+function Todos() {
+  // useQuery handles fetching, loading states, and error states for you.
+  const { isLoading, error, data } = useQuery({
+    queryKey: ['repoData'], // A unique key for this query
+    queryFn: () =>
+      fetch('https://api.github.com/repos/tannerlinsley/react-query')
+        .then(res => res.json())
+  });
+
+  // It automatically gives you the loading state
+  if (isLoading) return 'Loading...';
+
+  // And the error state
+  if (error) return 'An error has occurred: ' + error.message;
+
+  // And finally, the data
+  return (
+    <div>
+      <h1>{data.name}</h1>
+      <p>{data.description}</p>
+    </div>
+  );
+}`,
+            language: 'jsx'
+          }
+        ]
+      },
+      {
+        name: 'Advanced',
+        snippets: [
+          {
+            title: 'Coming Soon!',
+            description: 'Advanced React topics will be added here soon. Stay tuned!',
+            code: `// More content is on the way!`,
+            language: 'javascript'
+          }
+        ]
+      }
     ],
   },
   {

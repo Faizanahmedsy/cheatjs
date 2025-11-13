@@ -3,6 +3,8 @@ import { cheatsheets } from "@/lib/cheatsheets";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Home() {
+  const reactCategory = cheatsheets.find(c => c.name === 'React');
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-50 font-sans">
       <div className="relative overflow-hidden">
@@ -28,11 +30,34 @@ export default function Home() {
             </TabsList>
             
             <TabsContent value="React">
-              <div className="grid gap-6 md:grid-cols-2">
-                {cheatsheets.find(c => c.name === 'React')?.snippets.map((snippet) => (
-                  <CheatsheetCard key={snippet.title} snippet={snippet} color="cyan" />
-                ))}
-              </div>
+              <Tabs defaultValue="Beginner" className="w-full">
+                <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 bg-slate-800/50 border border-slate-700/50 mb-8">
+                  <TabsTrigger value="Beginner" className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300">Beginner</TabsTrigger>
+                  <TabsTrigger value="Intermediate" className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300">Intermediate</TabsTrigger>
+                  <TabsTrigger value="Advanced" className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300">Advanced</TabsTrigger>
+                </TabsList>
+                <TabsContent value="Beginner">
+                  <div className="grid gap-6 md:grid-cols-2">
+                    {reactCategory?.subCategories?.find(sc => sc.name === 'Beginner')?.snippets.map((snippet) => (
+                      <CheatsheetCard key={snippet.title} snippet={snippet} color="cyan" />
+                    ))}
+                  </div>
+                </TabsContent>
+                <TabsContent value="Intermediate">
+                  <div className="grid gap-6 md:grid-cols-2">
+                    {reactCategory?.subCategories?.find(sc => sc.name === 'Intermediate')?.snippets.map((snippet) => (
+                      <CheatsheetCard key={snippet.title} snippet={snippet} color="cyan" />
+                    ))}
+                  </div>
+                </TabsContent>
+                <TabsContent value="Advanced">
+                  <div className="grid gap-6 md:grid-cols-2">
+                    {reactCategory?.subCategories?.find(sc => sc.name === 'Advanced')?.snippets.map((snippet) => (
+                      <CheatsheetCard key={snippet.title} snippet={snippet} color="cyan" />
+                    ))}
+                  </div>
+                </TabsContent>
+              </Tabs>
             </TabsContent>
             
             <TabsContent value="Next.js">
