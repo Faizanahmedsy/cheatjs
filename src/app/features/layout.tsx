@@ -28,7 +28,7 @@ export default function FeaturesLayout({
   return (
     <div className="relative flex h-[calc(100vh-3.5rem)]">
       <SidebarProvider>
-        <Sidebar>
+        <Sidebar className="h-full">
           <SidebarContent>
             <SidebarGroup>
               <SidebarGroupLabel>Features</SidebarGroupLabel>
