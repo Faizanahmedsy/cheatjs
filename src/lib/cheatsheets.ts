@@ -589,6 +589,123 @@ app.get('/api/data', (req, res) => {
     icon: Share2,
     snippets: [
       {
+        title: 'Array',
+        description: "The simplest data structure, an array is a collection of items stored at contiguous memory locations. It's great for fast access to elements at a specific position (known as an 'index').",
+        visualization: 'Array',
+        pros: [
+          "Fast access: O(1) time complexity to access any element by its index.",
+          "Memory efficient: Stores elements contiguously, which can be cache-friendly.",
+        ],
+        cons: [
+          "Slow insertion/deletion: Adding or removing elements from the beginning or middle is slow (O(n)) because subsequent elements need to be shifted.",
+          "Fixed size (in many languages): In languages like Java/C++, arrays have a fixed size, requiring a new array to be created for resizing.",
+        ],
+        code: `// JavaScript arrays are dynamic and can hold multiple types.
+const fruits = ['Apple', 'Banana', 'Cherry'];
+
+// Access by index (O(1))
+console.log(fruits[1]); // "Banana"
+
+// Add to the end (amortized O(1))
+fruits.push('Date');
+
+// Remove from the end (O(1))
+fruits.pop();
+
+// Add to the beginning (O(n))
+fruits.unshift('Apricot');
+
+// Iterate through the array
+for (const fruit of fruits) {
+  console.log(fruit);
+}`,
+        language: 'javascript'
+      },
+      {
+        title: 'Stack',
+        description: "A Stack is a linear data structure that follows a Last-In, First-Out (LIFO) principle. Think of it like a stack of plates: you add a new plate to the top, and you also remove a plate from the top.",
+        visualization: 'Stack',
+        pros: [
+          "Fast operations: Push (add) and Pop (remove) are very fast (O(1)).",
+          "Simple to implement: Can be easily built using an array or a linked list.",
+          "Used in many algorithms: Essential for call stacks, parsing expressions, and backtracking (e.g., maze solving).",
+        ],
+        cons: [
+          "Limited access: You can only access the top element.",
+        ],
+        code: `// You can easily implement a Stack in JS using an array.
+class Stack {
+  constructor() {
+    this.items = [];
+  }
+
+  // push(item): Add an item to the top
+  push(item) {
+    this.items.push(item);
+  }
+
+  // pop(): Remove and return the top item
+  pop() {
+    if (this.items.length === 0) return "Underflow";
+    return this.items.pop();
+  }
+
+  // peek(): View the top item without removing
+  peek() {
+    return this.items[this.items.length - 1];
+  }
+
+  // isEmpty(): Check if the stack is empty
+  isEmpty() {
+    return this.items.length === 0;
+  }
+}`,
+        language: 'javascript'
+      },
+       {
+        title: 'Queue',
+        description: "A Queue is a linear data structure that follows a First-In, First-Out (FIFO) principle. It's like a checkout line at a grocery store: the first person to get in line is the first person to be served.",
+        visualization: 'Queue',
+        pros: [
+          "Fast operations: Enqueue (add) and Dequeue (remove) are very fast (O(1)).",
+          "Fairness: Maintains the order of elements, which is useful for processing tasks in sequence.",
+          "Used in many scenarios: Breadth-First Search (BFS) in graphs, task scheduling, and handling requests.",
+        ],
+        cons: [
+          "Limited access: You can only access the front and back elements.",
+          "Array-based implementation can be inefficient for dequeue if not careful (O(n) if using `shift`)."
+        ],
+        code: `// A simple Queue implementation in JS.
+class Queue {
+  constructor() {
+    this.items = [];
+  }
+
+  // enqueue(item): Add an item to the back
+  enqueue(item) {
+    this.items.push(item);
+  }
+
+  // dequeue(): Remove and return the front item
+  dequeue() {
+    if (this.isEmpty()) return "Underflow";
+    return this.items.shift(); // .shift() can be O(n), but is simple for demonstration.
+  }
+
+  // front(): View the front item
+  front() {
+    if (this.isEmpty()) return "No items in Queue";
+    return this.items[0];
+  }
+
+  // isEmpty(): Check if the queue is empty
+  isEmpty() {
+    return this.items.length === 0;
+  }
+}`,
+        language: 'javascript'
+      },
+      {
         title: 'Hash Map (Object/Map)',
         description: "A Hash Map is a data structure that stores key-value pairs. It uses a 'hash function' to compute an index into an array of buckets or slots, from which the desired value can be found. This allows for very fast lookups, insertions, and deletions.",
         visualization: 'HashMap',

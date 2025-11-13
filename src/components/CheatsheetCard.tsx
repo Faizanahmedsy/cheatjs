@@ -4,6 +4,9 @@ import { CodeBlock } from "@/components/ui/code-block";
 import type { Snippet } from "@/lib/cheatsheets";
 import { cn } from "@/lib/utils";
 import { HashMapVisualization } from "./visualizations/HashMapVisualization";
+import { ArrayVisualization } from "./visualizations/ArrayVisualization";
+import { StackVisualization } from "./visualizations/StackVisualization";
+import { QueueVisualization } from "./visualizations/QueueVisualization";
 
 const colorVariants = {
   cyan: "bg-cyan-400/20 text-cyan-300",
@@ -14,6 +17,9 @@ const colorVariants = {
 
 const visualizationComponents: { [key: string]: React.ComponentType<any> } = {
   'HashMap': HashMapVisualization,
+  'Array': ArrayVisualization,
+  'Stack': StackVisualization,
+  'Queue': QueueVisualization,
 };
 
 export function CheatsheetCard({
@@ -39,6 +45,23 @@ export function CheatsheetCard({
         <p className="text-slate-400 mt-6 mb-2 text-sm font-body">
           {snippet.description}
         </p>
+
+        {snippet.pros && snippet.cons && (
+          <div className="grid grid-cols-2 gap-4 my-4 text-xs font-code">
+            <div>
+              <h4 className="font-bold text-green-400 mb-1">Pros</h4>
+              <ul className="list-disc list-inside text-slate-400 space-y-1">
+                {snippet.pros.map(p => <li key={p}>{p}</li>)}
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-red-400 mb-1">Cons</h4>
+              <ul className="list-disc list-inside text-slate-400 space-y-1">
+                {snippet.cons.map(c => <li key={c}>{c}</li>)}
+              </ul>
+            </div>
+          </div>
+        )}
 
         {VisualizationComponent && (
           <div className="my-4">
