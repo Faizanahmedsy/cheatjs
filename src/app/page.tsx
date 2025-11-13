@@ -46,19 +46,19 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-full bg-slate-900 text-slate-50 font-sans">
+    <div className="min-h-full bg-background text-slate-50 font-sans">
       <div className="relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-cyan-900/10 via-slate-900 to-slate-900 opacity-50 z-0"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-cyan-900/10 via-background to-background opacity-50 z-0"></div>
         <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-cyan-500/5 rounded-full filter blur-3xl opacity-20"></div>
         <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-green-500/5 rounded-full filter blur-3xl opacity-20"></div>
 
         <main className="container mx-auto px-4 py-16 relative z-10">
           <div className="text-center mb-12">
             <h1 className="font-headline text-5xl font-bold text-slate-100">
-              Code Cheatsheets
+              CheatJS
             </h1>
             <p className="mt-4 text-lg text-slate-400 max-w-2xl mx-auto">
-              A curated collection of snippets for Next.js, React, and advanced frontend concepts.
+              Your ultimate JavaScript cheatsheet for modern frontend development, DSA, and system design.
             </p>
           </div>
 
@@ -143,29 +143,31 @@ export default function Home() {
           </Tabs>
         </main>
 
-        <footer className="py-8 text-center text-slate-500 text-sm relative z-10">
-          <p>
-            Made by{' '}
-            <a
-              href="https://faizansaiyed.vercel.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-cyan-400 hover:underline"
-            >
-              Faizan Saiyed
-            </a>
-            . Find me on{' '}
-            <a
-              href="https://www.linkedin.com/in/faizanahmed-saiyed/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-cyan-400 hover:underline"
-            >
-              LinkedIn
-            </a>
-            .
-          </p>
-          <p className="mt-2">Built with Next.js &amp; Tailwind CSS.</p>
+        <footer className="border-t border-slate-800 py-8 text-center text-slate-500 text-sm relative z-10">
+          <div className="container mx-auto px-4">
+            <p className="mb-2">
+              Built by{' '}
+              <a
+                href="https://faizansaiyed.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:underline"
+              >
+                Faizan
+              </a>
+              . Find me on{' '}
+              <a
+                href="https://www.linkedin.com/in/faizanahmed-saiyed/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:underline"
+              >
+                LinkedIn
+              </a>
+              .
+            </p>
+            <p>&copy; {new Date().getFullYear()} CheatJS. All Rights Reserved.</p>
+          </div>
         </footer>
       </div>
     </div>

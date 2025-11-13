@@ -4,8 +4,8 @@ import { Navbar } from '@/components/Navbar';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Code Cheatsheets',
-  description: 'Your quick reference for Next.js, React, and advanced frontend concepts.',
+  title: 'CheatJS',
+  description: 'Your ultimate JavaScript cheatsheet for modern frontend development.',
 };
 
 export default function RootLayout({
@@ -22,7 +22,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased bg-slate-900" suppressHydrationWarning>
+      <body className="font-body antialiased bg-background" suppressHydrationWarning>
         <div className="flex flex-col min-h-screen">
           <Navbar />
           <div className="flex-grow">
