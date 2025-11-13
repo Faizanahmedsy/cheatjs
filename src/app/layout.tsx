@@ -22,7 +22,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased bg-slate-900">
+      <body className="font-body antialiased bg-slate-900" suppressHydrationWarning>
         <div className="flex flex-col min-h-screen">
           <Navbar />
           <div className="flex-grow">
