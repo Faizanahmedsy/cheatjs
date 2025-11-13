@@ -1,4 +1,4 @@
-import { FileCode, ToyBrick, Zap, Share2 } from 'lucide-react';
+import { FileCode, ToyBrick, Zap, Share2, Component } from 'lucide-react';
 import type { ElementType } from 'react';
 
 export type Snippet = {
@@ -701,6 +701,46 @@ class Queue {
   // isEmpty(): Check if the queue is empty
   isEmpty() {
     return this.items.length === 0;
+  }
+}`,
+        language: 'javascript'
+      },
+      {
+        title: 'Linked List',
+        description: "A Linked List is a linear data structure where elements are not stored at contiguous memory locations. Instead, each element (a 'node') contains a pointer to the next element in the sequence.",
+        visualization: 'LinkedList',
+        pros: [
+          "Efficient insertion/deletion: Adding or removing nodes is fast (O(1)) if you have a reference to the node, as it only requires changing a few pointers.",
+          "Dynamic size: Can grow and shrink easily without needing to reallocate the entire structure.",
+        ],
+        cons: [
+          "Slow access: To find an element, you must traverse the list from the beginning (O(n)).",
+          "Extra memory: Each node requires extra memory to store its pointer(s).",
+        ],
+        code: `class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+class LinkedList {
+  constructor() {
+    this.head = null;
+  }
+
+  // Add a node to the end
+  append(data) {
+    const newNode = new Node(data);
+    if (!this.head) {
+      this.head = newNode;
+      return;
+    }
+    let current = this.head;
+    while (current.next) {
+      current = current.next;
+    }
+    current.next = newNode;
   }
 }`,
         language: 'javascript'

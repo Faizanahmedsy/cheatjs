@@ -7,6 +7,7 @@ import { HashMapVisualization } from "./visualizations/HashMapVisualization";
 import { ArrayVisualization } from "./visualizations/ArrayVisualization";
 import { StackVisualization } from "./visualizations/StackVisualization";
 import { QueueVisualization } from "./visualizations/QueueVisualization";
+import { LinkedListVisualization } from "./visualizations/LinkedListVisualization";
 
 const colorVariants = {
   cyan: "bg-cyan-400/20 text-cyan-300",
@@ -20,6 +21,7 @@ const visualizationComponents: { [key: string]: React.ComponentType<any> } = {
   'Array': ArrayVisualization,
   'Stack': StackVisualization,
   'Queue': QueueVisualization,
+  'LinkedList': LinkedListVisualization,
 };
 
 export function CheatsheetCard({
