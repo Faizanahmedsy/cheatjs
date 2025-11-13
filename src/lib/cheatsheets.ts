@@ -464,7 +464,7 @@ export async function GET(request: Request) {
     snippets: [
       {
         title: 'Async/Await',
-        description: 'A modern way to handle asynchronous operations.',
+        description: 'A modern way to handle asynchronous operations, making promise-based code look and behave more like synchronous code.',
         code: `// Define an async function
 async function fetchData() {
   try {
@@ -474,15 +474,17 @@ async function fetchData() {
     const data = await response.json();
     console.log(data);
   } catch (error) {
-    // Handle any errors that occur
+    // Handle any errors that occur during the try block
     console.error('Fetching data failed:', error);
   }
-}`,
+}
+
+fetchData();`,
         language: 'javascript',
       },
       {
         title: 'Promise.all',
-        description: 'Run multiple promises in parallel.',
+        description: 'Run multiple promises concurrently and wait for all of them to resolve. It rejects if any of the promises reject.',
         code: `// Create some promises
 const promise1 = Promise.resolve(3);
 const promise2 = 42;
@@ -499,7 +501,7 @@ Promise.all([promise1, promise2, promise3]).then((values) => {
       },
       {
         title: 'Destructuring',
-        description: 'Unpack values from arrays or properties from objects.',
+        description: 'A convenient way to unpack values from arrays or properties from objects into distinct variables.',
         code: `// Object destructuring
 const user = { id: 1, name: 'John Doe', age: 30 };
 const { name, age } = user;
@@ -510,6 +512,71 @@ console.log(age); // 30
 const numbers = [1, 2, 3, 4, 5];
 const [first, second] = numbers;
 console.log(first, second); // 1 2`,
+        language: 'javascript',
+      },
+      {
+        title: 'Memoization (useMemo/useCallback)',
+        description: 'A performance optimization technique. `useMemo` caches the result of a calculation, `useCallback` caches a function definition, preventing unnecessary re-renders in child components.',
+        code: `import { useMemo, useCallback } from 'react';
+
+// useMemo: Memoizes a calculated value.
+// The expensive calculation only runs when 'a' or 'b' changes.
+const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
+
+// useCallback: Memoizes a function.
+// The function is not recreated on every render, which is useful
+// when passing callbacks to optimized child components.
+const memoizedCallback = useCallback(
+  () => {
+    doSomething(a, b);
+  },
+  [a, b], // The function is recreated only if a or b changes
+);`,
+        language: 'jsx',
+      },
+      {
+        title: 'The Event Loop',
+        description: "JavaScript has a single-threaded event loop that handles asynchronous operations. It consists of a call stack, a callback queue, and web APIs. Understanding it is key to understanding how JS handles async tasks like `setTimeout` or `fetch`.",
+        code: `console.log('Start'); // 1. Added to stack, executed
+
+// 2. setTimeout is a Web API. It's handed off to the browser.
+// The browser starts a 0ms timer.
+setTimeout(() => {
+  console.log('Timeout'); // 5. Added to queue, then stack when empty.
+}, 0);
+
+// 3. Promise is created. The executor runs immediately.
+Promise.resolve().then(() => {
+  console.log('Promise'); // 4. Added to microtask queue, which runs before callback queue.
+});
+
+console.log('End'); // 3. Added to stack, executed
+
+// Output order: Start, End, Promise, Timeout`,
+        language: 'javascript',
+      },
+      {
+        title: 'CORS (Cross-Origin Resource Sharing)',
+        description: "A browser security feature that restricts how a web page from one domain can request resources from another domain. The server must include specific HTTP headers (like `Access-Control-Allow-Origin`) to allow the request.",
+        code: `// Example of a server (e.g., Express.js) allowing requests
+// from a specific origin. This is NOT frontend code, but it's
+// essential for frontend developers to understand.
+
+// On your Node.js/Express server:
+const express = require('express');
+const cors = require('cors'); // Using the 'cors' middleware
+const app = express();
+
+const corsOptions = {
+  // The origin that is allowed to make requests
+  origin: 'https://my-awesome-frontend.com',
+};
+
+app.use(cors(corsOptions)); // Enable CORS for the allowed origin
+
+app.get('/api/data', (req, res) => {
+  res.json({ message: 'This data is protected by CORS!' });
+});`,
         language: 'javascript',
       },
     ],
