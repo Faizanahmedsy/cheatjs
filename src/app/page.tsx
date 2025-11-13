@@ -79,7 +79,28 @@ export default function Home() {
         </main>
 
         <footer className="py-8 text-center text-slate-500 text-sm relative z-10">
-          <p>Built with Next.js & Tailwind CSS.</p>
+          <p>
+            Made by{' '}
+            <a
+              href="https://faizansaiyed.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:underline"
+            >
+              Faizan Saiyed
+            </a>
+            . Find me on{' '}
+            <a
+              href="https://www.linkedin.com/in/faizanahmed-saiyed/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:underline"
+            >
+              LinkedIn
+            </a>
+            .
+          </p>
+          <p className="mt-2">Built with Next.js & Tailwind CSS.</p>
         </footer>
       </div>
     </div>
