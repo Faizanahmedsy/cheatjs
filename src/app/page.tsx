@@ -58,7 +58,7 @@ export default function Home() {
               CheatJS
             </h1>
             <p className="mt-4 text-lg text-slate-400 max-w-2xl mx-auto">
-              Your ultimate JavaScript cheatsheet for modern frontend development, DSA, and system design.
+              The easiest to understand resource to understand frontend development on planet earth.
             </p>
           </div>
 

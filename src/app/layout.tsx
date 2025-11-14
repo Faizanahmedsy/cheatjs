@@ -2,10 +2,11 @@ import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster";
 import { Navbar } from '@/components/Navbar';
 import './globals.css';
+import { PrototypeBanner } from '@/components/PrototypeBanner';
 
 export const metadata: Metadata = {
   title: 'CheatJS',
-  description: 'Your ultimate JavaScript cheatsheet for modern frontend development.',
+  description: 'The easiest to understand resource to understand frontend development on planet earth.',
 };
 
 export default function RootLayout({
@@ -24,6 +25,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased bg-background" suppressHydrationWarning>
         <div className="flex flex-col min-h-screen">
+          <PrototypeBanner />
           <Navbar />
           <div className="flex-grow">
             {children}
