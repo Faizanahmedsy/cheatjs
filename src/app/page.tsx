@@ -53,7 +53,7 @@ export default function Home() {
         <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-green-500/5 rounded-full filter blur-3xl opacity-20"></div>
 
         <main className="relative z-10">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 max-w-screen-xl">
             <div className="text-center py-16">
               <h1 className="font-headline text-5xl font-bold text-slate-100">
                 CheatJS
