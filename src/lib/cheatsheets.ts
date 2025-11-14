@@ -1,4 +1,5 @@
 
+
 import { FileCode, ToyBrick, Zap, Share2, Component, Puzzle } from 'lucide-react';
 import type { ElementType } from 'react';
 
@@ -145,10 +146,15 @@ function Counter() {
   return <p>Please log in.</p>;
 }
 
-// Using the component:
-<Greeting isLoggedIn={true} /> // Shows "Welcome back!"
-<Greeting isLoggedIn={false} /> // Shows "Please log in."
-`,
+function App() {
+  // Try changing this to false!
+  const isUserLoggedIn = true;
+  return (
+    <div>
+      <Greeting isLoggedIn={isUserLoggedIn} />
+    </div>
+  );
+}`,
             language: 'jsx',
           },
           {
