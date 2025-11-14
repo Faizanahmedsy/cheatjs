@@ -6,7 +6,7 @@ import { PrototypeBanner } from '@/components/PrototypeBanner';
 
 export const metadata: Metadata = {
   title: 'CheatJS',
-  description: 'The easiest to understand resource to understand frontend development on planet earth.',
+  description: 'The easiest to understand resource to learn frontend development on planet earth.',
 };
 
 export default function RootLayout({
