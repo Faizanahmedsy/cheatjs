@@ -5,7 +5,7 @@ import './globals.css';
 import { PrototypeBanner } from '@/components/PrototypeBanner';
 
 export const metadata: Metadata = {
-  title: 'CheatJS',
+  title: 'Cheat JS',
   description: 'The easiest to understand resource to learn frontend development on planet earth.',
 };
 

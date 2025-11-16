@@ -15,7 +15,7 @@ export default function Home() {
           <div className="container mx-auto px-4 max-w-screen-xl">
             <div className="text-center py-16">
               <h1 className="font-headline text-5xl font-bold text-slate-100">
-                CheatJS
+                Cheat JS
               </h1>
               <p className="mt-4 text-lg text-slate-400 max-w-2xl mx-auto">
                 The easiest to understand resource to learn frontend development on planet earth. Cheatsheets to help you learn and master modern web technologies.
@@ -52,7 +52,7 @@ export default function Home() {
               </a>
               .
             </p>
-            <p>&copy; {new Date().getFullYear()} CheatJS. All Rights Reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Cheat JS. All Rights Reserved.</p>
           </div>
         </footer>
       </div>

@@ -166,7 +166,7 @@ export function PDFDownloadModal({ isOpen, onClose }: PDFDownloadModalProps) {
           await generateCheatsheetPDF(
             selectedTopics.size === allTopics.length 
               ? firstGroup.categoryName 
-              : 'CheatJS',
+              : 'Cheat JS',
             customSubCategory,
             customTitle || undefined,
             customSubtitle || undefined

@@ -1,4 +1,3 @@
-
 import jsPDF from 'jspdf';
 import type { SubCategory, Snippet } from '../lib/cheatsheets';
 import type { DSATopic } from '../lib/dsa';
@@ -50,38 +49,57 @@ function addCoverPage(
   customTitle?: string,
   customSubtitle?: string
 ) {
-  pdf.setFillColor(37, 99, 235);
+  // --- Background ---
+  pdf.setFillColor(30, 58, 138);
   pdf.rect(0, 0, pageWidth, pageHeight, 'F');
-  pdf.setFillColor(59, 130, 246);
-  pdf.rect(0, 0, pageWidth, pageHeight / 2, 'F');
-  pdf.setFillColor(96, 165, 250);
-  pdf.circle(30, 30, 40, 'F');
-  pdf.circle(pageWidth - 30, pageHeight - 30, 50, 'F');
 
-  const centerY = pageHeight / 2;
+  // --- Playful Decorative "Blobs" ---
+  pdf.setFillColor(59, 130, 246);
+  pdf.circle(-20, -20, 100, 'F');
+
+  pdf.setFillColor(34, 211, 238);
+  pdf.circle(pageWidth + 30, pageHeight + 30, 120, 'F');
+
+  // --- Main Content (Asymmetrical Layout) ---
+  const contentX = 25;
+  const contentY = pageHeight / 2.8; // Adjusted for new tagline
+
+  // Main Logo/Title
   pdf.setTextColor(255, 255, 255);
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(64);
-  pdf.text('CheatJS', pageWidth / 2, centerY - 40, { align: 'center' });
+  pdf.setFontSize(72);
+  pdf.text('Cheat JS', contentX, contentY);
 
-  pdf.setDrawColor(255, 255, 255);
-  pdf.setLineWidth(0.5);
-  pdf.line(pageWidth / 2 - 30, centerY - 30, pageWidth / 2 + 30, centerY - 30);
+  // --- NEW: Add the tagline ---
+  const tagline = [
+    'The easiest to understand resource to learn DSA and',
+    'Frontend development on planet earth'
+  ];
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(12);
+  pdf.setTextColor(200, 220, 255); // Softer white for contrast
+  pdf.text(tagline, contentX, contentY + 15);
 
+  // --- Content below tagline (pushed down) ---
+  // Title (custom or category name)
   const title = customTitle || categoryName;
-  pdf.setFontSize(32);
-  pdf.text(title, pageWidth / 2, centerY + 5, { align: 'center' });
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(36);
+  pdf.text(title, contentX, contentY + 40);
 
+  // Subtitle (custom or subcategory name)
   const subtitle = customSubtitle || subCategoryName;
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(24);
-  pdf.text(subtitle, pageWidth / 2, centerY + 25, { align: 'center' });
+  pdf.setFontSize(22);
+  pdf.setTextColor(200, 220, 255);
+  pdf.text(subtitle, contentX, contentY + 55);
 
-  pdf.setFont('helvetica', 'italic');
-  pdf.setFontSize(14);
-  pdf.setTextColor(226, 232, 240);
-  pdf.text('Your Quick Reference Guide', pageWidth / 2, centerY + 45, { align: 'center' });
+  // Decorative Accent Line
+  pdf.setDrawColor(34, 211, 238);
+  pdf.setLineWidth(1.5);
+  pdf.line(contentX, contentY + 65, contentX + 50, contentY + 65);
 
+  // --- Footer ---
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(11);
   pdf.setTextColor(255, 255, 255);
@@ -91,6 +109,7 @@ function addCoverPage(
     url: 'https://cheatjs.vercel.app',
   });
 }
+
 
 function addContentPages(
   pdf: jsPDF,
@@ -237,7 +256,7 @@ function addAdvertisementPage(
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(48);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('CheatJS', pageWidth / 2, 40, { align: 'center' });
+  pdf.text('Cheat JS', pageWidth / 2, 40, { align: 'center' });
 
   const contentStartY = 85;
 
@@ -308,7 +327,7 @@ function addAdvertisementPage(
   pdf.setFontSize(9);
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(148, 163, 184);
-  pdf.text('© 2025 CheatJS. All rights reserved.', pageWidth / 2, pageHeight - 15, { align: 'center' });
+  pdf.text('© 2025 Cheat JS. All rights reserved.', pageWidth / 2, pageHeight - 15, { align: 'center' });
 }
 
 // New function for DSA PDF generation

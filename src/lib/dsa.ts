@@ -1,66 +1,66 @@
 import {
-    Box,
-    GitBranch,
-    Network,
-    Layers,
-    Search,
-    ArrowUpDown,
-    Shuffle,
-    TrendingUp,
-    Grid3x3,
-    type LucideIcon,
+  Box,
+  GitBranch,
+  Network,
+  Layers,
+  Search,
+  ArrowUpDown,
+  Shuffle,
+  TrendingUp,
+  Grid3x3,
+  type LucideIcon,
 } from 'lucide-react';
 
 type CodeStep = {
-    title: string;
-    explanation: string;
-    code: string;
-    language: string;
+  title: string;
+  explanation: string;
+  code: string;
+  language: string;
 };
 
 export type DSATopic = {
-    id: string;
-    label: string;
-    icon: LucideIcon;
-    href: string;
-    content: {
-        title: string;
-        description: string;
-        steps: CodeStep[];
-    };
+  id: string;
+  label: string;
+  icon: LucideIcon;
+  href: string;
+  content: {
+    title: string;
+    description: string;
+    steps: CodeStep[];
+  };
 };
 
 export type DSAGroup = {
-    name: string;
-    topics: DSATopic[];
+  name: string;
+  topics: DSATopic[];
 };
 
 // Overview Group
 const overviewTopics: DSATopic[] = [
-    {
-        id: 'visualizations',
-        label: 'Visualizations',
-        icon: Grid3x3,
-        href: '/dsa?topic=visualizations',
-        content: {
-            title: 'Data Structure Visualizations',
-            description: 'Interactive visualizations to understand how data structures work internally.',
-            steps: [],
-        },
+  {
+    id: 'visualizations',
+    label: 'Visualizations',
+    icon: Grid3x3,
+    href: '/dsa?topic=visualizations',
+    content: {
+      title: 'Data Structure Visualizations',
+      description: 'Interactive visualizations to understand how data structures work internally.',
+      steps: [],
     },
-    {
-        id: 'algorithms-overview',
-        label: 'Algorithms',
-        icon: TrendingUp,
-        href: '/dsa?topic=algorithms-overview',
-        content: {
-            title: 'Algorithm Fundamentals',
-            description: 'Core algorithmic concepts and problem-solving techniques.',
-            steps: [
-                {
-                    title: 'Time Complexity',
-                    explanation: 'Understanding Big O notation and how to analyze algorithm efficiency.',
-                    code: `// O(1) - Constant Time
+  },
+  {
+    id: 'algorithms-overview',
+    label: 'Algorithms',
+    icon: TrendingUp,
+    href: '/dsa?topic=algorithms-overview',
+    content: {
+      title: 'Algorithm Fundamentals',
+      description: 'Core algorithmic concepts and problem-solving techniques.',
+      steps: [
+        {
+          title: 'Time Complexity',
+          explanation: 'Understanding Big O notation and how to analyze algorithm efficiency.',
+          code: `// O(1) - Constant Time
 function getFirst(arr) {
   return arr[0]; // Always takes same time
 }
@@ -84,39 +84,39 @@ function bubbleSort(arr) {
   }
   return arr;
 }`,
-                    language: 'javascript',
-                },
-            ],
+          language: 'javascript',
         },
+      ],
     },
-    {
-        id: 'patterns-overview',
-        label: 'Patterns',
-        icon: Shuffle,
-        href: '/dsa?topic=patterns-overview',
-        content: {
-            title: 'Common Problem-Solving Patterns',
-            description: 'Learn the most common patterns used to solve coding problems efficiently.',
-            steps: [],
-        },
+  },
+  {
+    id: 'patterns-overview',
+    label: 'Patterns',
+    icon: Shuffle,
+    href: '/dsa?topic=patterns-overview',
+    content: {
+      title: 'Common Problem-Solving Patterns',
+      description: 'Learn the most common patterns used to solve coding problems efficiently.',
+      steps: [],
     },
+  },
 ];
 
 // Data Structures Group
 const dataStructureTopics: DSATopic[] = [
-    {
-        id: 'arrays',
-        label: 'Arrays',
-        icon: Box,
-        href: '/dsa?topic=arrays',
-        content: {
-            title: 'Arrays',
-            description: 'The most fundamental data structure - a contiguous block of memory storing elements.',
-            steps: [
-                {
-                    title: 'Array Basics',
-                    explanation: 'Arrays store elements in contiguous memory locations with O(1) access time by index.',
-                    code: `// Creating arrays
+  {
+    id: 'arrays',
+    label: 'Arrays',
+    icon: Box,
+    href: '/dsa?topic=arrays',
+    content: {
+      title: 'Arrays',
+      description: 'The most fundamental data structure - a contiguous block of memory storing elements.',
+      steps: [
+        {
+          title: 'Array Basics',
+          explanation: 'Arrays store elements in contiguous memory locations with O(1) access time by index.',
+          code: `// Creating arrays
 const arr1 = [1, 2, 3, 4, 5];
 const arr2 = new Array(5); // Creates array with 5 empty slots
 const arr3 = Array.from({ length: 5 }, (_, i) => i); // [0,1,2,3,4]
@@ -130,12 +130,12 @@ arr1.push(6); // Add to end - O(1)
 arr1.pop(); // Remove from end - O(1)
 arr1.unshift(0); // Add to start - O(n)
 arr1.shift(); // Remove from start - O(n)`,
-                    language: 'javascript',
-                },
-                {
-                    title: 'Array Methods',
-                    explanation: 'Essential array methods for manipulation and transformation.',
-                    code: `const numbers = [1, 2, 3, 4, 5];
+          language: 'javascript',
+        },
+        {
+          title: 'Array Methods',
+          explanation: 'Essential array methods for manipulation and transformation.',
+          code: `const numbers = [1, 2, 3, 4, 5];
 
 // map - transform each element
 const doubled = numbers.map(n => n * 2); // [2,4,6,8,10]
@@ -154,24 +154,24 @@ const hasEven = numbers.some(n => n % 2 === 0); // true
 
 // every - check if all elements match
 const allPositive = numbers.every(n => n > 0); // true`,
-                    language: 'javascript',
-                },
-            ],
+          language: 'javascript',
         },
+      ],
     },
-    {
-        id: 'linked-lists',
-        label: 'Linked Lists',
-        icon: GitBranch,
-        href: '/dsa?topic=linked-lists',
-        content: {
-            title: 'Linked Lists',
-            description: 'A linear data structure where elements are stored in nodes, each pointing to the next.',
-            steps: [
-                {
-                    title: 'Singly Linked List',
-                    explanation: 'Each node contains data and a pointer to the next node.',
-                    code: `class Node {
+  },
+  {
+    id: 'linked-lists',
+    label: 'Linked Lists',
+    icon: GitBranch,
+    href: '/dsa?topic=linked-lists',
+    content: {
+      title: 'Linked Lists',
+      description: 'A linear data structure where elements are stored in nodes, each pointing to the next.',
+      steps: [
+        {
+          title: 'Singly Linked List',
+          explanation: 'Each node contains data and a pointer to the next node.',
+          code: `class Node {
   constructor(data) {
     this.data = data;
     this.next = null;
@@ -228,24 +228,24 @@ class LinkedList {
     }
   }
 }`,
-                    language: 'javascript',
-                },
-            ],
+          language: 'javascript',
         },
+      ],
     },
-    {
-        id: 'stacks',
-        label: 'Stacks',
-        icon: Layers,
-        href: '/dsa?topic=stacks',
-        content: {
-            title: 'Stacks',
-            description: 'LIFO (Last In First Out) data structure - like a stack of plates.',
-            steps: [
-                {
-                    title: 'Stack Implementation',
-                    explanation: 'Stack supports push, pop, and peek operations, all in O(1) time.',
-                    code: `class Stack {
+  },
+  {
+    id: 'stacks',
+    label: 'Stacks',
+    icon: Layers,
+    href: '/dsa?topic=stacks',
+    content: {
+      title: 'Stacks',
+      description: 'LIFO (Last In First Out) data structure - like a stack of plates.',
+      steps: [
+        {
+          title: 'Stack Implementation',
+          explanation: 'Stack supports push, pop, and peek operations, all in O(1) time.',
+          code: `class Stack {
   constructor() {
     this.items = [];
   }
@@ -283,24 +283,24 @@ stack.push(2);
 stack.push(3);
 console.log(stack.pop()); // 3
 console.log(stack.peek()); // 2`,
-                    language: 'javascript',
-                },
-            ],
+          language: 'javascript',
         },
+      ],
     },
-    {
-        id: 'queues',
-        label: 'Queues',
-        icon: ArrowUpDown,
-        href: '/dsa?topic=queues',
-        content: {
-            title: 'Queues',
-            description: 'FIFO (First In First Out) data structure - like a line at a store.',
-            steps: [
-                {
-                    title: 'Queue Implementation',
-                    explanation: 'Queue supports enqueue (add to back) and dequeue (remove from front).',
-                    code: `class Queue {
+  },
+  {
+    id: 'queues',
+    label: 'Queues',
+    icon: ArrowUpDown,
+    href: '/dsa?topic=queues',
+    content: {
+      title: 'Queues',
+      description: 'FIFO (First In First Out) data structure - like a line at a store.',
+      steps: [
+        {
+          title: 'Queue Implementation',
+          explanation: 'Queue supports enqueue (add to back) and dequeue (remove from front).',
+          code: `class Queue {
   constructor() {
     this.items = [];
   }
@@ -338,24 +338,24 @@ queue.enqueue(2);
 queue.enqueue(3);
 console.log(queue.dequeue()); // 1
 console.log(queue.front()); // 2`,
-                    language: 'javascript',
-                },
-            ],
+          language: 'javascript',
         },
+      ],
     },
-    {
-        id: 'trees',
-        label: 'Trees',
-        icon: Network,
-        href: '/dsa?topic=trees',
-        content: {
-            title: 'Trees',
-            description: 'Hierarchical data structure with a root node and child nodes.',
-            steps: [
-                {
-                    title: 'Binary Tree',
-                    explanation: 'Each node has at most two children: left and right.',
-                    code: `class TreeNode {
+  },
+  {
+    id: 'trees',
+    label: 'Binary Trees',
+    icon: Network,
+    href: '/dsa?topic=trees',
+    content: {
+      title: 'Binary Tree',
+      description: 'Hierarchical data structure with a root node and child nodes.',
+      steps: [
+        {
+          title: 'Binary Tree',
+          explanation: 'Each node has at most two children: left and right.',
+          code: `class TreeNode {
   constructor(value) {
     this.value = value;
     this.left = null;
@@ -398,24 +398,24 @@ class BinaryTree {
     return result;
   }
 }`,
-                    language: 'javascript',
-                },
-            ],
+          language: 'javascript',
         },
+      ],
     },
-    {
-        id: 'hash-tables',
-        label: 'Hash Tables',
-        icon: Grid3x3,
-        href: '/dsa?topic=hash-tables',
-        content: {
-            title: 'Hash Tables',
-            description: 'Key-value pairs with O(1) average lookup time using hash functions.',
-            steps: [
-                {
-                    title: 'Hash Table Basics',
-                    explanation: 'JavaScript objects and Maps are hash table implementations.',
-                    code: `// Using Map (preferred for hash tables)
+  },
+  {
+    id: 'hash-tables',
+    label: 'Hash Tables',
+    icon: Grid3x3,
+    href: '/dsa?topic=hash-tables',
+    content: {
+      title: 'Hash Tables',
+      description: 'Key-value pairs with O(1) average lookup time using hash functions.',
+      steps: [
+        {
+          title: 'Hash Table Basics',
+          explanation: 'JavaScript objects and Maps are hash table implementations.',
+          code: `// Using Map (preferred for hash tables)
 const map = new Map();
 
 // Set key-value pairs - O(1)
@@ -450,28 +450,28 @@ function countFrequency(arr) {
   }
   return freq;
 }`,
-                    language: 'javascript',
-                },
-            ],
+          language: 'javascript',
         },
+      ],
     },
+  },
 ];
 
 // Algorithms Group
 const algorithmTopics: DSATopic[] = [
-    {
-        id: 'searching',
-        label: 'Searching',
-        icon: Search,
-        href: '/dsa?topic=searching',
-        content: {
-            title: 'Searching Algorithms',
-            description: 'Techniques to find elements in data structures efficiently.',
-            steps: [
-                {
-                    title: 'Linear Search',
-                    explanation: 'Check each element one by one. Time: O(n), Space: O(1)',
-                    code: `function linearSearch(arr, target) {
+  {
+    id: 'searching',
+    label: 'Searching',
+    icon: Search,
+    href: '/dsa?topic=searching',
+    content: {
+      title: 'Searching Algorithms',
+      description: 'Techniques to find elements in data structures efficiently.',
+      steps: [
+        {
+          title: 'Linear Search',
+          explanation: 'Check each element one by one. Time: O(n), Space: O(1)',
+          code: `function linearSearch(arr, target) {
   for (let i = 0; i < arr.length; i++) {
     if (arr[i] === target) {
       return i; // Return index if found
@@ -484,12 +484,12 @@ const algorithmTopics: DSATopic[] = [
 const arr = [5, 2, 8, 1, 9];
 console.log(linearSearch(arr, 8)); // 2
 console.log(linearSearch(arr, 3)); // -1`,
-                    language: 'javascript',
-                },
-                {
-                    title: 'Binary Search',
-                    explanation: 'Efficient search on sorted arrays. Time: O(log n), Space: O(1)',
-                    code: `function binarySearch(arr, target) {
+          language: 'javascript',
+        },
+        {
+          title: 'Binary Search',
+          explanation: 'Efficient search on sorted arrays. Time: O(log n), Space: O(1)',
+          code: `function binarySearch(arr, target) {
   let left = 0;
   let right = arr.length - 1;
 
@@ -512,24 +512,24 @@ console.log(linearSearch(arr, 3)); // -1`,
 const sortedArr = [1, 2, 5, 8, 9];
 console.log(binarySearch(sortedArr, 8)); // 3
 console.log(binarySearch(sortedArr, 3)); // -1`,
-                    language: 'javascript',
-                },
-            ],
+          language: 'javascript',
         },
+      ],
     },
-    {
-        id: 'sorting',
-        label: 'Sorting',
-        icon: ArrowUpDown,
-        href: '/dsa?topic=sorting',
-        content: {
-            title: 'Sorting Algorithms',
-            description: 'Arrange elements in a specific order efficiently.',
-            steps: [
-                {
-                    title: 'Bubble Sort',
-                    explanation: 'Repeatedly swap adjacent elements if they are in wrong order. Time: O(n²)',
-                    code: `function bubbleSort(arr) {
+  },
+  {
+    id: 'sorting',
+    label: 'Sorting',
+    icon: ArrowUpDown,
+    href: '/dsa?topic=sorting',
+    content: {
+      title: 'Sorting Algorithms',
+      description: 'Arrange elements in a specific order efficiently.',
+      steps: [
+        {
+          title: 'Bubble Sort',
+          explanation: 'Repeatedly swap adjacent elements if they are in wrong order. Time: O(n²)',
+          code: `function bubbleSort(arr) {
   const n = arr.length;
   
   for (let i = 0; i < n; i++) {
@@ -554,12 +554,12 @@ console.log(binarySearch(sortedArr, 3)); // -1`,
 // Usage
 console.log(bubbleSort([64, 34, 25, 12, 22]));
 // [12, 22, 25, 34, 64]`,
-                    language: 'javascript',
-                },
-                {
-                    title: 'Quick Sort',
-                    explanation: 'Divide and conquer algorithm. Average Time: O(n log n)',
-                    code: `function quickSort(arr) {
+          language: 'javascript',
+        },
+        {
+          title: 'Quick Sort',
+          explanation: 'Divide and conquer algorithm. Average Time: O(n log n)',
+          code: `function quickSort(arr) {
   if (arr.length <= 1) return arr;
 
   const pivot = arr[arr.length - 1];
@@ -580,12 +580,12 @@ console.log(bubbleSort([64, 34, 25, 12, 22]));
 // Usage
 console.log(quickSort([64, 34, 25, 12, 22]));
 // [12, 22, 25, 34, 64]`,
-                    language: 'javascript',
-                },
-                {
-                    title: 'Merge Sort',
-                    explanation: 'Divide array into halves, sort them, and merge. Time: O(n log n)',
-                    code: `function mergeSort(arr) {
+          language: 'javascript',
+        },
+        {
+          title: 'Merge Sort',
+          explanation: 'Divide array into halves, sort them, and merge. Time: O(n log n)',
+          code: `function mergeSort(arr) {
   if (arr.length <= 1) return arr;
 
   const mid = Math.floor(arr.length / 2);
@@ -613,24 +613,24 @@ function merge(left, right) {
 // Usage
 console.log(mergeSort([64, 34, 25, 12, 22]));
 // [12, 22, 25, 34, 64]`,
-                    language: 'javascript',
-                },
-            ],
+          language: 'javascript',
         },
+      ],
     },
-    {
-        id: 'sliding-window',
-        label: 'Sliding Window',
-        icon: Box,
-        href: '/dsa?topic=sliding-window',
-        content: {
-            title: 'Sliding Window Pattern',
-            description: 'Efficiently process subarrays or substrings by maintaining a window.',
-            steps: [
-                {
-                    title: 'Fixed Size Window',
-                    explanation: 'Find maximum sum of k consecutive elements.',
-                    code: `function maxSumSubarray(arr, k) {
+  },
+  {
+    id: 'sliding-window',
+    label: 'Sliding Window',
+    icon: Box,
+    href: '/dsa?topic=sliding-window',
+    content: {
+      title: 'Sliding Window Pattern',
+      description: 'Efficiently process subarrays or substrings by maintaining a window.',
+      steps: [
+        {
+          title: 'Fixed Size Window',
+          explanation: 'Find maximum sum of k consecutive elements.',
+          code: `function maxSumSubarray(arr, k) {
   if (arr.length < k) return null;
 
   // Calculate sum of first window
@@ -653,12 +653,12 @@ console.log(mergeSort([64, 34, 25, 12, 22]));
 // Usage
 console.log(maxSumSubarray([1, 4, 2, 10, 23, 3, 1, 0, 20], 4));
 // 39 (10 + 23 + 3 + 1)`,
-                    language: 'javascript',
-                },
-                {
-                    title: 'Variable Size Window',
-                    explanation: 'Find smallest subarray with sum >= target.',
-                    code: `function minSubArrayLen(target, arr) {
+          language: 'javascript',
+        },
+        {
+          title: 'Variable Size Window',
+          explanation: 'Find smallest subarray with sum >= target.',
+          code: `function minSubArrayLen(target, arr) {
   let minLen = Infinity;
   let windowSum = 0;
   let start = 0;
@@ -680,24 +680,24 @@ console.log(maxSumSubarray([1, 4, 2, 10, 23, 3, 1, 0, 20], 4));
 // Usage
 console.log(minSubArrayLen(7, [2, 3, 1, 2, 4, 3]));
 // 2 (subarray [4, 3])`,
-                    language: 'javascript',
-                },
-            ],
+          language: 'javascript',
         },
+      ],
     },
-    {
-        id: 'two-pointer',
-        label: 'Two Pointer',
-        icon: ArrowUpDown,
-        href: '/dsa?topic=two-pointer',
-        content: {
-            title: 'Two Pointer Pattern',
-            description: 'Use two pointers to solve problems efficiently, often on sorted arrays.',
-            steps: [
-                {
-                    title: 'Two Sum (Sorted Array)',
-                    explanation: 'Find two numbers that add up to target in sorted array.',
-                    code: `function twoSum(arr, target) {
+  },
+  {
+    id: 'two-pointer',
+    label: 'Two Pointer',
+    icon: ArrowUpDown,
+    href: '/dsa?topic=two-pointer',
+    content: {
+      title: 'Two Pointer Pattern',
+      description: 'Use two pointers to solve problems efficiently, often on sorted arrays.',
+      steps: [
+        {
+          title: 'Two Sum (Sorted Array)',
+          explanation: 'Find two numbers that add up to target in sorted array.',
+          code: `function twoSum(arr, target) {
   let left = 0;
   let right = arr.length - 1;
 
@@ -719,12 +719,12 @@ console.log(minSubArrayLen(7, [2, 3, 1, 2, 4, 3]));
 // Usage
 console.log(twoSum([1, 2, 3, 4, 6], 6));
 // [1, 3] (2 + 4 = 6)`,
-                    language: 'javascript',
-                },
-                {
-                    title: 'Remove Duplicates',
-                    explanation: 'Remove duplicates from sorted array in-place.',
-                    code: `function removeDuplicates(arr) {
+          language: 'javascript',
+        },
+        {
+          title: 'Remove Duplicates',
+          explanation: 'Remove duplicates from sorted array in-place.',
+          code: `function removeDuplicates(arr) {
   if (arr.length === 0) return 0;
 
   let slow = 0;
@@ -743,32 +743,32 @@ console.log(twoSum([1, 2, 3, 4, 6], 6));
 const arr = [1, 1, 2, 2, 3, 4, 4];
 const len = removeDuplicates(arr);
 console.log(arr.slice(0, len)); // [1, 2, 3, 4]`,
-                    language: 'javascript',
-                },
-            ],
+          language: 'javascript',
         },
+      ],
     },
+  },
 ];
 
 // Export groups
 export const dsaGroups: DSAGroup[] = [
-    {
-        name: 'Overview',
-        topics: overviewTopics,
-    },
-    {
-        name: 'Deep Dive: Data Structures',
-        topics: dataStructureTopics,
-    },
-    {
-        name: 'Algorithms',
-        topics: algorithmTopics,
-    },
+  {
+    name: 'Overview',
+    topics: overviewTopics,
+  },
+  {
+    name: 'Deep Dive: Data Structures',
+    topics: dataStructureTopics,
+  },
+  {
+    name: 'Algorithms',
+    topics: algorithmTopics,
+  },
 ];
 
 // Flat list of all topics for easy lookup
 export const allDSATopics = [
-    ...overviewTopics,
-    ...dataStructureTopics,
-    ...algorithmTopics,
+  ...overviewTopics,
+  ...dataStructureTopics,
+  ...algorithmTopics,
 ];

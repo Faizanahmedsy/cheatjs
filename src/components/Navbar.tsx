@@ -10,7 +10,7 @@ import { PDFDownloadModal } from './PDFDownloadModal';
 const navLinks = [
   { href: '/', label: 'Cheatsheets' },
   { href: '/features', label: 'Features' },
-  { href: '/dsa', label: 'DSA' },
+  { href: '/dsa', label: 'Data Structures and Algorithms' },
 ];
 
 export function Navbar() {
@@ -19,13 +19,13 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-background/80 backdrop-blur-sm">
+      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-background/80 backdrop-blur-sm px-32">
         <div className="container mx-auto flex h-14 items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-2 mr-6">
               <Code2 className="h-6 w-6 text-cyan-400" />
               <span className="font-bold text-lg text-slate-200 font-headline">
-                CheatJS
+                Cheat JS
               </span>
             </Link>
             <nav className="flex items-center gap-4 text-sm">
