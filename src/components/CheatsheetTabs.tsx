@@ -63,22 +63,48 @@ export function CheatsheetTabs() {
             <TabsTrigger value="Advanced" className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300">Advanced</TabsTrigger>
           </TabsList>
           <TabsContent value="Beginner">
-            <div className="grid gap-6 md:grid-cols-2">
-              {reactCategory?.subCategories?.find(sc => sc.name === 'Beginner')?.snippets.map((snippet) => (
-                <CheatsheetCard key={snippet.title} snippet={snippet} color="cyan" />
-              ))}
-            </div>
+            {(() => {
+              const beginnerCategory = reactCategory?.subCategories?.find(sc => sc.name === 'Beginner');
+              if (!beginnerCategory) return null;
+              
+              if (beginnerCategory.sections) {
+                // Render sections with headings
+                return (
+                  <div className="space-y-12">
+                    {beginnerCategory.sections.map((section) => (
+                      <div key={section.heading}>
+                        <h2 className="text-2xl font-bold text-cyan-300 mb-6 text-center">{section.heading}</h2>
+                        <div className="grid gap-6 md:grid-cols-2">
+                          {section.snippets.map((snippet) => (
+                            <CheatsheetCard key={snippet.title} snippet={snippet} color="cyan" />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+              
+              // Fallback for old structure without sections
+              return (
+                <div className="grid gap-6 md:grid-cols-2">
+                  {beginnerCategory.snippets?.map((snippet) => (
+                    <CheatsheetCard key={snippet.title} snippet={snippet} color="cyan" />
+                  ))}
+                </div>
+              );
+            })()}
           </TabsContent>
           <TabsContent value="Intermediate">
             <div className="grid gap-6 md:grid-cols-2">
-              {reactCategory?.subCategories?.find(sc => sc.name === 'Intermediate')?.snippets.map((snippet) => (
+              {reactCategory?.subCategories?.find(sc => sc.name === 'Intermediate')?.snippets?.map((snippet) => (
                 <CheatsheetCard key={snippet.title} snippet={snippet} color="cyan" />
               ))}
             </div>
           </TabsContent>
           <TabsContent value="Advanced">
             <div className="grid gap-6 md:grid-cols-2">
-              {reactCategory?.subCategories?.find(sc => sc.name === 'Advanced')?.snippets.map((snippet) => (
+              {reactCategory?.subCategories?.find(sc => sc.name === 'Advanced')?.snippets?.map((snippet) => (
                 <CheatsheetCard key={snippet.title} snippet={snippet} color="cyan" />
               ))}
             </div>
@@ -88,7 +114,7 @@ export function CheatsheetTabs() {
       
       <TabsContent value="Next.js">
         <div className="grid gap-6 md:grid-cols-2">
-          {isClient && cheatsheets.find(c => c.name === 'Next.js')?.snippets.map((snippet) => (
+          {isClient && cheatsheets.find(c => c.name === 'Next.js')?.snippets?.map((snippet) => (
             <CheatsheetCard key={snippet.title} snippet={snippet} color="green" />
           ))}
         </div>
@@ -96,7 +122,7 @@ export function CheatsheetTabs() {
 
       <TabsContent value="Frontend Concepts">
         <div className="grid gap-6 md:grid-cols-2">
-          {isClient && cheatsheets.find(c => c.name === 'Frontend Concepts')?.snippets.map((snippet) => (
+          {isClient && cheatsheets.find(c => c.name === 'Frontend Concepts')?.snippets?.map((snippet) => (
             <CheatsheetCard key={snippet.title} snippet={snippet} color="yellow" />
           ))}
         </div>
@@ -111,7 +137,7 @@ export function CheatsheetTabs() {
           </TabsList>
           <TabsContent value="Visualizations">
             <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-              {dsaCategory?.subCategories?.find(sc => sc.name === 'Visualizations')?.snippets.map((snippet) => (
+              {dsaCategory?.subCategories?.find(sc => sc.name === 'Visualizations')?.snippets?.map((snippet) => (
                 <CheatsheetCard key={snippet.title} snippet={snippet} color="red" />
               ))}
             </div>

@@ -13,9 +13,15 @@ export type Snippet = {
   cons?: string[];
 };
 
+export type Section = {
+  heading: string;
+  snippets: Snippet[];
+};
+
 export type SubCategory = {
   name: string;
-  snippets: Snippet[];
+  snippets?: Snippet[];
+  sections?: Section[];
 }
 
 export type Category = {
@@ -32,7 +38,10 @@ export const cheatsheets: Category[] = [
     subCategories: [
       {
         name: 'Beginner',
-        snippets: [
+        sections: [
+          {
+            heading: 'Concepts',
+            snippets: [
           {
             title: 'What is React?',
             description:
@@ -208,11 +217,1549 @@ function Timer() {
 }`,
             language: 'jsx',
           },
+          {
+            title: 'useEffect Dependency Array',
+            description:
+              'The dependency array controls when useEffect runs. An empty array [] runs once on mount. With dependencies [count, name], it runs when those values change. No array means it runs after every render.',
+            code: `import { useState, useEffect } from 'react';
+
+function DependencyExample() {
+  const [count, setCount] = useState(0);
+  const [name, setName] = useState('Alice');
+
+  // 1. No dependency array - runs after EVERY render
+  useEffect(() => {
+    console.log('Runs after every render');
+  });
+
+  // 2. Empty array [] - runs ONCE on mount
+  useEffect(() => {
+    console.log('Runs only once when component mounts');
+  }, []);
+
+  // 3. With dependencies - runs when 'count' changes
+  useEffect(() => {
+    console.log('Count changed to:', count);
+    document.title = \`Count: \${count}\`;
+  }, [count]); // Only re-run when count changes
+
+  // 4. Multiple dependencies - runs when 'count' OR 'name' changes
+  useEffect(() => {
+    console.log(\`\${name} clicked \${count} times\`);
+  }, [count, name]); // Re-run when either changes
+
+  return (
+    <div>
+      <p>{name}: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={() => setName(name === 'Alice' ? 'Bob' : 'Alice')}>
+        Toggle Name
+      </button>
+    </div>
+  );
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'useEffect Cleanup Function',
+            description:
+              'The cleanup function runs before the component unmounts or before the effect runs again. Use it to cancel subscriptions, clear timers, or remove event listeners to prevent memory leaks.',
+            code: `import { useState, useEffect } from 'react';
+
+function CleanupExample() {
+  const [count, setCount] = useState(0);
+
+  // Example 1: Cleanup a timer
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      console.log('Timer tick');
+    }, 1000);
+
+    // Cleanup: Clear the timer when component unmounts
+    return () => {
+      clearInterval(timerId);
+      console.log('Timer cleaned up');
+    };
+  }, []);
+
+  // Example 2: Cleanup event listener
+  useEffect(() => {
+    const handleResize = () => {
+      console.log('Window resized');
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup: Remove the event listener
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      console.log('Event listener removed');
+    };
+  }, []);
+
+  // Example 3: Cleanup that runs before effect re-runs
+  useEffect(() => {
+    console.log('Effect running for count:', count);
+
+    // This cleanup runs BEFORE the next effect
+    return () => {
+      console.log('Cleaning up previous effect for count:', count);
+    };
+  }, [count]); // Runs every time count changes
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+
+// Why cleanup matters:
+// Without cleanup, you'd have memory leaks from:
+// - Timers that keep running
+// - Event listeners that pile up
+// - Subscriptions that never close`,
+            language: 'jsx',
+          },
+          {
+            title: 'Props',
+            description:
+              'Props (short for "properties") are how you pass data from a parent component to a child component. Think of them like function arguments. They make components reusable by letting you customize them with different data.',
+            code: `// Parent component passes data to child via props
+function App() {
+  return (
+    <div>
+      <Greeting name="Alice" age={25} />
+      <Greeting name="Bob" age={30} />
+    </div>
+  );
+}
+
+// Child component receives props as an object
+function Greeting(props) {
+  return (
+    <div>
+      <p>Hello, {props.name}!</p>
+      <p>You are {props.age} years old.</p>
+    </div>
+  );
+}
+
+// You can also destructure props directly
+function Greeting({ name, age }) {
+  return (
+    <div>
+      <p>Hello, {name}!</p>
+      <p>You are {age} years old.</p>
+    </div>
+  );
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'Prop Drilling',
+            description:
+              'Prop drilling is when you pass props through multiple layers of components to reach a deeply nested child. It can make your code messy. Solutions include Context API, state management libraries (Zustand, Redux), or component composition.',
+            code: `// Problem: Prop drilling through multiple levels
+function App() {
+  const user = { name: 'Alice', theme: 'dark' };
+  return <Parent user={user} />;
+}
+
+function Parent({ user }) {
+  // Parent doesn't use 'user', just passes it down
+  return <Child user={user} />;
+}
+
+function Child({ user }) {
+  // Child doesn't use 'user', just passes it down
+  return <GrandChild user={user} />;
+}
+
+function GrandChild({ user }) {
+  // Finally used here!
+  return <p>Hello {user.name}, theme: {user.theme}</p>;
+}
+
+// Solution: Use Context API to avoid drilling
+import { createContext, useContext } from 'react';
+
+const UserContext = createContext();
+
+function App() {
+  const user = { name: 'Alice', theme: 'dark' };
+  return (
+    <UserContext.Provider value={user}>
+      <Parent />
+    </UserContext.Provider>
+  );
+}
+
+function GrandChild() {
+  // Access user directly without drilling
+  const user = useContext(UserContext);
+  return <p>Hello {user.name}, theme: {user.theme}</p>;
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'Lists and Keys',
+            description:
+              'When rendering lists in React, each item needs a unique "key" prop. Keys help React identify which items have changed, been added, or removed, making updates more efficient.',
+            code: `function TodoList() {
+  const todos = [
+    { id: 1, text: 'Learn React' },
+    { id: 2, text: 'Build a project' },
+    { id: 3, text: 'Get a job' }
+  ];
+
+  return (
+    <ul>
+      {todos.map((todo) => (
+        // The 'key' should be a unique identifier
+        <li key={todo.id}>{todo.text}</li>
+      ))}
+    </ul>
+  );
+}
+
+// ❌ Don't use array index as key if list can change
+// ✅ Use a unique ID from your data`,
+            language: 'jsx',
+          },
+          {
+            title: 'Fragments',
+            description:
+              'Fragments let you group multiple elements without adding extra nodes to the DOM. Use <></> shorthand or <React.Fragment> when you need to return multiple elements from a component.',
+            code: `import React from 'react';
+
+// ❌ Without Fragment - adds unnecessary <div> to DOM
+function BadExample() {
+  return (
+    <div>
+      <h1>Title</h1>
+      <p>Paragraph</p>
+    </div>
+  );
+}
+
+// ✅ With Fragment shorthand - no extra DOM node
+function GoodExample() {
+  return (
+    <>
+      <h1>Title</h1>
+      <p>Paragraph</p>
+    </>
+  );
+}
+
+// ✅ With React.Fragment - use when you need to add a key
+function ListExample() {
+  const items = [
+    { id: 1, term: 'React', desc: 'A JavaScript library' },
+    { id: 2, term: 'JSX', desc: 'JavaScript XML' }
+  ];
+
+  return (
+    <dl>
+      {items.map(item => (
+        <React.Fragment key={item.id}>
+          <dt>{item.term}</dt>
+          <dd>{item.desc}</dd>
+        </React.Fragment>
+      ))}
+    </dl>
+  );
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'Children Prop',
+            description:
+              'The children prop lets you pass content between component tags. It makes components flexible and reusable, like creating a custom Card or Button that can wrap any content.',
+            code: `// Children prop allows you to wrap content
+function Card({ children }) {
+  return (
+    <div style={{ border: '1px solid gray', padding: '20px' }}>
+      {children}
+    </div>
+  );
+}
+
+// Use it like this:
+function App() {
+  return (
+    <div>
+      <Card>
+        <h2>My Card Title</h2>
+        <p>This is the card content!</p>
+      </Card>
+
+      <Card>
+        <img src="photo.jpg" alt="Photo" />
+        <button>Click me</button>
+      </Card>
+    </div>
+  );
+}
+
+// You can also use children with other props
+function Button({ children, color }) {
+  return (
+    <button style={{ backgroundColor: color }}>
+      {children}
+    </button>
+  );
+}
+
+// Usage:
+<Button color="blue">Click Me!</Button>`,
+            language: 'jsx',
+          },
+          {
+            title: 'Default Props & PropTypes',
+            description:
+              'Default props provide fallback values when props are not passed. PropTypes help catch bugs by validating prop types during development.',
+            code: `import PropTypes from 'prop-types';
+
+// Define a component with default props
+function Greeting({ name, age, role }) {
+  return (
+    <div>
+      <h1>Hello, {name}!</h1>
+      <p>Age: {age}</p>
+      <p>Role: {role}</p>
+    </div>
+  );
+}
+
+// Set default values for props
+Greeting.defaultProps = {
+  name: 'Guest',
+  age: 18,
+  role: 'User'
+};
+
+// Validate prop types (install: npm install prop-types)
+Greeting.propTypes = {
+  name: PropTypes.string,
+  age: PropTypes.number,
+  role: PropTypes.string.isRequired // This prop is required
+};
+
+// Modern way with default parameters
+function ModernGreeting({ name = 'Guest', age = 18, role = 'User' }) {
+  return (
+    <div>
+      <h1>Hello, {name}!</h1>
+      <p>Age: {age}</p>
+      <p>Role: {role}</p>
+    </div>
+  );
+}
+
+// Usage:
+<Greeting /> // Uses all defaults
+<Greeting name="Alice" age={25} /> // Overrides some defaults`,
+            language: 'jsx',
+          },
+          {
+            title: 'Ternary Operator in JSX',
+            description:
+              'The ternary operator (condition ? true : false) is perfect for inline conditional rendering in JSX. Use it when you need to choose between two different outputs.',
+            code: `function UserStatus({ isLoggedIn, isPremium }) {
+  return (
+    <div>
+      {/* Simple ternary */}
+      <p>Status: {isLoggedIn ? 'Online' : 'Offline'}</p>
+
+      {/* Ternary with components */}
+      {isLoggedIn ? (
+        <button>Logout</button>
+      ) : (
+        <button>Login</button>
+      )}
+
+      {/* Nested ternary (use sparingly!) */}
+      <p>
+        {isLoggedIn 
+          ? isPremium 
+            ? 'Premium User' 
+            : 'Free User'
+          : 'Guest'
+        }
+      </p>
+
+      {/* Ternary with styling */}
+      <div style={{ color: isLoggedIn ? 'green' : 'red' }}>
+        {isLoggedIn ? '✓ Connected' : '✗ Disconnected'}
+      </div>
+    </div>
+  );
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'Logical && Operator',
+            description:
+              'The && operator is great for conditional rendering when you only want to show something if a condition is true. If the condition is false, nothing renders.',
+            code: `function Notifications({ messages, isAdmin }) {
+  return (
+    <div>
+      {/* Show element only if condition is true */}
+      {messages.length > 0 && (
+        <p>You have {messages.length} new messages</p>
+      )}
+
+      {/* Multiple conditions */}
+      {isAdmin && messages.length > 0 && (
+        <button>Delete All Messages</button>
+      )}
+
+      {/* Common pattern: check if array has items before mapping */}
+      {messages.length > 0 && (
+        <ul>
+          {messages.map(msg => (
+            <li key={msg.id}>{msg.text}</li>
+          ))}
+        </ul>
+      )}
+
+      {/* ⚠️ Be careful with numbers! 0 is falsy */}
+      {/* ❌ Bad: If count is 0, it will render "0" */}
+      {messages.length && <p>Messages: {messages.length}</p>}
+      
+      {/* ✅ Good: Explicitly check */}
+      {messages.length > 0 && <p>Messages: {messages.length}</p>}
+    </div>
+  );
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'Component Lifecycle Basics',
+            description:
+              'Components go through three phases: Mounting (appearing), Updating (changing), and Unmounting (disappearing). With hooks, useEffect handles all lifecycle events.',
+            code: `import { useState, useEffect } from 'react';
+
+function LifecycleDemo() {
+  const [count, setCount] = useState(0);
+
+  // 1. MOUNTING: Runs once when component appears
+  useEffect(() => {
+    console.log('Component mounted!');
+    // Good for: API calls, subscriptions, timers
+  }, []); // Empty array = mount only
+
+  // 2. UPDATING: Runs when 'count' changes
+  useEffect(() => {
+    console.log('Count updated to:', count);
+    // Good for: Reacting to state/prop changes
+  }, [count]); // Runs when count changes
+
+  // 3. UNMOUNTING: Cleanup runs when component disappears
+  useEffect(() => {
+    const timer = setInterval(() => {
+      console.log('Tick');
+    }, 1000);
+
+    // This cleanup runs on unmount
+    return () => {
+      clearInterval(timer);
+      console.log('Component unmounted, timer cleared');
+    };
+  }, []);
+
+  // 4. ALL RENDERS: Runs after every render
+  useEffect(() => {
+    console.log('Component rendered');
+  }); // No dependency array
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'Controlled vs Uncontrolled Components',
+            description:
+              'Controlled components have their value controlled by React state. Uncontrolled components store their own state internally. Controlled is preferred for most cases.',
+            code: `import { useState, useRef } from 'react';
+
+// ✅ CONTROLLED: React controls the input value
+function ControlledForm() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Submitted:', { name, email });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={name} // Value is controlled by state
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Name"
+      />
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+      />
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+
+// ❌ UNCONTROLLED: DOM controls the input value
+function UncontrolledForm() {
+  const nameRef = useRef();
+  const emailRef = useRef();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Access values directly from DOM
+    console.log('Submitted:', {
+      name: nameRef.current.value,
+      email: emailRef.current.value
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input ref={nameRef} type="text" placeholder="Name" />
+      <input ref={emailRef} type="email" placeholder="Email" />
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+
+// Use controlled when you need:
+// - Validation, formatting, or instant feedback
+// - To disable submit button based on input
+// - Multiple inputs that depend on each other`,
+            language: 'jsx',
+          },
+          {
+            title: 'Immutability in React',
+            description:
+              'Never mutate state directly! Always create new copies when updating arrays or objects. This ensures React detects changes and re-renders properly.',
+            code: `import { useState } from 'react';
+
+function ImmutabilityExample() {
+  const [user, setUser] = useState({ name: 'Alice', age: 25 });
+  const [todos, setTodos] = useState(['Learn React', 'Build app']);
+
+  // ❌ WRONG: Mutating state directly
+  const badUpdateObject = () => {
+    user.age = 26; // Don't do this!
+    setUser(user); // React won't detect the change
+  };
+
+  const badUpdateArray = () => {
+    todos.push('New todo'); // Don't do this!
+    setTodos(todos); // React won't detect the change
+  };
+
+  // ✅ CORRECT: Create new copies
+
+  // Update object - use spread operator
+  const goodUpdateObject = () => {
+    setUser({ ...user, age: 26 }); // Creates new object
+  };
+
+  // Update nested object
+  const updateNested = () => {
+    setUser({
+      ...user,
+      address: { ...user.address, city: 'New York' }
+    });
+  };
+
+  // Add to array
+  const addTodo = () => {
+    setTodos([...todos, 'New todo']); // Creates new array
+  };
+
+  // Remove from array
+  const removeTodo = (index) => {
+    setTodos(todos.filter((_, i) => i !== index));
+  };
+
+  // Update array item
+  const updateTodo = (index, newText) => {
+    setTodos(todos.map((todo, i) => 
+      i === index ? newText : todo
+    ));
+  };
+
+  return <div>Check the code for examples!</div>;
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'Spread Operator',
+            description:
+              'The spread operator (...) is essential in React for creating copies of arrays and objects when updating state. It helps maintain immutability.',
+            code: `import { useState } from 'react';
+
+function SpreadOperatorExamples() {
+  const [user, setUser] = useState({
+    name: 'Alice',
+    age: 25,
+    hobbies: ['reading', 'coding']
+  });
+
+  // 1. Copy and update object properties
+  const updateName = () => {
+    setUser({ ...user, name: 'Bob' });
+    // Equivalent to: { name: 'Bob', age: 25, hobbies: [...] }
+  };
+
+  // 2. Update multiple properties
+  const updateMultiple = () => {
+    setUser({ ...user, name: 'Charlie', age: 30 });
+  };
+
+  // 3. Add to array
+  const addHobby = () => {
+    setUser({ ...user, hobbies: [...user.hobbies, 'gaming'] });
+  };
+
+  // 4. Merge objects
+  const address = { city: 'NYC', country: 'USA' };
+  const updateWithAddress = () => {
+    setUser({ ...user, ...address });
+  };
+
+  // 5. Copy array and add item
+  const [numbers, setNumbers] = useState([1, 2, 3]);
+  const addNumber = () => {
+    setNumbers([...numbers, 4]); // [1, 2, 3, 4]
+  };
+
+  // 6. Combine arrays
+  const moreNumbers = [5, 6, 7];
+  const combineArrays = () => {
+    setNumbers([...numbers, ...moreNumbers]); // [1,2,3,5,6,7]
+  };
+
+  // 7. Copy array and modify
+  const doubleNumbers = () => {
+    setNumbers([...numbers].map(n => n * 2));
+  };
+
+  return <div>Check the code for examples!</div>;
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'Array Methods in React',
+            description:
+              'Master these array methods for rendering lists and updating state: .map() for rendering, .filter() for removing items, .find() for searching, and .reduce() for calculations.',
+            code: `import { useState } from 'react';
+
+function ArrayMethodsExample() {
+  const [products] = useState([
+    { id: 1, name: 'Laptop', price: 1000, inStock: true },
+    { id: 2, name: 'Phone', price: 500, inStock: false },
+    { id: 3, name: 'Tablet', price: 300, inStock: true }
+  ]);
+
+  // 1. .map() - Transform and render each item
+  const productList = products.map(product => (
+    <li key={product.id}>
+      {product.name} - {product.price}
+    </li>
+  ));
+
+  // 2. .filter() - Show only items that match condition
+  const inStockProducts = products.filter(p => p.inStock);
+  const affordableProducts = products.filter(p => p.price < 600);
+
+  // 3. .find() - Get first item that matches
+  const laptop = products.find(p => p.name === 'Laptop');
+  const cheapest = products.find(p => p.price < 400);
+
+  // 4. .reduce() - Calculate total
+  const totalPrice = products.reduce((sum, p) => sum + p.price, 0);
+
+  // 5. Chaining methods
+  const totalInStockPrice = products
+    .filter(p => p.inStock)
+    .reduce((sum, p) => sum + p.price, 0);
+
+  // 6. .some() - Check if any item matches
+  const hasExpensive = products.some(p => p.price > 800);
+
+  // 7. .every() - Check if all items match
+  const allInStock = products.every(p => p.inStock);
+
+  return (
+    <div>
+      <h2>All Products</h2>
+      <ul>{productList}</ul>
+
+      <h2>In Stock ({inStockProducts.length})</h2>
+      <ul>
+        {inStockProducts.map(p => (
+          <li key={p.id}>{p.name}</li>
+        ))}
+      </ul>
+
+      <p>Total Price: {totalPrice}</p>
+      <p>Has Expensive Item: {hasExpensive ? 'Yes' : 'No'}</p>
+    </div>
+  );
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'Import/Export Modules',
+            description:
+              'ES6 modules let you split your code into separate files. Use export to share components/functions and import to use them elsewhere.',
+            code: `// ===== Button.jsx =====
+// Named export
+export function Button({ children, onClick }) {
+  return <button onClick={onClick}>{children}</button>;
+}
+
+// Another named export in same file
+export function IconButton({ icon, onClick }) {
+  return <button onClick={onClick}>{icon}</button>;
+}
+
+// Default export (one per file)
+export default function PrimaryButton({ children }) {
+  return <button className="primary">{children}</button>;
+}
+
+// ===== utils.js =====
+// Export multiple utilities
+export const formatDate = (date) => {
+  return date.toLocaleDateString();
+};
+
+export const capitalize = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+// ===== App.jsx =====
+// Import default export
+import PrimaryButton from './Button';
+
+// Import named exports
+import { Button, IconButton } from './Button';
+import { formatDate, capitalize } from './utils';
+
+// Import everything as an object
+import * as utils from './utils';
+
+// Import with alias
+import { Button as CustomButton } from './Button';
+
+function App() {
+  return (
+    <div>
+      <PrimaryButton>Click Me</PrimaryButton>
+      <Button>Regular Button</Button>
+      <CustomButton>Aliased Button</CustomButton>
+      <p>{utils.formatDate(new Date())}</p>
+    </div>
+  );
+}
+
+// Quick reference:
+// export default Component  →  import Component from './file'
+// export { Component }      →  import { Component } from './file'
+// export const name = ...   →  import { name } from './file'`,
+            language: 'jsx',
+          },
+            ]
+          },
+          {
+            heading: 'Styling',
+            snippets: [
+              {
+                title: 'Inline Styles',
+                description:
+                  'Apply styles directly to elements using the style prop with a JavaScript object. Property names are camelCase (backgroundColor instead of background-color).',
+                code: `function InlineStylesExample() {
+  // Define styles as an object
+  const containerStyle = {
+    backgroundColor: '#f0f0f0',
+    padding: '20px',
+    borderRadius: '8px',
+    maxWidth: '500px',
+    margin: '0 auto'
+  };
+
+  const headingStyle = {
+    color: '#333',
+    fontSize: '24px',
+    fontWeight: 'bold',
+    marginBottom: '10px'
+  };
+
+  // Dynamic styles based on state
+  const [isActive, setIsActive] = useState(false);
+  
+  const buttonStyle = {
+    backgroundColor: isActive ? 'green' : 'gray',
+    color: 'white',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer'
+  };
+
+  return (
+    <div style={containerStyle}>
+      <h1 style={headingStyle}>Inline Styles</h1>
+      
+      {/* Inline object directly */}
+      <p style={{ color: 'blue', fontSize: '16px' }}>
+        This text is styled inline
+      </p>
+
+      <button 
+        style={buttonStyle}
+        onClick={() => setIsActive(!isActive)}
+      >
+        {isActive ? 'Active' : 'Inactive'}
+      </button>
+    </div>
+  );
+}
+
+// Note: Use inline styles for dynamic styling
+// For static styles, prefer CSS files or CSS Modules`,
+                language: 'jsx',
+              },
+              {
+                title: 'CSS Modules',
+                description:
+                  'CSS Modules scope your styles to a specific component, preventing naming conflicts. Create a .module.css file and import it as an object.',
+                code: `// ===== Button.module.css =====
+.button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.button:hover {
+  opacity: 0.8;
+}
+
+// ===== Button.jsx =====
+import styles from './Button.module.css';
+
+function Button({ variant = 'primary', children }) {
+  // Access styles as object properties
+  return (
+    <button className={styles.button + ' ' + styles[variant]}>
+      {children}
+    </button>
+  );
+}
+
+// Better way with template literals
+function BetterButton({ variant = 'primary', children }) {
+  return (
+    <button className={\`\${styles.button} \${styles[variant]}\`}>
+      {children}
+    </button>
+  );
+}
+
+// With conditional classes
+function ConditionalButton({ isPrimary, children }) {
+  const className = isPrimary ? styles.primary : styles.secondary;
+  
+  return (
+    <button className={\`\${styles.button} \${className}\`}>
+      {children}
+    </button>
+  );
+}
+
+// Usage:
+<Button variant="primary">Primary</Button>
+<Button variant="secondary">Secondary</Button>
+
+// Benefits:
+// ✅ Scoped styles (no conflicts)
+// ✅ Works with Vite/CRA out of the box
+// ✅ Better than inline styles for static CSS`,
+                language: 'jsx',
+              },
+              {
+                title: 'Tailwind CSS Integration',
+                description:
+                  'Tailwind CSS is a utility-first framework that lets you style components using pre-defined classes. Fast, flexible, and no CSS files needed!',
+                code: `// Step 1: Install Tailwind (already covered in Practice section)
+// npm install -D tailwindcss postcss autoprefixer
+// npx tailwindcss init -p
+
+// Step 2: Use Tailwind classes in your components
+function TailwindExample() {
+  const [isActive, setIsActive] = useState(false);
+
+  return (
+    <div className="max-w-md mx-auto p-6 bg-gray-100 rounded-lg shadow-lg">
+      <h1 className="text-3xl font-bold text-gray-800 mb-4">
+        Tailwind CSS
+      </h1>
+      
+      <p className="text-gray-600 mb-6">
+        Style with utility classes directly in JSX!
+      </p>
+
+      {/* Responsive design */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white p-4 rounded">Card 1</div>
+        <div className="bg-white p-4 rounded">Card 2</div>
+      </div>
+
+      {/* Hover and focus states */}
+      <button className="mt-4 px-6 py-2 bg-blue-500 text-white rounded 
+                         hover:bg-blue-600 focus:outline-none focus:ring-2 
+                         focus:ring-blue-400 transition-colors">
+        Hover Me
+      </button>
+
+      {/* Conditional classes */}
+      <div className={\`mt-4 p-4 rounded \${
+        isActive ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700'
+      }\`}>
+        Status: {isActive ? 'Active' : 'Inactive'}
+      </div>
+
+      <button 
+        onClick={() => setIsActive(!isActive)}
+        className="mt-2 px-4 py-2 bg-gray-800 text-white rounded"
+      >
+        Toggle
+      </button>
+    </div>
+  );
+}
+
+// Common Tailwind patterns:
+// Spacing: p-4 (padding), m-4 (margin), gap-4 (gap)
+// Colors: bg-blue-500, text-white, border-gray-300
+// Layout: flex, grid, grid-cols-3
+// Responsive: sm:, md:, lg:, xl: prefixes`,
+                language: 'jsx',
+              },
+            ]
+          },
+          {
+            heading: 'Forms',
+            snippets: [
+              {
+                title: 'Form Submission',
+                description:
+                  'Handle form submissions properly by preventing the default browser behavior and processing the data in React. Always use preventDefault() to avoid page reload.',
+                code: `import { useState } from 'react';
+
+function FormSubmission() {
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: ''
+  });
+  const [submitted, setSubmitted] = useState(false);
+
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevent page reload!
+    
+    // Validate data
+    if (!formData.username || !formData.email) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    // Process the data (API call, etc.)
+    console.log('Form submitted:', formData);
+    
+    // Show success message
+    setSubmitted(true);
+    
+    // Reset form
+    setFormData({ username: '', email: '', password: '' });
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="username"
+          value={formData.username}
+          onChange={handleChange}
+          placeholder="Username"
+        />
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Email"
+        />
+        <input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="Password"
+        />
+        <button type="submit">Submit</button>
+      </form>
+
+      {submitted && <p>Form submitted successfully!</p>}
+    </div>
+  );
+}`,
+                language: 'jsx',
+              },
+              {
+                title: 'Multiple Input Handling',
+                description:
+                  'Manage multiple form inputs efficiently using a single state object and a reusable change handler. Use the input name attribute to update the correct field.',
+                code: `import { useState } from 'react';
+
+function MultipleInputForm() {
+  // Single state object for all inputs
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    age: '',
+    country: 'USA',
+    subscribe: false,
+    gender: 'male'
+  });
+
+  // Single handler for all inputs
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    
+    setFormData({
+      ...formData,
+      // Use checkbox 'checked' property, otherwise use 'value'
+      [name]: type === 'checkbox' ? checked : value
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Submitted:', formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* Text inputs */}
+      <input
+        type="text"
+        name="firstName"
+        value={formData.firstName}
+        onChange={handleChange}
+        placeholder="First Name"
+      />
+      <input
+        type="text"
+        name="lastName"
+        value={formData.lastName}
+        onChange={handleChange}
+        placeholder="Last Name"
+      />
+
+      {/* Email input */}
+      <input
+        type="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+        placeholder="Email"
+      />
+
+      {/* Number input */}
+      <input
+        type="number"
+        name="age"
+        value={formData.age}
+        onChange={handleChange}
+        placeholder="Age"
+      />
+
+      {/* Select dropdown */}
+      <select name="country" value={formData.country} onChange={handleChange}>
+        <option value="USA">USA</option>
+        <option value="Canada">Canada</option>
+        <option value="UK">UK</option>
+      </select>
+
+      {/* Checkbox */}
+      <label>
+        <input
+          type="checkbox"
+          name="subscribe"
+          checked={formData.subscribe}
+          onChange={handleChange}
+        />
+        Subscribe to newsletter
+      </label>
+
+      {/* Radio buttons */}
+      <label>
+        <input
+          type="radio"
+          name="gender"
+          value="male"
+          checked={formData.gender === 'male'}
+          onChange={handleChange}
+        />
+        Male
+      </label>
+      <label>
+        <input
+          type="radio"
+          name="gender"
+          value="female"
+          checked={formData.gender === 'female'}
+          onChange={handleChange}
+        />
+        Female
+      </label>
+
+      <button type="submit">Submit</button>
+    </form>
+  );
+}`,
+                language: 'jsx',
+              },
+            ]
+          },
+          {
+            heading: 'Practice',
+            snippets: [
+              {
+                title: 'Create a React App with Vite',
+                description:
+                  'Vite is a modern, fast build tool for React. Follow these steps to create your first React app and get started with development.',
+                code: `# Step 1: Create a new React project with Vite
+npm create vite@latest my-react-app -- --template react
+
+# Step 2: Navigate to your project folder
+cd my-react-app
+
+# Step 3: Install dependencies
+npm install
+
+# Step 4: Start the development server
+npm run dev
+
+# Your app will be running at http://localhost:5173
+# Open it in your browser to see the default Vite + React page!
+
+# Project structure:
+# my-react-app/
+# ├── src/
+# │   ├── App.jsx       # Main component
+# │   ├── main.jsx      # Entry point
+# │   └── App.css       # Styles
+# ├── index.html        # HTML template
+# └── package.json      # Dependencies`,
+                language: 'bash',
+              },
+              {
+                title: 'Build a Todo List App',
+                description:
+                  'A classic beginner project! This todo list teaches you state management, event handling, conditional rendering, and working with lists. Follow along step by step.',
+                code: `import { useState } from 'react';
+
+function TodoApp() {
+  // State to store the list of todos
+  const [todos, setTodos] = useState([]);
+  // State to store the current input value
+  const [input, setInput] = useState('');
+
+  // Add a new todo
+  const addTodo = () => {
+    if (input.trim() === '') return; // Don't add empty todos
+    
+    const newTodo = {
+      id: Date.now(), // Simple unique ID
+      text: input,
+      completed: false
+    };
+    
+    setTodos([...todos, newTodo]);
+    setInput(''); // Clear input after adding
+  };
+
+  // Toggle todo completion
+  const toggleTodo = (id) => {
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
+  };
+
+  // Delete a todo
+  const deleteTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  return (
+    <div>
+      <h1>My Todo List</h1>
+      
+      {/* Input section */}
+      <div>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+          placeholder="Add a new todo..."
+        />
+        <button onClick={addTodo}>Add</button>
+      </div>
+
+      {/* Todo list */}
+      <ul>
+        {todos.map((todo) => (
+          <li key={todo.id}>
+            <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => toggleTodo(todo.id)}
+            />
+            <span>{todo.text}</span>
+            <button onClick={() => deleteTodo(todo.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+
+      {/* Show message if no todos */}
+      {todos.length === 0 && (
+        <p>No todos yet. Add one above!</p>
+      )}
+    </div>
+  );
+}
+
+export default TodoApp;`,
+                language: 'jsx',
+              },
+              {
+                title: 'Step 1: Integrate Tailwind CSS',
+                description:
+                  'Install and configure Tailwind CSS in your React project. Follow these steps to get Tailwind up and running.',
+                code: `# 1. Install Tailwind CSS and its dependencies
+npm install -D tailwindcss postcss autoprefixer
+
+# 2. Initialize Tailwind configuration
+npx tailwindcss init -p
+
+# 3. Configure your tailwind.config.js file
+# Add the paths to all of your template files:
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+
+# 4. Add Tailwind directives to your CSS
+# In your src/index.css or src/App.css file:
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+# 5. Start your dev server
+npm run dev
+
+# You're ready to use Tailwind!`,
+                language: 'bash',
+              },
+              {
+                title: 'Step 2: Style Your Todo List with Tailwind',
+                description:
+                  'Now use Tailwind utility classes to style your todo list. No separate CSS file needed - just add classes directly to your JSX!',
+                code: `function TodoApp() {
+  const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState('');
+
+  const addTodo = () => {
+    if (input.trim()) {
+      setTodos([...todos, { id: Date.now(), text: input, completed: false }]);
+      setInput('');
+    }
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(todos.map(todo => 
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
+  };
+
+  const deleteTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  return (
+    <div className="max-w-md mx-auto mt-12 p-6 bg-gray-50 rounded-lg shadow-lg">
+      <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+        My Todo List
+      </h1>
+      
+      {/* Input Section */}
+      <div className="flex gap-2 mb-6">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+          placeholder="Add a new todo..."
+          className="flex-1 px-4 py-2 border-2 border-gray-300 rounded-md 
+                     focus:outline-none focus:border-blue-500 text-base"
+        />
+        <button
+          onClick={addTodo}
+          className="px-6 py-2 bg-green-500 text-white rounded-md 
+                     hover:bg-green-600 transition-colors font-medium"
+        >
+          Add
+        </button>
+      </div>
+
+      {/* Todo List */}
+      {todos.length === 0 ? (
+        <p className="text-center text-gray-400 italic py-8">
+          No todos yet. Add one above!
+        </p>
+      ) : (
+        <ul className="space-y-2">
+          {todos.map(todo => (
+            <li
+              key={todo.id}
+              className="flex items-center gap-3 p-3 bg-white rounded-md 
+                         border border-gray-200 hover:shadow-md transition-shadow"
+            >
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => toggleTodo(todo.id)}
+                className="w-5 h-5 cursor-pointer"
+              />
+              <span className={\`flex-1 \${todo.completed ? 'line-through text-gray-400' : 'text-gray-800'}\`}>
+                {todo.text}
+              </span>
+              <button
+                onClick={() => deleteTodo(todo.id)}
+                className="px-3 py-1 bg-red-500 text-white text-sm rounded 
+                           hover:bg-red-600 transition-colors"
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}`,
+                language: 'jsx',
+              },
+            ]
+          }
         ]
       },
       {
         name: 'Intermediate',
         snippets: [
+          {
+            title: 'useRef Hook',
+            description:
+              'useRef creates a mutable reference that persists across renders without causing re-renders when changed. Use it to access DOM elements directly or store values that should not trigger re-renders.',
+            code: `import { useRef, useEffect } from 'react';
+
+function TextInputWithFocusButton() {
+  // Create a ref to hold the input element
+  const inputRef = useRef(null);
+
+  const handleClick = () => {
+    // Access the DOM element and focus it
+    inputRef.current.focus();
+  };
+
+  return (
+    <div>
+      {/* Attach the ref to the input */}
+      <input ref={inputRef} type="text" />
+      <button onClick={handleClick}>Focus Input</button>
+    </div>
+  );
+}
+
+// useRef for storing values without re-rendering
+function Counter() {
+  const countRef = useRef(0);
+  const [, forceRender] = useState();
+
+  const increment = () => {
+    countRef.current += 1;
+    // This doesn't cause a re-render!
+    console.log('Count:', countRef.current);
+  };
+
+  return <button onClick={increment}>Increment (check console)</button>;
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'useCallback Hook',
+            description:
+              'useCallback returns a memoized version of a callback function that only changes if dependencies change. This prevents unnecessary re-renders of child components that receive the function as a prop.',
+            code: `import { useState, useCallback } from 'react';
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  const [otherState, setOtherState] = useState(0);
+
+  // Without useCallback, this function is recreated on every render
+  // With useCallback, it's only recreated when 'count' changes
+  const handleClick = useCallback(() => {
+    console.log('Count is:', count);
+  }, [count]); // Only recreate if count changes
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={() => setOtherState(otherState + 1)}>
+        Other State
+      </button>
+      {/* Child won't re-render when otherState changes */}
+      <Child onClick={handleClick} />
+    </div>
+  );
+}
+
+// Wrap in React.memo to prevent re-renders when props don't change
+const Child = React.memo(({ onClick }) => {
+  console.log('Child rendered');
+  return <button onClick={onClick}>Click me</button>;
+});`,
+            language: 'jsx',
+          },
+          {
+            title: 'useMemo Hook',
+            description:
+              'useMemo memoizes the result of an expensive calculation and only recalculates when dependencies change. This optimizes performance by avoiding unnecessary computations on every render.',
+            code: `import { useState, useMemo } from 'react';
+
+function ExpensiveComponent({ items }) {
+  const [count, setCount] = useState(0);
+
+  // This expensive calculation only runs when 'items' changes
+  const total = useMemo(() => {
+    console.log('Calculating total...');
+    return items.reduce((sum, item) => sum + item.price, 0);
+  }, [items]); // Only recalculate when items array changes
+
+  return (
+    <div>
+      <p>Total: {total}</p>
+      <p>Count: {count}</p>
+      {/* Clicking this won't recalculate total */}
+      <button onClick={() => setCount(count + 1)}>
+        Increment Count
+      </button>
+    </div>
+  );
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'Custom Hooks',
+            description:
+              'Custom hooks let you extract component logic into reusable functions. They must start with "use" and can call other hooks. This helps keep your components clean and logic shareable.',
+            code: `import { useState, useEffect } from 'react';
+
+// Custom hook for fetching data
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(url);
+        const json = await response.json();
+        setData(json);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [url]);
+
+  return { data, loading, error };
+}
+
+// Use the custom hook in a component
+function UserProfile({ userId }) {
+  const { data, loading, error } = useFetch(
+    \`https://api.example.com/users/\${userId}\`
+  );
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+  return <div>User: {data.name}</div>;
+}`,
+            language: 'jsx',
+          },
           {
             title: 'Styling with Tailwind CSS',
             description: 'Tailwind CSS lets you write utility classes directly in your JSX for rapid styling, without leaving your HTML.',
@@ -326,12 +1873,357 @@ function Todos() {
   );
 }`,
             language: 'jsx'
+          },
+          {
+            title: 'React Developer Tools',
+            description:
+              'React DevTools is a browser extension that helps you inspect React components, view props and state, and debug performance issues. Essential for every React developer!',
+            code: `// Installation:
+// 1. Chrome: https://chrome.google.com/webstore (search "React Developer Tools")
+// 2. Firefox: https://addons.mozilla.org/firefox/ (search "React Developer Tools")
+
+// After installation, open your React app and press F12 (DevTools)
+// You'll see two new tabs: "Components" and "Profiler"
+
+// ===== Components Tab =====
+// - View component tree hierarchy
+// - Inspect props and state of any component
+// - Edit props/state in real-time to test changes
+// - See which component rendered and why
+// - Find components by name using search
+
+// Example: Debugging a component
+function UserProfile({ name, age }) {
+  const [count, setCount] = useState(0);
+  
+  // In DevTools Components tab, you can:
+  // 1. Click on "UserProfile" in the tree
+  // 2. See props: { name: "Alice", age: 25 }
+  // 3. See hooks: State(0)
+  // 4. Edit the count value directly to test
+  
+  return (
+    <div>
+      <h1>{name}</h1>
+      <p>Age: {age}</p>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+
+// ===== Profiler Tab =====
+// - Record and analyze component render performance
+// - See which components re-render and how long they take
+// - Identify performance bottlenecks
+// - Useful for optimizing slow components
+
+// Tips:
+// - Use the "eye dropper" tool to select components on the page
+// - Enable "Highlight updates" to see which components re-render
+// - Use search to quickly find components in large apps
+// - Right-click components to "Show in Elements" or "View source"`,
+            language: 'javascript',
+          },
+          {
+            title: 'Folder Structure',
+            description:
+              'Organize your React project with a clear folder structure. This makes your code easier to navigate, maintain, and scale as your app grows.',
+            code: `// ===== Basic Structure (Small Projects) =====
+my-react-app/
+├── public/              # Static files
+│   └── images/
+├── src/
+│   ├── components/      # Reusable components
+│   │   ├── Button.jsx
+│   │   ├── Card.jsx
+│   │   └── Navbar.jsx
+│   ├── App.jsx          # Main app component
+│   ├── main.jsx         # Entry point
+│   └── App.css          # Global styles
+└── package.json
+
+// ===== Intermediate Structure (Medium Projects) =====
+src/
+├── components/          # Reusable UI components
+│   ├── common/          # Shared components
+│   │   ├── Button.jsx
+│   │   ├── Input.jsx
+│   │   └── Modal.jsx
+│   └── layout/          # Layout components
+│       ├── Header.jsx
+│       ├── Footer.jsx
+│       └── Sidebar.jsx
+├── pages/               # Page components (routes)
+│   ├── Home.jsx
+│   ├── About.jsx
+│   └── Dashboard.jsx
+├── hooks/               # Custom hooks
+│   ├── useFetch.js
+│   └── useAuth.js
+├── utils/               # Helper functions
+│   ├── formatDate.js
+│   └── validation.js
+├── App.jsx
+└── main.jsx
+
+// ===== Advanced Structure (Large Projects) =====
+src/
+├── components/
+│   ├── common/
+│   ├── layout/
+│   └── features/        # Feature-specific components
+│       ├── auth/
+│       │   ├── LoginForm.jsx
+│       │   └── SignupForm.jsx
+│       └── dashboard/
+│           ├── Stats.jsx
+│           └── Chart.jsx
+├── pages/
+├── hooks/
+├── context/             # Context providers
+│   ├── AuthContext.jsx
+│   └── ThemeContext.jsx
+├── services/            # API calls
+│   ├── api.js
+│   └── authService.js
+├── store/               # State management (Zustand/Redux)
+│   └── userStore.js
+├── styles/              # Global styles
+│   ├── globals.css
+│   └── variables.css
+├── utils/
+├── constants/           # Constants and config
+│   └── config.js
+├── types/               # TypeScript types
+│   └── user.types.ts
+├── App.jsx
+└── main.jsx
+
+// Best Practices:
+// ✅ Group by feature, not by file type
+// ✅ Keep components small and focused
+// ✅ Use index.js for cleaner imports
+// ✅ Separate business logic from UI
+// ✅ Co-locate related files (component + styles + tests)`,
+            language: 'javascript',
+          },
+          {
+            title: 'Environment Variables',
+            description:
+              'Store sensitive data and configuration in environment variables. In Vite, prefix variables with VITE_ to make them accessible in your React app.',
+            code: `// ===== .env file (in project root) =====
+// Variables must start with VITE_ to be exposed to your app
+VITE_API_URL=https://api.example.com
+VITE_API_KEY=your_api_key_here
+VITE_APP_NAME=My Awesome App
+VITE_ENABLE_ANALYTICS=true
+
+// ⚠️ Never commit .env to git! Add it to .gitignore
+// Create .env.example for team reference
+
+// ===== .env.example =====
+VITE_API_URL=
+VITE_API_KEY=
+VITE_APP_NAME=
+
+// ===== Using environment variables in React =====
+function App() {
+  // Access with import.meta.env (Vite)
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiKey = import.meta.env.VITE_API_KEY;
+  const appName = import.meta.env.VITE_APP_NAME;
+
+  console.log('API URL:', apiUrl);
+  console.log('App Name:', appName);
+
+  return <h1>{appName}</h1>;
+}
+
+// ===== API Service Example =====
+// services/api.js
+const API_URL = import.meta.env.VITE_API_URL;
+const API_KEY = import.meta.env.VITE_API_KEY;
+
+export async function fetchUsers() {
+  const response = await fetch(\`\${API_URL}/users\`, {
+    headers: {
+      'Authorization': \`Bearer \${API_KEY}\`
+    }
+  });
+  return response.json();
+}
+
+// ===== Different environments =====
+// .env.development  (used with: npm run dev)
+VITE_API_URL=http://localhost:3000
+
+// .env.production   (used with: npm run build)
+VITE_API_URL=https://api.production.com
+
+// ===== Check current mode =====
+const isDevelopment = import.meta.env.DEV;
+const isProduction = import.meta.env.PROD;
+const mode = import.meta.env.MODE; // 'development' or 'production'
+
+if (isDevelopment) {
+  console.log('Running in development mode');
+}
+
+// Important Notes:
+// ✅ Only VITE_ prefixed variables are exposed
+// ✅ Never store secrets in client-side env vars (they're visible!)
+// ✅ Restart dev server after changing .env
+// ✅ Use .env.local for local overrides (git ignored by default)`,
+            language: 'javascript',
           }
         ]
       },
       {
         name: 'Advanced',
         snippets: [
+          {
+            title: 'useReducer Hook',
+            description:
+              'useReducer is an alternative to useState for managing complex state logic. It works like Redux: you dispatch actions to a reducer function that returns the new state. Great for state with multiple sub-values or complex transitions.',
+            code: `import { useReducer } from 'react';
+
+// Define the reducer function
+function counterReducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return { count: state.count + 1 };
+    case 'decrement':
+      return { count: state.count - 1 };
+    case 'reset':
+      return { count: 0 };
+    default:
+      throw new Error('Unknown action type');
+  }
+}
+
+function Counter() {
+  // Initialize with reducer function and initial state
+  const [state, dispatch] = useReducer(counterReducer, { count: 0 });
+
+  return (
+    <div>
+      <p>Count: {state.count}</p>
+      {/* Dispatch actions to update state */}
+      <button onClick={() => dispatch({ type: 'increment' })}>+</button>
+      <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
+      <button onClick={() => dispatch({ type: 'reset' })}>Reset</button>
+    </div>
+  );
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'React.memo',
+            description:
+              'React.memo is a higher-order component that prevents a component from re-rendering if its props have not changed. This is a performance optimization for expensive components.',
+            code: `import React from 'react';
+
+// Without React.memo, this component re-renders every time parent renders
+function ExpensiveComponent({ data }) {
+  console.log('Rendering ExpensiveComponent');
+  // Imagine some expensive calculations here
+  return <div>{data}</div>;
+}
+
+// With React.memo, it only re-renders when 'data' prop changes
+const MemoizedComponent = React.memo(ExpensiveComponent);
+
+// Custom comparison function (optional)
+const MemoizedWithCustomCompare = React.memo(
+  ExpensiveComponent,
+  (prevProps, nextProps) => {
+    // Return true if props are equal (skip re-render)
+    // Return false if props are different (re-render)
+    return prevProps.data === nextProps.data;
+  }
+);`,
+            language: 'jsx',
+          },
+          {
+            title: 'Error Boundaries',
+            description:
+              'Error Boundaries catch JavaScript errors in child components, log them, and display a fallback UI instead of crashing the whole app. They only work in class components (for now).',
+            code: `import React from 'react';
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    // Update state so next render shows fallback UI
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    // Log error to an error reporting service
+    console.error('Error caught:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      // Render fallback UI
+      return <h1>Something went wrong.</h1>;
+    }
+
+    return this.props.children;
+  }
+}
+
+// Usage: Wrap components that might throw errors
+function App() {
+  return (
+    <ErrorBoundary>
+      <MyComponent />
+    </ErrorBoundary>
+  );
+}`,
+            language: 'jsx',
+          },
+          {
+            title: 'Portals',
+            description:
+              'Portals let you render children into a DOM node that exists outside the parent component hierarchy. Perfect for modals, tooltips, and dropdowns that need to break out of overflow:hidden containers.',
+            code: `import { createPortal } from 'react-dom';
+
+function Modal({ children, isOpen }) {
+  if (!isOpen) return null;
+
+  // Render into a different part of the DOM tree
+  return createPortal(
+    <div className="modal-overlay">
+      <div className="modal-content">
+        {children}
+      </div>
+    </div>,
+    document.getElementById('modal-root') // Target DOM node
+  );
+}
+
+// In your HTML, add: <div id="modal-root"></div>
+
+function App() {
+  const [showModal, setShowModal] = useState(false);
+
+  return (
+    <div>
+      <button onClick={() => setShowModal(true)}>Open Modal</button>
+      <Modal isOpen={showModal}>
+        <h2>I'm in a portal!</h2>
+        <button onClick={() => setShowModal(false)}>Close</button>
+      </Modal>
+    </div>
+  );
+}`,
+            language: 'jsx',
+          },
           {
             title: 'Rendering Strategies',
             description: 'Different ways to render your app. CSR is standard React. Next.js enables SSR and SSG for better performance and SEO.',
