@@ -22,6 +22,8 @@ interface SelectedTopic {
 export function PDFDownloadModal({ isOpen, onClose }: PDFDownloadModalProps) {
   const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set());
   const [isGenerating, setIsGenerating] = useState(false);
+  const [customTitle, setCustomTitle] = useState('');
+  const [customSubtitle, setCustomSubtitle] = useState('');
 
   if (!isOpen) return null;
 
@@ -139,7 +141,9 @@ export function PDFDownloadModal({ isOpen, onClose }: PDFDownloadModalProps) {
           selectedTopics.size === allTopics.length 
             ? firstGroup.categoryName 
             : 'CheatJS',
-          customSubCategory
+          customSubCategory,
+          customTitle || undefined,
+          customSubtitle || undefined
         );
       }
     } catch (error) {
@@ -182,6 +186,36 @@ export function PDFDownloadModal({ isOpen, onClose }: PDFDownloadModalProps) {
           >
             <X size={24} />
           </button>
+        </div>
+
+        {/* Custom Title and Subtitle Inputs */}
+        <div className="p-4 border-b border-slate-700 bg-slate-800/30">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Custom Title (Optional)
+              </label>
+              <input
+                type="text"
+                value={customTitle}
+                onChange={(e) => setCustomTitle(e.target.value)}
+                placeholder="e.g., React Fundamentals"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Custom Subtitle (Optional)
+              </label>
+              <input
+                type="text"
+                value={customSubtitle}
+                onChange={(e) => setCustomSubtitle(e.target.value)}
+                placeholder="e.g., Essential Concepts"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Selection Controls */}
