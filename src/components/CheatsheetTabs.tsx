@@ -48,7 +48,7 @@ export function CheatsheetTabs() {
 
   return (
     <Tabs value={categoryTab} onValueChange={setCategoryTab} className="w-full">
-      <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 bg-slate-800/50 border border-slate-700/50 mb-8">
+        <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 bg-slate-800/50 border border-slate-700/50 mb-8">
         <TabsTrigger value="React" className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300">React</TabsTrigger>
         <TabsTrigger value="Next.js" className="data-[state=active]:bg-slate-700 data-[state=active]:text-green-300">Next.js</TabsTrigger>
         <TabsTrigger value="Frontend Concepts" className="data-[state=active]:bg-slate-700 data-[state=active]:text-yellow-300">Frontend Concepts</TabsTrigger>
