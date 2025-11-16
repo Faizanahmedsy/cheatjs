@@ -1,6 +1,7 @@
 
 import jsPDF from 'jspdf';
 import type { SubCategory, Snippet } from '../lib/cheatsheets';
+import type { DSATopic } from '../lib/dsa';
 
 export async function generateCheatsheetPDF(
   categoryName: string,
@@ -307,5 +308,104 @@ function addAdvertisementPage(
   pdf.setFontSize(9);
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(148, 163, 184);
-  pdf.text('© 2024 CheatJS. All rights reserved.', pageWidth / 2, pageHeight - 15, { align: 'center' });
+  pdf.text('© 2025 CheatJS. All rights reserved.', pageWidth / 2, pageHeight - 15, { align: 'center' });
+}
+
+// New function for DSA PDF generation
+export async function generateDSAPDF(
+  topics: DSATopic[],
+  customTitle?: string,
+  customSubtitle?: string
+) {
+  const pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  });
+
+  const pageWidth = 210;
+  const pageHeight = 297;
+  const margin = 20;
+  const contentWidth = pageWidth - 2 * margin;
+  const maxY = pageHeight - margin;
+
+  // Page 1: Cover Page
+  const title = customTitle || 'Data Structures & Algorithms';
+  const subtitle = customSubtitle || 'Quick Reference Guide';
+  addCoverPage(pdf, title, subtitle, pageWidth, pageHeight, customTitle, customSubtitle);
+
+  // Middle Pages: Content
+  pdf.addPage();
+  let yPosition = addDSAContentPages(pdf, topics, margin, contentWidth, maxY);
+
+  // If the last content page ended up being blank, remove it
+  if (yPosition <= margin && pdf.getNumberOfPages() > 2) {
+    pdf.deletePage(pdf.getNumberOfPages());
+  }
+
+  // Last Page: Advertisement
+  pdf.addPage();
+  addAdvertisementPage(pdf, pageWidth, pageHeight);
+
+  // Download the PDF
+  const fileName = customTitle
+    ? `${customTitle.replace(/\s+/g, '-')}-DSA-Cheatsheet.pdf`
+    : 'DSA-Cheatsheet.pdf';
+  pdf.save(fileName);
+}
+
+function addDSAContentPages(
+  pdf: jsPDF,
+  topics: DSATopic[],
+  margin: number,
+  contentWidth: number,
+  maxY: number
+): number {
+  let y = margin;
+
+  for (const topic of topics) {
+    // Add topic title
+    const topicHeaderHeight = 15;
+    if (y + topicHeaderHeight > maxY && y > margin) {
+      pdf.addPage();
+      y = margin;
+    }
+
+    pdf.setFontSize(20);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(59, 130, 246);
+    pdf.text(topic.content.title, margin, y);
+    y += 10;
+
+    // Add description
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(80, 80, 80);
+    const descLines = pdf.splitTextToSize(topic.content.description, contentWidth);
+    for (const line of descLines) {
+      if (y + 5 > maxY) {
+        pdf.addPage();
+        y = margin;
+      }
+      pdf.text(line, margin, y);
+      y += 5;
+    }
+    y += 8;
+
+    // Add steps
+    for (const step of topic.content.steps) {
+      const snippet: Snippet = {
+        title: step.title,
+        description: step.explanation,
+        code: step.code,
+        language: step.language,
+      };
+      y = addSnippetToPDF(pdf, snippet, y, margin, contentWidth, maxY);
+      y += 10;
+    }
+
+    y += 5; // Extra space between topics
+  }
+
+  return y;
 }

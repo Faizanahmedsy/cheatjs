@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { X, Download, Check } from 'lucide-react';
 import { cheatsheets } from '@/lib/cheatsheets';
-import { generateCheatsheetPDF } from '@/utils/pdfGenerator';
+import { allDSATopics } from '@/lib/dsa';
+import { generateCheatsheetPDF, generateDSAPDF } from '@/utils/pdfGenerator';
 import type { Snippet } from '@/lib/cheatsheets';
+import type { DSATopic } from '@/lib/dsa';
 
 interface PDFDownloadModalProps {
   isOpen: boolean;
@@ -19,8 +21,12 @@ interface SelectedTopic {
   snippet: Snippet;
 }
 
+type ContentType = 'cheatsheets' | 'dsa';
+
 export function PDFDownloadModal({ isOpen, onClose }: PDFDownloadModalProps) {
+  const [contentType, setContentType] = useState<ContentType>('cheatsheets');
   const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set());
+  const [selectedDSATopics, setSelectedDSATopics] = useState<Set<string>>(new Set());
   const [isGenerating, setIsGenerating] = useState(false);
   const [customTitle, setCustomTitle] = useState('');
   const [customSubtitle, setCustomSubtitle] = useState('');
@@ -90,67 +96,112 @@ export function PDFDownloadModal({ isOpen, onClose }: PDFDownloadModalProps) {
     setSelectedTopics(newSelected);
   };
 
+  const toggleDSATopic = (topicId: string) => {
+    const newSelected = new Set(selectedDSATopics);
+    if (newSelected.has(topicId)) {
+      newSelected.delete(topicId);
+    } else {
+      newSelected.add(topicId);
+    }
+    setSelectedDSATopics(newSelected);
+  };
+
   const selectAll = () => {
-    const allIds = allTopics.map(getTopicId);
-    setSelectedTopics(new Set(allIds));
+    if (contentType === 'cheatsheets') {
+      const allIds = allTopics.map(getTopicId);
+      setSelectedTopics(new Set(allIds));
+    } else {
+      const allIds = allDSATopics.map(t => t.id);
+      setSelectedDSATopics(new Set(allIds));
+    }
   };
 
   const deselectAll = () => {
-    setSelectedTopics(new Set());
+    if (contentType === 'cheatsheets') {
+      setSelectedTopics(new Set());
+    } else {
+      setSelectedDSATopics(new Set());
+    }
   };
 
   const handleDownload = async () => {
-    if (selectedTopics.size === 0) {
-      alert('Please select at least one topic');
-      return;
-    }
+    if (contentType === 'cheatsheets') {
+      if (selectedTopics.size === 0) {
+        alert('Please select at least one topic');
+        return;
+      }
 
-    setIsGenerating(true);
-    try {
-      // Filter selected snippets
-      const selectedSnippets = allTopics.filter((topic) =>
-        selectedTopics.has(getTopicId(topic))
-      );
+      setIsGenerating(true);
+      try {
+        // Filter selected snippets
+        const selectedSnippets = allTopics.filter((topic) =>
+          selectedTopics.has(getTopicId(topic))
+        );
 
-      // Group by category and subcategory
-      const groupedTopics = selectedSnippets.reduce((acc, topic) => {
-        const key = `${topic.categoryName}-${topic.subCategoryName}`;
-        if (!acc[key]) {
-          acc[key] = {
-            categoryName: topic.categoryName,
-            subCategoryName: topic.subCategoryName,
-            snippets: [],
+        // Group by category and subcategory
+        const groupedTopics = selectedSnippets.reduce((acc, topic) => {
+          const key = `${topic.categoryName}-${topic.subCategoryName}`;
+          if (!acc[key]) {
+            acc[key] = {
+              categoryName: topic.categoryName,
+              subCategoryName: topic.subCategoryName,
+              snippets: [],
+            };
+          }
+          acc[key].snippets.push(topic.snippet);
+          return acc;
+        }, {} as Record<string, { categoryName: string; subCategoryName: string; snippets: Snippet[] }>);
+
+        // Generate PDF for the first group (or combine all)
+        const firstGroup = Object.values(groupedTopics)[0];
+        if (firstGroup) {
+          // Create a custom subcategory with selected snippets
+          const customSubCategory = {
+            name: selectedTopics.size === allTopics.length 
+              ? firstGroup.subCategoryName 
+              : 'Custom Selection',
+            snippets: Object.values(groupedTopics).flatMap(g => g.snippets),
           };
+
+          await generateCheatsheetPDF(
+            selectedTopics.size === allTopics.length 
+              ? firstGroup.categoryName 
+              : 'CheatJS',
+            customSubCategory,
+            customTitle || undefined,
+            customSubtitle || undefined
+          );
         }
-        acc[key].snippets.push(topic.snippet);
-        return acc;
-      }, {} as Record<string, { categoryName: string; subCategoryName: string; snippets: Snippet[] }>);
+      } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Failed to generate PDF. Please try again.');
+      } finally {
+        setIsGenerating(false);
+      }
+    } else {
+      // DSA PDF generation
+      if (selectedDSATopics.size === 0) {
+        alert('Please select at least one DSA topic');
+        return;
+      }
 
-      // Generate PDF for the first group (or combine all)
-      const firstGroup = Object.values(groupedTopics)[0];
-      if (firstGroup) {
-        // Create a custom subcategory with selected snippets
-        const customSubCategory = {
-          name: selectedTopics.size === allTopics.length 
-            ? firstGroup.subCategoryName 
-            : 'Custom Selection',
-          snippets: Object.values(groupedTopics).flatMap(g => g.snippets),
-        };
+      setIsGenerating(true);
+      try {
+        const selectedTopicsData = allDSATopics.filter((topic) =>
+          selectedDSATopics.has(topic.id)
+        );
 
-        await generateCheatsheetPDF(
-          selectedTopics.size === allTopics.length 
-            ? firstGroup.categoryName 
-            : 'CheatJS',
-          customSubCategory,
+        await generateDSAPDF(
+          selectedTopicsData,
           customTitle || undefined,
           customSubtitle || undefined
         );
+      } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Failed to generate PDF. Please try again.');
+      } finally {
+        setIsGenerating(false);
       }
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
-    } finally {
-      setIsGenerating(false);
     }
   };
 
@@ -177,7 +228,7 @@ export function PDFDownloadModal({ isOpen, onClose }: PDFDownloadModalProps) {
           <div>
             <h2 className="text-2xl font-bold text-white">Download PDF</h2>
             <p className="text-sm text-slate-400 mt-1">
-              Select topics to include in your cheatsheet
+              Select topics to include in your PDF
             </p>
           </div>
           <button
@@ -186,6 +237,32 @@ export function PDFDownloadModal({ isOpen, onClose }: PDFDownloadModalProps) {
           >
             <X size={24} />
           </button>
+        </div>
+
+        {/* Content Type Selector */}
+        <div className="p-4 border-b border-slate-700 bg-slate-800/30">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setContentType('cheatsheets')}
+              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+                contentType === 'cheatsheets'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              }`}
+            >
+              Cheatsheets
+            </button>
+            <button
+              onClick={() => setContentType('dsa')}
+              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+                contentType === 'dsa'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              }`}
+            >
+              DSA
+            </button>
+          </div>
         </div>
 
         {/* Custom Title and Subtitle Inputs */}
@@ -221,7 +298,10 @@ export function PDFDownloadModal({ isOpen, onClose }: PDFDownloadModalProps) {
         {/* Selection Controls */}
         <div className="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-800/50">
           <div className="text-sm text-slate-300">
-            {selectedTopics.size} of {allTopics.length} topics selected
+            {contentType === 'cheatsheets' 
+              ? `${selectedTopics.size} of ${allTopics.length} topics selected`
+              : `${selectedDSATopics.size} of ${allDSATopics.length} topics selected`
+            }
           </div>
           <div className="flex gap-2">
             <button
@@ -241,56 +321,96 @@ export function PDFDownloadModal({ isOpen, onClose }: PDFDownloadModalProps) {
 
         {/* Topics List */}
         <div className="flex-1 overflow-y-auto p-6">
-          <div className="space-y-6">
-            {Object.entries(groupedTopics).map(([categoryName, subCategories]) => (
-              <div key={categoryName}>
-                <h3 className="text-lg font-bold text-cyan-300 mb-3">
-                  {categoryName}
-                </h3>
-                {Object.entries(subCategories).map(([subCategoryName, topics]) => (
-                  <div key={subCategoryName} className="ml-4 mb-4">
-                    <h4 className="text-md font-semibold text-slate-300 mb-2">
-                      {subCategoryName}
-                    </h4>
-                    <div className="space-y-1">
-                      {topics.map((topic) => {
-                        const topicId = getTopicId(topic);
-                        const isSelected = selectedTopics.has(topicId);
-                        return (
-                          <label
-                            key={topicId}
-                            className="flex items-center gap-3 p-2 rounded hover:bg-slate-800/50 cursor-pointer transition-colors"
-                          >
-                            <div
-                              className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                                isSelected
-                                  ? 'bg-blue-600 border-blue-600'
-                                  : 'border-slate-600'
-                              }`}
+          {contentType === 'cheatsheets' ? (
+            <div className="space-y-6">
+              {Object.entries(groupedTopics).map(([categoryName, subCategories]) => (
+                <div key={categoryName}>
+                  <h3 className="text-lg font-bold text-cyan-300 mb-3">
+                    {categoryName}
+                  </h3>
+                  {Object.entries(subCategories).map(([subCategoryName, topics]) => (
+                    <div key={subCategoryName} className="ml-4 mb-4">
+                      <h4 className="text-md font-semibold text-slate-300 mb-2">
+                        {subCategoryName}
+                      </h4>
+                      <div className="space-y-1">
+                        {topics.map((topic) => {
+                          const topicId = getTopicId(topic);
+                          const isSelected = selectedTopics.has(topicId);
+                          return (
+                            <label
+                              key={topicId}
+                              className="flex items-center gap-3 p-2 rounded hover:bg-slate-800/50 cursor-pointer transition-colors"
                             >
-                              {isSelected && <Check size={14} className="text-white" />}
-                            </div>
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={() => toggleTopic(topicId)}
-                              className="sr-only"
-                            />
-                            <span className="text-sm text-slate-300">
-                              {topic.sectionName && (
-                                <span className="text-slate-500">{topic.sectionName} → </span>
-                              )}
-                              {topic.snippetTitle}
-                            </span>
-                          </label>
-                        );
-                      })}
+                              <div
+                                className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                                  isSelected
+                                    ? 'bg-blue-600 border-blue-600'
+                                    : 'border-slate-600'
+                                }`}
+                              >
+                                {isSelected && <Check size={14} className="text-white" />}
+                              </div>
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => toggleTopic(topicId)}
+                                className="sr-only"
+                              />
+                              <span className="text-sm text-slate-300">
+                                {topic.sectionName && (
+                                  <span className="text-slate-500">{topic.sectionName} → </span>
+                                )}
+                                {topic.snippetTitle}
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {allDSATopics.map((topic) => {
+                const Icon = topic.icon;
+                const isSelected = selectedDSATopics.has(topic.id);
+                return (
+                  <label
+                    key={topic.id}
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800/50 cursor-pointer transition-colors"
+                  >
+                    <div
+                      className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                        isSelected
+                          ? 'bg-blue-600 border-blue-600'
+                          : 'border-slate-600'
+                      }`}
+                    >
+                      {isSelected && <Check size={14} className="text-white" />}
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleDSATopic(topic.id)}
+                      className="sr-only"
+                    />
+                    <Icon className="h-5 w-5 text-cyan-400" />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-slate-200">
+                        {topic.label}
+                      </div>
+                      <div className="text-xs text-slate-400">
+                        {topic.content.description}
+                      </div>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -303,7 +423,11 @@ export function PDFDownloadModal({ isOpen, onClose }: PDFDownloadModalProps) {
           </button>
           <button
             onClick={handleDownload}
-            disabled={selectedTopics.size === 0 || isGenerating}
+            disabled={
+              (contentType === 'cheatsheets' && selectedTopics.size === 0) ||
+              (contentType === 'dsa' && selectedDSATopics.size === 0) ||
+              isGenerating
+            }
             className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white rounded-lg transition-colors shadow-lg"
           >
             <Download size={18} />

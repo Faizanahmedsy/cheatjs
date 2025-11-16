@@ -10,6 +10,7 @@ import { PDFDownloadModal } from './PDFDownloadModal';
 const navLinks = [
   { href: '/', label: 'Cheatsheets' },
   { href: '/features', label: 'Features' },
+  { href: '/dsa', label: 'DSA' },
 ];
 
 export function Navbar() {
