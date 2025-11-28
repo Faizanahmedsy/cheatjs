@@ -8,8 +8,9 @@ import {
   Shuffle,
   TrendingUp,
   Grid3x3,
+  GitMerge,
   type LucideIcon,
-} from 'lucide-react';
+} from "lucide-react";
 
 type CodeStep = {
   title: string;
@@ -38,28 +39,30 @@ export type DSAGroup = {
 // Overview Group
 const overviewTopics: DSATopic[] = [
   {
-    id: 'visualizations',
-    label: 'Visualizations',
+    id: "visualizations",
+    label: "Visualizations",
     icon: Grid3x3,
-    href: '/dsa?topic=visualizations',
+    href: "/dsa?topic=visualizations",
     content: {
-      title: 'Data Structure Visualizations',
-      description: 'Interactive visualizations to understand how data structures work internally.',
+      title: "Data Structure Visualizations",
+      description:
+        "Interactive visualizations to understand how data structures work internally.",
       steps: [],
     },
   },
   {
-    id: 'algorithms-overview',
-    label: 'Algorithms',
+    id: "algorithms-overview",
+    label: "Algorithms",
     icon: TrendingUp,
-    href: '/dsa?topic=algorithms-overview',
+    href: "/dsa?topic=algorithms-overview",
     content: {
-      title: 'Algorithm Fundamentals',
-      description: 'Core algorithmic concepts and problem-solving techniques.',
+      title: "Algorithm Fundamentals",
+      description: "Core algorithmic concepts and problem-solving techniques.",
       steps: [
         {
-          title: 'Time Complexity',
-          explanation: 'Understanding Big O notation and how to analyze algorithm efficiency.',
+          title: "Time Complexity",
+          explanation:
+            "Understanding Big O notation and how to analyze algorithm efficiency.",
           code: `// O(1) - Constant Time
 function getFirst(arr) {
   return arr[0]; // Always takes same time
@@ -84,19 +87,20 @@ function bubbleSort(arr) {
   }
   return arr;
 }`,
-          language: 'javascript',
+          language: "javascript",
         },
       ],
     },
   },
   {
-    id: 'patterns-overview',
-    label: 'Patterns',
+    id: "patterns-overview",
+    label: "Patterns",
     icon: Shuffle,
-    href: '/dsa?topic=patterns-overview',
+    href: "/dsa?topic=patterns-overview",
     content: {
-      title: 'Common Problem-Solving Patterns',
-      description: 'Learn the most common patterns used to solve coding problems efficiently.',
+      title: "Common Problem-Solving Patterns",
+      description:
+        "Learn the most common patterns used to solve coding problems efficiently.",
       steps: [],
     },
   },
@@ -105,17 +109,19 @@ function bubbleSort(arr) {
 // Data Structures Group
 const dataStructureTopics: DSATopic[] = [
   {
-    id: 'arrays',
-    label: 'Arrays',
+    id: "arrays",
+    label: "Arrays",
     icon: Box,
-    href: '/dsa?topic=arrays',
+    href: "/dsa?topic=arrays",
     content: {
-      title: 'Arrays',
-      description: 'The most fundamental data structure - a contiguous block of memory storing elements.',
+      title: "Arrays",
+      description:
+        "The most fundamental data structure - a contiguous block of memory storing elements.",
       steps: [
         {
-          title: 'Array Basics',
-          explanation: 'Arrays store elements in contiguous memory locations with O(1) access time by index.',
+          title: "Array Basics",
+          explanation:
+            "Arrays store elements in contiguous memory locations with O(1) access time by index.",
           code: `// Creating arrays
 const arr1 = [1, 2, 3, 4, 5];
 const arr2 = new Array(5); // Creates array with 5 empty slots
@@ -130,11 +136,12 @@ arr1.push(6); // Add to end - O(1)
 arr1.pop(); // Remove from end - O(1)
 arr1.unshift(0); // Add to start - O(n)
 arr1.shift(); // Remove from start - O(n)`,
-          language: 'javascript',
+          language: "javascript",
         },
         {
-          title: 'Array Methods',
-          explanation: 'Essential array methods for manipulation and transformation.',
+          title: "Array Methods",
+          explanation:
+            "Essential array methods for manipulation and transformation.",
           code: `const numbers = [1, 2, 3, 4, 5];
 
 // map - transform each element
@@ -154,23 +161,25 @@ const hasEven = numbers.some(n => n % 2 === 0); // true
 
 // every - check if all elements match
 const allPositive = numbers.every(n => n > 0); // true`,
-          language: 'javascript',
+          language: "javascript",
         },
       ],
     },
   },
   {
-    id: 'linked-lists',
-    label: 'Linked Lists',
+    id: "linked-lists",
+    label: "Linked Lists",
     icon: GitBranch,
-    href: '/dsa?topic=linked-lists',
+    href: "/dsa?topic=linked-lists",
     content: {
-      title: 'Linked Lists',
-      description: 'A linear data structure where elements are stored in nodes, each pointing to the next.',
+      title: "Linked Lists",
+      description:
+        "A linear data structure where elements are stored in nodes, each pointing to the next.",
       steps: [
         {
-          title: 'Singly Linked List',
-          explanation: 'Each node contains data and a pointer to the next node.',
+          title: "Singly Linked List",
+          explanation:
+            "Each node contains data and a pointer to the next node.",
           code: `class Node {
   constructor(data) {
     this.data = data;
@@ -228,23 +237,25 @@ class LinkedList {
     }
   }
 }`,
-          language: 'javascript',
+          language: "javascript",
         },
       ],
     },
   },
   {
-    id: 'stacks',
-    label: 'Stacks',
+    id: "stacks",
+    label: "Stacks",
     icon: Layers,
-    href: '/dsa?topic=stacks',
+    href: "/dsa?topic=stacks",
     content: {
-      title: 'Stacks',
-      description: 'LIFO (Last In First Out) data structure - like a stack of plates.',
+      title: "Stacks",
+      description:
+        "LIFO (Last In First Out) data structure - like a stack of plates.",
       steps: [
         {
-          title: 'Stack Implementation',
-          explanation: 'Stack supports push, pop, and peek operations, all in O(1) time.',
+          title: "Stack Implementation",
+          explanation:
+            "Stack supports push, pop, and peek operations, all in O(1) time.",
           code: `class Stack {
   constructor() {
     this.items = [];
@@ -283,23 +294,25 @@ stack.push(2);
 stack.push(3);
 console.log(stack.pop()); // 3
 console.log(stack.peek()); // 2`,
-          language: 'javascript',
+          language: "javascript",
         },
       ],
     },
   },
   {
-    id: 'queues',
-    label: 'Queues',
+    id: "queues",
+    label: "Queues",
     icon: ArrowUpDown,
-    href: '/dsa?topic=queues',
+    href: "/dsa?topic=queues",
     content: {
-      title: 'Queues',
-      description: 'FIFO (First In First Out) data structure - like a line at a store.',
+      title: "Queues",
+      description:
+        "FIFO (First In First Out) data structure - like a line at a store.",
       steps: [
         {
-          title: 'Queue Implementation',
-          explanation: 'Queue supports enqueue (add to back) and dequeue (remove from front).',
+          title: "Queue Implementation",
+          explanation:
+            "Queue supports enqueue (add to back) and dequeue (remove from front).",
           code: `class Queue {
   constructor() {
     this.items = [];
@@ -338,23 +351,24 @@ queue.enqueue(2);
 queue.enqueue(3);
 console.log(queue.dequeue()); // 1
 console.log(queue.front()); // 2`,
-          language: 'javascript',
+          language: "javascript",
         },
       ],
     },
   },
   {
-    id: 'trees',
-    label: 'Binary Trees',
+    id: "trees",
+    label: "Binary Trees",
     icon: Network,
-    href: '/dsa?topic=trees',
+    href: "/dsa?topic=trees",
     content: {
-      title: 'Binary Tree',
-      description: 'Hierarchical data structure with a root node and child nodes.',
+      title: "Binary Tree",
+      description:
+        "Hierarchical data structure with a root node and child nodes.",
       steps: [
         {
-          title: 'Binary Tree',
-          explanation: 'Each node has at most two children: left and right.',
+          title: "Binary Tree",
+          explanation: "Each node has at most two children: left and right.",
           code: `class TreeNode {
   constructor(value) {
     this.value = value;
@@ -398,23 +412,25 @@ class BinaryTree {
     return result;
   }
 }`,
-          language: 'javascript',
+          language: "javascript",
         },
       ],
     },
   },
   {
-    id: 'hash-tables',
-    label: 'Hash Tables',
+    id: "hash-tables",
+    label: "Hash Tables",
     icon: Grid3x3,
-    href: '/dsa?topic=hash-tables',
+    href: "/dsa?topic=hash-tables",
     content: {
-      title: 'Hash Tables',
-      description: 'Key-value pairs with O(1) average lookup time using hash functions.',
+      title: "Hash Tables",
+      description:
+        "Key-value pairs with O(1) average lookup time using hash functions.",
       steps: [
         {
-          title: 'Hash Table Basics',
-          explanation: 'JavaScript objects and Maps are hash table implementations.',
+          title: "Hash Table Basics",
+          explanation:
+            "JavaScript objects and Maps are hash table implementations.",
           code: `// Using Map (preferred for hash tables)
 const map = new Map();
 
@@ -450,7 +466,7 @@ function countFrequency(arr) {
   }
   return freq;
 }`,
-          language: 'javascript',
+          language: "javascript",
         },
       ],
     },
@@ -460,17 +476,18 @@ function countFrequency(arr) {
 // Algorithms Group
 const algorithmTopics: DSATopic[] = [
   {
-    id: 'searching',
-    label: 'Searching',
+    id: "searching",
+    label: "Searching",
     icon: Search,
-    href: '/dsa?topic=searching',
+    href: "/dsa?topic=searching",
     content: {
-      title: 'Searching Algorithms',
-      description: 'Techniques to find elements in data structures efficiently.',
+      title: "Searching Algorithms",
+      description:
+        "Techniques to find elements in data structures efficiently.",
       steps: [
         {
-          title: 'Linear Search',
-          explanation: 'Check each element one by one. Time: O(n), Space: O(1)',
+          title: "Linear Search",
+          explanation: "Check each element one by one. Time: O(n), Space: O(1)",
           code: `function linearSearch(arr, target) {
   for (let i = 0; i < arr.length; i++) {
     if (arr[i] === target) {
@@ -484,11 +501,12 @@ const algorithmTopics: DSATopic[] = [
 const arr = [5, 2, 8, 1, 9];
 console.log(linearSearch(arr, 8)); // 2
 console.log(linearSearch(arr, 3)); // -1`,
-          language: 'javascript',
+          language: "javascript",
         },
         {
-          title: 'Binary Search',
-          explanation: 'Efficient search on sorted arrays. Time: O(log n), Space: O(1)',
+          title: "Binary Search",
+          explanation:
+            "Efficient search on sorted arrays. Time: O(log n), Space: O(1)",
           code: `function binarySearch(arr, target) {
   let left = 0;
   let right = arr.length - 1;
@@ -512,23 +530,24 @@ console.log(linearSearch(arr, 3)); // -1`,
 const sortedArr = [1, 2, 5, 8, 9];
 console.log(binarySearch(sortedArr, 8)); // 3
 console.log(binarySearch(sortedArr, 3)); // -1`,
-          language: 'javascript',
+          language: "javascript",
         },
       ],
     },
   },
   {
-    id: 'sorting',
-    label: 'Sorting',
+    id: "sorting",
+    label: "Sorting",
     icon: ArrowUpDown,
-    href: '/dsa?topic=sorting',
+    href: "/dsa?topic=sorting",
     content: {
-      title: 'Sorting Algorithms',
-      description: 'Arrange elements in a specific order efficiently.',
+      title: "Sorting Algorithms",
+      description: "Arrange elements in a specific order efficiently.",
       steps: [
         {
-          title: 'Bubble Sort',
-          explanation: 'Repeatedly swap adjacent elements if they are in wrong order. Time: O(n²)',
+          title: "Bubble Sort",
+          explanation:
+            "Repeatedly swap adjacent elements if they are in wrong order. Time: O(n²)",
           code: `function bubbleSort(arr) {
   const n = arr.length;
   
@@ -554,11 +573,11 @@ console.log(binarySearch(sortedArr, 3)); // -1`,
 // Usage
 console.log(bubbleSort([64, 34, 25, 12, 22]));
 // [12, 22, 25, 34, 64]`,
-          language: 'javascript',
+          language: "javascript",
         },
         {
-          title: 'Quick Sort',
-          explanation: 'Divide and conquer algorithm. Average Time: O(n log n)',
+          title: "Quick Sort",
+          explanation: "Divide and conquer algorithm. Average Time: O(n log n)",
           code: `function quickSort(arr) {
   if (arr.length <= 1) return arr;
 
@@ -580,11 +599,12 @@ console.log(bubbleSort([64, 34, 25, 12, 22]));
 // Usage
 console.log(quickSort([64, 34, 25, 12, 22]));
 // [12, 22, 25, 34, 64]`,
-          language: 'javascript',
+          language: "javascript",
         },
         {
-          title: 'Merge Sort',
-          explanation: 'Divide array into halves, sort them, and merge. Time: O(n log n)',
+          title: "Merge Sort",
+          explanation:
+            "Divide array into halves, sort them, and merge. Time: O(n log n)",
           code: `function mergeSort(arr) {
   if (arr.length <= 1) return arr;
 
@@ -613,23 +633,24 @@ function merge(left, right) {
 // Usage
 console.log(mergeSort([64, 34, 25, 12, 22]));
 // [12, 22, 25, 34, 64]`,
-          language: 'javascript',
+          language: "javascript",
         },
       ],
     },
   },
   {
-    id: 'sliding-window',
-    label: 'Sliding Window',
+    id: "sliding-window",
+    label: "Sliding Window",
     icon: Box,
-    href: '/dsa?topic=sliding-window',
+    href: "/dsa?topic=sliding-window",
     content: {
-      title: 'Sliding Window Pattern',
-      description: 'Efficiently process subarrays or substrings by maintaining a window.',
+      title: "Sliding Window Pattern",
+      description:
+        "Efficiently process subarrays or substrings by maintaining a window.",
       steps: [
         {
-          title: 'Fixed Size Window',
-          explanation: 'Find maximum sum of k consecutive elements.',
+          title: "Fixed Size Window",
+          explanation: "Find maximum sum of k consecutive elements.",
           code: `function maxSumSubarray(arr, k) {
   if (arr.length < k) return null;
 
@@ -653,11 +674,11 @@ console.log(mergeSort([64, 34, 25, 12, 22]));
 // Usage
 console.log(maxSumSubarray([1, 4, 2, 10, 23, 3, 1, 0, 20], 4));
 // 39 (10 + 23 + 3 + 1)`,
-          language: 'javascript',
+          language: "javascript",
         },
         {
-          title: 'Variable Size Window',
-          explanation: 'Find smallest subarray with sum >= target.',
+          title: "Variable Size Window",
+          explanation: "Find smallest subarray with sum >= target.",
           code: `function minSubArrayLen(target, arr) {
   let minLen = Infinity;
   let windowSum = 0;
@@ -680,23 +701,25 @@ console.log(maxSumSubarray([1, 4, 2, 10, 23, 3, 1, 0, 20], 4));
 // Usage
 console.log(minSubArrayLen(7, [2, 3, 1, 2, 4, 3]));
 // 2 (subarray [4, 3])`,
-          language: 'javascript',
+          language: "javascript",
         },
       ],
     },
   },
   {
-    id: 'two-pointer',
-    label: 'Two Pointer',
+    id: "two-pointer",
+    label: "Two Pointer",
     icon: ArrowUpDown,
-    href: '/dsa?topic=two-pointer',
+    href: "/dsa?topic=two-pointer",
     content: {
-      title: 'Two Pointer Pattern',
-      description: 'Use two pointers to solve problems efficiently, often on sorted arrays.',
+      title: "Two Pointer Pattern",
+      description:
+        "Use two pointers to solve problems efficiently, often on sorted arrays.",
       steps: [
         {
-          title: 'Two Sum (Sorted Array)',
-          explanation: 'Find two numbers that add up to target in sorted array.',
+          title: "Two Sum (Sorted Array)",
+          explanation:
+            "Find two numbers that add up to target in sorted array.",
           code: `function twoSum(arr, target) {
   let left = 0;
   let right = arr.length - 1;
@@ -719,11 +742,11 @@ console.log(minSubArrayLen(7, [2, 3, 1, 2, 4, 3]));
 // Usage
 console.log(twoSum([1, 2, 3, 4, 6], 6));
 // [1, 3] (2 + 4 = 6)`,
-          language: 'javascript',
+          language: "javascript",
         },
         {
-          title: 'Remove Duplicates',
-          explanation: 'Remove duplicates from sorted array in-place.',
+          title: "Remove Duplicates",
+          explanation: "Remove duplicates from sorted array in-place.",
           code: `function removeDuplicates(arr) {
   if (arr.length === 0) return 0;
 
@@ -743,7 +766,280 @@ console.log(twoSum([1, 2, 3, 4, 6], 6));
 const arr = [1, 1, 2, 2, 3, 4, 4];
 const len = removeDuplicates(arr);
 console.log(arr.slice(0, len)); // [1, 2, 3, 4]`,
-          language: 'javascript',
+          language: "javascript",
+        },
+      ],
+    },
+  },
+  {
+    id: "backtracking",
+    label: "Backtracking",
+    icon: GitMerge,
+    href: "/dsa?topic=backtracking",
+    content: {
+      title: "Backtracking",
+      description:
+        "A powerful algorithmic technique for solving problems by exploring all possible solutions and abandoning paths that don't lead to a solution.",
+      steps: [
+        {
+          title: "What is Backtracking?",
+          explanation:
+            "Backtracking is like exploring a maze: you try a path, and if it doesn't work, you go back and try another. It's a systematic way to explore all possible solutions by building candidates incrementally and abandoning them (\"backtracking\") as soon as you determine they cannot lead to a valid solution.",
+          code: `// The Backtracking Pattern (Template)
+function backtrack(path, choices) {
+  // Base case: found a valid solution
+  if (isValidSolution(path)) {
+    result.push([...path]); // Save the solution
+    return;
+  }
+
+  // Try each possible choice
+  for (let choice of choices) {
+    // 1. CHOOSE: Add choice to path
+    path.push(choice);
+    
+    // 2. EXPLORE: Recursively explore with this choice
+    backtrack(path, getNextChoices(choice));
+    
+    // 3. UNCHOOSE: Remove choice (backtrack)
+    path.pop();
+  }
+}
+
+// Key Insight: Choose → Explore → Unchoose
+// This is the heart of backtracking!`,
+          language: "javascript",
+        },
+        {
+          title: "When to Use Backtracking",
+          explanation:
+            "Backtracking is perfect when you need to find ALL solutions or check if ANY solution exists. Common patterns include: generating combinations, permutations, subsets, solving puzzles (Sudoku, N-Queens), and pathfinding problems.",
+          code: `// Pattern Recognition - Use Backtracking When:
+
+// 1. "Find all combinations/permutations"
+// 2. "Generate all subsets"
+// 3. "Find all valid arrangements"
+// 4. "Solve puzzle with constraints"
+// 5. Output is a collection of solutions
+
+// Example Keywords:
+// - "all possible"
+// - "generate all"
+// - "find every"
+// - "combinations of k elements"
+// - "valid arrangements"`,
+          language: "javascript",
+        },
+        {
+          title: "Combinations Problem",
+          explanation:
+            "Given n and k, return all possible combinations of k numbers chosen from 1 to n. This is the classic C(n,k) problem. For example, C(4,2) = [[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]].",
+          code: `/**
+ * @param {number} n
+ * @param {number} k
+ * @return {number[][]}
+ */
+var combine = function(n, k) {
+  // Store all valid combinations
+  let allCombinations = [];
+
+  // Helper function: builds combinations incrementally
+  const backtrack = (currentCombo, startNumber) => {
+    
+    // BASE CASE: We have k numbers, save this combination
+    if (currentCombo.length === k) {
+      allCombinations.push([...currentCombo]);
+      return;
+    }
+
+    // RECURSIVE CASE: Try each number from startNumber to n
+    for (let num = startNumber; num <= n; num++) {
+      
+      // 1. CHOOSE: Add current number to combination
+      currentCombo.push(num);
+      
+      // 2. EXPLORE: Recursively build with remaining numbers
+      //    Start from num+1 to avoid duplicates like [2,1]
+      backtrack(currentCombo, num + 1);
+      
+      // 3. UNCHOOSE: Remove number to try next option
+      currentCombo.pop();
+    }
+  };
+
+  // Start with empty combination and number 1
+  backtrack([], 1);
+  
+  return allCombinations;
+};
+
+// Example: combine(4, 2)
+// Returns: [[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]]`,
+          language: "javascript",
+        },
+        {
+          title: "How It Works - Step by Step",
+          explanation:
+            "The algorithm explores like a tree. Starting with [], it tries adding 1, then explores [1,?]. It tries [1,2] → valid! Saves it. Backtracks to [1], tries [1,3] → valid! And so on. The key is startNumber prevents going backwards (no [2,1] after [1,2]).",
+          code: `// Execution trace for combine(4, 2):
+
+// Start: backtrack([], 1)
+//   ├─ Try 1: currentCombo = [1]
+//   │   ├─ Try 2: currentCombo = [1,2] ✓ length=2, SAVE IT!
+//   │   │   └─ pop() → [1]
+//   │   ├─ Try 3: currentCombo = [1,3] ✓ length=2, SAVE IT!
+//   │   │   └─ pop() → [1]
+//   │   └─ Try 4: currentCombo = [1,4] ✓ length=2, SAVE IT!
+//   │       └─ pop() → [1]
+//   └─ pop() → []
+//
+//   ├─ Try 2: currentCombo = [2]
+//   │   ├─ Try 3: currentCombo = [2,3] ✓ length=2, SAVE IT!
+//   │   │   └─ pop() → [2]
+//   │   └─ Try 4: currentCombo = [2,4] ✓ length=2, SAVE IT!
+//   │       └─ pop() → [2]
+//   └─ pop() → []
+//
+//   ├─ Try 3: currentCombo = [3]
+//   │   └─ Try 4: currentCombo = [3,4] ✓ length=2, SAVE IT!
+//   │       └─ pop() → [3]
+//   └─ pop() → []
+//
+//   └─ Try 4: currentCombo = [4]
+//       └─ No more numbers, loop ends
+//       └─ pop() → []
+
+// Result: [[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]]`,
+          language: "javascript",
+        },
+        {
+          title: "Why startNumber Matters",
+          explanation:
+            "The startNumber parameter ensures we only move forward through numbers. Without it, we'd get duplicates like [1,2] and [2,1]. By starting each recursive call at num+1, we guarantee combinations are in ascending order and unique.",
+          code: `// WITHOUT startNumber (WRONG - creates duplicates):
+function combineWrong(n, k) {
+  let result = [];
+  
+  const backtrack = (path) => {
+    if (path.length === k) {
+      result.push([...path]);
+      return;
+    }
+    
+    // BAD: Always loop from 1 to n
+    for (let i = 1; i <= n; i++) {
+      path.push(i);
+      backtrack(path);
+      path.pop();
+    }
+  };
+  
+  backtrack([]);
+  return result;
+}
+// Result: [[1,1], [1,2], [1,3], [1,4], [2,1], [2,2], ...]
+// ❌ Has duplicates and invalid combinations!
+
+// WITH startNumber (CORRECT):
+function combineCorrect(n, k) {
+  let result = [];
+  
+  const backtrack = (path, start) => {
+    if (path.length === k) {
+      result.push([...path]);
+      return;
+    }
+    
+    // GOOD: Only loop from start to n
+    for (let i = start; i <= n; i++) {
+      path.push(i);
+      backtrack(path, i + 1); // Next iteration starts after i
+      path.pop();
+    }
+  };
+  
+  backtrack([], 1);
+  return result;
+}
+// Result: [[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]]
+// ✓ No duplicates, all valid!`,
+          language: "javascript",
+        },
+        {
+          title: "Time & Space Complexity",
+          explanation:
+            "Time complexity is O(k × C(n,k)) where C(n,k) is the binomial coefficient (number of combinations). We generate C(n,k) combinations, and each takes O(k) time to copy. Space complexity is O(k) for recursion depth plus O(k × C(n,k)) for storing results.",
+          code: `// Complexity Analysis:
+
+// Time: O(k × C(n,k))
+// - C(n,k) = n! / (k! × (n-k)!)
+// - We generate C(n,k) combinations
+// - Each combination takes O(k) to copy into result
+// 
+// Examples:
+// - combine(4, 2): C(4,2) = 6 combinations → O(2 × 6) = O(12)
+// - combine(5, 3): C(5,3) = 10 combinations → O(3 × 10) = O(30)
+// - combine(10, 5): C(10,5) = 252 combinations → O(5 × 252) = O(1260)
+
+// Space: O(k) + O(k × C(n,k))
+// - O(k) for recursion call stack (max depth = k)
+// - O(k × C(n,k)) for storing all combinations in result array
+
+// Why it grows fast:
+// C(20, 10) = 184,756 combinations!
+// C(30, 15) = 155,117,520 combinations!
+// This is why backtracking can be slow for large inputs.`,
+          language: "javascript",
+        },
+        {
+          title: "Common Backtracking Problems",
+          explanation:
+            "Once you understand the Choose → Explore → Unchoose pattern, you can solve many problems: Permutations, Subsets, Letter Combinations, Palindrome Partitioning, N-Queens, Sudoku Solver, and more. The key is identifying the choices and base case.",
+          code: `// Problem 1: Generate all subsets (Power Set)
+function subsets(nums) {
+  let result = [];
+  
+  const backtrack = (path, start) => {
+    result.push([...path]); // Every path is valid!
+    
+    for (let i = start; i < nums.length; i++) {
+      path.push(nums[i]);
+      backtrack(path, i + 1);
+      path.pop();
+    }
+  };
+  
+  backtrack([], 0);
+  return result;
+}
+
+// Problem 2: Generate all permutations
+function permute(nums) {
+  let result = [];
+  
+  const backtrack = (path, remaining) => {
+    if (remaining.length === 0) {
+      result.push([...path]);
+      return;
+    }
+    
+    for (let i = 0; i < remaining.length; i++) {
+      path.push(remaining[i]);
+      // Remove current element from remaining
+      backtrack(path, [...remaining.slice(0, i), ...remaining.slice(i + 1)]);
+      path.pop();
+    }
+  };
+  
+  backtrack([], nums);
+  return result;
+}
+
+// The pattern is always the same:
+// 1. Define base case (when to save solution)
+// 2. Loop through choices
+// 3. Choose → Explore → Unchoose`,
+          language: "javascript",
         },
       ],
     },
@@ -753,15 +1049,15 @@ console.log(arr.slice(0, len)); // [1, 2, 3, 4]`,
 // Export groups
 export const dsaGroups: DSAGroup[] = [
   {
-    name: 'Overview',
+    name: "Overview",
     topics: overviewTopics,
   },
   {
-    name: 'Deep Dive: Data Structures',
+    name: "Deep Dive: Data Structures",
     topics: dataStructureTopics,
   },
   {
-    name: 'Algorithms',
+    name: "Algorithms",
     topics: algorithmTopics,
   },
 ];

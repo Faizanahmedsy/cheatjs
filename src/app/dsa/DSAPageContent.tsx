@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CodeBlock } from '@/components/ui/code-block';
-import { allDSATopics } from '@/lib/dsa';
-import { useSearchParams } from 'next/navigation';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CodeBlock } from "@/components/ui/code-block";
+import { allDSATopics } from "@/lib/dsa";
+import { useSearchParams } from "next/navigation";
+import BacktrackingVisualization from "@/components/BacktrackingVisualization";
 
 export default function DSAPageContent() {
   const searchParams = useSearchParams();
-  const topic = searchParams.get('topic') || 'visualizations';
+  const topic = searchParams.get("topic") || "visualizations";
 
   const currentTopic = allDSATopics.find((t) => t.id === topic);
 
@@ -38,6 +39,13 @@ export default function DSAPageContent() {
           </p>
         </div>
 
+        {/* Show interactive visualization for backtracking topic */}
+        {topic === "backtracking" && (
+          <div className="mb-12">
+            <BacktrackingVisualization />
+          </div>
+        )}
+
         {currentTopic.content.steps.length > 0 ? (
           <div className="space-y-8">
             {currentTopic.content.steps.map((step, index) => (
@@ -59,9 +67,7 @@ export default function DSAPageContent() {
           </div>
         ) : (
           <div className="text-center text-slate-400 py-12">
-            <p className="text-lg">
-              Content for this topic is coming soon!
-            </p>
+            <p className="text-lg">Content for this topic is coming soon!</p>
           </div>
         )}
       </div>
