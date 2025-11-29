@@ -114,24 +114,24 @@ export default function PermutationsVisualization() {
   const currentStepData = steps[currentStep];
 
   return (
-    <div className="w-full bg-slate-900 text-slate-50 font-sans">
-      <div className="max-w-7xl mx-auto">
+    <div className="w-full bg-slate-900 text-slate-50 font-sans overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4">
         {/* Title */}
-        <div className="text-center mb-8">
-          <h2 className="text-4xl font-headline font-bold text-cyan-300 mb-2">
+        <div className="text-center mb-6 md:mb-8">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-headline font-bold text-cyan-300 mb-2">
             PERMUTATIONS([{nums.join(", ")}])
           </h2>
-          <p className="text-slate-400">
+          <p className="text-sm md:text-base text-slate-400">
             Generating all possible orderings - Order matters!
           </p>
         </div>
 
         {/* Controls */}
-        <div className="flex justify-center gap-3 mb-8 flex-wrap">
+        <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 mb-6 md:mb-8">
           <Button
             onClick={() => setIsAnimating(!isAnimating)}
             variant="default"
-            className="bg-cyan-600 hover:bg-cyan-700 text-white"
+            className="bg-cyan-600 hover:bg-cyan-700 text-white text-sm md:text-base"
           >
             {isAnimating ? (
               <>
@@ -146,7 +146,7 @@ export default function PermutationsVisualization() {
           <Button
             onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
             variant="outline"
-            className="border-slate-600 text-slate-300 hover:bg-slate-800"
+            className="border-slate-600 text-slate-300 hover:bg-slate-800 text-sm md:text-base"
           >
             ← PREV
           </Button>
@@ -155,7 +155,7 @@ export default function PermutationsVisualization() {
               setCurrentStep((prev) => Math.min(steps.length - 1, prev + 1))
             }
             variant="outline"
-            className="border-slate-600 text-slate-300 hover:bg-slate-800"
+            className="border-slate-600 text-slate-300 hover:bg-slate-800 text-sm md:text-base"
           >
             NEXT →
           </Button>
@@ -165,18 +165,21 @@ export default function PermutationsVisualization() {
               setIsAnimating(false);
             }}
             variant="outline"
-            className="border-purple-600 text-purple-400 hover:bg-purple-900/20"
+            className="border-purple-600 text-purple-400 hover:bg-purple-900/20 text-sm md:text-base"
           >
             <RotateCcw className="mr-2 h-4 w-4" /> RESET
           </Button>
         </div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           {/* Left: Visualization */}
           <Card className="bg-slate-800/50 border-slate-700/50">
-            <CardContent className="p-6">
-              <svg viewBox="0 0 600 750" className="w-full">
+            <CardContent className="p-3 md:p-6">
+              <svg
+                viewBox="0 0 600 750"
+                className="w-full h-auto max-h-[550px] md:max-h-none"
+              >
                 <defs>
                   <linearGradient
                     id="cyanGradient"
@@ -745,7 +748,7 @@ export default function PermutationsVisualization() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 text-xs md:text-sm">
                 <div>
                   <span className="text-slate-500">Path length:</span>
                   <span className="ml-2 font-bold text-cyan-300">
