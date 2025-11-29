@@ -1034,11 +1034,194 @@ function permute(nums) {
   backtrack([], nums);
   return result;
 }
-
 // The pattern is always the same:
 // 1. Define base case (when to save solution)
 // 2. Loop through choices
 // 3. Choose → Explore → Unchoose`,
+          language: "javascript",
+        },
+        {
+          title: "Permutations - Complete Example",
+          explanation:
+            "Generate all permutations of an array. Unlike combinations, order matters here: [1,2,3] and [3,2,1] are different permutations. The key difference is we use path.includes() to check if a number is already used, rather than using a start index.",
+          code: `/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+var permute = function(nums) {
+    let result = [] // final permutations
+    let path = []   // current permutation being built
+
+    function backtrack() {
+        // BASE CASE: We've used all numbers
+        if (path.length === nums.length) {
+            result.push([...path])
+            return
+        }
+
+        // Try each number from nums
+        for (let i = 0; i < nums.length; i++) {
+            // Skip if already in current path
+            if (!path.includes(nums[i])) {
+                
+                // 1. CHOOSE: Add number to path
+                path.push(nums[i])
+                
+                // 2. EXPLORE: Recursively build rest
+                backtrack()
+                
+                // 3. UNCHOOSE: Remove number (backtrack)
+                // ⚠️ CRITICAL: This runs AFTER backtrack() returns!
+                path.pop()
+            }
+        }
+    }
+    
+    backtrack()
+    return result
+};
+
+// Example: permute([1, 2, 3])
+// Returns: [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]`,
+          language: "javascript",
+        },
+        {
+          title: "Permutations - Execution Trace",
+          explanation:
+            "Understanding WHEN path.pop() executes is crucial. It runs AFTER the recursive backtrack() call returns. This trace shows the first permutation [1,2,3] being built, highlighting when each pop() happens.",
+          code: `// 🌳 Building First Permutation: [1, 2, 3]
+
+// ═══════════════════════════════════════════════════════
+// CALL 1 (Depth 1, path = [])
+// ═══════════════════════════════════════════════════════
+function backtrack() {
+    // path.length (0) !== 3, continue
+    
+    for (let i = 0; i < 3; i++) {
+        // i=0: nums[0]=1, ![].includes(1) is TRUE
+        
+        path.push(1)        // path = [1]
+        backtrack()         // 🔽 PAUSE: Jump to CALL 2
+        // ⏸️ EXECUTION PAUSED HERE...
+        // ... (CALL 2 completes all its work)
+        // ▶️ RESUME: After CALL 2 returns
+        path.pop()          // 🔴 path = [] (removes 1)
+        
+        // i=1: nums[1]=2, ![].includes(2) is TRUE
+        // i=2: nums[2]=3, ![].includes(3) is TRUE
+        // ... (explores [2,x,x] and [3,x,x] branches)
+    }
+}
+
+// ═══════════════════════════════════════════════════════
+// CALL 2 (Depth 2, path = [1])
+// ═══════════════════════════════════════════════════════
+function backtrack() {
+    // path.length (1) !== 3, continue
+    
+    for (let i = 0; i < 3; i++) {
+        // i=0: nums[0]=1, ![1].includes(1) is FALSE ❌ Skip!
+        
+        // i=1: nums[1]=2, ![1].includes(2) is TRUE ✓
+        
+        path.push(2)        // path = [1, 2]
+        backtrack()         // 🔽 PAUSE: Jump to CALL 3
+        // ⏸️ EXECUTION PAUSED HERE...
+        // ... (CALL 3 completes)
+        // ▶️ RESUME: After CALL 3 returns
+        path.pop()          // 🔴 path = [1] (removes 2)
+        
+        // i=2: nums[2]=3, ![1].includes(3) is TRUE
+        // ... (explores [1,3,x] branch)
+    }
+    // Returns to CALL 1
+}
+
+// ═══════════════════════════════════════════════════════
+// CALL 3 (Depth 3, path = [1, 2])
+// ═══════════════════════════════════════════════════════
+function backtrack() {
+    // path.length (2) !== 3, continue
+    
+    for (let i = 0; i < 3; i++) {
+        // i=0: nums[0]=1, ![1,2].includes(1) is FALSE ❌ Skip!
+        // i=1: nums[1]=2, ![1,2].includes(2) is FALSE ❌ Skip!
+        
+        // i=2: nums[2]=3, ![1,2].includes(3) is TRUE ✓
+        
+        path.push(3)        // path = [1, 2, 3]
+        backtrack()         // 🔽 PAUSE: Jump to CALL 4
+        // ⏸️ EXECUTION PAUSED HERE...
+        // ... (CALL 4 hits base case)
+        // ▶️ RESUME: After CALL 4 returns
+        path.pop()          // 🔴 path = [1, 2] (removes 3)
+    }
+    // Returns to CALL 2
+}
+
+// ═══════════════════════════════════════════════════════
+// CALL 4 (Depth 4, path = [1, 2, 3])
+// ═══════════════════════════════════════════════════════
+function backtrack() {
+    // ✅ BASE CASE HIT!
+    if (path.length === 3) {
+        result.push([1, 2, 3])  // First permutation saved!
+        return                   // Returns to CALL 3
+    }
+}
+
+// 🎯 KEY INSIGHT:
+// path.pop() ALWAYS runs AFTER backtrack() returns
+// This is how we "undo" choices and try alternatives`,
+          language: "javascript",
+        },
+        {
+          title: "Permutations vs Combinations",
+          explanation:
+            "The key difference: Combinations use a start index to avoid duplicates (only move forward), while Permutations check if element is already used (can use any order). This is why [1,2] and [2,1] are different permutations but the same combination.",
+          code: `// COMBINATIONS: Use start index
+function combine(n, k) {
+    const backtrack = (path, start) => {
+        if (path.length === k) {
+            result.push([...path]);
+            return;
+        }
+        
+        // Only loop from start onwards → prevents [2,1]
+        for (let i = start; i <= n; i++) {
+            path.push(i);
+            backtrack(path, i + 1); // Next starts at i+1
+            path.pop();
+        }
+    };
+}
+// Result for (4,2): [[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]]
+// Only 6 combinations
+
+// PERMUTATIONS: Check if already used
+function permute(nums) {
+    const backtrack = (path) => {
+        if (path.length === nums.length) {
+            result.push([...path]);
+            return;
+        }
+        
+        // Loop through ALL numbers, skip if used
+        for (let i = 0; i < nums.length; i++) {
+            if (!path.includes(nums[i])) {
+                path.push(nums[i]);
+                backtrack(path); // No start index needed
+                path.pop();
+            }
+        }
+    };
+}
+// Result for [1,2,3]: [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]
+// 6 permutations (3! = 6)
+
+// 🔑 Remember:
+// - Combinations: Order doesn't matter, use start index
+// - Permutations: Order matters, check if used`,
           language: "javascript",
         },
       ],

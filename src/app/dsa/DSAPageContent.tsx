@@ -5,6 +5,7 @@ import { CodeBlock } from "@/components/ui/code-block";
 import { allDSATopics } from "@/lib/dsa";
 import { useSearchParams } from "next/navigation";
 import BacktrackingVisualization from "@/components/BacktrackingVisualization";
+import PermutationsVisualization from "@/components/PermutationsVisualization";
 
 export default function DSAPageContent() {
   const searchParams = useSearchParams();
@@ -61,6 +62,14 @@ export default function DSAPageContent() {
                 <CardContent className="space-y-4">
                   <p className="text-slate-400">{step.explanation}</p>
                   <CodeBlock code={step.code} language={step.language} />
+
+                  {/* Show PermutationsVisualization after the permutations example */}
+                  {topic === "backtracking" &&
+                    step.title === "Permutations - Complete Example" && (
+                      <div className="mt-8">
+                        <PermutationsVisualization />
+                      </div>
+                    )}
                 </CardContent>
               </Card>
             ))}
