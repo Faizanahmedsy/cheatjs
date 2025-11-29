@@ -289,7 +289,7 @@ export default function PermutationsVisualization() {
                     x="100"
                     y="120"
                     width="400"
-                    height="60"
+                    height="70"
                     fill={currentStepData.isResuming ? "#7c2d12" : "#1e293b"}
                     stroke={currentStepData.isResuming ? "#f97316" : "#22d3ee"}
                     strokeWidth="3"
@@ -297,9 +297,9 @@ export default function PermutationsVisualization() {
                   />
                   <text
                     x="300"
-                    y="145"
+                    y="148"
                     fill={currentStepData.isResuming ? "#fb923c" : "#22d3ee"}
-                    fontSize="13"
+                    fontSize="16"
                     fontFamily="monospace"
                     fontWeight="bold"
                     textAnchor="middle"
@@ -317,10 +317,11 @@ export default function PermutationsVisualization() {
                   </text>
                   <text
                     x="300"
-                    y="165"
-                    fill="#94a3b8"
-                    fontSize="11"
+                    y="172"
+                    fill="#cbd5e1"
+                    fontSize="14"
                     fontFamily="monospace"
+                    fontWeight="bold"
                     textAnchor="middle"
                   >
                     Step {currentStep + 1} / {steps.length}
@@ -333,9 +334,9 @@ export default function PermutationsVisualization() {
                 <g>
                   <text
                     x="300"
-                    y="210"
+                    y="220"
                     fill="#22d3ee"
-                    fontSize="16"
+                    fontSize="18"
                     fontFamily="monospace"
                     fontWeight="bold"
                     textAnchor="middle"
@@ -348,7 +349,7 @@ export default function PermutationsVisualization() {
                   </text>
                   <rect
                     x="100"
-                    y="220"
+                    y="230"
                     width="400"
                     height="100"
                     fill="none"
@@ -362,7 +363,7 @@ export default function PermutationsVisualization() {
                     <g key={num}>
                       <circle
                         cx={150 + idx * 150}
-                        cy="270"
+                        cy="280"
                         r="30"
                         fill={
                           currentStepData.path.includes(num)
@@ -391,7 +392,7 @@ export default function PermutationsVisualization() {
                       </circle>
                       <text
                         x={150 + idx * 150}
-                        y="280"
+                        y="290"
                         fill="white"
                         fontSize="24"
                         fontFamily="monospace"
@@ -404,15 +405,15 @@ export default function PermutationsVisualization() {
                         <>
                           <line
                             x1={125 + idx * 150}
-                            y1="245"
+                            y1="255"
                             x2={175 + idx * 150}
-                            y2="295"
+                            y2="305"
                             stroke="#ef4444"
                             strokeWidth="4"
                           />
                           <text
                             x={150 + idx * 150}
-                            y="315"
+                            y="325"
                             fill="#ef4444"
                             fontSize="11"
                             fontFamily="monospace"
@@ -431,9 +432,9 @@ export default function PermutationsVisualization() {
                 <g>
                   <text
                     x="300"
-                    y="350"
+                    y="365"
                     fill="#22d3ee"
-                    fontSize="16"
+                    fontSize="18"
                     fontFamily="monospace"
                     fontWeight="bold"
                     textAnchor="middle"
@@ -442,7 +443,7 @@ export default function PermutationsVisualization() {
                   </text>
                   <rect
                     x="100"
-                    y="360"
+                    y="375"
                     width="400"
                     height="200"
                     fill="none"
@@ -459,7 +460,7 @@ export default function PermutationsVisualization() {
                       <g key={idx}>
                         <rect
                           x="120"
-                          y={530 - idx * 45}
+                          y={545 - idx * 45}
                           width="360"
                           height="40"
                           fill={isActive ? "url(#cyanGradient)" : "#334155"}
@@ -478,7 +479,7 @@ export default function PermutationsVisualization() {
                         </rect>
                         <text
                           x="300"
-                          y={555 - idx * 45}
+                          y={570 - idx * 45}
                           fill={isActive ? "white" : "#94a3b8"}
                           fontSize="14"
                           fontFamily="monospace"
@@ -496,9 +497,9 @@ export default function PermutationsVisualization() {
                 <g>
                   <text
                     x="300"
-                    y="590"
+                    y="610"
                     fill="#22d3ee"
-                    fontSize="16"
+                    fontSize="18"
                     fontFamily="monospace"
                     fontWeight="bold"
                     textAnchor="middle"
@@ -508,7 +509,7 @@ export default function PermutationsVisualization() {
                   </text>
                   <rect
                     x="50"
-                    y="600"
+                    y="620"
                     width="500"
                     height="130"
                     fill="url(#greenGradient)"
@@ -517,7 +518,7 @@ export default function PermutationsVisualization() {
                     rx="5"
                   />
 
-                  <foreignObject x="60" y="610" width="480" height="110">
+                  <foreignObject x="60" y="650" width="480" height="110">
                     <div className="text-green-900 font-code text-xs font-bold p-2 overflow-y-auto max-h-[110px]">
                       {currentStepData.result.length > 0
                         ? currentStepData.result.map((arr, idx) => (

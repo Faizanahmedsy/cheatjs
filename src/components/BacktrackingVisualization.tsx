@@ -202,7 +202,7 @@ export default function BacktrackingVisualization() {
                     x="300"
                     y="30"
                     fill="#22d3ee"
-                    fontSize="16"
+                    fontSize="26"
                     fontFamily="monospace"
                     fontWeight="bold"
                     textAnchor="middle"
