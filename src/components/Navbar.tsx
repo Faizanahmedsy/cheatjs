@@ -12,7 +12,9 @@ import { Button } from "@/components/ui/button";
 const navLinks = [
   { href: "/", label: "Cheatsheets" },
   { href: "/features", label: "Features" },
-  { href: "/dsa", label: "Data Structures and Algorithms" },
+  { href: "/dsa", label: "DSA" },
+  { href: "/ai-engineering", label: "AI Engineering" },
+  { href: "/aws-saa", label: "AWS SAA" },
 ];
 
 export function Navbar() {
