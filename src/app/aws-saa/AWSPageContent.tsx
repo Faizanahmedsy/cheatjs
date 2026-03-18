@@ -54,7 +54,16 @@ export default function AWSPageContent() {
                   <p className="text-sm md:text-base text-slate-400">
                     {step.explanation}
                   </p>
-                  <CodeBlock code={step.code} language={step.language} />
+                  
+                  {step.text && (
+                    <div className="bg-slate-900/40 p-5 rounded-lg text-sm md:text-base text-slate-200 whitespace-pre-wrap leading-relaxed border border-slate-700/50">
+                      {step.text}
+                    </div>
+                  )}
+
+                  {step.code && step.language && (
+                    <CodeBlock code={step.code} language={step.language} />
+                  )}
                 </CardContent>
               </Card>
             ))}
