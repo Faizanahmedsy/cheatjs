@@ -11,6 +11,8 @@ import {
   GitMerge,
   type LucideIcon,
 } from "lucide-react";
+import { patternTopics } from "./dsa/patterns";
+import { structureTopics } from "./dsa/structures";
 
 type CodeStep = {
   title: string;
@@ -1243,6 +1245,14 @@ export const dsaGroups: DSAGroup[] = [
     name: "Algorithms",
     topics: algorithmTopics,
   },
+  {
+    name: "Patterns & Techniques",
+    topics: patternTopics,
+  },
+  {
+    name: "Trees, Heaps & Tries",
+    topics: structureTopics,
+  },
 ];
 
 // Flat list of all topics for easy lookup
@@ -1250,4 +1260,6 @@ export const allDSATopics = [
   ...overviewTopics,
   ...dataStructureTopics,
   ...algorithmTopics,
+  ...patternTopics,
+  ...structureTopics,
 ];
