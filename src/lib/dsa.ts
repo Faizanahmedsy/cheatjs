@@ -11,6 +11,7 @@ import {
   GitMerge,
   type LucideIcon,
 } from "lucide-react";
+import { algorithmMoreTopics } from "./dsa/algorithms";
 import { patternTopics } from "./dsa/patterns";
 import { structureTopics } from "./dsa/structures";
 
@@ -1246,6 +1247,10 @@ export const dsaGroups: DSAGroup[] = [
     topics: algorithmTopics,
   },
   {
+    name: "Dynamic Programming & More Algorithms",
+    topics: algorithmMoreTopics,
+  },
+  {
     name: "Patterns & Techniques",
     topics: patternTopics,
   },
@@ -1260,6 +1265,7 @@ export const allDSATopics = [
   ...overviewTopics,
   ...dataStructureTopics,
   ...algorithmTopics,
+  ...algorithmMoreTopics,
   ...patternTopics,
   ...structureTopics,
 ];
