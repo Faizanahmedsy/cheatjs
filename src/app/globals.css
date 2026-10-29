@@ -102,3 +102,45 @@
     color: rgb(134, 239, 172);
   }
 }
+
+/* JS Visualizer: "changed this step" ring and value slides (swaps, shifts). */
+@layer utilities {
+  @keyframes viz-flash {
+    0% {
+      box-shadow: 0 0 0 3px rgb(251 191 36 / 0.95);
+    }
+    100% {
+      box-shadow: 0 0 0 3px rgb(251 191 36 / 0.25);
+    }
+  }
+  @keyframes viz-slide {
+    from {
+      transform: translateX(var(--viz-shift, 0px));
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  .viz-flash {
+    animation: viz-flash 1.1s ease-out forwards;
+  }
+  .viz-slide {
+    animation: viz-slide 320ms ease-out;
+  }
+  .viz-flash.viz-slide {
+    animation:
+      viz-slide 320ms ease-out,
+      viz-flash 1.1s ease-out forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .viz-flash,
+    .viz-slide,
+    .viz-flash.viz-slide {
+      animation: none;
+      box-shadow: 0 0 0 3px rgb(251 191 36 / 0.6);
+    }
+    .viz-slide:not(.viz-flash) {
+      box-shadow: none;
+    }
+  }
+}

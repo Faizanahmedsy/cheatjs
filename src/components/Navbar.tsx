@@ -15,6 +15,7 @@ const navLinks = [
   { href: "/dsa", label: "DSA" },
   { href: "/ai-engineering", label: "AI Engineering" },
   { href: "/aws-saa", label: "AWS SAA" },
+  { href: "/visualizer", label: "JS Visualizer" },
 ];
 
 export function Navbar() {
