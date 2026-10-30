@@ -21,6 +21,10 @@ export function Legend() {
         index pointer (coloured per variable)
       </li>
       <li className="flex items-center gap-1.5">
+        <span className="inline-block h-3 w-5 rounded-sm bg-amber-300/25 ring-1 ring-amber-300/50" aria-hidden="true" />
+        window between two pointers (left..right)
+      </li>
+      <li className="flex items-center gap-1.5">
         <span className="inline-block h-3 w-3 rounded-full bg-slate-200" aria-hidden="true" />
         reference → object
       </li>

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { algorithmMoreTopics } from "./dsa/algorithms";
 import { patternTopics } from "./dsa/patterns";
+import { preDsaTopics } from "./dsa/pre-dsa";
 import { structureTopics } from "./dsa/structures";
 
 type CodeStep = {
@@ -1235,6 +1236,10 @@ function permute(nums) {
 // Export groups
 export const dsaGroups: DSAGroup[] = [
   {
+    name: "Pre-DSA: Loops & Logic",
+    topics: preDsaTopics,
+  },
+  {
     name: "Overview",
     topics: overviewTopics,
   },
@@ -1262,6 +1267,7 @@ export const dsaGroups: DSAGroup[] = [
 
 // Flat list of all topics for easy lookup
 export const allDSATopics = [
+  ...preDsaTopics,
   ...overviewTopics,
   ...dataStructureTopics,
   ...algorithmTopics,

@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { FrameSnapshot } from "@/lib/visualizer/types";
+import { Term } from "./Term";
 import { OldValue, ValueView } from "./ValueView";
 import { flashKey, oldText, type StepView } from "./view-context";
 
@@ -82,7 +83,9 @@ export function FramesColumn({ view }: { view: StepView }) {
   const frames = view.step.frames;
   return (
     <div className="flex flex-col gap-3">
-      <h2 className="text-sm font-medium uppercase tracking-wide text-slate-500">Frames</h2>
+      <h2 className="text-sm font-medium uppercase tracking-wide text-slate-400">
+        <Term name="frame" enabled={view.beginner}>Frames</Term>
+      </h2>
       {frames.map((frame, index) => (
         <FrameCard key={frame.id} frame={frame} depth={index} isCurrent={index === frames.length - 1} view={view} />
       ))}

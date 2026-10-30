@@ -21,7 +21,7 @@ export function topFrame(step: TraceStep): FrameSnapshot {
 
 /** Variable names that make sense as array indexes. */
 const POINTER_NAME =
-  /^(i|j|k|l|r|p|q|m|c|x|y|idx|index|left|right|lo|hi|low|high|mid|start|end|slow|fast|front|rear|head|tail|top|row|col|cur|curr|pos|ptr)$|(Idx|Index|Ptr|Pointer)$/;
+  /^(i|j|k|l|r|p|q|m|c|x|y|idx|index|left|right|lo|hi|low|high|mid|start|end|slow|fast|front|rear|head|tail|top|row|col|cur|curr|pos|ptr)$|(Idx|Index|Ptr|Pointer|Start|End)$/;
 const ROW_NAME = /^(i|r|row|y|rowIdx|rowIndex)$/;
 const COL_NAME = /^(j|c|col|x|colIdx|colIndex|column)$/;
 

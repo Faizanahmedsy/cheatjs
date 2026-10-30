@@ -23,7 +23,7 @@ function kindLabel(object: HeapObject, isGrid: boolean): string {
   }
 }
 
-/** Key/value rows for objects and Maps; changed rows flash and show the old value. */
+/** A dictionary (Map or plain object) as a key → value table; changed rows flash, new keys get a badge. */
 function KeyValueRows({
   rows,
   changedCells,
@@ -33,16 +33,23 @@ function KeyValueRows({
   changedCells?: Map<string, Value | null>;
   view: StepView;
 }) {
-  if (rows.length === 0) return <p className="font-code text-sm italic text-slate-500">empty</p>;
+  if (rows.length === 0) return <p className="font-code text-sm italic text-slate-500">empty — no keys yet</p>;
   return (
-    <table className="w-full border-collapse text-base">
+    <table className="w-full min-w-[10rem] border-collapse text-base">
+      <thead>
+        <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
+          <th scope="col" className="pb-1 pr-3 font-medium">key</th>
+          <th scope="col" className="pb-1 font-medium">value</th>
+        </tr>
+      </thead>
       <tbody>
         {rows.map((row) => {
           const isChanged = changedCells?.has(row.cellKey) ?? false;
+          const isNewKey = isChanged && changedCells?.get(row.cellKey) === null && view.stepIndex > 0;
           const was = isChanged ? oldText(view, changedCells?.get(row.cellKey)) : null;
           return (
-            <tr key={row.cellKey} className="border-t border-slate-700/60 first:border-t-0">
-              <th scope="row" className="py-1.5 pr-3 text-left align-middle font-code text-sm font-normal text-slate-400">
+            <tr key={row.cellKey} className={cn("border-t border-slate-700/60", isChanged && "bg-amber-300/10")}>
+              <th scope="row" className="py-1.5 pr-3 text-left align-middle font-code text-sm font-normal text-slate-300">
                 {row.key}
               </th>
               <td className="py-1.5 align-middle">
@@ -52,6 +59,7 @@ function KeyValueRows({
                 >
                   <ValueView value={row.value} heap={view.step.heap} boxed={view.boxed} />
                   {was && <OldValue text={was} />}
+                  {isNewKey && <NewBadge />}
                 </span>
               </td>
             </tr>
@@ -60,6 +68,23 @@ function KeyValueRows({
       </tbody>
     </table>
   );
+}
+
+function NewBadge() {
+  return <span className="rounded bg-amber-300/20 px-1.5 py-0.5 font-body text-[11px] font-medium text-amber-200">new key</span>;
+}
+
+function sizeOf(object: HeapObject): number | null {
+  switch (object.kind) {
+    case "map":
+    case "object":
+      return object.entries.length + object.hidden;
+    case "set":
+    case "array":
+      return object.items.length + object.hidden;
+    default:
+      return null;
+  }
 }
 
 function Body({ id, object, view }: { id: number; object: HeapObject; view: StepView }) {
@@ -93,18 +118,22 @@ function Body({ id, object, view }: { id: number; object: HeapObject; view: Step
       );
     case "set":
       return object.items.length === 0 ? (
-        <p className="font-code text-sm italic text-slate-500">empty</p>
+        <p className="font-code text-sm italic text-slate-500">empty set</p>
       ) : (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1.5">
           {object.items.map((item) => {
             const key = valueKey(item);
             const isChanged = changedCells?.has(key) ?? false;
             return (
               <span
                 key={flashKey(isChanged, view.stepIndex, key)}
-                className={cn("rounded-md border-2 border-slate-600 bg-slate-800/80 px-2.5 py-1.5 text-lg", isChanged && "viz-flash")}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full border-2 border-slate-600 bg-slate-800/80 px-3 py-1 text-lg",
+                  isChanged && "viz-flash",
+                )}
               >
                 <ValueView value={item} heap={view.step.heap} boxed={view.boxed} />
+                {isChanged && view.stepIndex > 0 && <span className="text-[11px] font-medium text-amber-200">new</span>}
               </span>
             );
           })}
@@ -124,6 +153,7 @@ export function HeapObjectView({ id, view }: { id: number; view: StepView }) {
   const isGrid = object.kind === "array" && gridRows(object, view.step.heap) !== null;
   const isNew = view.changes.newObjects.has(id) && view.stepIndex > 0;
   const name = view.names.get(id);
+  const size = sizeOf(object);
   const hidden = "hidden" in object && object.hidden > 0 && object.kind !== "array" ? object.hidden : 0;
   return (
     <section
@@ -135,6 +165,7 @@ export function HeapObjectView({ id, view }: { id: number; view: StepView }) {
       <header className="mb-2 flex items-baseline gap-2 text-sm">
         <span className="font-medium text-slate-300">{kindLabel(object, isGrid)}</span>
         {name && <span className="font-code text-slate-400">{name}</span>}
+        {size !== null && object.kind !== "array" && <span className="text-xs text-slate-400">size {size}</span>}
         <span className="font-code text-xs text-slate-600">#{id}</span>
       </header>
       <Body id={id} object={object} view={view} />

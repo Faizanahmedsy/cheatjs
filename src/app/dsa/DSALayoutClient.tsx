@@ -16,7 +16,7 @@ export default function DSALayoutClient({
   children: React.ReactNode;
 }) {
   const searchParams = useSearchParams();
-  const currentTopic = searchParams.get("topic") || "visualizations";
+  const currentTopic = searchParams.get("topic") || "pre-dsa-overview";
   const [isOpen, setIsOpen] = useState(false);
 
   const SidebarContent = () => (
