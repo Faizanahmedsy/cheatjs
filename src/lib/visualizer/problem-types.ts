@@ -3,6 +3,15 @@ export const PROBLEM_GROUPS = [
   "Arrays & Hashing",
   "Two Pointers",
   "Sliding Window",
+  "Stack & Queue",
+  "Binary Search",
+  "Linked Lists",
+  "Binary Trees & BST",
+  "Graphs & Grids",
+  "Intervals & Sorting",
+  "Dynamic Programming",
+  "Backtracking & Recursion",
+  "Strings & Parsing",
 ] as const;
 
 export type ProblemGroup = (typeof PROBLEM_GROUPS)[number];
@@ -17,7 +26,7 @@ export type ProblemGroup = (typeof PROBLEM_GROUPS)[number];
 export interface Problem {
   /** Stable id, kebab-case, e.g. "two-sum". */
   id: string;
-  /** Position in the 35-problem syllabus (1–35). */
+  /** Position in the syllabus (1–143; 125–133 are not used). */
   number: number;
   /** The well-known title, e.g. "Two Sum". */
   title: string;
