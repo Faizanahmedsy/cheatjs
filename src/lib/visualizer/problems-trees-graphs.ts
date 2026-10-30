@@ -826,7 +826,7 @@ const c2 = c1.neighbors[0];
 const c3 = c2.neighbors[1];
 const c4 = c1.neighbors[1];
 const adj = [c1, c2, c3, c4].map((n) => n.neighbors.map((m) => m.val));
-console.log(adj, c1 !== n1); // expected: [[2, 4], [1, 3], [2, 4], [1, 3]] true`,
+console.log(adj); // expected: [[2, 4], [1, 3], [2, 4], [1, 3]]`,
   },
   {
     id: "max-area-of-island",
