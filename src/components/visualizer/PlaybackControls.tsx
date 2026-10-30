@@ -46,8 +46,8 @@ export function PlaybackControls({ index, total, onChange, playing, onTogglePlay
   const atStart = index <= 0;
   const atEnd = index >= last;
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="space-y-3 xl:flex xl:items-center xl:gap-5 xl:space-y-0">
+      <div className="flex flex-wrap items-center gap-2 xl:flex-nowrap">
         <NavButton label="First step" onClick={() => onChange(0)} disabled={atStart}>
           <ChevronsLeft className="h-4 w-4" aria-hidden="true" />
           <span className="hidden sm:inline">First</span>
@@ -84,7 +84,7 @@ export function PlaybackControls({ index, total, onChange, playing, onTogglePlay
         </label>
       </div>
 
-      <div>
+      <div className="xl:min-w-0 xl:flex-1">
         <input
           type="range"
           min={0}
