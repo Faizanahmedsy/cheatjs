@@ -12,10 +12,12 @@ interface CodeTraceViewProps {
   doneLine: number;
   /** The step is an error: the next-line band turns into the error band. */
   isError: boolean;
+  /** Beginner mode: bigger text. */
+  large?: boolean;
 }
 
 /** Read-only code with Python Tutor style arrows: green = just ran, red = runs next. */
-export function CodeTraceView({ code, nextLine, doneLine, isError }: CodeTraceViewProps) {
+export function CodeTraceView({ code, nextLine, doneLine, isError, large = false }: CodeTraceViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const lines = code.split("\n");
 
@@ -33,7 +35,10 @@ export function CodeTraceView({ code, nextLine, doneLine, isError }: CodeTraceVi
   return (
     <div
       ref={containerRef}
-      className="relative h-[22rem] overflow-auto rounded-lg border border-slate-700/60 bg-slate-950 py-3 font-code text-[15px] leading-7 lg:h-[30rem]"
+      className={cn(
+        "relative h-[22rem] overflow-auto rounded-lg border border-slate-700/60 bg-slate-950 py-3 font-code lg:h-[30rem]",
+        large ? "text-[17px] leading-8" : "text-[15px] leading-7",
+      )}
       aria-label="Code being visualized"
       role="region"
     >
@@ -47,7 +52,7 @@ export function CodeTraceView({ code, nextLine, doneLine, isError }: CodeTraceVi
             data-line={line}
             aria-current={isNext ? "step" : undefined}
             className={cn(
-              "flex min-w-max items-stretch pr-4 transition-colors duration-200",
+              "flex min-w-max items-stretch pr-4 transition-colors duration-200 motion-reduce:transition-none",
               isNext && (isError ? "bg-red-500/20" : "bg-red-500/10"),
               !isNext && isDone && "bg-emerald-500/10",
             )}

@@ -6,10 +6,11 @@ import { allDSATopics } from "@/lib/dsa";
 import { useSearchParams } from "next/navigation";
 import BacktrackingVisualization from "@/components/BacktrackingVisualization";
 import PermutationsVisualization from "@/components/PermutationsVisualization";
+import { PreDsaChecklist } from "@/components/PreDsaChecklist";
 
 export default function DSAPageContent() {
   const searchParams = useSearchParams();
-  const topic = searchParams.get("topic") || "visualizations";
+  const topic = searchParams.get("topic") || "pre-dsa-overview";
 
   const currentTopic = allDSATopics.find((t) => t.id === topic);
 
@@ -39,6 +40,13 @@ export default function DSAPageContent() {
             {currentTopic.content.description}
           </p>
         </div>
+
+        {/* Mastery checklist on the Pre-DSA overview */}
+        {topic === "pre-dsa-overview" && (
+          <div className="mb-8 md:mb-12">
+            <PreDsaChecklist />
+          </div>
+        )}
 
         {/* Show interactive visualization for backtracking topic */}
         {topic === "backtracking" && (

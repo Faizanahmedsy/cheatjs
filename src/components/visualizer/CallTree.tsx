@@ -49,7 +49,7 @@ export function CallTree({ roots, stepIndex, activeFrameIds }: CallTreeProps) {
   const budget = { left: MAX_NODES };
   return (
     <section aria-label="Recursion call tree" className="rounded-xl border border-slate-700/50 bg-slate-800/40 p-4">
-      <h2 className="mb-2 text-sm font-medium uppercase tracking-wide text-slate-500">Call tree</h2>
+      <h2 className="mb-2 text-sm font-medium uppercase tracking-wide text-slate-400">Call tree</h2>
       {visible.length === 0 ? (
         <p className="text-sm italic text-slate-500">No calls yet.</p>
       ) : (
