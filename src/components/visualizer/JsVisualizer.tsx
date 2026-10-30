@@ -9,6 +9,7 @@ import {
   DEFAULT_ENTRY,
   DEFAULT_SELECTION,
   findEntry,
+  PROBLEMS,
   selectionFromSearch,
   urlForSelection,
   type Selection,
@@ -169,16 +170,33 @@ export function JsVisualizer() {
           </div>
           <p className="max-w-3xl text-base text-slate-400 md:text-lg">
             Dry-run JavaScript one line at a time — variables, arrays, strings, maps and the call stack, with a paper-style
-            iteration table. Pick one of the 35 practice problems or an example, or paste your own code.
+            iteration table. Pick one of the {PROBLEMS.length} practice problems or an example, or paste your own code.
           </p>
           <Legend />
         </header>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-          {/* Left: problem, code, playback, output */}
-          <div className="flex min-w-0 flex-col gap-4">
-            {problem && <ProblemPanel problem={problem} changedNames={changedNames} beginner={beginner} />}
+        {/* Playback sits above both columns and stays pinned under the navbar,
+            so Forward / Back are always at hand while reading the code and the
+            state side by side (it used to sit under the code, off screen). */}
+        {viewing && (
+      <div className="sticky top-16 z-30 mb-4 hidden rounded-xl border border-slate-700/60 bg-slate-800/95 p-3 shadow-lg shadow-slate-950/40 lg:block">
+            <PlaybackControls
+              index={safeIndex}
+              total={total}
+              onChange={jump}
+              playing={playing}
+              onTogglePlay={() => setPlaying((p) => !p)}
+              speed={speed}
+              onSpeedChange={setSpeed}
+              marks={summary.marks}
+            />
+            {trace.notice && <p className="mt-3 rounded-lg bg-amber-400/10 px-3 py-2 text-sm text-amber-200">{trace.notice}</p>}
+          </div>
+        )}
 
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          {/* Left: code, problem, output */}
+          <div className="flex min-w-0 flex-col gap-4">
             <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-4">
               <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center">
                 <ExamplePicker value={selection} onChange={choose} />
@@ -234,21 +252,7 @@ export function JsVisualizer() {
               )}
             </div>
 
-            {viewing && (
-              <div className="z-20 rounded-xl border border-slate-700/50 bg-slate-800 p-4 lg:sticky lg:top-16">
-                <PlaybackControls
-                  index={safeIndex}
-                  total={total}
-                  onChange={jump}
-                  playing={playing}
-                  onTogglePlay={() => setPlaying((p) => !p)}
-                  speed={speed}
-                  onSpeedChange={setSpeed}
-                  marks={summary.marks}
-                />
-                {trace.notice && <p className="mt-3 rounded-lg bg-amber-400/10 px-3 py-2 text-sm text-amber-200">{trace.notice}</p>}
-              </div>
-            )}
+            {problem && <ProblemPanel problem={problem} changedNames={changedNames} beginner={beginner} />}
 
             {viewing && <OutputPanel stdout={step.stdout} error={step.event === "exception" ? step.error : undefined} />}
           </div>
