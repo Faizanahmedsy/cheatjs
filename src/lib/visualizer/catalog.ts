@@ -1,5 +1,5 @@
 /**
- * Everything the picker can load: the 35 practice problems first, then the
+ * Everything the picker can load: the practice problems first, then the
  * short examples. A selection is addressed by kind + id so a problem and an
  * example may share an id (both have "two-sum").
  */
@@ -7,6 +7,11 @@ import { DEFAULT_EXAMPLE, EXAMPLES, type Example } from "./examples";
 import { PROBLEM_GROUPS, type Problem } from "./problem-types";
 import { HASHING_PROBLEMS } from "./problems-hashing";
 import { POINTER_PROBLEMS } from "./problems-pointers";
+import { STACK_SEARCH_PROBLEMS } from "./problems-stack-search";
+import { LIST_STRING_PROBLEMS } from "./problems-lists-strings";
+import { TREE_GRAPH_PROBLEMS } from "./problems-trees-graphs";
+import { INTERVAL_DP_PROBLEMS } from "./problems-intervals-dp";
+import { BACKTRACKING_PROBLEMS } from "./problems-backtracking";
 
 export type CatalogEntry =
   | { kind: "problem"; id: string; label: string; code: string; problem: Problem }
@@ -14,7 +19,15 @@ export type CatalogEntry =
 
 export type Selection = { kind: "problem" | "example"; id: string } | { kind: "custom" };
 
-export const PROBLEMS: Problem[] = [...HASHING_PROBLEMS, ...POINTER_PROBLEMS].sort((a, b) => a.number - b.number);
+export const PROBLEMS: Problem[] = [
+  ...HASHING_PROBLEMS,
+  ...POINTER_PROBLEMS,
+  ...STACK_SEARCH_PROBLEMS,
+  ...LIST_STRING_PROBLEMS,
+  ...TREE_GRAPH_PROBLEMS,
+  ...INTERVAL_DP_PROBLEMS,
+  ...BACKTRACKING_PROBLEMS,
+].sort((a, b) => a.number - b.number);
 
 export function problemLabel(problem: Problem): string {
   return `${problem.number}. ${problem.title}`;
