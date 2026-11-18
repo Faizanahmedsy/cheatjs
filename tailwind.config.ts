@@ -13,8 +13,19 @@ export default {
         body: ['Inter', 'sans-serif'],
         headline: ['Lexend', 'sans-serif'],
         code: ['Source Code Pro', 'monospace'],
+        labmono: ['var(--lab-mono)'],
       },
       colors: {
+        lab: {
+          bg: 'var(--lab-bg)',
+          scene: 'var(--lab-scene)',
+          panel: 'var(--lab-panel)',
+          raised: 'var(--lab-raised)',
+          border: 'var(--lab-border)',
+          text: 'var(--lab-text)',
+          muted: 'var(--lab-muted)',
+          accent: 'var(--lab-accent)',
+        },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

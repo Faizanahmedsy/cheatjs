@@ -144,3 +144,75 @@
     }
   }
 }
+
+/* AI Visual Lab — theme tokens scoped to the lab so the rest of the site is untouched. */
+.ai-lab,
+.ai-lab-pop {
+  --lab-mono: "Source Code Pro", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --lab-bg: #070d1c;
+  --lab-scene: #0a1428;
+  --lab-panel: #0c1526;
+  --lab-raised: #111d33;
+  --lab-border: #1c2a44;
+  --lab-grid: rgba(96, 165, 250, 0.13);
+  --lab-text: #dbe4f3;
+  --lab-muted: #7d8aa5;
+  --lab-accent: #60a5fa;
+  --t-blue: #60a5fa;
+  --t-cyan: #22d3ee;
+  --t-violet: #a78bfa;
+  --t-amber: #fbbf24;
+  --t-green: #34d399;
+  --t-rose: #fb7185;
+  --t-slate: #94a3b8;
+  color: var(--lab-text);
+}
+.ai-lab[data-theme="light"],
+.ai-lab-pop[data-theme="light"] {
+  --lab-bg: #f5f7fb;
+  --lab-scene: #eef2f9;
+  --lab-panel: #ffffff;
+  --lab-raised: #f1f4fa;
+  --lab-border: #d6deeb;
+  --lab-grid: rgba(37, 99, 235, 0.12);
+  --lab-text: #15213a;
+  --lab-muted: #5b6782;
+  --lab-accent: #2563eb;
+  --t-blue: #2563eb;
+  --t-cyan: #0e7490;
+  --t-violet: #7c3aed;
+  --t-amber: #b45309;
+  --t-green: #047857;
+  --t-rose: #e11d48;
+  --t-slate: #64748b;
+}
+@keyframes lab-dash {
+  to {
+    stroke-dashoffset: -22;
+  }
+}
+@keyframes lab-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.lab-dash {
+  animation: lab-dash 1.1s linear infinite;
+}
+.lab-dash-rev {
+  animation: lab-dash 1.1s linear infinite reverse;
+}
+.lab-pulse {
+  animation: lab-pulse 1.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-dash,
+  .lab-dash-rev,
+  .lab-pulse {
+    animation: none;
+  }
+}
