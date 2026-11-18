@@ -742,7 +742,7 @@ export default function PermutationsVisualization() {
                 <div className="bg-orange-900/30 border-l-4 border-orange-400 p-3 mb-4">
                   <p className="text-orange-300 font-bold text-sm">
                     🎯 KEY MOMENT: The recursive backtrack() call has returned.
-                    Now path.pop() executes to "undo" our choice before trying
+                    Now path.pop() executes to &ldquo;undo&rdquo; our choice before trying
                     the next option in the for loop.
                   </p>
                 </div>

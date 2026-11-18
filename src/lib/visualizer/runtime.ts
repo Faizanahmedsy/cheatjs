@@ -279,7 +279,7 @@ export function traceProgram(code: string, maxSteps = DEFAULT_MAX_STEPS): TraceR
   const shadowed = ["setTimeout", "setInterval", "queueMicrotask", "requestAnimationFrame", "fetch", "importScripts"];
   let program: (...args: unknown[]) => void;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval -- running user code is the point; it is isolated in a worker.
+    // Running user code is the point here; it is isolated in a worker.
     program = new Function("__viz", "console", ...shadowed, source) as (...args: unknown[]) => void;
   } catch (error) {
     return { ok: false, kind: "internal", message: `Could not prepare this code: ${errorText(error)}` };
