@@ -242,7 +242,7 @@ export type NetworkStage = {
   target?: { label: string; value: number; was?: number };
   /** Show a little ReLU gate on hidden neurons (open when the value is above 0). */
   gates?: boolean;
-  /** Per-node blame for the backward pass, same shape as layers' nodes. */
+  /** Per-node blame for the backward pass, same shape as layers' nodes. Use [] for a layer that gets none (the inputs). */
   blame?: number[][];
   note?: string;
 };

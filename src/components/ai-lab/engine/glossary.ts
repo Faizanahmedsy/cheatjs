@@ -34,6 +34,8 @@ export const GLOSSARY: Record<string, { term: string; def: string }> = {
   bce: { term: "Binary cross-entropy", def: "Loss for yes/no outputs: −[y·log p + (1−y)·log(1−p)]. Punishes confident wrong answers hard." },
   "cross-entropy": { term: "Cross-entropy", def: "−log(probability the model gave the correct answer). 0 when it is certain and right; huge when it is confidently wrong." },
   "decision-boundary": { term: "Decision boundary", def: "The line (or curve) where the model switches from predicting one class to the other." },
+  "hidden-layer": { term: "Hidden layer", def: "A layer of neurons between the inputs and the output. 'Hidden' only because you never see its numbers directly; it builds patterns the output uses." },
+  "dead-relu": { term: "Dead ReLU", def: "A ReLU neuron whose total is below zero for every input, so it always outputs 0 and gets no gradient. It stops learning." },
   // ---- transformers
   token: { term: "Token", def: "A chunk of text the model reads — a word, part of a word, or punctuation. Roughly ¾ of an English word on average." },
   tokenizer: { term: "Tokenizer", def: "The fixed rulebook that splits text into tokens and maps each to an integer ID (e.g. BPE)." },

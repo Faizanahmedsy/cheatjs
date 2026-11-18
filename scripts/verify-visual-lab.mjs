@@ -4,6 +4,7 @@
  *
  *   node scripts/verify-visual-lab.mjs              # every topic
  *   node scripts/verify-visual-lab.mjs rag embeddings
+ *   node scripts/verify-visual-lab.mjs neural-networks --text   # also print each step's words
  *
  * Copies the scenario files and the engine's plain modules to a temp folder,
  * adds the `.ts` extensions Node needs, imports each topic with Node's type
@@ -30,7 +31,8 @@ writeFileSync(join(tmp, "package.json"), '{"type":"module"}');
 const { GLOSSARY } = await import(pathToFileURL(join(tmp, "engine/glossary.ts")).href);
 const { SCENARIOS } = await import(pathToFileURL(join(tmp, "scenarios/index.ts")).href);
 
-const want = process.argv.slice(2);
+const showText = process.argv.includes("--text");
+const want = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const metas = want.length ? SCENARIOS.filter((m) => want.includes(m.id)) : SCENARIOS;
 if (want.length && metas.length !== want.length) console.error(`unknown topic id in: ${want.join(", ")}`);
 
@@ -45,10 +47,14 @@ for (const meta of metas) {
   const warn = (m) => (warnings++, console.log(`  ! ${m}`));
   console.log(`\n${meta.id} — ${s.steps.length} steps, ${s.interview.length} questions, ${s.quiz.length} quiz`);
   if (s.id !== meta.id) err(`id "${s.id}" does not match the index entry "${meta.id}"`);
+  if (showText) {
+    console.log(`  IMAGINE: ${s.imagine}\n  PLAIN: ${s.overview.plain}\n  RECAP: ${(s.recap ?? []).join(" / ")}`);
+    s.steps.forEach((st, i) => console.log(`  ${i + 1}. ${st.title} [${st.stage?.kind ?? "-"}${st.stage?.mode ? `:${st.stage.mode}` : ""}]\n     SIMPLE: ${st.simple}\n     EXPLAIN: ${st.explain}`));
+  }
 
   // NaN / Infinity anywhere, numbers or text (interview answers may talk about NaN losses, so they are skipped)
   const walk = (v, path) => {
-    if (path.endsWith(".interview")) return;
+    if (path.endsWith(".interview") || path.endsWith(".interviewTip")) return;
     if (typeof v === "number" && !Number.isFinite(v)) err(`${path} is ${v}`);
     else if (typeof v === "string" && /\bNaN\b|\bInfinity\b|\bundefined\b/.test(v)) err(`${path} contains "${v.match(/\bNaN\b|\bInfinity\b|\bundefined\b/)[0]}": ${v.slice(0, 80)}`);
     else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`));
@@ -120,7 +126,7 @@ for (const meta of metas) {
           if (m.length !== g.layers[l].nodes.length || m.some((row) => row.length !== g.layers[l + 1].nodes.length)) bad(`weights[${l}] shape does not match the layers`);
         });
         if (g.mode === "update" && !g.newWeights) bad("update mode needs newWeights");
-        if (g.blame && g.blame.some((b, l) => b.length !== g.layers[l].nodes.length)) bad("blame shape does not match the layers");
+        if (g.blame && g.blame.some((b, l) => b.length && b.length !== g.layers[l].nodes.length)) bad("blame shape does not match the layers (use [] for a layer with no blame)");
         break;
       case "tokens":
         if (g.ids && g.ids.length !== g.tokens.length) bad("ids length ≠ tokens");

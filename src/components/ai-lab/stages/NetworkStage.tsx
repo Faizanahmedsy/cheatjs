@@ -134,10 +134,26 @@ export default function NetworkStage({ stage, animate, speed }: StageProps<Netwo
           ),
         )}
 
-      {/* update: label the biggest changes */}
-      {topDeltas.map(({ l, i, j, d }) => {
-        const x = xs[l] + R + (xs[l + 1] - xs[l] - 2 * R) * 0.5;
-        const y = (ys[l][i] + ys[l + 1][j]) / 2;
+      {/* update: the lines that changed most glow, and get a +/− chip */}
+      {topDeltas.map(({ l, i, j }) => (
+        <motion.line
+          key={`g-${l}-${i}-${j}`}
+          x1={xs[l] + R}
+          y1={ys[l][i]}
+          x2={xs[l + 1] - R}
+          y2={ys[l + 1][j]}
+          strokeLinecap="round"
+          strokeWidth={10}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: animate ? [0, 0.55, 0.25] : 0.25 }}
+          transition={animate ? { duration: 1.6 / speed, delay: 0.6 / speed } : { duration: 0 }}
+          style={{ stroke: toneVar("amber") }}
+        />
+      ))}
+      {topDeltas.map(({ l, i, j, d }, k) => {
+        const f = 0.35 + k * 0.15;
+        const x = xs[l] + R + (xs[l + 1] - xs[l] - 2 * R) * f;
+        const y = ys[l][i] + (ys[l + 1][j] - ys[l][i]) * f;
         const tone = d >= 0 ? "blue" : "rose";
         return (
           <motion.g key={`d-${l}-${i}-${j}`} initial={{ opacity: animate ? 0 : 1 }} animate={{ opacity: 1 }} transition={t(0.4, 1.8)}>
