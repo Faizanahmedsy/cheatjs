@@ -192,7 +192,11 @@ export type NetworkViz = {
 export type ThreeLossViz = { kind: "three-loss"; title?: string; caption?: string };
 export type ThreeEmbedViz = { kind: "three-embed"; title?: string; caption?: string };
 
-export type Viz =
+/** Which level a panel visual belongs to. Omitted = shown in both. */
+export type VizLevel = { only?: "simple" | "interview" };
+
+export type Viz = VizLevel &
+  (
   | BarsViz
   | HeatmapViz
   | MatrixViz
@@ -205,7 +209,138 @@ export type Viz =
   | ChatViz
   | NetworkViz
   | ThreeLossViz
-  | ThreeEmbedViz;
+  | ThreeEmbedViz
+  );
+
+// ---------- stages: the big concept visual in the centre ----------
+
+export type NeuronStage = {
+  kind: "neuron";
+  inputs: { label: string; value: number }[];
+  weights: number[];
+  bias: number;
+  activation: "relu" | "sigmoid";
+  /** inputs: show x × w on each line · sum: fill the body with Σ + b · activate: pass through the gate. */
+  phase: "inputs" | "sum" | "activate";
+  outputLabel?: string;
+  /** Optional "what if the total were negative?" example for the gate phase. */
+  blockedExample?: number;
+};
+
+export type NetworkStage = {
+  kind: "network";
+  layers: { title: string; nodes: { label: string; value?: number }[] }[];
+  /** weights[l][i][j]: from node i in layer l to node j in layer l + 1. */
+  weights: number[][][];
+  /** structure: draw it · forward: numbers flow right · backward: blame flows left · update: lines change to newWeights. */
+  mode: "structure" | "forward" | "backward" | "update";
+  newWeights?: number[][][];
+  /** Shown next to the output in backward/update modes. */
+  target?: { label: string; value: number };
+  /** Show a little ReLU gate on hidden neurons (open when the value is above 0). */
+  gates?: boolean;
+  /** Per-node blame for the backward pass, same shape as layers' nodes. */
+  blame?: number[][];
+  note?: string;
+};
+
+export type TokensStage = {
+  kind: "tokens";
+  mode: "split" | "ids" | "vectors" | "qkv" | "attention" | "next" | "generate";
+  /** The sentence before splitting (split mode). */
+  text?: string;
+  tokens: string[];
+  ids?: (number | string)[];
+  /** A short vector per token, drawn as little bars (vectors mode). */
+  vectors?: number[][];
+  /** attention[i][j] = how much token i looks at token j. */
+  attention?: number[][];
+  /** The token whose attention lines are drawn first. */
+  focus?: number;
+  /** next/generate: candidate next words with probabilities. */
+  candidates?: { text: string; p: number }[];
+  chosen?: number;
+  /** generate: how many of `tokens` are the prompt; the rest appear one by one. */
+  promptCount?: number;
+  /** generate: show the KV cache as a notebook that fills up. */
+  notebook?: boolean;
+  note?: string;
+};
+
+export type FitStage = {
+  kind: "fit";
+  mode: "data" | "split" | "guess" | "train" | "fits" | "predict";
+  points: { x: number; y: number; set?: "train" | "val" | "test" }[];
+  xLabel: string;
+  yLabel: string;
+  x: [number, number];
+  y: [number, number];
+  /** guess/predict: one line. train: one line per frame (epoch), animated in order. */
+  lines?: { w: number; b: number; label?: string }[];
+  /** train: loss per frame for the side graph. */
+  losses?: number[];
+  /** fits: three curves sampled as points. */
+  curves?: { label: string; tone: Tone; points: [number, number][]; note?: string }[];
+  /** predict: the new input and its prediction. */
+  newPoint?: { x: number; label: string };
+  /** data: annotate one point with its feature (x) and label (y) in words. */
+  callout?: { index: number; feature: string; label: string };
+  note?: string;
+};
+
+export type DescentStage = {
+  kind: "descent";
+  /** The loss curve as (w, loss) points. */
+  curve: [number, number][];
+  /** Positions of w at each step, in order. */
+  steps: number[];
+  xLabel: string;
+  yLabel: string;
+  note?: string;
+};
+
+export type MapStage = {
+  kind: "map";
+  mode: "map" | "angle";
+  points: { x: number; y: number; label: string; tone?: Tone }[];
+  query?: { x: number; y: number; label: string };
+  neighbours?: number[];
+  /** angle mode: arrows from the origin to points a and b (indices). The stage computes the cosine from the coordinates. */
+  pairs?: { a: number; b: number; verdict: string }[];
+  note?: string;
+};
+
+export type CardsStage = {
+  kind: "cards";
+  /**
+   * Zones drawn left to right. A card keeps its `id` across steps, so when a
+   * later step puts it in a different zone it visibly flies there.
+   */
+  zones: {
+    id: string;
+    label: string;
+    icon?: "doc" | "scissors" | "shelf" | "person" | "librarian" | "tray" | "llm" | "answer" | "box" | "search" | "check";
+    cards?: { id: string; title: string; sub?: string; score?: string; tone?: Tone; struck?: boolean; badge?: string }[];
+    /** Free text in the zone, e.g. the question or the answer. `[n]` becomes a sticky-note citation. */
+    text?: string;
+    tone?: Tone;
+  }[];
+  note?: string;
+};
+
+export type ChatStage = {
+  kind: "chat";
+  messages: { role: "system" | "user" | "assistant" | "tool"; text: string; note?: string; dim?: boolean }[];
+  /** Type the last message out word by word. */
+  streamLast?: boolean;
+  /** A side box, e.g. "sent to the model this turn" or a memory notebook. */
+  aside?: { title: string; items: string[]; tone?: Tone };
+  note?: string;
+};
+
+export type VizStage = { kind: "viz"; viz: Viz };
+
+export type Stage = NeuronStage | NetworkStage | TokensStage | FitStage | DescentStage | MapStage | CardsStage | ChatStage | VizStage;
 
 // ---------- steps ----------
 
@@ -214,14 +349,21 @@ export type LogRow = { tone?: Tone; cells: Record<string, string | number> };
 export type Step = {
   id: string;
   title: string;
+  /** "In simple words": one plain sentence, no jargon, at most ~20 words. Shown first, in both modes. */
+  simple?: string;
   /**
-   * Plain-English explanation a layman can follow. Supports light markup:
+   * 2–3 short plain sentences a school student can follow. Supports light markup:
    * `{{term}}` / `{{term|shown text}}` for glossary tooltips, `**bold**`, and `` `code` ``.
+   * Explain any jargon in brackets the first time it appears.
    */
   explain: string;
+  /** Interview mode only: the deeper, more technical explanation. */
+  detail?: string;
+  /** The big centre visual. Steps without one show the flow scene. */
+  stage?: Stage;
   /** One-line analogy, shown in a callout. */
   analogy?: string;
-  /** The "deeper" toggle: math lines and/or code. */
+  /** Interview mode: "Show the maths" (text + math) and "Show the code" toggles, collapsed by default. */
   deeper?: { text?: string; math?: string[]; code?: { lang: string; src: string } };
   highlight?: string[];
   packets?: Packet[];
@@ -260,7 +402,13 @@ export type Scenario = {
   id: string;
   title: string;
   tagline: string;
+  /** "Imagine…" card shown before step 1. Starts with "Imagine". */
+  imagine?: string;
+  /** "What you just learned": three plain bullets shown after the last step. */
+  recap?: [string, string, string];
   overview: {
+    /** Simple-mode definition: 2–3 plain sentences. */
+    plain?: string;
     definition: string;
     analogy: string;
     facts: [string, string][];
