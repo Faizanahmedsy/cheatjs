@@ -1,4 +1,4 @@
-import type { Scenario, Tone } from "../engine/types";
+import type { CardsStage, Scenario, Tone } from "../engine/types";
 import { bm25, cosine, f, mean, ndcgAtK, precisionAtK, reciprocalRank, recallAtK, rrf, sigmoid } from "../engine/math";
 
 /* ------------------------------------------------------------------ *
@@ -133,11 +133,42 @@ const FAIL_TOTAL = FAILURES.reduce((s, x) => s + x.value, 0);
 const t = (id: string) => byId.get(id)!.title;
 const rrfQuizA = 1 / 61 + 1 / 63;
 
+/* ---- the cards stage: one library story, cards keep their ids so they fly between zones ---- */
+type Card = NonNullable<CardsStage["zones"][number]["cards"]>[number];
+type Zone = CardsStage["zones"][number];
+const cards = (zones: Zone[], note?: string): CardsStage => ({ kind: "cards", zones, note });
+const yearSub = (id: string) => `year ${byId.get(id)!.year}${byId.get(id)!.year !== FILTER_YEAR ? " · out of date" : ""}`;
+/** A keyword-list card (its own id, so the same chunk can sit in both lists at once). */
+const kCard = (x: { id: string; score: number }, i: number): Card => ({ id: `k-${x.id}`, title: t(x.id), sub: `#${i + 1} · ${yearSub(x.id)}`, score: f(x.score), tone: "amber" });
+/** A vector-list card. It uses the chunk id, so later steps can fly it into the shortlist. */
+const vCard = (x: { id: string; score: number }, i: number): Card => ({ id: x.id, title: t(x.id), sub: `#${i + 1} · ${yearSub(x.id)}`, score: f(x.score, 3), tone: "blue" });
+const Q_ZONE = (text: string): Zone => ({ id: "question", label: "Your question", icon: "person", text, tone: "cyan" });
+const COS_ORIG = cosine(Q_ORIG, byId.get("p1")!.emb);
+const COS_REWRITE = cosine(Q_REWRITE, byId.get("p1")!.emb);
+const COS_HYDE = cosine(Q_HYDE, byId.get("p1")!.emb);
+const P3_BM25 = rankOf(BM25_ALL, "p3");
+const P3_VEC = rankOf(VEC_ALL, "p3");
+const letterOf = (id: string) => LETTERS[CANDIDATES.findIndex((c) => c.id === id)];
+const DROPPED_RRF = FUSED.slice(TOP_N);
+const BADGE = new Map(KEPT.map((k, i) => [k.id, String(i + 1)]));
+const cite = (id: string | null) => (id && BADGE.has(id) ? ` [${BADGE.get(id)}]` : "");
+const ANSWER_TEXT = CLAIMS.map((c) => `${c.text}${cite(c.source)}`).join(" ");
+const shortlistCard = (id: string, score: string, sub: string, tone: Tone = "violet"): Card => ({ id, title: `${letterOf(id)} · ${t(id)}`, sub, score, tone });
+
 const scenario: Scenario = {
   id: "advanced-rag",
   title: "Advanced RAG & retrieval quality",
   tagline: "Better queries, better ranking, a tighter context — and numbers that prove it.",
+  imagine:
+    "Imagine asking a busy library a vague question: “how much leave do new joiners get?”. A great librarian first works out what you really mean, checks both the catalogue and the shelves, skips the out-of-date editions, reads the best few, and hands you a short stack with the right pages marked. Then they ask whether it helped.",
+  recap: [
+    "Fix the **question** first: rewrite it, add synonyms, or search with a fake answer (HyDE).",
+    "Search two ways (keywords + meaning), **filter** out stale or forbidden chunks, **merge** with RRF, then **re-rank** the shortlist.",
+    "Pack a short, de-duplicated context, cite every claim, and **measure** recall, MRR and faithfulness on a test set.",
+  ],
   overview: {
+    plain:
+      "Basic RAG looks up a few passages and lets the AI answer from them. Advanced RAG makes every part of that lookup better: a clearer question, two kinds of search, removing out-of-date passages, a careful second ranking, and a short, tidy set of evidence. Then it measures the results so every change is proven, not guessed.",
     definition:
       "Basic {{rag|RAG}} embeds the question and grabs the nearest {{chunk|chunks}}. **Advanced RAG** improves each stage: rewrite the question, search with keywords *and* vectors ({{hybrid-search|hybrid search}}), filter by metadata, re-order with a {{reranker|re-ranker}}, pack the best evidence into the prompt, and **measure** retrieval and answers so changes are proven, not guessed.",
     analogy:
@@ -185,49 +216,102 @@ const scenario: Scenario = {
     { key: "detail", label: "Detail" },
   ],
   steps: [
+    // 1 ─────────────────────────────────────────────────────────────
     {
       id: "rewrite",
       title: "Fix the question before searching",
-      explain:
-        `Users type short, vague questions: “${ORIGINAL}”. The handbook never says “joiners”, so keyword search misses, and the vector of a vague question sits far from the right chunk.\n\nA small LLM call can improve the query first:\n\n- **Rewrite**: make it specific and self-contained.\n- **Expansion**: add synonyms (joiner → new employee, leave → vacation).\n- **{{hyde|HyDE}}**: write a *fake* answer and search with its {{embedding}} — answers look more like documents than questions do.\n- **Multi-query**: search several phrasings and merge the results.\n- **Decomposition**: split a compound question into sub-questions.`,
+      simple: "Vague questions find the wrong pages, so a small AI step first rewrites the question clearly.",
+      explain: `People type short questions like “${ORIGINAL}”. The handbook never says “joiners”, so a word search misses. A quick rewrite (asking an AI to restate it) makes it specific: “${REWRITTEN}”, and it now matches the right page better (${f(COS_ORIG, 3)} → ${f(COS_REWRITE, 3)}).`,
       analogy: "A good librarian asks “do you mean annual leave for someone in their first year?” before walking to the shelves.",
+      detail:
+        "Query transformations, cheapest first:\n\n- **Rewrite**: make it specific and self-contained (also resolves “it” / “that” from earlier chat turns).\n- **Expansion**: add synonyms (joiner → new employee, leave → vacation) so keyword search can match.\n- **Decomposition**: split a compound question (“compare 2022 and 2024 leave”) into sub-questions.\n\nEach one is an extra LLM call, so it adds latency and cost. Measure the gain.",
+      stage: cards(
+        [
+          { ...Q_ZONE(`“${ORIGINAL}”`), cards: [{ id: "q-orig", title: "Original wording", sub: "no match for “joiners”", score: f(COS_ORIG, 3), tone: "slate" }] },
+          { id: "rewriter", label: "Rewriter", icon: "librarian", tone: "violet", text: `“${REWRITTEN}”`, cards: [{ id: "q-rewrite", title: "Rewritten question", sub: "specific, standalone, handbook words", score: f(COS_REWRITE, 3), tone: "violet" }] },
+        ],
+        `score = how close the question is to the right page (${t("p1")}), 1 = perfect`,
+      ),
       highlight: ["user", "rewriter"],
       packets: [
         { from: "user", to: "rewriter", label: "vague question", sub: "how much leave … new joiners?", tone: "cyan" },
-        { from: "rewriter", to: "rewriter", label: "rewrite + HyDE + 3 variants", tone: "violet" },
+        { from: "rewriter", to: "rewriter", label: "rewrite + expand", tone: "violet" },
       ],
-      viz: [
-        {
-          kind: "table",
-          title: "Five ways to improve a query",
-          columns: ["Technique", "Output"],
-          rows: [
-            ["Rewrite", REWRITTEN],
-            ["Expansion", "leave OR vacation OR PTO; joiner OR new employee OR new hire"],
-            ["HyDE", HYDE],
-            ["Multi-query", MULTI.join(" | ")],
-            ["Decomposition", "“Compare 2022 and 2024 leave” → (1) 2022 allowance? (2) 2024 allowance?"],
-          ],
-        },
-        {
-          kind: "bars",
-          title: `Cosine similarity to the right chunk (${t("p1")})`,
-          items: [
-            { label: "original", value: cosine(Q_ORIG, byId.get("p1")!.emb), tone: "slate" },
-            { label: "rewritten", value: cosine(Q_REWRITE, byId.get("p1")!.emb), tone: "blue" },
-            { label: "HyDE", value: cosine(Q_HYDE, byId.get("p1")!.emb), tone: "green" },
-          ],
-          max: 1,
-          format: "fixed3",
-          caption: `Keyword search on the original wording ranks ${t("p1")} #${rankOf(BM25_ORIG, "p1")}; the rewritten query ranks it #${rankOf(BM25_ALL, "p1")}.`,
-        },
-      ],
+      viz: {
+        only: "interview",
+        kind: "table",
+        title: "Ways to improve a query",
+        columns: ["Technique", "Output"],
+        rows: [
+          ["Rewrite", REWRITTEN],
+          ["Expansion", "leave OR vacation OR PTO; joiner OR new employee OR new hire"],
+          ["Decomposition", "“Compare 2022 and 2024 leave” → (1) 2022 allowance? (2) 2024 allowance?"],
+        ],
+        caption: `Keyword search on the original wording ranks ${t("p1")} #${rankOf(BM25_ORIG, "p1")}; the rewritten query ranks it #${rankOf(BM25_ALL, "p1")}.`,
+      },
       deeper: {
-        text: "HyDE costs an extra LLM call and can backfire when the model does not know the domain — its fake answer may pull in the wrong documents. Keep the original query in the mix (multi-query) and measure.",
         code: {
           lang: "python",
           src: `
 rewritten = llm("Rewrite as a specific, standalone search query: " + q)
+expanded  = llm("Add common synonyms for the key terms: " + rewritten)`,
+        },
+      },
+      log: [
+        { tone: "cyan", cells: { stage: "input", doc: ORIGINAL, score: f(COS_ORIG, 3), detail: "vague: no match for “joiners”" } },
+        { tone: "violet", cells: { stage: "rewrite", doc: REWRITTEN, score: f(COS_REWRITE, 3), detail: "cos to p1" } },
+      ],
+      interviewTip: "Name the cost of every trick: an extra LLM call adds latency and money. Interviewers want to hear you would measure the gain.",
+    },
+    // 2 ─────────────────────────────────────────────────────────────
+    {
+      id: "hyde",
+      title: "Search with a fake answer, and several phrasings",
+      simple: "Answers look more like handbook pages than questions do, so we also search with a made-up answer.",
+      explain: `{{hyde|HyDE}} asks the AI to write a short pretend answer, then searches with its {{embedding}} (its list of meaning numbers). It lands even closer to the right page: **${f(COS_HYDE, 3)}**. **Multi-query** searches ${MULTI.length} different phrasings too, and merges the results, so one unlucky wording can't sink the search.`,
+      analogy: "Describing the book you hope exists (“a chapter that says new staff get N days off”) instead of just asking a question.",
+      detail:
+        "HyDE (Hypothetical Document Embeddings) works because documents and answers share wording and structure, while questions are short and phrased differently. The fake answer is **only used for retrieval**, never shown.\n\nIt can backfire when the model does not know the domain: a confidently wrong fake answer pulls in the wrong documents. Keep the original query in the mix (multi-query) and measure on a golden set.",
+      stage: cards(
+        [
+          { ...Q_ZONE(`“${ORIGINAL}”`), cards: [{ id: "q-orig", title: "Original wording", sub: "kept in the mix", score: f(COS_ORIG, 3), tone: "slate" }] },
+          {
+            id: "rewriter",
+            label: "Rewriter",
+            icon: "librarian",
+            tone: "violet",
+            cards: [
+              { id: "q-rewrite", title: "Rewritten question", sub: "specific, standalone, handbook words", score: f(COS_REWRITE, 3), tone: "violet" },
+              { id: "q-hyde", title: "HyDE: a pretend answer", sub: "“New employees typically get … days per year”", score: f(COS_HYDE, 3), tone: "green" },
+              ...MULTI.map((m, i): Card => ({ id: `q-m${i}`, title: `Phrasing ${i + 1}`, sub: m, tone: "blue" })),
+            ],
+          },
+        ],
+        "every query card is searched; their results are merged later",
+      ),
+      highlight: ["rewriter", "vdb"],
+      packets: [
+        { from: "rewriter", to: "rewriter", label: "HyDE + 3 variants", tone: "violet" },
+        { from: "rewriter", to: "vdb", label: "embed(fake answer)", tone: "green" },
+      ],
+      viz: {
+        only: "interview",
+        kind: "bars",
+        title: `Cosine similarity to the right chunk (${t("p1")})`,
+        items: [
+          { label: "original", value: COS_ORIG, tone: "slate" },
+          { label: "rewritten", value: COS_REWRITE, tone: "blue" },
+          { label: "HyDE", value: COS_HYDE, tone: "green" },
+        ],
+        max: 1,
+        format: "fixed3",
+        caption: `HyDE text: “${HYDE}”`,
+      },
+      deeper: {
+        text: "HyDE costs an extra LLM call before retrieval even starts, which adds directly to time-to-first-token.",
+        code: {
+          lang: "python",
+          src: `
 hyde_doc  = llm("Write a short passage that answers: " + rewritten)
 variants  = llm("Give 3 different phrasings of: " + rewritten).splitlines()
 queries   = [q, rewritten, *variants]          # search all, fuse with RRF
@@ -235,32 +319,42 @@ hyde_vec  = embed(hyde_doc)                    # search with the fake answer's v
         },
       },
       log: [
-        { tone: "cyan", cells: { stage: "input", doc: ORIGINAL, score: "", detail: "vague: no match for “joiners”" } },
-        { tone: "violet", cells: { stage: "rewrite", doc: REWRITTEN, score: f(cosine(Q_REWRITE, byId.get("p1")!.emb), 3), detail: "cos to p1" } },
-        { tone: "violet", cells: { stage: "hyde", doc: "fake answer → embed", score: f(cosine(Q_HYDE, byId.get("p1")!.emb), 3), detail: "cos to p1" } },
+        { tone: "green", cells: { stage: "hyde", doc: "fake answer → embed", score: f(COS_HYDE, 3), detail: "cos to p1" } },
+        ...MULTI.map((m) => ({ tone: "blue" as const, cells: { stage: "multi-query", doc: m, score: "", detail: "searched too" } })),
       ],
-      interviewTip: "Name the cost of every trick: an extra LLM call adds latency and money. Interviewers want to hear you would measure the gain.",
+      interviewTip: "HyDE vs multi-query vs decomposition: same intent in better words, several wordings, or several sub-questions. Be crisp about which is which.",
     },
+    // 3 ─────────────────────────────────────────────────────────────
     {
       id: "hybrid",
-      title: "Keyword and vector search, side by side",
-      explain:
-        "Two searches run in parallel on the rewritten query:\n\n- **{{bm25|BM25}}** scores exact word matches — great for names, codes, numbers like “2024”.\n- **Vector search** compares {{embedding|embeddings}} with {{cosine-similarity|cosine similarity}} — great for paraphrases.\n\nNotice the problem: the **2022** policy (p3) scores high on both. It *looks* relevant but is out of date. Similarity alone cannot know that.",
+      title: "Keyword and meaning search, side by side",
+      simple: "Two searches run at once: one matches exact words, the other matches meaning.",
+      explain: `{{bm25|BM25}} (keyword search) rewards pages that share rare words with the question, like “2024” or “vacation”. Vector search compares meaning with {{cosine-similarity|cosine similarity}} (how closely two meaning-arrows point the same way). Notice the **2022** policy: it ranks ${P3_BM25 === P3_VEC ? `#${P3_BM25} in both lists` : `#${P3_BM25} and #${P3_VEC}`}. It looks relevant, but it is out of date.`,
+      analogy: "One assistant checks the card catalogue word by word; another walks the shelves looking for books on the same subject.",
+      detail:
+        "- **BM25** scores exact term matches: great for names, product codes, error messages, numbers. It misses paraphrases (“joiner” vs “new employee”).\n- **Vector search** compares {{embedding|embeddings}}: great for paraphrases and synonyms, weaker on exact identifiers.\n\nRunning both is {{hybrid-search|hybrid search}}. Similarity alone cannot know a document is superseded: that needs metadata (next step).",
+      stage: cards(
+        [
+          { id: "q-zone", label: "Search with", icon: "search", tone: "violet", cards: [{ id: "q-rewrite", title: "Rewritten question", sub: "+ HyDE + phrasings", tone: "violet" }] },
+          { id: "keyword", label: "Keyword catalogue (BM25)", icon: "search", tone: "amber", cards: BM25_ALL.slice(0, TOP_N).map(kCard) },
+          { id: "meaning", label: "Meaning shelf (vectors)", icon: "shelf", tone: "blue", cards: VEC_ALL.slice(0, TOP_N).map(vCard) },
+        ],
+        "top 5 from each search · BM25 scores and cosines are on different scales",
+      ),
       highlight: ["rewriter", "bm25", "vdb"],
       packets: [
-        { from: "rewriter", to: "bm25", label: "BM25: 6 query terms", sub: "vacation days new employees …", tone: "amber" },
+        { from: "rewriter", to: "bm25", label: "BM25: query terms", sub: "vacation days new employees …", tone: "amber" },
         { from: "rewriter", to: "vdb", label: `q = [${Q_REWRITE.join(", ")}]`, tone: "blue" },
       ],
-      viz: [
-        {
-          kind: "table",
-          title: "Top 5 from each search (no filter)",
-          columns: ["#", "BM25", "score", "Vector", "cosine"],
-          rows: Array.from({ length: 5 }, (_, i) => [i + 1, `${BM25_ALL[i].id} ${t(BM25_ALL[i].id)}`, f(BM25_ALL[i].score), `${VEC_ALL[i].id} ${t(VEC_ALL[i].id)}`, f(VEC_ALL[i].score, 3)]),
-          highlightRow: Math.min(rankOf(BM25_ALL, "p3"), rankOf(VEC_ALL, "p3")) - 1,
-          caption: `p3 (2022, outdated) ranks #${rankOf(BM25_ALL, "p3")} in BM25 and #${rankOf(VEC_ALL, "p3")} in vectors.`,
-        },
-      ],
+      viz: {
+        only: "interview",
+        kind: "table",
+        title: "Top 5 from each search (no filter)",
+        columns: ["#", "BM25", "score", "Vector", "cosine"],
+        rows: Array.from({ length: TOP_N }, (_, i) => [i + 1, `${BM25_ALL[i].id} ${t(BM25_ALL[i].id)}`, f(BM25_ALL[i].score), `${VEC_ALL[i].id} ${t(VEC_ALL[i].id)}`, f(VEC_ALL[i].score, 3)]),
+        highlightRow: Math.min(P3_BM25, P3_VEC) - 1,
+        caption: `p3 (2022, outdated) ranks #${P3_BM25} in BM25 and #${P3_VEC} in vectors.`,
+      },
       deeper: {
         math: [
           "BM25(q, d) = Σ_t IDF(t) · tf·(k₁+1) / (tf + k₁·(1 − b + b·|d|/avgdl)),  k₁ = 1.2, b = 0.75",
@@ -273,60 +367,133 @@ hyde_vec  = embed(hyde_doc)                    # search with the fake answer's v
         ...BM25_ALL.slice(0, 3).map((x, i) => ({ tone: "amber" as const, cells: { stage: `bm25 #${i + 1}`, doc: `${x.id} ${t(x.id)}`, score: f(x.score), detail: `year ${byId.get(x.id)!.year}` } })),
         ...VEC_ALL.slice(0, 3).map((x, i) => ({ tone: "blue" as const, cells: { stage: `vector #${i + 1}`, doc: `${x.id} ${t(x.id)}`, score: f(x.score, 3), detail: `year ${byId.get(x.id)!.year}` } })),
       ],
+      interviewTip: "Give a concrete example of what each side misses: BM25 misses “joiner” ≈ “new employee”; vectors blur an exact code like “ERR-4031”.",
     },
+    // 4 ─────────────────────────────────────────────────────────────
     {
-      id: "filter-fuse",
-      title: "Metadata filter + fuse with RRF",
-      explain:
-        `A {{metadata-filter|metadata filter}} (year = ${FILTER_YEAR}) removes stale versions before ranking. The same mechanism enforces **permissions** — users must only retrieve chunks they are allowed to read.\n\nNow merge the two lists. BM25 scores and cosines are on different scales, so we use ranks instead: {{rrf|Reciprocal Rank Fusion}} gives each chunk 1 / (60 + rank) from each list and adds them up. A chunk near the top of **both** lists wins.`,
+      id: "filter",
+      title: "Filter out stale pages",
+      simple: "Out-of-date or off-limits pages are removed before ranking, using labels stored with each page.",
+      explain: `Every chunk carries labels (its {{metadata-filter|metadata}}: year, team, who may read it). A filter keeps only year = ${FILTER_YEAR}, so the 2022 policy leaves both lists and the next-best pages move up. The same trick enforces **permissions**: people must only find pages they are allowed to read.`,
+      analogy: "The librarian pulls last edition's copies off the shelf before you start browsing.",
+      detail:
+        "Filter **inside** the vector DB query (pre-filter) where possible. Filtering after taking the top-k (post-filter) can leave you with too few results, or none.\n\nFreshness and access control are the two classic reasons. Leaking a document the user may not see is a security bug, not a relevance bug.",
+      stage: cards(
+        [
+          { id: "keyword", label: "Keyword catalogue (BM25)", icon: "search", tone: "amber", cards: BM25_F.slice(0, TOP_N).map(kCard) },
+          { id: "meaning", label: "Meaning shelf (vectors)", icon: "shelf", tone: "blue", cards: VEC_F.slice(0, TOP_N).map(vCard) },
+          {
+            id: "filtered",
+            label: `Filtered out (year ≠ ${FILTER_YEAR})`,
+            icon: "tray",
+            tone: "rose",
+            cards: [
+              { id: "k-p3", title: t("p3"), sub: "year 2022 · superseded", tone: "amber", struck: true },
+              { id: "p3", title: t("p3"), sub: "year 2022 · superseded", tone: "blue", struck: true },
+            ],
+          },
+        ],
+        `filter: year = ${FILTER_YEAR} · ${CHUNKS.length - POOL.length} of ${CHUNKS.length} chunks removed before ranking`,
+      ),
+      highlight: ["bm25", "vdb"],
+      packets: [
+        { from: "rewriter", to: "vdb", label: `filter year = ${FILTER_YEAR}`, tone: "rose" },
+        { from: "rewriter", to: "bm25", label: `filter year = ${FILTER_YEAR}`, tone: "rose" },
+      ],
+      viz: {
+        only: "interview",
+        kind: "table",
+        title: "Chunks and their metadata",
+        columns: ["Chunk", "year", "kept?"],
+        rows: CHUNKS.map((c) => [`${c.id} ${c.title}`, c.year, c.year === FILTER_YEAR ? "yes" : "filtered"]),
+      },
+      log: CHUNKS.filter((c) => c.year !== FILTER_YEAR).map((c) => ({ tone: "rose" as const, cells: { stage: "filter", doc: `${c.id} ${c.title}`, score: "", detail: `year ${c.year} ≠ ${FILTER_YEAR}` } })),
+      interviewTip: "Mention access control as a metadata filter. Interviewers love hearing that permissions are enforced at retrieval time, not in the prompt.",
+    },
+    // 5 ─────────────────────────────────────────────────────────────
+    {
+      id: "fuse",
+      title: "Merge the two lists with RRF",
+      simple: "Each page earns points for ranking high in each list; pages near the top of both win.",
+      explain: `The two lists use different scoring scales, so we use places instead of scores. {{rrf|Reciprocal Rank Fusion}} gives each page 1 / (60 + its place) from every list it appears in, then adds them up. The top ${TOP_N} become the shortlist **A–E**.`,
       analogy: "Two judges rank the same contestants with different scoring sheets. Instead of adding incompatible points, you add up how high each contestant placed.",
+      detail: `RRF needs no score normalisation and no tuning to start, and k = 60 stops a single #1 from dominating. Here ${FUSED[0].id} and ${FUSED[1].id} tie on ${f(FUSED[0].score, 4)} because each is #1 in one list and #2 in the other. ${DROPPED_RRF.map((x) => `${x.id} (${f(x.score, 4)})`).join(", ")} just misses the shortlist.\n\nMulti-query results (step 2) are merged the same way: every query's ranked list is one more list in the sum.`,
+      stage: cards(
+        [
+          { id: "keyword", label: "Keyword catalogue (BM25)", icon: "search", tone: "amber", cards: BM25_F.slice(0, TOP_N).map(kCard) },
+          {
+            id: "shortlist",
+            label: "Shortlist (RRF)",
+            icon: "check",
+            tone: "violet",
+            cards: CANDIDATES.map((c) => shortlistCard(c.id, f(c.score, 4), `bm25 #${LISTS[0].indexOf(c.id) + 1 || "—"} · vector #${LISTS[1].indexOf(c.id) + 1 || "—"}`)),
+          },
+          { id: "missed", label: "Missed the cut", icon: "tray", tone: "slate", cards: DROPPED_RRF.map((x): Card => ({ id: x.id, title: t(x.id), sub: `RRF ${f(x.score, 4)} · rank ${FUSED.indexOf(x) + 1}`, tone: "blue", struck: true })) },
+        ],
+        "RRF score = 1/(60 + BM25 place) + 1/(60 + vector place)",
+      ),
       highlight: ["bm25", "vdb", "fusion"],
       packets: [
         { from: "bm25", to: "fusion", label: `top ${TOP_N} ids (year=${FILTER_YEAR})`, tone: "amber" },
         { from: "vdb", to: "fusion", label: `top ${TOP_N} ids (year=${FILTER_YEAR})`, tone: "blue" },
       ],
-      viz: [
-        {
-          kind: "table",
-          title: "Fused ranking",
-          columns: ["", "Chunk", "BM25 rank", "Vector rank", "RRF"],
-          rows: FUSED.map((x, i) => [i < TOP_N ? LETTERS[i] : "—", `${x.id} ${t(x.id)}`, LISTS[0].indexOf(x.id) + 1 || "—", LISTS[1].indexOf(x.id) + 1 || "—", f(x.score, 4)]),
-          caption: `p3 (2022) and p7 (2023) are filtered out. Top ${TOP_N} become candidates A–E for the re-ranker.`,
-        },
-        { kind: "bars", title: "RRF scores", items: FUSED.map((x, i) => ({ label: x.id, value: x.score, tone: i < TOP_N ? "violet" : "slate" })), format: "fixed4" },
-      ],
+      viz: {
+        only: "interview",
+        kind: "table",
+        title: "Fused ranking",
+        columns: ["", "Chunk", "BM25 rank", "Vector rank", "RRF"],
+        rows: FUSED.map((x, i) => [i < TOP_N ? LETTERS[i] : "—", `${x.id} ${t(x.id)}`, LISTS[0].indexOf(x.id) + 1 || "—", LISTS[1].indexOf(x.id) + 1 || "—", f(x.score, 4)]),
+        caption: `Top ${TOP_N} become candidates A–E for the re-ranker.`,
+      },
       deeper: {
         math: [
           "RRF(d) = Σ_lists 1 / (k + rank_list(d)),  k = 60",
           `RRF(${FUSED[0].id}) = ${LISTS.map((l) => (l.includes(FUSED[0].id) ? `1/(60+${l.indexOf(FUSED[0].id) + 1})` : "0")).join(" + ")} = ${f(FUSED[0].score, 5)}`,
-          "Filter inside the vector DB query (pre-filter) where possible; filtering after top-k can leave you with too few results.",
         ],
+        code: {
+          lang: "python",
+          src: `
+def rrf(lists, k=60):
+    score = defaultdict(float)
+    for ranked in lists:
+        for rank, doc in enumerate(ranked, start=1):
+            score[doc] += 1 / (k + rank)
+    return sorted(score, key=score.get, reverse=True)`,
+        },
       },
       log: FUSED.slice(0, TOP_N).map((x, i) => ({ tone: "violet" as const, cells: { stage: `rrf ${LETTERS[i]}`, doc: `${x.id} ${t(x.id)}`, score: f(x.score, 4), detail: `bm25 #${LISTS[0].indexOf(x.id) + 1 || "—"} · vec #${LISTS[1].indexOf(x.id) + 1 || "—"}` } })),
-      interviewTip: "Mention access control as a metadata filter. Leaking a document the user may not see is a security bug, not a relevance bug.",
+      interviewTip: "Explain why you fuse ranks, not scores: BM25 and cosine live on different, query-dependent scales.",
     },
+    // 6 ─────────────────────────────────────────────────────────────
     {
       id: "rerank",
-      title: "Re-rank A–E with a cross-encoder",
-      explain:
-        "First-stage search is fast because document vectors were computed in advance ({{bi-encoder}}): the query and the chunk never “see” each other.\n\nA {{cross-encoder}} reads the question and one chunk **together** and outputs a relevance score. It is far more accurate but too slow to run over the whole corpus, so we only run it on the few candidates. Here it lifts the exact answer to the top.",
+      title: "Re-rank A–E with a careful reader",
+      simple: "A slower, smarter model reads the question with each shortlisted page and re-orders them.",
+      explain: `The first searches were fast because each page's meaning numbers were worked out in advance. A {{cross-encoder}} (a model that reads the question and one page **together**) is far more accurate, but too slow for the whole library, so it only reads the shortlist. Watch the cards re-order: ${RERANKED[0].letter} (${t(RERANKED[0].id)}) moves to the top.`,
       analogy: "The first round is a quick CV scan; the re-ranker is the interview. You only interview the shortlist.",
+      detail:
+        "First-stage search uses a {{bi-encoder}}: query and documents are embedded separately, so document vectors are precomputed and lookup is cheap. The query and chunk never “see” each other.\n\nA cross-encoder runs one model pass per (query, chunk) pair and outputs a relevance score. Re-rank the top ~20–100, not the whole corpus. The logits here are made up for the demo; the sigmoid and sorting are real.",
+      stage: cards(
+        [
+          Q_ZONE(`“${REWRITTEN}”`),
+          { id: "shortlist", label: "Shortlist, re-ranked", icon: "librarian", tone: "green", cards: RERANKED.map((r) => shortlistCard(r.id, f(r.ce, 3), `relevance · was #${r.first}`, r.ce > 0.5 ? "green" : "slate")) },
+        ],
+        "relevance 0–1 from the cross-encoder · the cards moved to their new order",
+      ),
       highlight: ["fusion", "reranker"],
       packets: [
         { from: "fusion", to: "reranker", label: "5 × (query, chunk) pairs", tone: "violet" },
         { from: "reranker", to: "reranker", label: "score each pair", tone: "green" },
       ],
-      viz: [
-        {
-          kind: "table",
-          title: "Before → after re-ranking",
-          columns: ["New", "Cand.", "Chunk", "Was", "Relevance"],
-          rows: RERANKED.map((r, i) => [i + 1, r.letter, `${r.id} ${t(r.id)}`, `#${r.first}`, f(r.ce, 3)]),
-          highlightRow: 0,
-          caption: "Relevance = sigmoid(cross-encoder logit). Logits here are made up for the demo; the sorting is real.",
-        },
-        { kind: "bars", title: "Cross-encoder relevance", items: RERANKED.map((r) => ({ label: `${r.letter} ${r.id}`, value: r.ce, tone: r.ce > 0.5 ? "green" : "slate" })), max: 1, format: "fixed3" },
-      ],
+      viz: {
+        only: "interview",
+        kind: "table",
+        title: "Before → after re-ranking",
+        columns: ["New", "Cand.", "Chunk", "Was", "Relevance"],
+        rows: RERANKED.map((r, i) => [i + 1, r.letter, `${r.id} ${t(r.id)}`, `#${r.first}`, f(r.ce, 3)]),
+        highlightRow: 0,
+        caption: "Relevance = sigmoid(cross-encoder logit).",
+      },
       deeper: {
         code: {
           lang: "python",
@@ -338,22 +505,41 @@ ranked = [c for _, c in sorted(zip(scores, candidates), reverse=True)]`,
         math: ["Cost: bi-encoder = 1 query embedding + ANN lookup; cross-encoder = one model pass per candidate.", "So re-rank 20–100 candidates, not 1 million."],
       },
       log: RERANKED.map((r, i) => ({ tone: "green" as const, cells: { stage: `rerank #${i + 1}`, doc: `${r.letter} ${r.id} ${t(r.id)}`, score: f(r.ce, 3), detail: `was #${r.first}` } })),
+      interviewTip: "If asked why not use the cross-encoder for everything: cost is one model pass per document, so it only scales to a shortlist.",
     },
+    // 7 ─────────────────────────────────────────────────────────────
     {
       id: "assemble",
-      title: "Assemble the context: dedupe, budget, order",
-      explain:
-        `The prompt has limited room, and every extra {{token}} costs money and latency. The context builder:\n\n- **Dedupes**: p9 is an FAQ copy of p1 — near-identical vectors, so it adds nothing.\n- **Fits a budget**: here ${BUDGET} tokens for evidence.\n- **Orders**: best evidence first, each chunk tagged with its id so the answer can cite it.\n\nModels tend to use information at the start and end of a long context more reliably than the middle (“lost in the middle”), so a short, well-ordered context usually beats a long one.`,
+      title: "Pack a short, tidy context",
+      simple: "Only the best pages that fit the space go into the prompt; copies and extras are left out.",
+      explain: `The prompt has limited room, and every extra {{token}} (word piece) costs money and time. The FAQ is a near copy of the 2024 policy, so it adds nothing and is dropped. The pages that fit a ${BUDGET}-token budget go in, best first: ${USED} tokens used.`,
+      analogy: "Packing a carry-on bag: no two copies of the same shirt, and only what fits.",
+      detail: `The context builder:\n\n- **Dedupes**: near-identical vectors (cos ≥ ${DEDUPE_AT}) add nothing.\n- **Fits a budget**: here ${BUDGET} tokens for evidence, leaving room for instructions and the answer.\n- **Orders**: best evidence first, each chunk tagged with its id so the answer can cite it.\n\nModels tend to use the start and end of a long context more reliably than the middle (“lost in the middle”), so a short, well-ordered context usually beats a long one.`,
+      stage: cards(
+        [
+          { id: "context", label: `Context (≤ ${BUDGET} tokens)`, icon: "box", tone: "cyan", cards: KEPT.map((k): Card => ({ id: k.id, title: t(k.id), sub: `${k.tokens} tokens · relevance ${f(k.ce, 2)}`, tone: "cyan" })) },
+          {
+            id: "left-out",
+            label: "Left out",
+            icon: "tray",
+            tone: "slate",
+            cards: SLOTS.filter((s) => s.status !== "kept").map((s): Card => ({ id: s.id, title: t(s.id), sub: s.status.replace("dropped: ", "").slice(0, 50), score: `${s.tokens} tok`, tone: "slate", struck: true })),
+          },
+        ],
+        `${KEPT.length} chunks kept · ${USED} of ${BUDGET} tokens used`,
+      ),
       highlight: ["reranker", "context"],
       packets: [{ from: "reranker", to: "context", label: `${RERANKED.length} ranked chunks`, tone: "green" }],
       viz: [
         {
+          only: "interview",
           kind: "table",
           title: "Context decisions",
           columns: ["Chunk", "Tokens", "Decision"],
           rows: SLOTS.map((s) => [`${s.id} ${t(s.id)}`, s.tokens, s.status]),
         },
         {
+          only: "interview",
           kind: "stack",
           title: `Prompt budget (≈ ${SYS_TOKENS + Q_TOKENS + USED} tokens)`,
           segments: [
@@ -374,63 +560,94 @@ prompt  = f"Answer only from the sources. Cite ids like [p1]. If unsure, say so.
         },
       },
       log: SLOTS.map((s) => ({ tone: (s.status === "kept" ? "cyan" : "slate") as Tone, cells: { stage: "context", doc: `${s.id} ${t(s.id)}`, score: `${s.tokens} tok`, detail: s.status } })),
+      interviewTip: "“More context is better” is the wrong answer. Talk about dedupe, budget, ordering and lost-in-the-middle.",
     },
+    // 8 ─────────────────────────────────────────────────────────────
     {
       id: "generate",
-      title: "Answer with citations",
-      explain:
-        `The LLM answers from the assembled sources and cites them by id. Then we check the answer **claim by claim**: is each sentence backed by a cited chunk?\n\nHere ${SUPPORTED} of ${CLAIMS.length} claims are supported. The last one (“paid out at year end”) appears in no source — a {{hallucination}}. {{faithfulness|Faithfulness}} = ${SUPPORTED} / ${CLAIMS.length} = ${f(FAITHFULNESS)}.`,
+      title: "Answer with citations, then check each claim",
+      simple: "The AI answers from the packed pages, marks where each fact came from, and we check every claim.",
+      explain: `Each sentence points to its source page with a sticky note. Checking claim by claim, ${SUPPORTED} of ${CLAIMS.length} are backed by a page. The last one (“paid out at year end”) is in no page at all: a {{hallucination}} (made up). {{faithfulness|Faithfulness}} = ${SUPPORTED} / ${CLAIMS.length} = **${f(FAITHFULNESS)}**.`,
+      analogy: "An essay with footnotes: a sentence with no footnote is a sentence you cannot check.",
+      detail:
+        "Faithfulness (groundedness) = supported claims / total claims. It measures whether the answer sticks to the **retrieved context**, not whether the claim happens to be true in the world.\n\nUsually an LLM judge extracts the claims and checks each against the context. Validate the judge against human labels first, and fix its model and prompt version so scores stay comparable.",
+      stage: cards(
+        [
+          Q_ZONE(`“${REWRITTEN}”`),
+          { id: "context", label: "Context", icon: "box", tone: "cyan", cards: KEPT.map((k): Card => ({ id: k.id, title: t(k.id), sub: `${k.tokens} tokens`, tone: "cyan", badge: BADGE.get(k.id) })) },
+          { id: "answer", label: "Answer", icon: "answer", tone: "green", text: ANSWER_TEXT },
+          {
+            id: "check",
+            label: "Claim check",
+            icon: "check",
+            tone: FAITHFULNESS === 1 ? "green" : "rose",
+            cards: CLAIMS.map((c, i): Card => ({ id: `claim-${i}`, title: c.text.length > 28 ? `${c.text.slice(0, 26)}…` : c.text, sub: c.source && inContext.has(c.source) ? `backed by [${BADGE.get(c.source)}]` : "no source: made up", tone: c.source && inContext.has(c.source) ? "green" : "rose", struck: !(c.source && inContext.has(c.source)) })),
+          },
+        ],
+        `faithfulness = ${SUPPORTED} / ${CLAIMS.length} = ${f(FAITHFULNESS)}`,
+      ),
       highlight: ["context", "llm"],
       packets: [
         { from: "context", to: "llm", label: `prompt ≈ ${SYS_TOKENS + Q_TOKENS + USED} tokens`, tone: "cyan" },
-        { from: "llm", to: "eval", label: "answer + [p1] [p5] [p2]", tone: "green" },
+        { from: "llm", to: "eval", label: `answer + ${KEPT.map((k) => `[${k.id}]`).join(" ")}`, tone: "green" },
       ],
-      viz: [
-        {
-          kind: "chat",
-          title: "The answer",
-          messages: [
-            { role: "user", text: REWRITTEN },
-            { role: "assistant", text: `${CLAIMS[0].text} [p1] ${CLAIMS[1].text} [p5] ${CLAIMS[2].text} [p2] ${CLAIMS[3].text}`, note: "last sentence has no source" },
-          ],
-        },
-        { kind: "table", title: "Claim-level check", columns: ["Claim", "Source", "Supported?"], rows: CLAIMS.map((c) => [c.text, c.source ?? "—", c.source && inContext.has(c.source) ? "yes" : "NO"]), highlightRow: CLAIMS.length - 1 },
-      ],
+      viz: {
+        only: "interview",
+        kind: "table",
+        title: "Claim-level check",
+        columns: ["Claim", "Source", "Supported?"],
+        rows: CLAIMS.map((c) => [c.text, c.source ?? "—", c.source && inContext.has(c.source) ? "yes" : "NO"]),
+        highlightRow: CLAIMS.length - 1,
+      },
       deeper: {
-        math: ["faithfulness = supported claims / total claims", `= ${SUPPORTED} / ${CLAIMS.length} = ${f(FAITHFULNESS)}`, "Usually an LLM judge extracts claims and checks each against the context — validate the judge against human labels first."],
+        math: ["faithfulness = supported claims / total claims", `= ${SUPPORTED} / ${CLAIMS.length} = ${f(FAITHFULNESS)}`],
       },
       log: CLAIMS.map((c) => ({ tone: (c.source && inContext.has(c.source) ? "green" : "rose") as Tone, cells: { stage: "claim", doc: c.text, score: c.source && inContext.has(c.source) ? "1" : "0", detail: c.source ? `cites ${c.source}` : "no source" } })),
       interviewTip: "Separate “was the right evidence retrieved?” from “did the answer stick to it?”. They fail for different reasons and have different fixes.",
     },
+    // 9 ─────────────────────────────────────────────────────────────
     {
       id: "evaluate",
-      title: "Measure retrieval on a labelled test set",
-      explain:
-        `You cannot improve what you do not measure. Build a small **golden set**: real questions with the chunk ids that answer them. Then score the ranked results:\n\n- {{recall|Recall@${K}}}: did we find the relevant chunks at all?\n- {{precision|Precision@${K}}}: how much of the top ${K} is useful?\n- {{mrr|MRR}}: how high is the *first* relevant result?\n- {{ndcg|NDCG}}: are the *most* relevant results highest?\n\nRun it on every change (new chunker, new embedding model, new prompt) like unit tests.`,
+      title: "Measure retrieval on a test set",
+      simple: "Keep a list of real questions with known right pages, and score the search on them after every change.",
+      explain: `This list is a **golden set**. {{recall|Recall}} asks: did we find the right pages at all? {{mrr|MRR}} asks: how high was the first right page? {{ndcg|NDCG}} asks: were the most useful pages highest? Here recall is ${f(MEAN.recall)}, but the holidays question finds its page only at #${EVAL[2].ranked.indexOf("p8") + 1}, pulling MRR down to ${f(MEAN.mrr)}.`,
+      analogy: "Unit tests for search: a fixed set of questions you re-run every time you change anything.",
+      detail: `Score the ranked results @${K}:\n\n- {{recall|Recall@${K}}}: share of the relevant chunks that made the top ${K}.\n- {{precision|Precision@${K}}}: share of the top ${K} that is relevant (capped when a question has fewer than ${K} relevant chunks).\n- {{mrr|MRR}}: mean of 1 / rank of the first relevant result.\n- {{ndcg|NDCG}}: graded relevance with a log position discount, scaled so a perfect order = 1.\n\nRun it on every change (new chunker, embedding model, prompt) like a regression suite.`,
+      stage: {
+        kind: "viz",
+        viz: [
+          {
+            kind: "table",
+            title: `Golden set: retrieval @${K}`,
+            columns: ["Question", "Recall", "RR", "NDCG"],
+            rows: [...EVAL.map((e) => [e.q, f(e.recall), f(e.rr), f(e.ndcg, 2)]), ["mean", f(MEAN.recall), f(MEAN.mrr), f(MEAN.ndcg, 2)]],
+            highlightRow: EVAL.length,
+            caption: "MRR = mean of the RR column.",
+          },
+          {
+            kind: "bars",
+            title: "Pipeline scorecard",
+            items: [
+              { label: `recall@${K}`, value: MEAN.recall, tone: "green" },
+              { label: "MRR", value: MEAN.mrr, tone: "blue" },
+              { label: `NDCG@${K}`, value: MEAN.ndcg, tone: "violet" },
+              { label: "faithfulness", value: FAITHFULNESS, tone: "rose" },
+            ],
+            max: 1,
+            format: "fixed2",
+          },
+        ],
+      },
       highlight: ["llm", "eval"],
       packets: [{ from: "llm", to: "eval", label: `${EVAL.length} test questions`, tone: "rose" }],
-      viz: [
-        {
-          kind: "table",
-          title: `Retrieval metrics @${K}`,
-          columns: ["Question", "Recall", "Prec.", "RR", "NDCG"],
-          rows: [...EVAL.map((e) => [e.q, f(e.recall), f(e.precision), f(e.rr), f(e.ndcg, 3)]), ["mean", f(MEAN.recall), f(MEAN.precision), f(MEAN.mrr), f(MEAN.ndcg, 3)]],
-          highlightRow: EVAL.length,
-          caption: "MRR = mean of the RR column.",
-        },
-        {
-          kind: "bars",
-          title: "Pipeline scorecard",
-          items: [
-            { label: `recall@${K}`, value: MEAN.recall, tone: "green" },
-            { label: "MRR", value: MEAN.mrr, tone: "blue" },
-            { label: `NDCG@${K}`, value: MEAN.ndcg, tone: "violet" },
-            { label: "faithfulness", value: FAITHFULNESS, tone: "rose" },
-          ],
-          max: 1,
-          format: "fixed2",
-        },
-      ],
+      viz: {
+        only: "interview",
+        kind: "table",
+        title: `Precision@${K} too`,
+        columns: ["Question", "Prec."],
+        rows: [...EVAL.map((e) => [e.q, f(e.precision)]), ["mean", f(MEAN.precision)]],
+        caption: `Precision@${K} looks low because each question has only 1–2 relevant chunks.`,
+      },
       deeper: {
         math: [
           "Recall@k = |relevant ∩ top k| / |relevant|      Precision@k = |relevant ∩ top k| / k",
@@ -445,25 +662,32 @@ prompt  = f"Answer only from the sources. Cite ids like [p1]. If unsure, say so.
       ],
       interviewTip: "Precision@k is capped when a question has fewer than k relevant chunks — say so, and lean on recall, MRR and NDCG for RAG.",
     },
+    // 10 ────────────────────────────────────────────────────────────
     {
       id: "feedback",
       title: "Close the loop",
-      explain:
-        "Production gives you the best test cases: thumbs-down, “that's wrong” follow-ups, escalations to a human. Tag each failure by **where** it broke, fix the biggest bucket, and add the failing question to the golden set so it can never silently break again.",
+      simple: "Collect the answers users disliked, sort them by what broke, fix the biggest group, add them to the tests.",
+      explain: `Thumbs-down clicks and “that's wrong” replies are the best test cases. Tag each failure by **where** it broke. Here retrieval misses are the biggest group (${Math.round((FAILURES[0].value / FAIL_TOTAL) * 100)}% of ${FAIL_TOTAL}), so fix those first, and add each failing question to the golden set so it can never silently break again.`,
       analogy: "The librarian keeps a notebook of every question they couldn't answer well — and that notebook decides what to reorganise next.",
+      detail:
+        "Keep the loop honest: re-run the full golden set after each fix, compare against the previous run, and only ship changes that improve the target metric without regressing others. Online, confirm with feedback rates and A/B tests.",
+      stage: {
+        kind: "viz",
+        viz: [
+          { kind: "bars", title: "Where answers broke (example week)", items: FAILURES.map((x) => ({ label: x.label, value: x.value, tone: x.tone })), format: "int", caption: "Example counts for illustration." },
+          { kind: "table", title: "Fix per group", columns: ["Failure", "Share", "Fix"], rows: FAILURES.map((x) => [x.label, `${Math.round((x.value / FAIL_TOTAL) * 100)}%`, x.fix]) },
+        ],
+      },
       highlight: ["eval", "feedback", "rewriter"],
       packets: [
         { from: "eval", to: "feedback", label: `${FAIL_TOTAL} failures tagged`, tone: "amber" },
         { from: "feedback", to: "rewriter", label: "joiner → new employee", sub: "+ new eval cases", tone: "violet" },
       ],
-      viz: [
-        { kind: "stack", title: "Where answers broke (example week)", segments: FAILURES.map((x) => ({ label: x.label, value: x.value, tone: x.tone })), caption: "Example counts for illustration." },
-        { kind: "table", title: "Fix per bucket", columns: ["Failure", "Share", "Fix"], rows: FAILURES.map((x) => [x.label, `${Math.round((x.value / FAIL_TOTAL) * 100)}%`, x.fix]) },
-      ],
       deeper: {
-        text: "Keep the loop honest: re-run the full golden set after each fix, compare against the previous run, and only ship changes that improve the target metric without regressing others.",
+        text: "Typical buckets map to stages: retrieval miss → query rewriting, hybrid search, chunking; stale document → ingestion upserts and version metadata; unsupported claim → prompt and faithfulness checks.",
       },
       log: FAILURES.map((x) => ({ tone: x.tone, cells: { stage: "feedback", doc: x.label, score: `${x.value}`, detail: x.fix } })),
+      interviewTip: "Say how a production failure becomes a regression test. That is the difference between a demo and a maintained system.",
     },
   ],
   interview: [

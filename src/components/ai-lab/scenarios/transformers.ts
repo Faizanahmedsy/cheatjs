@@ -111,11 +111,26 @@ const LOSS = crossEntropy(PROBS[TARGET]);
 
 const mat = (m: number[][]) => m.map((r) => r.map((x) => +x.toFixed(2)));
 
+const pc = (x: number) => `${(x * 100).toFixed(0)}%`;
+const TOP3 = argmaxRow(A[3]);
+const TOP2 = argmaxRow(A2[3]);
+/** How many of the 12 FFN hidden units ReLU switched off for "sleeping". */
+const FFN_OFF = H_FFN.filter((h) => h === 0).length;
+
 const scenario: Scenario = {
   id: "transformers",
   title: "Transformers & attention",
-  tagline: "Every token looks at every other token and decides what matters — all at once.",
+  tagline: "Every word looks at every other word and decides what matters — all at once.",
+  imagine:
+    "Imagine reading “The cat is sleeping” and someone asks: who is sleeping? You glance back at “cat” without thinking. A transformer does that for every word at once: each word looks at all the others, decides which ones matter to it, and soaks up their meaning.",
+  recap: [
+    "Text is cut into **tokens**, and each token becomes a list of numbers that holds its meaning and its position.",
+    "**Attention**: every token scores every other token, turns the scores into percentages, and blends in what the best matches carry.",
+    "Stack that many times and train it to **predict the next token**: that is how a large language model works.",
+  ],
   overview: {
+    plain:
+      "A transformer is the kind of neural network behind ChatGPT and other chat models. It reads all the words of a text at the same time, and each word looks at every other word to work out what it means in this sentence. Trained on huge amounts of text to guess the next word, it learns language.",
     definition:
       "A **transformer** is a neural network built around {{self-attention}}: each {{token}} builds its new meaning by taking a weighted mix of every token in the context. Stack that (plus a small per-token {{ffn|feed-forward net}}) dozens of times and train it to predict the next token, and you get a large language model.",
     analogy:
@@ -169,12 +184,30 @@ const scenario: Scenario = {
     { key: "value", label: "Value" },
   ],
   steps: [
+    // 1 ─────────────────────────────────────────────────────────────
     {
       id: "why",
-      title: "Why not RNNs?",
-      explain:
-        "Before transformers, language models used {{rnn|RNNs}} and {{lstm|LSTMs}}. They read one word at a time and squeeze everything so far into a single running memory.\n\nTwo problems: **it is slow** (word 4 cannot start until word 3 is done, so a GPU cannot work on them in parallel) and **it forgets** (information from word 1 must survive every hop to reach word 400).\n\nA transformer lets every word look at every other word **directly, in one step**. That is the whole idea.",
-      analogy: "An RNN is a game of telephone: the message passes person to person and degrades. Attention is everyone in one room hearing everyone else first-hand.",
+      title: "Read every word at once",
+      simple: "Older models read one word at a time and forget; a transformer looks at every word together.",
+      explain: `Before transformers, models like {{rnn|RNNs}} read a sentence word by word, squeezing everything into one running memory. That is slow (word 4 waits for word 3) and forgetful (word 1 must survive ${TOKENS.length - 1} hops to reach word ${TOKENS.length}). A transformer lets every word look at every other word **directly, in one step**.`,
+      analogy: "An RNN is a game of telephone: the message passes person to person and degrades. A transformer is everyone in one room hearing everyone else first-hand.",
+      detail:
+        "{{rnn|RNNs}} and {{lstm|LSTMs}} carry a hidden state from step to step. Two problems: **training can't be parallel** across the sequence (each step depends on the previous one), and **long paths**: the gradient from token n back to token 1 passes through every step, so it vanishes or explodes. LSTM gates ease the second but not the first.\n\nSelf-attention connects any two tokens in one layer and computes all positions with matrix maths, which GPUs love. The price: comparing every token with every token costs O(n²) in sequence length.",
+      stage: {
+        kind: "viz",
+        viz: {
+          kind: "table",
+          title: "Old way vs transformer",
+          columns: ["", "RNN / LSTM (old)", "Transformer"],
+          rows: [
+            ["Reads words", "one after another", "all at once"],
+            [`Word 1 → word ${TOKENS.length}`, `${TOKENS.length - 1} hops, fading`, "1 direct look"],
+            ["On a GPU", "waits in a queue", "works in parallel"],
+            ["Cost for n words", "grows like n", "grows like n² (every pair)"],
+          ],
+          caption: "The trade: transformers pay for every-pair comparisons to get direct, parallel access to the whole text.",
+        },
+      },
       highlight: ["text", "rnn"],
       packets: [
         { from: "text", to: "rnn", label: "t1: The", tone: "slate" },
@@ -182,76 +215,99 @@ const scenario: Scenario = {
         { from: "text", to: "rnn", label: "t3: is", tone: "slate" },
         { from: "text", to: "rnn", label: "t4: sleeping", tone: "slate" },
       ],
-      viz: {
-        kind: "table",
-        title: "RNN / LSTM vs transformer",
-        columns: ["", "RNN / LSTM", "Transformer"],
-        rows: [
-          ["Reads tokens", "one after another", "all at once"],
-          ["Path from token 1 to token n", "n steps", "1 step"],
-          ["Training parallelism", "low (sequential)", "high (matrix maths)"],
-          ["Cost vs length n", "O(n)", "O(n²) attention"],
-        ],
-        caption: "The trade: transformers pay O(n²) compute for direct, parallel access to the whole context.",
-      },
       deeper: {
         math: ["RNN:  h_t = tanh(W_h · h_{t−1} + W_x · x_t + b)", "Gradient to x_1 passes through ∂h_t/∂h_{t−1} for every t → it shrinks or explodes (vanishing / exploding gradients).", "LSTM gates ease this but the loop is still sequential."],
       },
       log: [
         { tone: "slate", cells: { op: "rnn step t=1", what: "h₁ = f(h₀, “The”)", shape: "1 × d", value: "must wait" } },
         { tone: "slate", cells: { op: "rnn step t=2", what: "h₂ = f(h₁, “cat”)", shape: "1 × d", value: "must wait" } },
-        { tone: "slate", cells: { op: "rnn step t=4", what: "h₄ = f(h₃, “sleeping”)", shape: "1 × d", value: "4 sequential hops" } },
+        { tone: "slate", cells: { op: "rnn step t=4", what: "h₄ = f(h₃, “sleeping”)", shape: "1 × d", value: `${TOKENS.length} sequential hops` } },
       ],
       interviewTip: "Say both reasons: **parallel training** and **short paths between distant tokens**. Most candidates only mention one.",
     },
+    // 2 ─────────────────────────────────────────────────────────────
     {
-      id: "tokens",
-      title: "Text → tokens → embeddings + position",
+      id: "split",
+      title: "Cut the text into tokens",
+      simple: "First the text is cut into small pieces called tokens: whole words or parts of words.",
       explain:
-        "The {{tokenizer}} chops text into {{token|tokens}} — often whole words, sometimes word pieces — and swaps each for an integer ID. Note the leading space: in GPT-style {{bpe|BPE}} vocabularies, “ cat” (with space) and “cat” are different tokens.\n\nEach ID picks one row out of a big learned table: its {{embedding}}. Attention itself has no idea of word order, so we add a {{positional-encoding|positional encoding}} — a pattern of sines and cosines unique to each position.",
-      analogy: "Tokens are LEGO bricks; the embedding is each brick's colour and shape; the position stamp says which slot it sits in.",
-      highlight: ["text", "tokenizer", "tokens", "embed", "pos"],
+        "A {{tokenizer}} (a fixed rulebook) chops the text into {{token|tokens}}. Short common words are one token each; rare words get split into pieces. Notice the **␣**: the space before a word is part of its token, so “␣cat” and “cat” are different tokens.",
+      analogy: "Tokens are LEGO bricks. Any sentence, even one with typos or code, can be built from a fixed box of bricks.",
+      detail:
+        "Most LLMs use {{bpe|BPE}}-style sub-word tokenizers: start from bytes and merge the most frequent pairs into new tokens. That keeps the vocabulary fixed (tens of thousands to a few hundred thousand entries) while still covering any text.\n\nTokens ≠ words: English averages roughly ¾ of a word per token, other languages and code often need more. Pricing, context limits and speed are all counted in tokens.",
+      stage: { kind: "tokens", mode: "split", text: TOKENS.join(""), tokens: TOKENS, note: "␣ = the space that belongs to the token" },
+      highlight: ["text", "tokenizer"],
+      packets: [{ from: "text", to: "tokenizer", label: "“The cat is sleeping”", tone: "cyan" }],
+      viz: { only: "interview", kind: "tokens", title: "Tokens", tokens: SHOW.map((t) => ({ text: t, tone: "blue" as const })), caption: "GPT-style vocabularies keep the leading space inside the token." },
+      log: TOKENS.map((t, i) => ({ tone: "blue" as const, cells: { op: "tokenize", what: `piece ${i + 1}: “${t}”`, shape: "text", value: `pos ${i}` } })),
+      interviewTip: "Tokens ≠ words. Pricing, context limits and speed are all counted in tokens.",
+    },
+    // 3 ─────────────────────────────────────────────────────────────
+    {
+      id: "ids",
+      title: "Each token gets a number",
+      simple: "Every token is swapped for its number in the model's dictionary, because models only work with numbers.",
+      explain: `The tokenizer looks each piece up in its vocabulary (its fixed list of all tokens) and swaps it for that entry's number: “␣cat” → **${IDS[1]}**. These numbers are only labels, like seat numbers: ${IDS[1]} is not “bigger” than ${IDS[2]} in any useful way.`,
+      analogy: "A library catalogue: every book has a shelf number, but the number says nothing about what the book is about.",
+      detail: "IDs here are illustrative: every tokenizer has its own vocabulary, so real IDs differ between models. The same text tokenised by two models can even give a different number of tokens, which is why token counts (and cost) differ between providers.",
+      stage: { kind: "tokens", mode: "ids", tokens: TOKENS, ids: IDS, note: "illustrative IDs: every tokenizer has its own numbering" },
+      highlight: ["tokenizer", "tokens"],
+      packets: [{ from: "tokenizer", to: "tokens", label: `[${IDS.join(", ")}]`, sub: "illustrative IDs", tone: "blue" }],
+      viz: { only: "interview", kind: "tokens", title: "Tokens and IDs", tokens: SHOW.map((t, i) => ({ text: t, id: IDS[i], tone: "blue" as const })), caption: "IDs here are made up for the demo — every tokenizer has its own vocabulary." },
+      log: TOKENS.map((t, i) => ({ tone: "blue" as const, cells: { op: "lookup id", what: `“${t}” → ${IDS[i]}`, shape: "id", value: `pos ${i}` } })),
+      interviewTip: "Be ready to explain why the same text costs a different number of tokens on two different models.",
+    },
+    // 4 ─────────────────────────────────────────────────────────────
+    {
+      id: "vectors",
+      title: "Numbers that hold meaning and position",
+      simple: "Each token becomes a short list of numbers describing its meaning, plus a stamp saying where it sits.",
+      explain: `Each ID picks a learned row of numbers, its {{embedding}} (a list of numbers that captures meaning). Similar words get similar lists. Attention alone can't tell word order, so a {{positional-encoding|position stamp}} is added too. Here each token gets ${D} numbers (the bars); real models use thousands.`,
+      analogy: "A name tag that says what you are (meaning) and which seat you are in (position).",
+      detail: `The embedding table has one row per vocabulary entry; looking up an ID is just picking its row. In this toy, dims 2–5 are meanings [animal, action, function-word, state] and dims 0–1 carry the sin/cos position signal.\n\nThe original paper adds fixed sinusoidal encodings. BERT and GPT-2 learn position embeddings; many modern LLMs use **RoPE**, which rotates queries and keys by position inside attention.`,
+      stage: { kind: "tokens", mode: "vectors", tokens: TOKENS, vectors: X, note: "bars = the token's numbers · blue positive, red negative" },
+      highlight: ["tokens", "embed", "pos"],
       packets: [
-        { from: "text", to: "tokenizer", label: "“The cat is sleeping”", tone: "cyan" },
-        { from: "tokenizer", to: "tokens", label: `[${IDS.join(", ")}]`, sub: "illustrative IDs", tone: "blue" },
         { from: "tokens", to: "embed", label: "look up 4 rows", tone: "blue" },
         { from: "pos", to: "embed", label: "+ PE(pos)", tone: "amber" },
       ],
-      viz: [
-        { kind: "tokens", title: "Tokens and IDs", tokens: SHOW.map((t, i) => ({ text: t, id: IDS[i], tone: "blue" as const })), caption: "IDs here are made up for the demo — every tokenizer has its own vocabulary." },
-        {
-          kind: "matrices",
-          title: "X = embedding + position",
-          items: [
-            { name: "E (lookup)", rowLabels: SHORT, values: mat(E), tone: "blue" },
-            { name: "PE", values: mat(PE), tone: "amber" },
-            { name: "X", values: mat(X), tone: "violet" },
-          ],
-          ops: ["+", "="],
-          caption: "Toy 6-number embeddings (2 for position, 4 for meaning). Real models use 768 to 12,000+ numbers per token.",
-        },
-      ],
+      viz: {
+        only: "interview",
+        kind: "matrices",
+        title: "X = embedding + position",
+        items: [
+          { name: "E (lookup)", rowLabels: SHORT, values: mat(E), tone: "blue" },
+          { name: "PE", values: mat(PE), tone: "amber" },
+          { name: "X", values: mat(X), tone: "violet" },
+        ],
+        ops: ["+", "="],
+        caption: "Toy 6-number embeddings (2 for position, 4 for meaning). Real models use 768 to 12,000+ numbers per token.",
+      },
       deeper: {
-        math: ["PE(pos, 2i)   = sin(pos / 10000^(2i/d_model))", "PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))", `Position 1 → ${vec(PE[1])}`, "The original paper also multiplies embeddings by √d_model before adding PE. Many modern LLMs use RoPE (rotary embeddings) inside attention instead."],
+        math: ["PE(pos, 2i)   = sin(pos / 10000^(2i/d_model))", "PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))", `Position 1 → ${vec(PE[1])}`, "The original paper also multiplies embeddings by √d_model before adding PE."],
       },
       log: [
-        ...TOKENS.map((t, i) => ({ tone: "blue" as const, cells: { op: "tokenize", what: `“${t}” → ${IDS[i]}`, shape: "id", value: `pos ${i}` } })),
-        { tone: "amber", cells: { op: "embed + PE", what: "X = E[ids] + PE", shape: `4 × ${D}`, value: `X[cat] = ${vec(X[1])}` } },
+        ...SHORT.map((t, i) => ({ tone: "blue" as const, cells: { op: "embed + PE", what: `X[${t}]`, shape: `1 × ${D}`, value: vec(X[i]) } })),
       ],
-      interviewTip: "Tokens ≠ words. Pricing, context limits and speed are all counted in tokens.",
+      interviewTip: "Self-attention is permutation-equivariant: without positions, “dog bites man” and “man bites dog” look the same.",
     },
+    // 5 ─────────────────────────────────────────────────────────────
     {
       id: "qkv",
-      title: "Queries, keys and values",
+      title: "Every word asks, labels and offers",
+      simple: "Each word makes three things: a question (what am I looking for), a label (what I am), and its information.",
       explain:
-        "Each token's vector X is multiplied by three learned matrices to make three new vectors:\n\n- **{{query|Query}}** — what am I looking for?\n- **{{key|Key}}** — what do I contain?\n- **{{value|Value}}** — what will I hand over if picked?\n\nSame input, three different “views”. Training learns the matrices W_Q, W_K, W_V.",
-      analogy: "At the cocktail party: the query is the question in your head, the key is the name badge, the value is the story the person actually tells.",
+        "Each token's numbers are multiplied by three learned tables to make a {{query}} (what am I looking for?), a {{key}} (what can I be found by?) and a {{value}} (what I hand over if chosen). Same token, three different views. Training learns the three tables.",
+      analogy: "At a party: the query is the question in your head, the key is your name badge, the value is the story you actually tell.",
+      detail: `Q = X·W_Q, K = X·W_K, V = X·W_V, each ${TOKENS.length} × ${DK} here (d_k = ${DK}). In self-attention all three come from the **same** sequence; in cross-attention (encoder–decoder) the queries come from one sequence and keys/values from another.`,
+      stage: { kind: "tokens", mode: "qkv", tokens: TOKENS, note: "Q = looking for · K = label · V = information" },
       highlight: ["embed", "qkv"],
       packets: [
         { from: "embed", to: "qkv", label: `X (4 × ${D})`, tone: "blue" },
         { from: "qkv", to: "attn", label: `Q, K, V (4 × ${DK})`, tone: "violet" },
       ],
       viz: {
+        only: "interview",
         kind: "matrices",
         title: "Q = X·W_Q,  K = X·W_K,  V = X·W_V",
         items: [
@@ -277,50 +333,35 @@ V  = X @ W_v                       # (n, d_v)`,
         { tone: "violet", cells: { op: "project", what: "K = X · W_K", shape: `4 × ${DK}`, value: `K[cat] = ${vec(K[1])}` } },
         { tone: "violet", cells: { op: "project", what: "V = X · W_V", shape: `4 × ${DK}`, value: `V[cat] = ${vec(V[1])}` } },
       ],
+      interviewTip: "Say the order: score (Q·K) → softmax → weighted sum of V. And that Q, K, V come from the same input via different learned matrices.",
     },
+    // 6 ─────────────────────────────────────────────────────────────
     {
-      id: "scores",
-      title: "Scores: Q · Kᵀ / √d_k",
-      explain:
-        "Every query is compared with every key using a {{dot-product|dot product}}: multiply matching numbers and add them up. A big number means “this key matches what I'm looking for”.\n\nThat gives a 4 × 4 grid of scores — row = who is looking, column = who is being looked at. We divide by √d_k so the numbers do not grow with vector size; otherwise {{softmax}} in the next step becomes all-or-nothing and training stalls.",
+      id: "attention",
+      title: "Who should I listen to?",
+      simple: `“Sleeping” checks every word's label against its question. “Cat” matches best, so it gets ${pc(A[3][TOP3])} of the attention.`,
+      explain: `Each query is compared with every key using a {{dot-product|dot product}} (multiply matching numbers and add). A {{softmax}} then turns the scores into percentages that add up to 100%. Thicker lines = more {{attention}}. Hover or tab to another word to see where it looks.`,
+      analogy: "Scanning the name badges in a room and deciding how much to listen to each person.",
+      detail: `Scores = Q·Kᵀ / √d_k, a ${TOKENS.length} × ${TOKENS.length} grid (row = who looks, column = who is looked at). Dividing by √d_k = ${f(Math.sqrt(DK), 3)} keeps the scores' variance near 1: without it, scores grow with vector size and softmax becomes all-or-nothing, so gradients vanish.\n\nRow “sleeping”: score with “cat” = ${f(SCORES[3][1], 2)}, the highest, so softmax gives it ${(A[3][1] * 100).toFixed(1)}%.`,
+      stage: { kind: "tokens", mode: "attention", tokens: TOKENS, attention: A, focus: 3, note: "line thickness = share of attention" },
       highlight: ["qkv", "attn"],
-      packets: [{ from: "qkv", to: "attn", label: "Q · Kᵀ", sub: `÷ √${DK} = ÷ ${f(Math.sqrt(DK), 3)}`, tone: "amber" }],
-      viz: {
-        kind: "heatmap",
-        title: "Scaled scores (before softmax)",
-        rowLabels: SHORT,
-        colLabels: SHORT,
-        values: SCORES,
-        format: "fixed2",
-        highlightRow: 3,
-        rowAxis: "query",
-        colAxis: "key",
-        caption: `Row “sleeping”: its query matches the key of “cat” best (${f(SCORES[3][1])}).`,
-      },
-      deeper: {
-        math: [
-          `score(sleeping, cat) = Q[sleeping] · K[cat] / √${DK}`,
-          `= ${vec(Q[3])} · ${vec(K[1])} / ${f(Math.sqrt(DK), 3)}`,
-          `= ${f(Q[3].reduce((s, q, i) => s + q * K[1][i], 0), 3)} / ${f(Math.sqrt(DK), 3)} = ${f(SCORES[3][1], 3)}`,
-          "Why √d_k: if q and k have independent unit-variance entries, q·k has variance d_k. Dividing by √d_k brings it back to ~1.",
-        ],
-      },
-      log: SCORES.map((r, i) => ({ tone: "amber" as const, cells: { op: "score row", what: `“${SHORT[i]}” vs all`, shape: "1 × 4", value: `[${r.map((x) => f(x)).join(", ")}]` } })),
-      interviewTip: "The √d_k question is a classic. Answer with *variance*, not “normalisation”.",
-    },
-    {
-      id: "softmax",
-      title: "Softmax → weights → mix the values",
-      explain:
-        "{{softmax|Softmax}} turns each row of scores into percentages that add up to 100%. Those are the **attention weights**.\n\nEach token's output is then a weighted average of all the value vectors. “sleeping” puts most of its weight on “cat”, so its new vector now carries the information *who* is sleeping.\n\nThis is the moment a word's meaning becomes context-aware.",
-      analogy: "You heard four people at the party. You trust one a lot and the others a little; your takeaway is a blend weighted by that trust.",
-      highlight: ["attn"],
-      packets: [
-        { from: "attn", to: "attn", label: "softmax each row", tone: "amber" },
-        { from: "attn", to: "addnorm", label: `out = A · V (4 × ${DK})`, tone: "green" },
-      ],
+      packets: [{ from: "qkv", to: "attn", label: "Q · Kᵀ", sub: `÷ √${DK} → softmax`, tone: "amber" }],
       viz: [
         {
+          only: "interview",
+          kind: "heatmap",
+          title: "Scaled scores (before softmax)",
+          rowLabels: SHORT,
+          colLabels: SHORT,
+          values: SCORES,
+          format: "fixed2",
+          highlightRow: 3,
+          rowAxis: "query",
+          colAxis: "key",
+          caption: `Row “sleeping”: its query matches the key of “cat” best (${f(SCORES[3][1])}).`,
+        },
+        {
+          only: "interview",
           kind: "heatmap",
           title: "Attention weights A = softmax(scores)",
           rowLabels: SHORT,
@@ -332,26 +373,67 @@ V  = X @ W_v                       # (n, d_v)`,
           colAxis: "key",
           caption: "Every row sums to 100%.",
         },
-        {
-          kind: "bars",
-          title: "Where “sleeping” looks",
-          items: SHORT.map((t, j) => ({ label: t, value: A[3][j], tone: j === argmaxRow(A[3]) ? "green" : "blue" })),
-          max: 1,
-          format: "pct",
-        },
-        {
-          kind: "matrices",
-          title: "Output = A · V",
-          items: [{ name: "out", rowLabels: SHORT, values: mat(O), tone: "green" }],
-          caption: `out[sleeping] = Σ A[sleeping, j] · V[j] = ${vec(O[3])}`,
-        },
       ],
       deeper: {
         math: [
+          `score(sleeping, cat) = Q[sleeping] · K[cat] / √${DK}`,
+          `= ${vec(Q[3])} · ${vec(K[1])} / ${f(Math.sqrt(DK), 3)}`,
+          `= ${f(Q[3].reduce((s, q, i) => s + q * K[1][i], 0), 3)} / ${f(Math.sqrt(DK), 3)} = ${f(SCORES[3][1], 3)}`,
           "softmax(z)_j = e^{z_j} / Σ_k e^{z_k}",
-          `Row sleeping: e^${f(SCORES[3][1])} dominates → ${(A[3][1] * 100).toFixed(1)}% on “cat”`,
-          `Check: ${A[3].map((x) => (x * 100).toFixed(1)).join(" + ")} = ${(A[3].reduce((s, x) => s + x, 0) * 100).toFixed(1)}%`,
+          `Check row sleeping: ${A[3].map((x) => (x * 100).toFixed(1)).join(" + ")} = ${(A[3].reduce((s, x) => s + x, 0) * 100).toFixed(1)}%`,
+          "Why √d_k: if q and k have independent unit-variance entries, q·k has variance d_k. Dividing by √d_k brings it back to ~1.",
         ],
+      },
+      log: A.map((r, i) => ({
+        tone: "amber" as const,
+        cells: { op: "score + softmax", what: `“${SHORT[i]}” attends most to “${SHORT[argmaxRow(r)]}”`, shape: "1 × 4", value: `${(r[argmaxRow(r)] * 100).toFixed(1)}%` },
+      })),
+      interviewTip: "The √d_k question is a classic. Answer with *variance*, not “normalisation”.",
+    },
+    // 7 ─────────────────────────────────────────────────────────────
+    {
+      id: "mix",
+      title: "Blend in what you heard",
+      simple: "Each word's new meaning is a mix of the other words' information, weighted by those percentages.",
+      explain: `Now each token takes a weighted average of every token's {{value}}. “Sleeping” takes ${pc(A[3][1])} of “cat”'s information, so its new numbers now carry **who** is sleeping. This is the moment a word's meaning starts to depend on its sentence.`,
+      analogy: "You heard four people. You trust one a lot and the others a little; your takeaway is a blend weighted by that trust.",
+      detail: `out = A · V. For “sleeping”: out = Σⱼ A[sleeping, j] · V[j] = ${vec(O[3])}. The output has the same shape as V (${TOKENS.length} × ${DK}); the heads' outputs are later projected back to d_model.\n\nSoftmax gives a **soft** blend, not a single pick, which keeps everything differentiable so it can be trained with gradient descent.`,
+      stage: {
+        kind: "viz",
+        viz: [
+          {
+            kind: "bars",
+            title: "How much “sleeping” takes from each word",
+            items: SHORT.map((t, j) => ({ label: t, value: A[3][j], tone: j === TOP3 ? ("green" as const) : ("blue" as const) })),
+            max: 1,
+            format: "pct",
+            caption: "These percentages are the recipe for the blend.",
+          },
+          {
+            kind: "matrices",
+            title: "New “sleeping” = weights × values",
+            items: [
+              { name: "weights", values: [A[3].map((x) => +x.toFixed(2))], tone: "amber" },
+              { name: "V (one row per word)", rowLabels: SHORT, values: mat(V), tone: "green" },
+              { name: "new sleeping", values: [O[3].map((x) => +x.toFixed(2))], tone: "violet" },
+            ],
+            ops: ["×", "="],
+          },
+        ],
+      },
+      highlight: ["attn"],
+      packets: [
+        { from: "attn", to: "attn", label: "softmax each row", tone: "amber" },
+        { from: "attn", to: "addnorm", label: `out = A · V (4 × ${DK})`, tone: "green" },
+      ],
+      viz: {
+        only: "interview",
+        kind: "matrices",
+        title: "Output = A · V (all tokens)",
+        items: [{ name: "out", rowLabels: SHORT, values: mat(O), tone: "green" }],
+        caption: `out[sleeping] = Σ A[sleeping, j] · V[j] = ${vec(O[3])}`,
+      },
+      deeper: {
         code: {
           lang: "python",
           src: `
@@ -361,83 +443,96 @@ weights = weights / weights.sum(-1, keepdims=True)
 out     = weights @ V                       # (n, d_v)`,
         },
       },
-      log: A.map((r, i) => ({
-        tone: "green" as const,
-        cells: { op: "softmax + mix", what: `“${SHORT[i]}” attends most to “${SHORT[argmaxRow(r)]}”`, shape: "1 × 4", value: `${(r[argmaxRow(r)] * 100).toFixed(1)}%` },
-      })),
+      log: O.map((r, i) => ({ tone: "green" as const, cells: { op: "mix values", what: `out[${SHORT[i]}]`, shape: `1 × ${DK}`, value: vec(r) } })),
+      interviewTip: "If asked why softmax and not argmax: argmax isn't differentiable, and a soft blend lets a token use several sources.",
     },
+    // 8 ─────────────────────────────────────────────────────────────
     {
       id: "multihead",
-      title: "Multi-head attention",
-      explain:
-        "One set of Q/K/V weights can only learn one way of relating words. So a transformer runs several **heads** in parallel, each with its own weights — this is {{multi-head|multi-head attention}}.\n\nBelow, head 1 learned *meaning* (everything looks at “cat”); head 2 reads only the *position* numbers and learned to look at the **previous** token — a pattern found in real trained models. The heads' outputs are glued together and mixed by one more matrix, W_O.",
-      analogy: "Several listeners at the party, each tuned to a different thing: one to who's who, one to who's standing nearby.",
+      title: "Several heads, several questions",
+      simple: "The model asks several different questions at once, each with its own attention pattern.",
+      explain: `One set of query/key/value tables can only learn one way of relating words, so a transformer runs several **heads** side by side ({{multi-head|multi-head attention}}). Here head 1 links words by meaning (“sleeping” → “cat”); head 2 learned to look at the **previous** word (“sleeping” → “${SHORT[TOP2]}”).`,
+      analogy: "Several listeners at the party, each tuned to something different: one to who's who, one to who's standing next to whom.",
+      detail:
+        "Each head has its own W_Q, W_K, W_V. Head 2 here reads only the position numbers, and its key matrix rotates by one position, so the best match is always the token on the left — a “previous-token head”, a pattern found in real trained models. The heads' outputs are concatenated and mixed by one more matrix, W_O.\n\nWith d_k = d_model / h, h heads cost about the same as one full-width head. Heads aren't assigned jobs; specialisation emerges from training, and some heads turn out redundant.",
+      stage: {
+        kind: "viz",
+        viz: [
+          { kind: "heatmap", title: "Head 1 — meaning", rowLabels: SHORT, colLabels: SHORT, values: A, format: "pct", highlightRow: 3, rowAxis: "looks from", colAxis: "looks at" },
+          { kind: "heatmap", title: "Head 2 — previous word", rowLabels: SHORT, colLabels: SHORT, values: A2, format: "pct", highlightRow: 3, rowAxis: "looks from", colAxis: "looks at", caption: "“The” has nothing on its left, so it mostly looks at itself." },
+        ],
+        note: "same words, different learned tables → different patterns",
+      },
       highlight: ["qkv", "attn"],
       packets: [
         { from: "qkv", to: "attn", label: "head 1: Q₁ K₁ V₁", tone: "violet" },
         { from: "qkv", to: "attn", label: "head 2: Q₂ K₂ V₂", tone: "cyan" },
         { from: "attn", to: "addnorm", label: "concat → · W_O", tone: "green" },
       ],
-      viz: [
-        { kind: "heatmap", title: "Head 1 — meaning", rowLabels: SHORT, colLabels: SHORT, values: A, format: "pct", rowAxis: "query", colAxis: "key" },
-        { kind: "heatmap", title: "Head 2 — previous token", rowLabels: SHORT, colLabels: SHORT, values: A2, format: "pct", rowAxis: "query", colAxis: "key", caption: "Same tokens, different weights → each token looks one step left (“The” has nothing to its left, so it mostly looks at itself)." },
-      ],
       deeper: {
-        math: ["head_i = Attention(X W_Q^i, X W_K^i, X W_V^i)", "MultiHead(X) = Concat(head_1, …, head_h) · W_O", "Typical: d_k = d_model / h, so h heads cost about the same as one full-width head."],
+        math: ["head_i = Attention(X W_Q^i, X W_K^i, X W_V^i)", "MultiHead(X) = Concat(head_1, …, head_h) · W_O", `Head 2: q_i · k_j = α²·cos(i − j − 1), α = ${ALPHA} → largest when j = i − 1`],
       },
       log: [
         { tone: "violet", cells: { op: "head 1", what: "“sleeping” → “cat”", shape: "4 × 4", value: `${(A[3][1] * 100).toFixed(1)}%` } },
-        { tone: "cyan", cells: { op: "head 2", what: `“sleeping” → “${SHORT[argmaxRow(A2[3])]}”`, shape: "4 × 4", value: `${(A2[3][argmaxRow(A2[3])] * 100).toFixed(1)}%` } },
+        { tone: "cyan", cells: { op: "head 2", what: `“sleeping” → “${SHORT[TOP2]}”`, shape: "4 × 4", value: `${(A2[3][TOP2] * 100).toFixed(1)}%` } },
         { tone: "green", cells: { op: "concat · W_O", what: "heads merged", shape: `4 × ${D}`, value: "back to d_model" } },
       ],
       interviewTip: "Heads do not get hand-assigned jobs; specialisation emerges from training. Some heads are known to be redundant and can be pruned.",
     },
+    // 9 ─────────────────────────────────────────────────────────────
     {
       id: "block",
-      title: "Add & Norm, feed-forward, stack × N",
-      explain:
-        "After attention, two bits of plumbing keep a deep stack trainable:\n\n- **{{residual|Residual}}**: add the input back (x + attention(x)), so information and gradients always have a shortcut.\n- **{{layernorm|LayerNorm}}**: rescale each token's vector to mean 0, spread 1.\n\nThen a {{ffn|feed-forward network}} processes **each token on its own** (expand → {{relu|ReLU}} → shrink). Attention mixes information *between* tokens; the FFN transforms it *within* a token.\n\nThat whole unit is one **block**. Models stack it N times.",
+      title: "Think it over, then repeat the block",
+      simple: "After attention, each word is processed on its own by a small network; this whole block repeats many times.",
+      explain: `Attention mixes information **between** words. Then a small {{ffn|feed-forward network}} works on **each word alone** (for “sleeping”, ${FFN_OFF} of its 12 middle neurons stayed switched off). Shortcuts ({{residual|residual connections}}) and rescaling ({{layernorm|LayerNorm}}) keep it stable. That is one block; real models stack dozens.`,
+      analogy: "A study group: first everyone shares notes (attention), then each person quietly thinks it over (feed-forward). Repeat for every chapter.",
+      detail:
+        "- **{{residual|Residual}}**: add the input back, x + attention(x), so information and gradients always have a shortcut.\n- **{{layernorm|LayerNorm}}**: rescale each token's vector to mean 0, spread 1.\n- **FFN**: expand → {{relu|ReLU}} → shrink, usually to 4 × d_model in the middle.\n\nPost-LN (original) normalises after the add; most modern LLMs use pre-LN, x + f(LN(x)), which trains more stably when very deep. Per block ≈ 12·d² parameters: 4d² attention + 8d² FFN, so the FFN holds about ⅔.",
+      stage: {
+        kind: "viz",
+        viz: [
+          {
+            kind: "nn",
+            title: "Feed-forward for “sleeping” (6 → 12 → 6)",
+            layers: [6, 12, 6],
+            layerNames: ["in", "middle (ReLU)", "out"],
+            values: [NORMED[3], H_FFN, BLOCK_OUT],
+            activeLayer: 1,
+            caption: `${FFN_OFF} of 12 middle neurons got a negative total and output 0.`,
+          },
+          {
+            kind: "table",
+            title: "How many blocks real models stack",
+            columns: ["Model", "Blocks", "d_model", "Heads"],
+            rows: [
+              ["Transformer base (2017)", "6 + 6", 512, 8],
+              ["BERT-base", 12, 768, 12],
+              ["GPT-2 small", 12, 768, 12],
+              ["GPT-3 175B", 96, "12,288", 96],
+            ],
+            caption: "From the original papers.",
+          },
+        ],
+      },
       highlight: ["attn", "addnorm", "ffn", "stack"],
       packets: [
         { from: "attn", to: "addnorm", label: "x + attn(x)", tone: "cyan" },
         { from: "addnorm", to: "ffn", label: "LayerNorm(·)", tone: "cyan" },
         { from: "ffn", to: "stack", label: "6 → 12 → 6", sub: "ReLU in the middle", tone: "violet" },
       ],
-      viz: [
-        {
-          kind: "bars",
-          title: "“sleeping”: residual vs after LayerNorm",
-          items: [
-            ...RESID[3].map((x, i) => ({ label: `x+attn d${i}`, value: x, tone: "slate" as const })),
-            ...NORMED[3].map((x, i) => ({ label: `norm d${i}`, value: x, tone: x >= 0 ? ("cyan" as const) : ("rose" as const), note: x < 0 ? "(neg)" : "" })),
-          ],
-          format: "fixed2",
-          caption: `After LayerNorm the 6 numbers have mean ${f(NORMED[3].reduce((s, x) => s + x, 0) / D)} and std ≈ 1.`,
-        },
-        {
-          kind: "nn",
-          title: "FFN for one token (6 → 12 → 6)",
-          layers: [6, 12, 6],
-          layerNames: ["in", "hidden (ReLU)", "out"],
-          values: [NORMED[3], H_FFN, BLOCK_OUT],
-          activeLayer: 1,
-          caption: `${H_FFN.filter((h) => h === 0).length} of 12 hidden units were negative and got zeroed by ReLU. Output shown after the second Add & Norm.`,
-        },
-        {
-          kind: "table",
-          title: "Published configurations",
-          columns: ["Model", "Blocks", "d_model", "Heads"],
-          rows: [
-            ["Transformer base (2017)", "6 + 6", 512, 8],
-            ["BERT-base", 12, 768, 12],
-            ["GPT-2 small", 12, 768, 12],
-            ["GPT-3 175B", 96, "12,288", 96],
-          ],
-          caption: "From the original papers. Newer frontier models rarely publish these.",
-        },
-      ],
+      viz: {
+        only: "interview",
+        kind: "bars",
+        title: "“sleeping”: residual vs after LayerNorm",
+        items: [
+          ...RESID[3].map((x, i) => ({ label: `x+attn d${i}`, value: x, tone: "slate" as const })),
+          ...NORMED[3].map((x, i) => ({ label: `norm d${i}`, value: x, tone: x >= 0 ? ("cyan" as const) : ("rose" as const), note: x < 0 ? "(neg)" : "" })),
+        ],
+        format: "fixed2",
+        caption: `After LayerNorm the 6 numbers have mean ${f(NORMED[3].reduce((s, x) => s + x, 0) / D)} and std ≈ 1.`,
+      },
       deeper: {
-        math: ["Post-LN (original):  x = LN(x + Attn(x));  x = LN(x + FFN(x))", "Pre-LN (most modern LLMs): x = x + Attn(LN(x));  x = x + FFN(LN(x)) — more stable when very deep", "FFN(x) = W₂ · act(W₁ x + b₁) + b₂, with hidden size usually ≈ 4 × d_model", "Per block ≈ 12·d² parameters: 4d² attention (Q,K,V,O) + 8d² FFN → the FFN holds about ⅔."],
+        math: ["Post-LN (original):  x = LN(x + Attn(x));  x = LN(x + FFN(x))", "Pre-LN (most modern LLMs): x = x + Attn(LN(x));  x = x + FFN(LN(x))", "FFN(x) = W₂ · act(W₁ x + b₁) + b₂, hidden size usually ≈ 4 × d_model", "Per block ≈ 12·d² parameters: 4d² attention (Q,K,V,O) + 8d² FFN."],
       },
       log: [
         { tone: "cyan", cells: { op: "residual", what: "x + attn(x) [sleeping]", shape: `1 × ${D}`, value: vec(RESID[3]) } },
@@ -447,11 +542,15 @@ out     = weights @ V                       # (n, d_v)`,
       ],
       interviewTip: "Know where the parameters live: the FFNs, not attention, hold most of them.",
     },
+    // 10 ────────────────────────────────────────────────────────────
     {
       id: "next",
-      title: "Predict the next token, learn from the miss",
-      explain:
-        "The last block's vector for the **final** position goes through the LM head: one score ({{logits|logit}}) per word in the vocabulary, then softmax → probabilities.\n\n**Training**: the real text continues “… sleeping **on** the sofa”, so the loss is {{cross-entropy}} = −log(probability given to “ on”). Confident and right → loss near 0. Confident and wrong → huge loss. {{backprop|Backprop}} then nudges every weight in every block.\n\nA {{causal-mask|causal mask}} stops each position peeking at later words, which lets one forward pass train on every position of the sentence at once.",
+      title: "Guess the next word, learn from the miss",
+      simple: `The model scores every possible next word. “on” gets ${pc(PROBS[TARGET])}; in training, the real next word teaches it.`,
+      explain: `The last word's final numbers become one score per word in the vocabulary ({{logits}}), and softmax turns them into chances. The real text continues “sleeping **on** the sofa”, so the {{loss}} is −log(chance given to “␣on”) = **${f(LOSS, 2)}**. {{backprop|Backprop}} then nudges every weight so “␣on” gets a bit more next time.`,
+      analogy: "A fill-in-the-blank quiz with millions of sentences. Every wrong guess is a small lesson.",
+      detail: `This is {{cross-entropy}} loss: 0 when the model puts 100% on the right token, huge when it is confidently wrong. Over a batch, the loss is averaged over every position of every sequence.\n\nA {{causal-mask|causal mask}} sets later positions to −∞ before softmax, so each position can only look left. With the true previous tokens fed in (teacher forcing), one forward pass trains on **every** position at once. Generation is different: each new token depends on the last, so it goes one token at a time.`,
+      stage: { kind: "tokens", mode: "next", tokens: TOKENS, candidates: CANDIDATES.map((c, i) => ({ text: c, p: PROBS[i] })), chosen: TARGET, note: `real next word: “on” · loss = −ln ${f(PROBS[TARGET], 2)} = ${f(LOSS, 2)}` },
       highlight: ["stack", "head", "next", "loss"],
       packets: [
         { from: "stack", to: "head", label: "h[last] (1 × d_model)", tone: "blue" },
@@ -460,14 +559,7 @@ out     = weights @ V                       # (n, d_v)`,
       ],
       viz: [
         {
-          kind: "bars",
-          title: "Next-token probabilities (toy 5-word vocabulary)",
-          items: CANDIDATES.map((c, i) => ({ label: `“${c}”`, value: PROBS[i], tone: i === TARGET ? "green" : "blue", note: `logit ${LOGITS[i].toFixed(1)}` })),
-          max: 1,
-          format: "pct",
-          caption: `Target “ on” got ${(PROBS[TARGET] * 100).toFixed(1)}% → loss = −ln(${f(PROBS[TARGET], 3)}) = ${f(LOSS, 3)}.`,
-        },
-        {
+          only: "interview",
           kind: "plot",
           title: "Cross-entropy = −ln p(correct)",
           series: [{ label: "−ln p", points: Array.from({ length: 60 }, (_, i) => { const p = 0.02 + (i / 59) * 0.98; return [p, -Math.log(p)] as [number, number]; }), tone: "rose" }],
@@ -478,6 +570,7 @@ out     = weights @ V                       # (n, d_v)`,
           markers: [{ x: PROBS[TARGET], y: LOSS, label: `p=${f(PROBS[TARGET])}`, tone: "green" }],
         },
         {
+          only: "interview",
           kind: "heatmap",
           title: "Causal mask: decoders only look left",
           rowLabels: SHORT,
@@ -490,7 +583,7 @@ out     = weights @ V                       # (n, d_v)`,
         },
       ],
       deeper: {
-        math: [`p = softmax(logits) = [${PROBS.map((p) => f(p, 3)).join(", ")}]`, `L = −ln p(“ on”) = −ln ${f(PROBS[TARGET], 4)} = ${f(LOSS, 4)}`, "Over a batch: average L over every position of every sequence (“teacher forcing”: the true previous tokens are fed in, not the model's guesses)."],
+        math: [`p = softmax(logits) = [${PROBS.map((p) => f(p, 3)).join(", ")}]`, `L = −ln p(“ on”) = −ln ${f(PROBS[TARGET], 4)} = ${f(LOSS, 4)}`, "Teacher forcing: the true previous tokens are fed in, not the model's guesses."],
       },
       log: [
         ...CANDIDATES.map((c, i) => ({ tone: (i === TARGET ? "green" : "blue") as "green" | "blue", cells: { op: "lm head", what: `“${c}”  logit ${LOGITS[i].toFixed(1)}`, shape: "1 of V", value: `p = ${f(PROBS[i], 3)}` } })),

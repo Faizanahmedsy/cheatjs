@@ -74,11 +74,27 @@ const TOOL_CALL = { name: "get_weather", arguments: { city: "Paris", date: "tomo
 const TOOL_RESULT = { city: "Paris", rain_chance: 0.7, temp_c: 14 };
 const FINAL = `Yes, take one: there's a ${Math.round(TOOL_RESULT.rain_chance * 100)}% chance of rain and about ${TOOL_RESULT.temp_c} °C.`;
 
+/** A question asked with no history at all: the model has nothing to go on. */
+const FORGOT_Q = TURNS[LAST][0].text;
+const FORGOT_A = "Sorry, I'm not sure which city you mean. Could you tell me?";
+const SORTED_MEMS = MEMORIES.map((m, i) => ({ ...m, s: SIMS[i], i })).sort((a, b) => b.s - a.s);
+const MEM_ANSWER = `Good news for ${MEMORIES[BEST].text.replace("User's dog is called ", "")}: most trains in France allow dogs. Want me to check the rules for your route?`;
+const SSE_SHOWN = 5;
+
 const scenario: Scenario = {
   id: "conversational-ai",
   title: "Conversational AI & streaming",
   tagline: "Roles, history, tokens streamed to the browser, memory and tools.",
+  imagine:
+    "Imagine chatting with a brilliant helper who forgets everything the moment they finish a sentence. To keep the conversation going, you hand them the whole chat so far before every new question. That is how every chatbot works: the app does the remembering, the model just answers.",
+  recap: [
+    "Every message has a **role** (system, user, assistant, tool), and the model remembers nothing: the app resends the history every turn.",
+    "Replies are **streamed** token by token over SSE, so text appears almost at once.",
+    "Long chats need **memory tricks** (a sliding window, summaries, vector memory), and **tools** let the model ask your code to look things up.",
+  ],
   overview: {
+    plain:
+      "A chatbot is an app wrapped around a language model. Each time you send a message, the app sends the model the rules, the chat so far and your new message, and the model writes the next reply word by word. Remembering, looking things up and keeping chats short enough are all the app's job.",
     definition:
       "A chat app is a loop around a {{stateless}} model API: every turn, **your app** sends the list of messages so far — a {{system-prompt|system prompt}}, the user and assistant turns, and any tool results — and the model replies with the next assistant message, usually streamed token by token over {{sse|SSE}}. Memory, tools and long conversations are all things **the app** manages.",
     analogy:
@@ -121,12 +137,25 @@ const scenario: Scenario = {
     { key: "t", label: "t (ms)", align: "right", width: "9%" },
   ],
   steps: [
+    // 1 ─────────────────────────────────────────────────────────────
     {
       id: "roles",
-      title: "Message roles",
+      title: "Every message has a role",
+      simple: "A chat is a list of messages, and each one is labelled with who said it.",
       explain:
-        "A chat request is a list of messages, each tagged with a **role**:\n\n- **system** — the developer's rules and persona (the {{system-prompt|system prompt}}).\n- **user** — what the person typed.\n- **assistant** — what the model said earlier.\n- **tool** — results your code sends back after the model asked for a tool.\n\nThe model was trained to treat these differently, e.g. to follow system instructions over casual user requests — though that is a tendency, not a security guarantee.",
+        "The **system** message holds the app maker's rules (the {{system-prompt|system prompt}}). **User** is what you typed, **assistant** is what the model replied. Later we will meet a fourth role, **tool**, for answers your own code looks up.",
       analogy: "A film script: stage directions (system), lines for each character (user, assistant), and props handed in from off-stage (tool).",
+      detail:
+        "A chat request is an ordered list of role-tagged messages. The model was trained to treat the roles differently, e.g. to follow system instructions over casual user requests — but that is a tendency, not a security guarantee. User text and tool results can still try to override the rules (prompt injection).\n\nField names vary between providers (some put the system prompt in a separate field), but the idea is the same everywhere.",
+      stage: {
+        kind: "chat",
+        messages: [
+          { role: "system", text: SYSTEM.text, note: `≈ ${tok(SYSTEM.text)} tokens · the rules` },
+          { role: "user", text: TURNS[0][0].text, note: `≈ ${tok(TURNS[0][0].text)} tokens` },
+          { role: "assistant", text: TURNS[0][1].text, note: "the model's reply" },
+        ],
+        aside: { title: "The roles", items: ["system: the app's rules", "user: what you type", "assistant: the model's replies", "tool: results your code sends back"], tone: "slate" },
+      },
       highlight: ["user", "browser", "server", "llm"],
       packets: [
         { from: "user", to: "browser", label: `“${TURNS[0][0].text}”`, tone: "cyan" },
@@ -134,12 +163,13 @@ const scenario: Scenario = {
         { from: "server", to: "llm", label: "[system, user]", sub: `${INPUT_PER_CALL[0]} tokens`, tone: "blue" },
       ],
       viz: {
-        kind: "chat",
+        only: "interview",
+        kind: "table",
         title: "What the API receives",
-        messages: [
-          { role: "system", text: SYSTEM.text, note: `≈ ${tok(SYSTEM.text)} tokens` },
-          { role: "user", text: TURNS[0][0].text, note: `≈ ${tok(TURNS[0][0].text)} tokens` },
-          { role: "assistant", text: TURNS[0][1].text, note: "the model's reply" },
+        columns: ["role", "content", "≈ tokens"],
+        rows: [
+          ["system", SYSTEM.text, tok(SYSTEM.text)],
+          ["user", TURNS[0][0].text, tok(TURNS[0][0].text)],
         ],
         caption: "Token counts here use the rough “4 characters ≈ 1 token” rule; real tokenizers vary.",
       },
@@ -155,7 +185,6 @@ const scenario: Scenario = {
   "stream": true
 }`,
         },
-        text: "Field names vary between providers (some put the system prompt in a separate field), but the idea — an ordered list of role-tagged messages — is the same everywhere.",
       },
       log: [
         { tone: "slate", cells: { op: "build request", role: "system", payload: SYSTEM.text, tokens: tok(SYSTEM.text) } },
@@ -164,11 +193,53 @@ const scenario: Scenario = {
       ],
       interviewTip: "Say clearly that the system prompt is **not** a security boundary: user text and tool results can still try to override it (prompt injection).",
     },
+    // 2 ─────────────────────────────────────────────────────────────
+    {
+      id: "forgets",
+      title: "The model remembers nothing",
+      simple: "Each call to the model starts fresh. Send only the new question and it has no idea what came before.",
+      explain:
+        "The model API is {{stateless}} (it keeps nothing between calls). If the app sends only “Remind me which city we're talking about?”, the model has never heard of Paris. It can only guess or ask.",
+      analogy: "Phoning a help desk where a different person picks up every time and nobody takes notes.",
+      detail:
+        "Chat model APIs are stateless: each call is independent and inference never updates the weights, so nothing is learned from your chat. Any “memory” — history, summaries, stored facts — is something the application builds and sends. Some platforms offer server-side threads, but they too just store and resend context for you.",
+      stage: {
+        kind: "chat",
+        messages: [
+          { role: "system", text: SYSTEM.text },
+          { role: "user", text: FORGOT_Q, note: "sent on its own, no history" },
+          { role: "assistant", text: FORGOT_A, note: "it cannot know" },
+        ],
+        streamLast: true,
+        aside: { title: "Sent to the model this turn", items: ["system prompt", `“${FORGOT_Q}”`, `≈ ${tok(SYSTEM.text) + tok(FORGOT_Q)} tokens, no earlier turns`], tone: "rose" },
+      },
+      highlight: ["server", "llm"],
+      packets: [{ from: "server", to: "llm", label: "[system, new message]", sub: `${tok(SYSTEM.text) + tok(FORGOT_Q)} tokens`, tone: "rose" }],
+      log: [{ tone: "rose", cells: { op: "call (no history)", role: "→ llm", payload: FORGOT_Q, tokens: tok(SYSTEM.text) + tok(FORGOT_Q) } }],
+      interviewTip: "“Does the model remember?” — No. The app resends history; inference does not update weights.",
+    },
+    // 3 ─────────────────────────────────────────────────────────────
     {
       id: "history",
-      title: "Multi-turn: the app resends the history",
-      explain:
-        "The model API is {{stateless}}: it does not remember the last call. To answer “Remind me which city we're talking about?”, the backend loads the thread from its database and sends **every earlier message again**.\n\nSo each call's input grows, and you pay for that history every turn. Over a conversation the total input grows roughly with the *square* of the number of turns.",
+      title: "So the app resends the whole chat",
+      simple: "Before every reply the app sends the model the entire conversation again, so each call gets bigger.",
+      explain: `The backend loads the chat from its database and sends **every earlier message** plus the new one. Call ${TURNS.length} sends ${INPUT_PER_CALL[LAST]} {{token|tokens}} (small chunks of text), though you only typed ${tok(TURNS[LAST][0].text)}. You pay for that history on every turn.`,
+      detail: `Each call's input = system + every earlier message + the new user message, so input grows each turn and the **total** over a conversation grows roughly with the square of the number of turns. Here: ${INPUT_PER_CALL.join(" + ")} = **${TOTAL_INPUT}** input tokens over ${TURNS.length} calls, while the user typed only ${sum(TURNS.map(([u]) => tok(u.text)))}. Long chats get slower and pricier for this reason.`,
+      stage: {
+        kind: "chat",
+        messages: [
+          { role: "system", text: SYSTEM.text },
+          { role: "user", text: TURNS[LAST - 1][0].text, dim: true, note: `+ ${LAST - 1} earlier turns, also resent` },
+          { role: "assistant", text: TURNS[LAST - 1][1].text, dim: true },
+          { role: "user", text: TURNS[LAST][0].text, note: "new" },
+          { role: "assistant", text: TURNS[LAST][1].text },
+        ],
+        aside: {
+          title: "Tokens sent per call",
+          items: [...INPUT_PER_CALL.map((n, i) => `call ${i + 1}: ${n} tokens${i === LAST ? " (this one)" : ""}`), `total: ${TOTAL_INPUT} tokens`],
+          tone: "blue",
+        },
+      },
       highlight: ["server", "history", "llm"],
       packets: [
         { from: "server", to: "history", label: "load thread", tone: "slate" },
@@ -177,6 +248,7 @@ const scenario: Scenario = {
       ],
       viz: [
         {
+          only: "interview",
           kind: "plot",
           title: "Input tokens per call",
           series: [{ label: "input tokens", points: INPUT_PER_CALL.map((n, i) => [i + 1, n] as [number, number]), tone: "blue" }],
@@ -185,9 +257,10 @@ const scenario: Scenario = {
           xLabel: "turn",
           yLabel: "tokens in",
           markers: INPUT_PER_CALL.map((n, i) => ({ x: i + 1, y: n, label: String(n), tone: "blue" as Tone })),
-          caption: `Total input billed over ${TURNS.length} turns: ${TOTAL_INPUT} tokens, though the user typed only ${sum(TURNS.map(([u]) => tok(u.text)))}.`,
+          caption: `Total input billed over ${TURNS.length} turns: ${TOTAL_INPUT} tokens.`,
         },
         {
+          only: "interview",
           kind: "table",
           title: "What each call contains",
           columns: ["Call", "Messages sent", "≈ Tokens in"],
@@ -198,28 +271,39 @@ const scenario: Scenario = {
         math: ["input(call i) = system + Σ_{j<i} (user_j + assistant_j) + user_i", ...INPUT_PER_CALL.map((n, i) => `call ${i + 1}: ${n}`), `total = ${INPUT_PER_CALL.join(" + ")} = ${TOTAL_INPUT}`],
       },
       log: INPUT_PER_CALL.map((n, i) => ({ tone: "blue" as Tone, cells: { op: `call ${i + 1}`, role: "→ llm", payload: `system + ${i * 2} history msgs + “${TURNS[i][0].text}”`, tokens: n } })),
-      interviewTip: "“Does the model remember?” — No. The app resends history; that is why long chats get slower and pricier.",
+      interviewTip: "Mention the cost curve: resending history makes total input grow roughly quadratically with turns.",
     },
+    // 4 ─────────────────────────────────────────────────────────────
     {
       id: "stream",
-      title: "Streaming tokens with SSE",
-      explain:
-        "Waiting for a full answer feels slow, so the backend asks the model to **stream**. Tokens arrive a few at a time, and the backend forwards them to the browser over {{sse|Server-Sent Events}}: one long HTTP response where each chunk is a line starting with `data:` followed by a blank line.\n\nThe browser appends each chunk as it arrives. The total time barely changes; the *perceived* wait drops to the {{ttft|time to first token}}.",
+      title: "Words arrive as they are written",
+      simple: "Instead of waiting for the whole answer, the reply is sent piece by piece and appears as it is written.",
+      explain: `This is **streaming**. The server keeps one connection open and pushes each new piece as a small message, using {{sse|Server-Sent Events}} (lines that start with \`data:\`). The first words show up after ${TTFT_MS} ms instead of after the whole answer.`,
       analogy: "A radio broadcast instead of mailing a recording: you hear the first words while the rest is still being spoken.",
+      detail: `The total time barely changes; the *perceived* wait drops to the {{ttft|time to first token}} (${TTFT_MS} ms here, finished at ${STREAM_DONE_MS} ms). Each SSE event is a \`data: …\` line ended by a blank line. The browser's built-in \`EventSource\` only does GET, so chat UIs usually \`fetch\` with POST and read the body as a stream. Watch out for proxies that buffer responses (for nginx, \`X-Accel-Buffering: no\`), cancel the upstream call when the user disconnects, and save the partial message.`,
+      stage: {
+        kind: "chat",
+        messages: [
+          { role: "user", text: TURNS[0][0].text },
+          { role: "assistant", text: ANSWER_CHUNKS.join(""), note: `first piece at ${TTFT_MS} ms, done at ${STREAM_DONE_MS} ms` },
+        ],
+        streamLast: true,
+        aside: { title: "What the browser receives", items: [...ANSWER_CHUNKS.slice(0, SSE_SHOWN).map((c, i) => `${chunkTime(i)} ms  ${sseLine(c)}`), `… ${ANSWER_CHUNKS.length - SSE_SHOWN} more`], tone: "green" },
+      },
       highlight: ["llm", "server", "browser"],
       packets: [
         { from: "llm", to: "server", label: "token stream", tone: "violet" },
         ...ANSWER_CHUNKS.slice(0, 4).map((c, i) => ({ from: "server", to: "browser", label: sseLine(c), sub: `${chunkTime(i)} ms`, tone: "green" as Tone })),
       ],
       viz: {
+        only: "interview",
         kind: "table",
-        title: "What the browser receives",
+        title: "Every SSE chunk",
         columns: ["t (ms)", "SSE line", "Text so far"],
         rows: ANSWER_CHUNKS.map((c, i) => [chunkTime(i), sseLine(c), ANSWER_CHUNKS.slice(0, i + 1).join("")]),
-        caption: `First text on screen at ${TTFT_MS} ms; finished at ${STREAM_DONE_MS} ms. The event shape here is simplified — each provider has its own.`,
+        caption: "The event shape here is simplified — each provider has its own.",
       },
       deeper: {
-        text: "The browser's built-in `EventSource` only does GET requests, so chat UIs usually `fetch` with POST and read the body as a stream. Watch out for proxies that buffer responses (for nginx, the `X-Accel-Buffering: no` header turns that off).",
         code: {
           lang: "ts",
           src: `
@@ -241,93 +325,111 @@ for (;;) { const { value, done } = await reader.read(); if (done) break; render(
       log: ANSWER_CHUNKS.map((c, i) => ({ tone: "green" as Tone, cells: { op: "sse chunk", role: "server → browser", payload: sseLine(c), tokens: 1, t: chunkTime(i) } })),
       interviewTip: "Mention cancellation (AbortController), saving the partial message, and proxy buffering. That is what separates people who have shipped streaming.",
     },
+    // 5 ─────────────────────────────────────────────────────────────
     {
       id: "window",
-      title: "Too long? Sliding window",
-      explain:
-        "History cannot grow forever: it must fit the {{context-window|context window}}, and every token costs money and time. The simplest fix is a **sliding window**: keep the system prompt and only the last few turns.\n\nIt is cheap and predictable — but whatever falls out of the window is simply gone. Here, with a window of 2 turns, the turn where we learned the city falls out.",
+      title: "Too long? Keep only the latest turns",
+      simple: "When the chat gets long, the app can send only the last few turns and drop the oldest ones.",
+      explain: `The chat must fit the {{context-window|context window}} (the most text a model can read at once), and every token costs money. A **sliding window** keeps the rules plus the last ${WINDOW} turns: ${WINDOW_INPUT} tokens instead of ${INPUT_PER_CALL[LAST]}. Cheap and simple, but the dropped turns are simply gone.`,
+      detail: `Here the oldest turn — the one that mentioned France — falls out. ${
+        KEPT_HAS_CITY_ONLY_INDIRECTLY ? "The city still appears in a kept answer, so the model copes this time, but older facts can vanish entirely." : "The city no longer appears anywhere in the prompt."
+      } In practice, trim by a **token budget** (count with the real tokenizer, drop the oldest until it fits, and leave room for the reply) rather than by turn count.`,
+      stage: {
+        kind: "chat",
+        messages: [
+          { role: "system", text: SYSTEM.text },
+          ...DROPPED_TURNS.flatMap(([u, a]) => [
+            { role: "user" as const, text: u.text, dim: true, note: "dropped" },
+            { role: "assistant" as const, text: a.text, dim: true },
+          ]),
+          { role: "assistant", text: KEPT_TURNS[KEPT_TURNS.length - 1][1].text, note: `kept: the last ${WINDOW} turns` },
+          { role: "user", text: TURNS[LAST][0].text, note: "new" },
+        ],
+        aside: {
+          title: `Sent this turn: ${WINDOW_INPUT} tokens`,
+          items: ["system prompt", ...KEPT_TURNS.map(([u]) => `turn: “${u.text}”`), "the new message", `saved ${INPUT_PER_CALL[LAST] - WINDOW_INPUT} tokens`],
+          tone: "blue",
+        },
+      },
       highlight: ["server", "history", "llm"],
       packets: [
         { from: "server", to: "history", label: `keep last ${WINDOW} turns`, tone: "slate" },
         { from: "server", to: "llm", label: `${WINDOW_INPUT} tokens (was ${INPUT_PER_CALL[LAST]})`, tone: "blue" },
       ],
-      viz: {
-        kind: "chat",
-        title: `Window of ${WINDOW} turns at call ${TURNS.length}`,
-        messages: [
-          { role: "system", text: SYSTEM.text },
-          ...DROPPED_TURNS.flatMap(([u, a]) => [
-            { role: "user" as const, text: u.text, dim: true, note: "dropped" },
-            { role: "assistant" as const, text: a.text, dim: true, note: "dropped" },
-          ]),
-          ...KEPT_TURNS.flatMap(([u, a]) => [
-            { role: "user" as const, text: u.text },
-            { role: "assistant" as const, text: a.text },
-          ]),
-          { role: "user", text: TURNS[LAST][0].text, note: "new" },
-        ],
-        caption: DROPPED_HAS_CITY
-          ? `The dropped turn held the question about France. ${KEPT_HAS_CITY_ONLY_INDIRECTLY ? "The city still appears in a kept answer, so the model can probably cope this time — but older facts can vanish entirely." : "The city no longer appears anywhere in the prompt."}`
-          : "Nothing important was dropped this time.",
-      },
       deeper: {
-        math: [`window input = system + last ${WINDOW} turns + new message = ${WINDOW_INPUT} tokens`, `full history = ${INPUT_PER_CALL[LAST]} tokens → saved ${INPUT_PER_CALL[LAST] - WINDOW_INPUT}`, "In practice, trim by token budget (count tokens, drop oldest until it fits) rather than by turn count."],
+        math: [`window input = system + last ${WINDOW} turns + new message = ${WINDOW_INPUT} tokens`, `full history = ${INPUT_PER_CALL[LAST]} tokens → saved ${INPUT_PER_CALL[LAST] - WINDOW_INPUT}`],
       },
       log: [
         ...DROPPED_TURNS.map(([u]) => ({ tone: "rose" as Tone, cells: { op: "drop", role: "history", payload: `“${u.text}” (+ reply)` } })),
         { tone: "blue", cells: { op: "call", role: "→ llm", payload: `system + last ${WINDOW} turns + new message`, tokens: WINDOW_INPUT } },
       ],
+      interviewTip: "Always budget tokens for the output too: prompt + max reply must fit the context window.",
     },
+    // 6 ─────────────────────────────────────────────────────────────
     {
       id: "summary",
-      title: "Summarise old turns",
-      explain:
-        "A smarter option: before dropping old turns, ask a model to **summarise** them into a short note, and send that note instead.\n\nYou keep the gist (“planning a trip to Paris”) for a fraction of the tokens. The risk: summaries lose details and can introduce errors, so keep important facts (names, numbers, decisions) explicitly.",
+      title: "Or squeeze old turns into a summary",
+      simple: "Before dropping old turns, the app asks a model to write a short note about them, and keeps the note.",
+      explain: `The note (“planning a trip to Paris”) keeps the gist for ${tok(SUMMARY)} tokens. Rules + note + recent turns come to ${SUMMARY_INPUT} tokens: ${SUMMARY_INPUT > WINDOW_INPUT ? `more than the window alone (${WINDOW_INPUT}) in a chat this short, but the city is not lost` : `less than the full ${INPUT_PER_CALL[LAST]}`}. The risk: summaries lose details and can get things wrong.`,
       analogy: "Minutes of a meeting instead of the full recording.",
+      detail: `Common pattern: when history passes a token budget, summarise the oldest chunk (${OLD_TURNS_TOKENS} tokens here), store the summary on the thread, and keep a few recent turns verbatim. Run the summariser with a small, cheap model and a strict prompt (“keep names, numbers, decisions”). In this tiny chat the summary is not much shorter than what it replaces; the saving grows with long conversations.`,
+      stage: {
+        kind: "chat",
+        messages: [
+          { role: "system", text: SUMMARY, note: "the note, added to the system message" },
+          { role: "user", text: KEPT_TURNS[KEPT_TURNS.length - 1][0].text },
+          { role: "assistant", text: KEPT_TURNS[KEPT_TURNS.length - 1][1].text },
+          { role: "user", text: TURNS[LAST][0].text, note: "new" },
+          { role: "assistant", text: TURNS[LAST][1].text },
+        ],
+        streamLast: true,
+        aside: {
+          title: "Tokens at the last call",
+          items: [`full history: ${INPUT_PER_CALL[LAST]}`, `sliding window: ${WINDOW_INPUT}`, `window + summary: ${SUMMARY_INPUT}`],
+          tone: "violet",
+        },
+      },
       highlight: ["server", "summ", "history"],
       packets: [
         { from: "server", to: "summ", label: `old turns (${OLD_TURNS_TOKENS} tokens)`, tone: "slate" },
         { from: "summ", to: "server", label: `summary (${tok(SUMMARY)} tokens)`, tone: "violet" },
         { from: "server", to: "history", label: "store summary", tone: "slate" },
       ],
-      viz: [
-        {
-          kind: "chat",
-          title: "Prompt with a running summary",
-          messages: [
-            { role: "system", text: `${SYSTEM.text}\n${SUMMARY}`, note: "summary appended to the system message" },
-            ...KEPT_TURNS.flatMap(([u, a]) => [
-              { role: "user" as const, text: u.text },
-              { role: "assistant" as const, text: a.text },
-            ]),
-            { role: "user", text: TURNS[LAST][0].text },
-          ],
-        },
-        {
-          kind: "bars",
-          title: "Input tokens at the last call",
-          items: [
-            { label: "full history", value: INPUT_PER_CALL[LAST], tone: "slate" },
-            { label: "sliding window", value: WINDOW_INPUT, tone: "blue" },
-            { label: "window + summary", value: SUMMARY_INPUT, tone: "green" },
-          ],
-          format: "int",
-          caption: "In this tiny chat the summary is not much shorter than what it replaces; the saving grows with long conversations.",
-        },
-      ],
-      deeper: {
-        text: "Common pattern: when history passes a token budget, summarise the oldest chunk, store the summary on the thread, and keep a few recent turns verbatim. Run the summariser with a small, cheap model and a strict prompt (“keep names, numbers, decisions”).",
+      viz: {
+        only: "interview",
+        kind: "bars",
+        title: "Input tokens at the last call",
+        items: [
+          { label: "full history", value: INPUT_PER_CALL[LAST], tone: "slate" },
+          { label: "sliding window", value: WINDOW_INPUT, tone: "blue" },
+          { label: "window + summary", value: SUMMARY_INPUT, tone: "green" },
+        ],
+        format: "int",
       },
       log: [
         { tone: "violet", cells: { op: "summarise", role: "summariser", payload: SUMMARY, tokens: tok(SUMMARY) } },
         { tone: "green", cells: { op: "call", role: "→ llm", payload: "system + summary + last turns + new", tokens: SUMMARY_INPUT } },
       ],
+      interviewTip: "Name the risk of summaries: they blur details and can introduce errors, so pin critical facts explicitly.",
     },
+    // 7 ─────────────────────────────────────────────────────────────
     {
       id: "vector",
-      title: "Vector memory: recall what's relevant",
-      explain:
-        "For facts that matter across many sessions (“my dog is Biscuit”), store each one with an {{embedding}}. On a new message, embed it and fetch only the closest memories by {{cosine-similarity|cosine similarity}}, then put those in the prompt.\n\nThis scales to thousands of facts without bloating every request — the same retrieval idea as {{rag|RAG}}, applied to the user's own history.",
+      title: "Remember facts for later",
+      simple: "Important facts are saved, and only the ones that match the new question are added to the prompt.",
+      explain: `Each saved fact is turned into an {{embedding}} (a list of numbers that captures its meaning). For “${QUERY.text}”, the app finds the closest fact by {{cosine-similarity|cosine similarity}}: “${MEMORIES[BEST].text}” scores ${f(SIMS[BEST], 2)}. Only that fact goes into the prompt.`,
+      analogy: "A notebook about each friend: before replying you flip to the page that matters, not read the whole book.",
+      detail: `This scales to thousands of facts without bloating every request — the same retrieval idea as {{rag|RAG}}, applied to the user's own history. Decide when to write memories (e.g. a small model extracts durable facts after each turn), resolve conflicts (newer fact wins), and let users see and delete them.\n\nTrade-offs: windows are simple but forget; summaries compress but blur; vector memory scales but can retrieve the wrong thing.`,
+      stage: {
+        kind: "chat",
+        messages: [
+          { role: "system", text: `Known about this user: ${MEMORIES[BEST].text}.`, note: "added by the app from memory" },
+          { role: "user", text: QUERY.text },
+          { role: "assistant", text: MEM_ANSWER },
+        ],
+        streamLast: true,
+        aside: { title: "Memory notebook (match score)", items: SORTED_MEMS.map((m) => `${m.i === BEST ? "✓ " : ""}${m.text} · ${f(m.s, 2)}`), tone: "green" },
+      },
       highlight: ["server", "vmem", "llm"],
       packets: [
         { from: "server", to: "vmem", label: `embed “${QUERY.text}”`, tone: "green" },
@@ -335,6 +437,7 @@ for (;;) { const { value, done } = await reader.read(); if (done) break; render(
         { from: "server", to: "llm", label: "prompt + 1 memory", tone: "blue" },
       ],
       viz: {
+        only: "interview",
         kind: "bars",
         title: `Similarity to “${QUERY.text}”`,
         items: MEMORIES.map((m, i) => ({ label: m.text, value: SIMS[i], tone: (i === BEST ? "green" : "blue") as Tone })),
@@ -343,22 +446,31 @@ for (;;) { const { value, done } = await reader.read(); if (done) break; render(
         caption: "Toy 4-number vectors [pets, seating, food, home]; real embeddings have hundreds of dimensions.",
       },
       deeper: {
-        math: [
-          "cos(q, m) = (q · m) / (|q| |m|)",
-          `q = [${QUERY.v.join(", ")}],  m = [${MEMORIES[BEST].v.join(", ")}]`,
-          `cos = ${f(SIMS[BEST], 4)}`,
-          "Decide when to write memories (e.g. a small model extracts durable facts after each turn), and give users a way to see and delete them.",
-        ],
+        math: ["cos(q, m) = (q · m) / (|q| |m|)", `q = [${QUERY.v.join(", ")}],  m = [${MEMORIES[BEST].v.join(", ")}]`, `cos = ${f(SIMS[BEST], 4)}`],
       },
       log: MEMORIES.map((m, i) => ({ tone: (i === BEST ? "green" : "blue") as Tone, cells: { op: i === BEST ? "retrieve ✓" : "score", role: "vector memory", payload: `${m.text} · cos ${f(SIMS[i], 3)}` } })),
       interviewTip: "Name the trade-off: windows are simple but forget; summaries compress but blur; vector memory scales but can retrieve the wrong thing.",
     },
+    // 8 ─────────────────────────────────────────────────────────────
     {
       id: "tools",
-      title: "Tool calling round trip",
-      explain:
-        "Models cannot look things up on their own. With {{tool-calling|tool calling}} you describe functions (name, description, JSON schema for arguments). When useful, the model replies not with text but with a **tool call**: the function name and arguments.\n\nYour backend validates and runs it, sends the result back as a **tool** message, and calls the model again. The model then writes the final answer using the result. The model never runs code itself — your app does.",
+      title: "Asking your code for help (tools)",
+      simple: "The model can't look things up, so it asks your app to run a function, then answers with the result.",
+      explain: `With {{tool-calling|tool calling}} you describe functions the model may use. Asked about rain, it replies with a request: run \`${TOOL_CALL.name}\` for ${TOOL_CALL.arguments.city}. Your code runs it, sends the result back as a **tool** message, and the model writes the answer.`,
       analogy: "A manager who can't use the database: they write a precise request slip, you run the query, and they use the printout to answer the client.",
+      detail:
+        "You send tool definitions (name, description, JSON schema for the arguments). The model may respond with a structured tool call instead of text. Your backend **validates** the arguments, executes the function, appends the result as a tool message, and calls the model again. That is two model calls for one question; agents repeat the loop until the model stops asking for tools. The model never runs code itself, and tool output is untrusted input to the next call (it can carry prompt injection).",
+      stage: {
+        kind: "chat",
+        messages: [
+          { role: "user", text: "Do I need an umbrella in Paris tomorrow?" },
+          { role: "assistant", text: JSON.stringify({ tool_call: TOOL_CALL }), note: "not text: a request to run a function" },
+          { role: "tool", text: JSON.stringify(TOOL_RESULT), note: "your code ran it" },
+          { role: "assistant", text: FINAL, note: "second model call" },
+        ],
+        streamLast: true,
+        aside: { title: "The round trip", items: ["1. app sends messages + tool list", `2. model asks for ${TOOL_CALL.name}`, "3. app checks the arguments and runs it", "4. app sends the result back", "5. model writes the answer"], tone: "amber" },
+      },
       highlight: ["server", "llm", "tool"],
       packets: [
         { from: "server", to: "llm", label: "messages + tool schema", tone: "blue" },
@@ -368,17 +480,6 @@ for (;;) { const { value, done } = await reader.read(); if (done) break; render(
         { from: "server", to: "llm", label: "+ tool result message", tone: "blue" },
         { from: "llm", to: "server", label: "final answer", tone: "green" },
       ],
-      viz: {
-        kind: "chat",
-        title: "The full exchange",
-        messages: [
-          { role: "user", text: "Do I need an umbrella in Paris tomorrow?" },
-          { role: "assistant", text: JSON.stringify({ tool_call: TOOL_CALL }), note: "no text — a structured request" },
-          { role: "tool", text: JSON.stringify(TOOL_RESULT), note: "your code ran the function" },
-          { role: "assistant", text: FINAL },
-        ],
-        caption: "Two model calls for one user question. Agents repeat this loop until the model stops asking for tools.",
-      },
       deeper: {
         code: {
           lang: "ts",

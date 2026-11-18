@@ -69,12 +69,10 @@ const EX = TRAIN.slice(0, 3).map((h) => {
 });
 const EX_MSE = mean(EX.map((e) => e.sq));
 
-/** 1D slice of the bowl: loss vs w with b frozen at its trained value, and gradient steps on w alone. */
+/** 1D slice of the bowl: loss vs w with b frozen at its trained value. */
 const B_FIXED = FINAL.b;
 const lossW = (w: number) => mseOf(w, B_FIXED, TRAIN);
 const dLossW = (w: number) => mean(TRAIN.map((h) => 2 * (predict(w, B_FIXED, h.size) - h.price) * h.size));
-const W_PATH: number[] = [0];
-for (let i = 0; i < 5; i++) W_PATH.push(W_PATH[i] - LR * dLossW(W_PATH[i]));
 
 /** Under / good / over-fitting on 7 training houses (every other one by size). */
 const SUB = [...TRAIN].sort((a, b) => a.size - b.size).filter((_, i) => i % 2 === 0);
@@ -97,11 +95,53 @@ const NEW_PRICE = predict(FINAL.w, FINAL.b, NEW_SIZE);
 const TEST_MAE = maeOf(FINAL.w, FINAL.b, TEST);
 const TEST_RMSE = Math.sqrt(mseOf(FINAL.w, FINAL.b, TEST));
 
+
+/** The ball on the valley: gradient descent on w alone (b frozen), at three learning rates. */
+const CURVATURE = 2 * mean(TRAIN.map((h) => h.size * h.size)); // d²L/dw²: how sharply the valley bends
+const walk = (lr: number, n: number) => {
+  const out = [0];
+  for (let i = 0; i < n; i++) out.push(out[i] - lr * dLossW(out[i]));
+  return out;
+};
+const LR_OK = 0.05;
+const LR_SMALL = 0.005;
+const LR_BIG = +(1.9 / CURVATURE).toFixed(2); // just under the 2 / curvature limit: bounces across the valley
+const HOPS = 8;
+const PATH_OK = walk(LR_OK, HOPS);
+const PATH_SMALL = walk(LR_SMALL, HOPS);
+const PATH_BIG = walk(LR_BIG, HOPS);
+const W_BEST = PATH_OK[PATH_OK.length - 1];
+const allW = [...PATH_OK, ...PATH_SMALL, ...PATH_BIG];
+const W_MIN = Math.min(0, ...allW) - 5;
+const W_MAX = Math.max(...allW) + 10;
+const VALLEY: [number, number][] = linspace(W_MIN, W_MAX, 90).map((w) => [w, lossW(w)]);
+
+/** The guess line before any learning, and a hand guess used for the MSE example. */
+const ZERO_MSE = mseOf(0, 0, TRAIN);
+const GUESS_MSE = mseOf(GUESS.w, GUESS.b, TRAIN);
+
+/** Frames for the training animation. */
+const FRAMES = [0, 1, 2, 3, 5, 8, 12, 20, 35, 60, 100, 200, 400].map((e) => HISTORY[e]);
+
+const trainPts = TRAIN.map((h) => ({ x: h.size, y: h.price }));
+const X_DOM: [number, number] = [0.5, 3.7];
+const Y_DOM: [number, number] = [0, 500];
+const setOf = (h: House) => (TRAIN.includes(h) ? ("train" as const) : VAL.includes(h) ? ("val" as const) : ("test" as const));
+
 const scenario: Scenario = {
   id: "how-machines-learn",
   title: "How machines learn",
   tagline: "Guess, measure how wrong you were, adjust a little, repeat.",
+  imagine:
+    "Imagine a new estate agent guessing house prices. On day one their guesses are wild. Every time a house sells, they compare their guess with the real price and adjust their rule of thumb a little. After enough sales they are good at it, without ever memorising a single house. Machine learning is that, done with numbers.",
+  recap: [
+    "A model learns from **examples with answers**: features in (size), label out (price). Some examples are kept aside to test it fairly.",
+    "Training is a loop: **guess, measure the miss (loss), step downhill (gradient descent)**, repeat. The learning rate sets the step size.",
+    "The goal is doing well on **new** data, not zero training error. Too simple underfits; too wiggly overfits.",
+  ],
   overview: {
+    plain:
+      "Machine learning means the computer finds the rule itself, from examples, instead of a person writing it. You show it many houses with their prices; it keeps guessing, checks how wrong it was, and adjusts. Once its guesses are good, you use it to price houses it has never seen.",
     definition:
       "**Machine learning** means letting a program find its own rule from examples instead of a person writing the rule. You give it {{feature|features}} (house size) and {{label|labels}} (the price it sold for); {{training}} adjusts the model's {{parameter|parameters}} until its predictions match the labels; then {{inference}} uses the frozen model on houses it has never seen.",
     analogy:
@@ -152,31 +192,35 @@ const scenario: Scenario = {
     { key: "note", label: "Params / note" },
   ],
   steps: [
+    // 1 ─────────────────────────────────────────────────────────────
     {
       id: "data",
-      title: "Data: features and labels",
-      explain:
-        "Everything starts with examples. Each row is one house. The columns we feed in are **{{feature|features}}** (size, bedrooms). The column we want to predict is the **{{label}}** (sale price).\n\nTo keep the picture 2-D we use one feature — size — and let the model learn how price depends on it.",
+      title: "Start with examples",
+      simple: "Every dot is a real house: how big it is, and what it sold for.",
+      explain: `We have ${HOUSES.length} houses. The thing we look at, size, is the {{feature}} (an input clue). The thing we want to predict, price, is the {{label}} (the right answer). Bigger houses cost more, roughly along a straight line.`,
       analogy: "Features are the clues on the listing; the label is the price written on the sold sign.",
+      detail:
+        "Each row is one example. The columns we feed in are **features** (size, bedrooms); the column we predict is the **label**. Learning from examples that come with the right answer is called **supervised learning**.\n\nTo keep the picture 2-D we use one feature, size. The data is synthetic: price = 60 + 110 × size + noise (standard deviation 25), so we can check that training recovers the true rule.",
+      stage: {
+        kind: "fit",
+        mode: "data",
+        points: HOUSES.map((h) => ({ x: h.size, y: h.price })),
+        xLabel: "size (1,000 sq ft)",
+        yLabel: "price ($k)",
+        x: X_DOM,
+        y: Y_DOM,
+        callout: { index: 0, feature: `size ${sqft(HOUSES[0].size)}`, label: `price ${usd(HOUSES[0].price)}` },
+      },
       highlight: ["data"],
       packets: [{ from: "data", to: "split", label: "20 rows", sub: "size, beds → price", tone: "blue" }],
-      viz: [
-        {
-          kind: "table",
-          title: "First 6 houses",
-          columns: ["size (sq ft)", "beds", "price (label)"],
-          rows: HOUSES.slice(0, 6).map((h) => [sqft(h.size), h.beds, usd(h.price)]),
-          caption: "Features on the left, label on the right.",
-        },
-        {
-          kind: "scatter",
-          title: "All 20 houses",
-          points: HOUSES.map((h) => ({ x: h.size, y: h.price, tone: "blue" as const })),
-          x: [0.5, 3.5],
-          y: [100, 480],
-          caption: "x = size (1,000 sq ft), y = price ($k). Bigger houses cost more — roughly a straight line, plus noise.",
-        },
-      ],
+      viz: {
+        only: "interview",
+        kind: "table",
+        title: "First 6 houses",
+        columns: ["size (sq ft)", "beds", "price (label)"],
+        rows: HOUSES.slice(0, 6).map((h) => [sqft(h.size), h.beds, usd(h.price)]),
+        caption: "Features on the left, label on the right.",
+      },
       deeper: {
         text: "The data here is synthetic: price = 60 + 110 × size + noise with standard deviation 25. Knowing the true rule lets us check that training recovers it.",
         code: {
@@ -191,12 +235,25 @@ y = df["price"]       # label (one column)`,
       log: HOUSES.slice(0, 3).map((h, i) => ({ tone: "blue" as const, cells: { stage: "row", epoch: "", train: "", val: "", mae: "", note: `house ${i + 1}: ${sqft(h.size)}, ${h.beds} beds → ${usd(h.price)}` } })),
       interviewTip: "Name features and label explicitly. Many candidates blur “data” into one blob.",
     },
+    // 2 ─────────────────────────────────────────────────────────────
     {
       id: "split",
-      title: "Split: train / validation / test (70 / 15 / 15)",
-      explain:
-        "Before learning anything, set some houses aside. The model learns only from the **training** set. The **{{validation-set|validation set}}** is used while you work, to compare settings and spot {{overfitting}}. The **{{test-set|test set}}** stays locked away until the very end, so the final score is honest.\n\nIf you score a model on data it trained on, you are grading a student on the exact questions they practised.",
+      title: "Keep some houses aside",
+      simple: "We hide a few houses from the model, so later we can test it on houses it never saw.",
+      explain: `The model learns only from the **${TRAIN.length} training** houses. ${VAL.length} go to the {{validation-set|validation set}} (a practice exam we check while working), and ${TEST.length} to the {{test-set|test set}} (the final exam, opened once at the end).`,
       analogy: "Homework (train), mock exam (validation), the real exam you only sit once (test).",
+      detail:
+        "Before learning anything, set data aside. Validation is for comparing settings and spotting {{overfitting}}; the test set stays locked until the very end, so the final score is honest. If you score a model on data it trained on, you are grading a student on the exact questions they practised.\n\nShuffle first, unless the data is a time series: then split by time so you never train on the future.",
+      stage: {
+        kind: "fit",
+        mode: "split",
+        points: HOUSES.map((h) => ({ x: h.size, y: h.price, set: setOf(h) })),
+        xLabel: "size (1,000 sq ft)",
+        yLabel: "price ($k)",
+        x: X_DOM,
+        y: Y_DOM,
+        note: "70% to learn from · 15% to check while working · 15% for the final exam",
+      },
       highlight: ["split", "val", "test"],
       packets: [
         { from: "split", to: "model", label: `train: ${TRAIN.length} houses`, tone: "blue" },
@@ -204,6 +261,7 @@ y = df["price"]       # label (one column)`,
         { from: "split", to: "test", label: `test: ${TEST.length}`, sub: "don't touch", tone: "slate" },
       ],
       viz: {
+        only: "interview",
         kind: "stack",
         title: "20 houses",
         segments: [
@@ -229,17 +287,34 @@ X_val, X_test, y_val, y_test = train_test_split(X_tmp, y_tmp, test_size=0.50, ra
       ],
       interviewTip: "Mention **data leakage**: fit scalers, imputers and feature selection on the training set only.",
     },
+    // 3 ─────────────────────────────────────────────────────────────
     {
       id: "init",
-      title: "Start knowing nothing: init → predict",
+      title: "The first guess knows nothing",
+      simple: "The model is a straight line with two dials. At the start both dials are 0, so every guess is $0.",
       explain:
-        "The model is a rule with two dials: price = **w** × size + **b**. {{weight|w}} is “dollars per 1,000 sq ft”, {{bias|b}} is a base price.\n\nTraining has to start somewhere, so both dials start at 0. The first prediction for every house is therefore $0 — terrible, and that is fine. The rest of training is about turning the dials in the right direction.",
+        "The rule is price = **w** × size + **b**. The {{weight|weight w}} is dollars per 1,000 sq ft; the {{bias|bias b}} is a base price. Both start at 0, so the line lies flat on the floor. The red lines show how far off each guess is.",
+      analogy: "A new agent who hasn't seen a single sale yet and says “free!” for every house.",
+      detail:
+        "w and b are the model's two {{parameter|parameters}}. Training has to start somewhere, so both dials start at 0; the first prediction for every house is $0, which is terrible, and that is fine. The rest of training turns the dials in the right direction.\n\nNeural networks start from small random weights instead of 0 so that neurons don't all learn the same thing; for this 2-parameter line, 0 is fine.",
+      stage: {
+        kind: "fit",
+        mode: "guess",
+        points: trainPts,
+        xLabel: "size (1,000 sq ft)",
+        yLabel: "price ($k)",
+        x: X_DOM,
+        y: Y_DOM,
+        lines: [{ w: 0, b: 0, label: "w = 0, b = 0" }],
+        note: `price = 0 × size + 0 · every guess is $0k`,
+      },
       highlight: ["model", "pred"],
       packets: [
         { from: "split", to: "model", label: `house 1: ${sqft(TRAIN[0].size)}`, tone: "blue" },
         { from: "model", to: "pred", label: "ŷ = 0 × size + 0 = $0k", sub: `actual ${usd(TRAIN[0].price)}`, tone: "violet" },
       ],
       viz: {
+        only: "interview",
         kind: "table",
         title: "Predictions at w = 0, b = 0",
         columns: ["house", "size", "predicted", "actual", "error"],
@@ -247,29 +322,45 @@ X_val, X_test, y_val, y_test = train_test_split(X_tmp, y_tmp, test_size=0.50, ra
         caption: "Every guess is off by the full price.",
       },
       deeper: {
-        math: ["ŷ = w · x + b", "With w = 0 and b = 0: ŷ = 0 for every house", "Neural networks start from small random weights instead of 0 so that neurons don't all learn the same thing; for this 2-parameter line, 0 is fine."],
+        math: ["ŷ = w · x + b", "With w = 0 and b = 0: ŷ = 0 for every house"],
       },
       log: [{ tone: "violet", cells: { stage: "init", epoch: 0, train: f(HISTORY[0].train, 0), val: f(HISTORY[0].val, 0), mae: f(HISTORY[0].mae, 1), note: "w = 0, b = 0" } }],
+      interviewTip: "Know why neural nets use random (not zero) initialisation: equal weights get equal gradients and never become different.",
     },
+    // 4 ─────────────────────────────────────────────────────────────
     {
       id: "loss",
-      title: "Measure the miss: mean squared error",
-      explain:
-        "A {{loss}} turns “how wrong is the model?” into one number. Here we use {{mse|MSE}}: for each house take (prediction − actual), square it, then average.\n\nSquaring does two things: negatives can't cancel positives, and a $100k miss costs 100× more than a $10k miss — big mistakes are punished hard.\n\nWorked example with a hand guess w = 80, b = 50 on three houses:",
+      title: "Measure the miss",
+      simple: "We add up how far every guess is from the real price. One number says how wrong the model is.",
+      explain: `That number is the {{loss}}. We use {{mse|MSE}} (mean squared error): square each miss, then average. Here a rough guess line (w = ${GUESS.w}, b = ${GUESS.b}) scores **${f(GUESS_MSE, 0)}**, much better than the flat line's ${f(ZERO_MSE, 0)}. Smaller is better.`,
+      analogy: "A teacher marking a test: the further off your answer, the more marks you lose, and big mistakes lose a lot.",
+      detail: `Squaring does two things: negatives can't cancel positives, and a $100k miss costs 100× more than a $10k miss, so big mistakes are punished hard.\n\nWorked example with w = ${GUESS.w}, b = ${GUESS.b} on three houses: MSE = (${EX.map((e) => f(e.sq, 1)).join(" + ")}) / 3 = ${f(EX_MSE, 1)}. RMSE = √MSE = ${f(Math.sqrt(EX_MSE), 1)} reads as “typically off by about $${f(Math.sqrt(EX_MSE), 0)}k”.`,
+      stage: {
+        kind: "fit",
+        mode: "guess",
+        points: trainPts,
+        xLabel: "size (1,000 sq ft)",
+        yLabel: "price ($k)",
+        x: X_DOM,
+        y: Y_DOM,
+        lines: [{ w: GUESS.w, b: GUESS.b, label: `w = ${GUESS.w}, b = ${GUESS.b}` }],
+        note: `MSE = average of (miss)² = ${f(GUESS_MSE, 0)} · the flat line scored ${f(ZERO_MSE, 0)}`,
+      },
       highlight: ["pred", "loss"],
-      packets: [{ from: "pred", to: "loss", label: `MSE = ${f(EX_MSE, 1)}`, sub: "w = 80, b = 50 on 3 houses", tone: "rose" }],
+      packets: [{ from: "pred", to: "loss", label: `MSE = ${f(GUESS_MSE, 0)}`, sub: `w = ${GUESS.w}, b = ${GUESS.b}`, tone: "rose" }],
       viz: [
         {
+          only: "interview",
           kind: "table",
-          title: "MSE by hand",
+          title: "MSE by hand (3 houses)",
           columns: ["size", "ŷ = 80x + 50", "actual", "error", "error²"],
           rows: EX.map((e) => [e.size.toFixed(2), f(e.pred, 1), e.price, f(e.err, 1), f(e.sq, 1)]),
           caption: `MSE = (${EX.map((e) => f(e.sq, 1)).join(" + ")}) / 3 = ${f(EX_MSE, 1)}`,
         },
-        { kind: "bars", title: "Squared error per house", items: EX.map((e, i) => ({ label: `house ${i + 1}`, value: e.sq, tone: "rose" as const })), format: "fixed2" },
+        { only: "interview", kind: "bars", title: "Squared error per house", items: EX.map((e, i) => ({ label: `house ${i + 1}`, value: e.sq, tone: "rose" as const })), format: "fixed2" },
       ],
       deeper: {
-        math: ["MSE = (1/n) Σ (ŷᵢ − yᵢ)²", `RMSE = √MSE = ${f(Math.sqrt(EX_MSE), 1)} → “typically off by about $${f(Math.sqrt(EX_MSE), 0)}k”`, "MAE = (1/n) Σ |ŷᵢ − yᵢ| is gentler on outliers; MSE is smooth, which makes its gradient easy to use."],
+        math: ["MSE = (1/n) Σ (ŷᵢ − yᵢ)²", `RMSE = √MSE = ${f(Math.sqrt(EX_MSE), 1)}`, "MAE = (1/n) Σ |ŷᵢ − yᵢ| is gentler on outliers; MSE is smooth, which makes its gradient easy to use."],
         code: {
           lang: "python",
           src: `
@@ -277,43 +368,34 @@ import numpy as np
 mse = np.mean((y_pred - y_true) ** 2)`,
         },
       },
-      log: EX.map((e, i) => ({ tone: "rose" as const, cells: { stage: "loss", note: `house ${i + 1}: (${f(e.pred, 1)} − ${e.price})² = ${f(e.sq, 1)}` } })),
+      log: [
+        { tone: "rose", cells: { stage: "loss", train: f(ZERO_MSE, 0), note: "flat line w = 0, b = 0" } },
+        { tone: "rose", cells: { stage: "loss", train: f(GUESS_MSE, 0), note: `guess w = ${GUESS.w}, b = ${GUESS.b}` } },
+      ],
       interviewTip: "Say *why* you'd pick MSE vs MAE: MSE punishes large errors and is smooth; MAE is robust to outliers.",
     },
+    // 5 ─────────────────────────────────────────────────────────────
     {
       id: "descent",
-      title: "Gradient descent: walk downhill",
-      explain:
-        "Picture the loss as a landscape: every pair of dial settings (w, b) has a height = how wrong the model is. We want the lowest point.\n\nThe {{gradient}} says which way is uphill and how steep it is. So we step the **opposite** way, by a small amount set by the {{learning-rate|learning rate}} α:\n\n**w ← w − α · ∂L/∂w**\n\nSteep slope → big step; flat ground near the bottom → tiny steps. The 2-D chart is a slice of the bowl (b held fixed); the 3-D view shows a ball rolling down a full loss surface.",
+      title: "Walk downhill",
+      simple: "Picture the loss as a valley. The model feels which way is downhill and takes a small step that way.",
+      explain: `The curve shows the loss for every value of w (b held fixed). The {{gradient}} (the slope under the ball) says which way is uphill, so we step the **opposite** way. Steep slope, big step; near the bottom the steps shrink. After ${HOPS} steps w ≈ **${f(W_BEST, 0)}**.`,
       analogy: "Walking down a foggy hill: you can't see the valley, but you can feel which way the ground tilts under your feet.",
+      detail: `This is **gradient descent**: w ← w − α · ∂L/∂w, where α is the {{learning-rate|learning rate}}. The real loss is a bowl over both w and b (the 3-D view shows a ball rolling down a surface); the 2-D curve is one slice of it.\n\nAt w = 0, b = 0 on the 14 training houses: ∂L/∂w = ${f(FIRST.gw, 1)}, ∂L/∂b = ${f(FIRST.gb, 1)}, both negative, so both dials go up.`,
+      stage: { kind: "descent", curve: VALLEY, steps: PATH_OK, xLabel: "w ($k per 1,000 sq ft)", yLabel: "loss (MSE)", label: `α = ${LR_OK}`, note: `each dot is one update · b fixed at ${f(B_FIXED, 0)}` },
       highlight: ["loss", "opt", "model"],
       packets: [
         { from: "loss", to: "opt", label: `∂L/∂w = ${f(FIRST.gw, 1)}`, sub: `∂L/∂b = ${f(FIRST.gb, 1)}`, tone: "amber" },
         { from: "opt", to: "model", label: `w = 0 − ${LR}·(${f(FIRST.gw, 1)}) = ${f(HISTORY[1].w, 2)}`, tone: "amber" },
       ],
-      viz: [
-        {
-          kind: "plot",
-          title: `Loss vs w (b fixed at ${f(B_FIXED, 1)})`,
-          series: [{ label: "MSE(w)", points: linspace(0, 200, 81).map((w) => [w, lossW(w)] as [number, number]), tone: "rose" }],
-          x: [0, 200],
-          y: [0, Math.ceil(lossW(0) / 1000) * 1000],
-          xLabel: "w ($k per 1,000 sq ft)",
-          yLabel: "loss",
-          markers: W_PATH.map((w, i) => ({ x: w, y: lossW(w), label: i === 0 ? "start" : i === W_PATH.length - 1 ? `step ${i}` : undefined, tone: "amber" as const })),
-          connectMarkers: true,
-          caption: `Steps: ${W_PATH.map((w) => f(w, 1)).join(" → ")}. Each step is shorter because the slope flattens.`,
-        },
-        { kind: "three-loss", title: "A loss surface in 3-D", caption: "Drag to rotate. The ball follows real gradient steps on a bumpy bowl (a toy surface, not this house model)." },
-      ],
+      viz: { only: "interview", kind: "three-loss", title: "A loss surface in 3-D", caption: "Drag to rotate. The ball follows real gradient steps on a bumpy bowl (a toy surface, not this house model)." },
       deeper: {
         math: [
           "L(w, b) = (1/n) Σ (w·xᵢ + b − yᵢ)²",
           "∂L/∂w = (2/n) Σ (w·xᵢ + b − yᵢ) · xᵢ",
           "∂L/∂b = (2/n) Σ (w·xᵢ + b − yᵢ)",
-          `At w = 0, b = 0 on the 14 training houses: ∂L/∂w = ${f(FIRST.gw, 2)}, ∂L/∂b = ${f(FIRST.gb, 2)}`,
-          `Update with α = ${LR}: w = ${f(HISTORY[1].w, 3)}, b = ${f(HISTORY[1].b, 3)}`,
-          "α too big → overshoot and bounce or diverge; too small → painfully slow.",
+          `At w = 0, b = 0: ∂L/∂w = ${f(FIRST.gw, 2)}, ∂L/∂b = ${f(FIRST.gb, 2)}`,
+          `Ball path (α = ${LR_OK}): ${PATH_OK.map((w) => f(w, 1)).join(" → ")}`,
         ],
         code: {
           lang: "python",
@@ -329,13 +411,72 @@ b -= lr * grad_b`,
         { tone: "amber", cells: { stage: "gradient", epoch: 0, note: `∂L/∂w = ${f(FIRST.gw, 2)}, ∂L/∂b = ${f(FIRST.gb, 2)}` } },
         { tone: "amber", cells: { stage: "update", epoch: 1, train: f(HISTORY[1].train, 0), val: f(HISTORY[1].val, 0), mae: f(HISTORY[1].mae, 1), note: `w = ${f(HISTORY[1].w, 2)}, b = ${f(HISTORY[1].b, 2)}` } },
       ],
-      interviewTip: "Be ready to write the update rule and explain what happens if the learning rate is too high.",
+      interviewTip: "Be ready to write the update rule and say what the gradient's sign means.",
     },
+    // 6 ─────────────────────────────────────────────────────────────
+    {
+      id: "learning-rate",
+      title: "How big a step?",
+      simple: "Tiny steps take forever. Huge steps jump over the bottom. A medium step gets there quickly.",
+      explain: `The step size is the {{learning-rate|learning rate}} (α). Same valley, same start, ${HOPS} steps each: α = ${LR_SMALL} barely moves (w = ${f(PATH_SMALL[HOPS], 0)}), α = ${LR_OK} gets close to the bottom, and α = ${LR_BIG} bounces from side to side.`,
+      analogy: "Parking a car: inching forward takes ages, flooring it overshoots the spot.",
+      detail: `For this valley, any α above 2 ÷ (curvature) = ${f(2 / CURVATURE, 3)} makes every step overshoot by more than it gains, and the loss explodes. α = ${LR_BIG} sits just under that limit, so it bounces but slowly settles.\n\nIn practice you tune α, often with a warm-up and a decay schedule, and use adaptive optimisers like Adam that scale the step for each parameter.`,
+      stage: {
+        kind: "descent",
+        curve: VALLEY,
+        steps: PATH_OK,
+        xLabel: "w ($k per 1,000 sq ft)",
+        yLabel: "loss (MSE)",
+        label: `α ${LR_OK}`,
+        compare: [
+          { label: `α ${LR_SMALL}`, tone: "cyan", steps: PATH_SMALL },
+          { label: `α ${LR_BIG}`, tone: "rose", steps: PATH_BIG },
+        ],
+        note: `${HOPS} steps each, from w = 0`,
+      },
+      highlight: ["opt", "model"],
+      packets: [{ from: "opt", to: "model", label: `α = ${LR_SMALL} · ${LR_OK} · ${LR_BIG}`, tone: "amber" }],
+      viz: {
+        only: "interview",
+        kind: "table",
+        title: `Where w ends after ${HOPS} steps`,
+        columns: ["learning rate", "final w", "loss"],
+        rows: [
+          [LR_SMALL, f(PATH_SMALL[HOPS], 1), f(lossW(PATH_SMALL[HOPS]), 0)],
+          [LR_OK, f(PATH_OK[HOPS], 1), f(lossW(PATH_OK[HOPS]), 0)],
+          [LR_BIG, f(PATH_BIG[HOPS], 1), f(lossW(PATH_BIG[HOPS]), 0)],
+        ],
+        highlightRow: 1,
+      },
+      deeper: {
+        math: [`curvature d²L/dw² = 2·mean(x²) = ${f(CURVATURE, 2)}`, "each step multiplies the distance to the bottom by (1 − α·curvature)", `α = ${LR_SMALL}: × ${f(1 - LR_SMALL * CURVATURE, 2)} · α = ${LR_OK}: × ${f(1 - LR_OK * CURVATURE, 2)} · α = ${LR_BIG}: × ${f(1 - LR_BIG * CURVATURE, 2)}`, "|factor| > 1 → diverges"],
+      },
+      log: [
+        { tone: "slate", cells: { stage: `α ${LR_SMALL}`, note: `w after ${HOPS} steps: ${f(PATH_SMALL[HOPS], 1)} (too slow)` } },
+        { tone: "green", cells: { stage: `α ${LR_OK}`, note: `w after ${HOPS} steps: ${f(PATH_OK[HOPS], 1)}` } },
+        { tone: "rose", cells: { stage: `α ${LR_BIG}`, note: `w after ${HOPS} steps: ${f(PATH_BIG[HOPS], 1)} (bouncing)` } },
+      ],
+      interviewTip: "Describe both failure modes from the loss curve: flat and slow (α too small) vs zig-zag or exploding (α too big).",
+    },
+    // 7 ─────────────────────────────────────────────────────────────
     {
       id: "loop",
       title: "Repeat: the training loop",
-      explain:
-        "One pass over the training data is an {{epoch}}. Each epoch runs the same four moves: **predict → measure loss → compute gradient → update**. Watch the log: the loss drops fast at first, then flattens as the dials settle.\n\nWe also score the **validation** houses every epoch (without learning from them). If training loss keeps falling but validation loss starts rising, the model is memorising — time to stop.",
+      simple: "Guess, measure, step, repeat. Each round the line fits the houses a little better.",
+      explain: `One pass over all the training houses is an {{epoch}}. Every epoch does the same four moves: **predict, measure the loss, find the slope, update**. The loss falls fast, then flattens. After ${EPOCHS} epochs: w = **${f(FINAL.w, 1)}**, b = **${f(FINAL.b, 1)}**, close to the true 110 and 60.`,
+      detail:
+        "We also score the **validation** houses every epoch, without learning from them. If training loss keeps falling but validation loss starts rising, the model is memorising: time to stop (early stopping).\n\nThe final training MSE settles near 25² ≈ 625 because the noise we added has standard deviation 25: no straight line can predict random noise.",
+      stage: {
+        kind: "fit",
+        mode: "train",
+        points: trainPts,
+        xLabel: "size (1,000 sq ft)",
+        yLabel: "price ($k)",
+        x: X_DOM,
+        y: Y_DOM,
+        lines: FRAMES.map((h) => ({ w: h.w, b: h.b, label: `epoch ${h.epoch}: MSE ${f(h.train, 0)}` })),
+        losses: FRAMES.map((h) => h.train),
+      },
       highlight: ["model", "pred", "loss", "opt", "curve", "val"],
       packets: [
         { from: "model", to: "pred", label: "predict", tone: "violet" },
@@ -345,6 +486,7 @@ b -= lr * grad_b`,
         { from: "opt", to: "curve", label: `epoch ${EPOCHS}: MSE ${f(FINAL.train, 0)}`, tone: "green" },
       ],
       viz: {
+        only: "interview",
         kind: "plot",
         title: "Learning curve (epochs 1–40)",
         series: [
@@ -355,10 +497,9 @@ b -= lr * grad_b`,
         y: [0, 3000],
         xLabel: "epoch",
         yLabel: "MSE",
-        caption: `Epoch 0 starts at ${f(HISTORY[0].train, 0)} (off the chart). By epoch ${EPOCHS}: w = ${f(FINAL.w, 1)}, b = ${f(FINAL.b, 1)} — close to the true 110 and 60.`,
+        caption: `Epoch 0 starts at ${f(HISTORY[0].train, 0)} (off the chart). By epoch ${EPOCHS}: w = ${f(FINAL.w, 1)}, b = ${f(FINAL.b, 1)}.`,
       },
       deeper: {
-        text: "The final training MSE settles near 25² ≈ 625 because the noise we added has standard deviation 25: no straight line can predict random noise.",
         code: {
           lang: "python",
           src: `
@@ -376,51 +517,68 @@ for epoch in range(400):
       })),
       interviewTip: "Early stopping = keep the weights from the epoch with the best **validation** loss.",
     },
+    // 8 ─────────────────────────────────────────────────────────────
     {
       id: "fit",
-      title: "Underfitting, good fit, overfitting",
-      explain:
-        "How flexible should the model be? Fit three models to the same 7 houses and score them on houses they did **not** see:\n\n- **{{underfitting|Underfit}}**: always predict the average. Bad on training *and* validation.\n- **Good fit**: a straight line. Small errors on both.\n- **{{overfitting|Overfit}}**: a wiggly degree-6 curve through every point. Zero training error — and wild guesses in between.\n\nThe goal is never zero training error. It is low error on new data.",
+      title: "Too simple, just right, too wiggly",
+      simple: "A good model follows the trend. Too simple misses it; too wiggly memorises every dot and fails on new ones.",
+      explain: `Three models learn from the same 7 houses, then face new ones (hollow dots). Always guessing the average is {{underfitting}} (too simple). A curve through every dot is {{overfitting}} (memorising): perfect on its 7 houses, wild in between. The straight line wins on new houses.`,
       analogy: "Overfitting is the student who memorised last year's answers: perfect on old papers, lost on a new question.",
+      detail: `Scores (train MSE / validation MSE): ${FITS.map((m) => `${m.name.split(":")[0]} ${f(fitMse(m.fn, SUB), 0)} / ${f(fitMse(m.fn, VAL), 0)}`).join("; ")}. The goal is never zero training error; it is low error on new data.\n\nBias–variance: underfit = high bias (too simple), overfit = high variance (too sensitive to the exact training points). Fixes for overfitting: more data, a simpler model, regularisation (L2 adds λ·Σw² to the loss), early stopping, dropout in neural nets.`,
+      stage: {
+        kind: "fit",
+        mode: "fits",
+        points: [...SUB.map((h) => ({ x: h.size, y: h.price, set: "train" as const })), ...VAL.map((h) => ({ x: h.size, y: h.price, set: "val" as const }))],
+        xLabel: "size",
+        yLabel: "price",
+        x: [0.7, 3.1],
+        y: [-150, 500],
+        curves: FITS.map((m) => ({
+          label: m.name.split(":")[0],
+          tone: m.tone,
+          points: linspace(0.75, 3.0, 90).map((x) => [x, m.fn(x)] as [number, number]),
+          note: `new houses: MSE ${f(fitMse(m.fn, VAL), 0)}`,
+        })),
+      },
       highlight: ["model", "val", "curve"],
       packets: [
         { from: "val", to: "model", label: "score on unseen houses", tone: "cyan" },
         { from: "model", to: "pred", label: `overfit val MSE ${f(fitMse(wiggle, VAL), 0)}`, tone: "rose" },
       ],
-      viz: [
-        {
-          kind: "plot",
-          title: "Three models, 7 training houses",
-          series: [
-            ...FITS.map((m) => ({ label: m.name, points: linspace(0.75, 3.0, 90).map((x) => [x, m.fn(x)] as [number, number]), tone: m.tone })),
-            { label: "training houses", points: SUB.map((h) => [h.size, h.price] as [number, number]), tone: "blue", dots: true },
-            { label: "validation houses", points: VAL.map((h) => [h.size, h.price] as [number, number]), tone: "amber", dots: true },
-          ],
-          x: [0.7, 3.1],
-          y: [-150, 500],
-          xLabel: "size (1,000 sq ft)",
-          yLabel: "price ($k)",
-        },
-        {
-          kind: "table",
-          title: "Scores",
-          columns: ["model", "train MSE", "val MSE"],
-          rows: FITS.map((m) => [m.name.split(":")[0], f(fitMse(m.fn, SUB), 0), f(fitMse(m.fn, VAL), 0)]),
-          highlightRow: 1,
-          caption: `The overfit curve predicts ${usd(wiggle(VAL[2].size))} for a ${sqft(VAL[2].size)} house that sold for ${usd(VAL[2].price)}.`,
-        },
-      ],
+      viz: {
+        only: "interview",
+        kind: "table",
+        title: "Scores",
+        columns: ["model", "train MSE", "val MSE"],
+        rows: FITS.map((m) => [m.name.split(":")[0], f(fitMse(m.fn, SUB), 0), f(fitMse(m.fn, VAL), 0)]),
+        highlightRow: 1,
+        caption: `The overfit curve predicts ${usd(wiggle(VAL[2].size))} for a ${sqft(VAL[2].size)} house that sold for ${usd(VAL[2].price)}.`,
+      },
       deeper: {
-        math: ["Bias–variance: underfit = high bias (too simple), overfit = high variance (too sensitive to the exact training points).", "Fixes for overfitting: more data, a simpler model, regularisation (L2 adds λ·Σw² to the loss), early stopping, dropout (in neural nets)."],
+        math: ["Bias–variance: expected error = bias² + variance + irreducible noise.", "Degree-6 polynomial through 7 points: zero training error by construction (Lagrange interpolation)."],
       },
       log: FITS.map((m) => ({ tone: m.tone, cells: { stage: "compare", train: f(fitMse(m.fn, SUB), 0), val: f(fitMse(m.fn, VAL), 0), note: m.name } })),
       interviewTip: "Diagnose from the two numbers: high train + high val = underfit; low train + high val = overfit.",
     },
+    // 9 ─────────────────────────────────────────────────────────────
     {
       id: "inference",
-      title: "Inference: use the trained model",
-      explain:
-        "Training is over; the dials are frozen. **{{inference|Inference}}** is just running the rule on a new input — no labels, no loss, no learning. It is fast and cheap compared with training.\n\nOnly now do we unlock the **test set** once, to report an honest number: how far off the model is on houses it has never seen, and was never tuned on.",
+      title: "Use the trained model",
+      simple: "Learning is done. To price a new house, read its size off the line.",
+      explain: `Using a trained model is called {{inference}}: no answers needed, nothing changes inside. A ${sqft(NEW_SIZE)} house → ${f(FINAL.w, 1)} × ${NEW_SIZE} + ${f(FINAL.b, 1)} = **${usd(NEW_PRICE)}**. Only now do we open the test set once: the model is off by about **${usd(TEST_MAE)}** on average there.`,
+      detail:
+        "Training is over; the dials are frozen. Inference is just running the rule on a new input: no labels, no loss, no learning, so it is fast and cheap compared with training.\n\nThe test set is unlocked once to report an honest number: how far off the model is on houses it has never seen and was never tuned on. If you tune on it, it stops being a test set.",
+      stage: {
+        kind: "fit",
+        mode: "predict",
+        points: trainPts,
+        xLabel: "size (1,000 sq ft)",
+        yLabel: "price ($k)",
+        x: X_DOM,
+        y: Y_DOM,
+        lines: [{ w: FINAL.w, b: FINAL.b }],
+        newPoint: { x: NEW_SIZE, label: `${sqft(NEW_SIZE)} → ${usd(NEW_PRICE)}` },
+      },
       highlight: ["user", "model", "pred", "test"],
       packets: [
         { from: "user", to: "model", label: sqft(NEW_SIZE), tone: "cyan" },
@@ -429,6 +587,7 @@ for epoch in range(400):
       ],
       viz: [
         {
+          only: "interview",
           kind: "table",
           title: "Test set (first and only look)",
           columns: ["size", "predicted", "actual", "error"],
@@ -439,6 +598,7 @@ for epoch in range(400):
           caption: `Test MAE ≈ $${f(TEST_MAE, 1)}k, RMSE ≈ $${f(TEST_RMSE, 1)}k.`,
         },
         {
+          only: "interview",
           kind: "table",
           title: "Training vs inference",
           columns: ["", "Training", "Inference"],

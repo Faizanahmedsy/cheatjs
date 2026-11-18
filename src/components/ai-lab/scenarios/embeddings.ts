@@ -3,15 +3,17 @@ import { bm25, cosine, dot, f, gaussian, norm, seeded, vec } from "../engine/mat
 
 /* ------------------------------------------------------------------ *
  * Embeddings & vector search. Toy vectors stand in for a real model's
- * output; every score (cosine, BM25, memory, chunk ranges) is computed.
+ * output; every score (cosine, BM25, chunk ranges, memory) is computed.
  * ------------------------------------------------------------------ */
 
-// ---- step 1: one text → one vector (toy 8 dims, unit length)
+// ---- steps 1–2: text → token vectors → one pooled vector (toy 8 dims)
+const TOKENS = ["a", " small", " cat"];
 const rand = seeded(11);
-const RAW = Array.from({ length: 8 }, () => +(rand() * 2 - 1).toFixed(2));
-const QVEC = RAW.map((x) => x / norm(RAW));
+const TOKEN_VECS = TOKENS.map(() => Array.from({ length: 8 }, () => +(rand() * 2 - 1).toFixed(2)));
+const POOLED = TOKEN_VECS[0].map((_, d) => TOKEN_VECS.reduce((s, v) => s + v[d], 0) / TOKEN_VECS.length);
+const QVEC = POOLED.map((x) => x / norm(POOLED));
 
-// ---- step 2: a 2D map of meaning, clusters at different angles
+// ---- step 3: a 2D map of meaning, clusters at different angles
 type Pt = { word: string; group: "animals" | "vehicles" | "food"; x: number; y: number };
 const GROUPS: { group: Pt["group"]; angle: number; tone: Tone; words: string[] }[] = [
   { group: "animals", angle: 125, tone: "green", words: ["cat", "dog", "lion", "puppy"] },
@@ -27,6 +29,7 @@ const POINTS: Pt[] = GROUPS.flatMap((g) =>
   }),
 );
 const TONE_OF: Record<Pt["group"], Tone> = { animals: "green", vehicles: "blue", food: "amber" };
+const MAP_POINTS = POINTS.map((p) => ({ x: p.x, y: p.y, label: p.word, tone: TONE_OF[p.group] }));
 const KITTEN = { x: Math.cos((118 * Math.PI) / 180) * 0.6, y: Math.sin((118 * Math.PI) / 180) * 0.6 };
 const COS_2D = POINTS.map((p) => cosine([KITTEN.x, KITTEN.y], [p.x, p.y]));
 const NEIGHBOURS = COS_2D.map((c, i) => [c, i] as const)
@@ -34,8 +37,20 @@ const NEIGHBOURS = COS_2D.map((c, i) => [c, i] as const)
   .slice(0, 3)
   .map(([, i]) => i);
 
-// ---- step 3: cosine similarity, worked by hand
-// Toy dims: [animal, small/young, vehicle, wheels]
+// ---- step 4: arrows and angles (2D, so the stage can draw them; it computes the cosine itself)
+const ARROW = (deg: number, r = 1) => ({ x: Math.cos((deg * Math.PI) / 180) * r, y: Math.sin((deg * Math.PI) / 180) * r });
+const ANGLE_WORDS = [
+  { label: "kitten", tone: "green" as const, ...ARROW(40) },
+  { label: "cat", tone: "green" as const, ...ARROW(28, 0.9) },
+  { label: "toy car", tone: "violet" as const, ...ARROW(95, 0.85) },
+  { label: "truck", tone: "blue" as const, ...ARROW(128, 0.95) },
+];
+const cos2 = (i: number, j: number) => cosine([ANGLE_WORDS[i].x, ANGLE_WORDS[i].y], [ANGLE_WORDS[j].x, ANGLE_WORDS[j].y]);
+const verdict = (c: number) => (c > 0.8 ? "very similar" : c > 0.3 ? "partly related" : c > -0.3 ? "unrelated" : "opposite");
+const PAIRS = [1, 2, 3].map((j) => ({ a: 0, b: j, verdict: verdict(cos2(0, j)) }));
+const PAIR_COS = PAIRS.map((p) => cos2(p.a, p.b));
+
+// ---- the hand-worked cosine (toy dims: [animal, small/young, vehicle, wheels])
 const W = {
   kitten: [0.9, 0.8, 0.1, 0.0],
   cat: [0.9, 0.3, 0.1, 0.0],
@@ -51,25 +66,38 @@ const N_C = norm(W.cat);
 const COS_KC = cosine(W.kitten, W.cat);
 const COS_KCAR = cosine(W.kitten, W.car);
 
-// ---- step 4: keyword (BM25) vs semantic on a tiny help-desk corpus
+// ---- steps 6–7: keyword (BM25) vs semantic on a tiny help-desk corpus
 const DOCS = [
-  { id: "d1", text: "printer shows error e1043 when paper jams", v: [0.9, 0.0, 0.1, 0.1] },
-  { id: "d2", text: "how to recover a forgotten login credential", v: [0.0, 0.95, 0.1, 0.1] },
-  { id: "d3", text: "printer setup guide for new office printers", v: [0.9, 0.1, 0.1, 0.0] },
-  { id: "d4", text: "reset the router to fix wifi drops", v: [0.1, 0.1, 0.95, 0.0] },
-  { id: "d5", text: "error codes list for the billing system", v: [0.1, 0.2, 0.0, 0.9] },
+  { id: "d1", title: "Printer error e1043", text: "printer shows error e1043 when paper jams", v: [0.9, 0.0, 0.1, 0.1] },
+  { id: "d2", title: "Forgotten login", text: "how to recover a forgotten login credential", v: [0.0, 0.95, 0.1, 0.1] },
+  { id: "d3", title: "Printer setup guide", text: "printer setup guide for new office printers", v: [0.9, 0.1, 0.1, 0.0] },
+  { id: "d4", title: "Reset the router", text: "reset the router to fix wifi drops", v: [0.1, 0.1, 0.95, 0.0] },
+  { id: "d5", title: "Billing error codes", text: "error codes list for the billing system", v: [0.1, 0.2, 0.0, 0.9] },
 ];
 const CORPUS = DOCS.map((d) => d.text.split(" "));
 /** Query A has an exact code; query B uses different words than the right doc. Toy dims: [hardware, account, network, billing]. */
-const QA = { text: "error e1043", terms: ["error", "e1043"], v: [0.4, 0.2, 0.3, 0.4] };
-const QB = { text: "reset my password", terms: ["reset", "my", "password"], v: [0.05, 0.9, 0.3, 0.05] };
+const QA = { text: "error e1043", terms: ["error", "e1043"], v: [0.4, 0.2, 0.3, 0.4], right: 0 };
+const QB = { text: "reset my password", terms: ["reset", "my", "password"], v: [0.05, 0.9, 0.3, 0.05], right: 1 };
 const BM_A = CORPUS.map((d) => bm25(QA.terms, d, CORPUS));
 const BM_B = CORPUS.map((d) => bm25(QB.terms, d, CORPUS));
 const SEM_A = DOCS.map((d) => cosine(QA.v, d.v));
 const SEM_B = DOCS.map((d) => cosine(QB.v, d.v));
 const best = (xs: number[]) => xs.indexOf(Math.max(...xs));
+/** Top-3 cards for one ranking; the right answer is green, a wrong #1 is rose. */
+const ranked = (prefix: string, scores: number[], right: number, dp: number) =>
+  scores
+    .map((s, i) => ({ s, i }))
+    .sort((a, b) => b.s - a.s)
+    .slice(0, 3)
+    .map(({ s, i }, k) => ({
+      id: `${prefix}-${DOCS[i].id}`,
+      title: `${k + 1}. ${DOCS[i].title}`,
+      score: f(s, dp),
+      tone: (i === right ? "green" : k === 0 ? "rose" : "slate") as Tone,
+      badge: i === right ? "right one" : undefined,
+    }));
 
-// ---- step 5: chunking with overlap
+// ---- step 8: chunking with overlap
 const DOC_TOKENS = 2000;
 const CHUNK = 500;
 const OVERLAP = 100;
@@ -78,7 +106,7 @@ const N_CHUNKS = Math.ceil((DOC_TOKENS - OVERLAP) / STRIDE);
 const CHUNKS = Array.from({ length: N_CHUNKS }, (_, i) => [i * STRIDE, Math.min(DOC_TOKENS, i * STRIDE + CHUNK)] as const);
 const STORED = CHUNKS.reduce((s, [a, b]) => s + (b - a), 0);
 
-// ---- step 6: vector DB maths
+// ---- step 9: vector DB maths
 const N_VEC = 1_000_000;
 const DIM = 768;
 const FLOAT32_GB = (N_VEC * DIM * 4) / 1e9;
@@ -86,18 +114,30 @@ const INT8_GB = (N_VEC * DIM * 1) / 1e9;
 const BINARY_GB = (N_VEC * DIM) / 8 / 1e9;
 const MACS = N_VEC * DIM;
 
-// ---- step 7: end-to-end search trace
+// ---- step 10: end-to-end search trace
 const QC = { text: "my wifi keeps dropping", v: [0.1, 0.05, 0.9, 0.05] };
-const SEM_C = DOCS.map((d, i) => ({ id: d.id, text: d.text, s: cosine(QC.v, d.v), i })).sort((a, b) => b.s - a.s);
+const SEM_C = DOCS.map((d, i) => ({ id: d.id, title: d.title, text: d.text, s: cosine(QC.v, d.v), i })).sort((a, b) => b.s - a.s);
 const THRESHOLD = 0.5;
+const KEPT = SEM_C.filter((r) => r.s >= THRESHOLD);
+const DROPPED = SEM_C.filter((r) => r.s < THRESHOLD);
 
 const fmtInt = (n: number) => n.toLocaleString("en-US");
+const deg = (c: number) => ((Math.acos(Math.max(-1, Math.min(1, c))) * 180) / Math.PI).toFixed(0);
 
 const scenario: Scenario = {
   id: "embeddings",
   title: "Embeddings & vector search",
   tagline: "Meaning as coordinates; search as “what is nearby?”",
+  imagine:
+    "Imagine a huge map where every sentence ever written has its own address, and sentences that mean the same thing live on the same street. “My wifi keeps dropping” and “reset the router” would be neighbours, even though they share almost no words. Searching becomes simple: find your question's address and look at who lives nearby.",
+  recap: [
+    "An **embedding** turns a piece of text into one list of numbers; similar meanings get similar lists.",
+    "**Cosine similarity** checks whether two of those lists point the same way: 1 = same meaning, 0 = unrelated.",
+    "**Vector search** embeds the question and returns the nearest chunks; keyword search still wins for exact codes and names.",
+  ],
   overview: {
+    plain:
+      "An embedding is a list of numbers that captures what a piece of text means. A model is trained so that texts with similar meaning get similar numbers. To search, you turn the question into numbers too and look for the stored texts whose numbers are closest.",
     definition:
       "An {{embedding}} is a list of numbers (a {{vector}}) that an embedding model produces for a piece of text. The model is trained so that texts with similar meaning land close together. Search then becomes geometry: embed the question, and find the stored vectors pointing the same way using {{cosine-similarity|cosine similarity}}.",
     analogy:
@@ -146,29 +186,50 @@ const scenario: Scenario = {
     { key: "note", label: "Note" },
   ],
   steps: [
+    // 1 ─────────────────────────────────────────────────────────────
     {
-      id: "vectorise",
-      title: "Text → tokens → one vector",
+      id: "tokens",
+      title: "Words become lists of numbers",
+      simple: "The model cuts the text into pieces and gives every piece its own list of numbers.",
       explain:
-        "The embedding model reads the text's {{token|tokens}} with a transformer, then squeezes all of them into **one** fixed-length {{vector}} (often by averaging the token vectors, called mean pooling).\n\nThe numbers on their own mean nothing to a human. What matters is how they compare with *other* vectors: similar meaning → similar direction.\n\nVectors are usually scaled to length 1 so that comparing them is a plain {{dot-product|dot product}}.",
-      analogy: "Like turning a song into a fingerprint: you can't hum the fingerprint, but two recordings of the same song produce nearly the same one.",
-      highlight: ["text", "tokenizer", "model", "vector"],
+        "First the text is split into {{token|tokens}} (small pieces of words). The embedding model then gives each piece a {{vector}} (a list of numbers). Real models use hundreds of numbers per piece; the bars show 8 toy ones. Up means positive, down means negative.",
+      analogy: "Like describing each ingredient of a dish with a row of scores: sweet, salty, spicy, crunchy…",
+      detail:
+        "The embedding model is a transformer (usually encoder-only, e.g. a BERT-style model). After its layers, every token has a context-aware vector: “cat” in “a small cat” gets a slightly different vector than “cat” in “cat command”. The individual numbers have no human meaning on their own; only comparisons between vectors do.",
+      stage: { kind: "tokens", mode: "vectors", tokens: TOKENS, vectors: TOKEN_VECS, note: "one list of numbers per token (toy: 8 numbers)" },
+      highlight: ["text", "tokenizer", "model"],
       packets: [
         { from: "text", to: "tokenizer", label: "“a small cat”", tone: "cyan" },
         { from: "tokenizer", to: "model", label: "[a, ␣small, ␣cat]", tone: "violet" },
-        { from: "model", to: "vector", label: "pool → 1 vector", sub: "length 1.00", tone: "blue" },
       ],
-      viz: [
-        { kind: "tokens", title: "Tokens", tokens: [{ text: "a" }, { text: "␣small" }, { text: "␣cat" }] },
-        {
+      deeper: {
+        math: TOKENS.map((t, i) => `h(${t.trim()}) = ${vec(TOKEN_VECS[i])}`),
+      },
+      log: TOKENS.map((t, i) => ({ tone: "cyan" as const, cells: { stage: "token", item: `“${t.trim()}”`, score: "", note: `${vec(TOKEN_VECS[i].slice(0, 3))} …` } })),
+      interviewTip: "Mention that token vectors are contextual: the same word gets different vectors in different sentences.",
+    },
+    // 2 ─────────────────────────────────────────────────────────────
+    {
+      id: "pool",
+      title: "Squeeze them into one list",
+      simple: "All the pieces are averaged into one list of numbers that stands for the whole text.",
+      explain:
+        "Averaging the token lists (called mean pooling) gives **one** vector for the whole text, always the same length, whether the text is 3 words or 300. That one list is the {{embedding}}. It is then scaled to length 1, so comparing two texts is a quick {{dot-product|dot product}} (multiply matching numbers and add up).",
+      analogy: "Like turning a song into a fingerprint: you can't hum the fingerprint, but two recordings of the same song produce nearly the same one.",
+      detail: `v = mean(h₁, h₂, h₃), then v̂ = v / ‖v‖. Here ‖v̂‖ = ${f(norm(QVEC), 2)}. Some models use the [CLS] token's vector instead of the mean. Either way the output is **one fixed-length vector per text**, and the same model must embed both queries and documents, or the vectors live in different spaces.`,
+      stage: {
+        kind: "viz",
+        viz: {
           kind: "bars",
-          title: "Its embedding (toy: 8 of the ~768 numbers)",
+          title: "The embedding of “a small cat” (8 of ~768 numbers)",
           items: QVEC.map((x, i) => ({ label: `d${i}`, value: x, tone: x >= 0 ? ("blue" as const) : ("rose" as const), note: x < 0 ? "(neg)" : "" })),
           max: 1,
           format: "fixed2",
-          caption: `Scaled to unit length: √(Σ x²) = ${f(norm(QVEC), 2)}.`,
+          caption: `Average of the 3 token lists, scaled to length ${f(norm(QVEC), 2)}.`,
         },
-      ],
+      },
+      highlight: ["model", "vector"],
+      packets: [{ from: "model", to: "vector", label: "pool → 1 vector", sub: `length ${f(norm(QVEC), 2)}`, tone: "blue" }],
       deeper: {
         math: ["v = mean(h₁, h₂, …, h_n)   (mean pooling of the last-layer token vectors)", "v̂ = v / ‖v‖   (normalise to length 1)", `‖v̂‖ = ${f(norm(QVEC), 4)}`],
         code: {
@@ -180,47 +241,49 @@ v = model.encode("a small cat", normalize_embeddings=True)
 print(v.shape)   # (dim,)  e.g. (384,) or (768,)`,
         },
       },
-      log: [
-        { tone: "cyan", cells: { stage: "tokenize", item: "“a small cat” → 3 tokens", score: "", note: "toy split" } },
-        { tone: "blue", cells: { stage: "embed", item: `v = ${vec(QVEC.slice(0, 4))} …`, score: f(norm(QVEC), 2), note: "‖v‖ after normalising" } },
-      ],
+      log: [{ tone: "blue", cells: { stage: "embed", item: `v = ${vec(QVEC.slice(0, 4))} …`, score: f(norm(QVEC), 2), note: "‖v‖ after normalising" } }],
       interviewTip: "Say clearly: **one vector per text**, fixed length regardless of text length, and the same model must embed both queries and documents.",
     },
+    // 3 ─────────────────────────────────────────────────────────────
     {
       id: "space",
       title: "Meaning becomes position",
+      simple: "Plot every text's numbers as a dot: texts with similar meaning land close together.",
       explain:
-        "Plot every vector and you get a map of meaning. Words about animals cluster together, vehicles somewhere else, food somewhere else again.\n\nThe query “kitten” is not in our list, yet it lands right next to the animals — so its nearest neighbours are exactly the results you'd want. Nobody wrote a rule saying kittens are animals; the model learned it from text.\n\nReal embeddings have hundreds of dimensions. These pictures are squashed down to 2D and 3D so we can see them.",
+        "Put each vector on a map and groups appear: animals together, vehicles elsewhere, food somewhere else again. Nobody told the model that a lion is an animal; it learned it from lots of text. Real embeddings have hundreds of dimensions; this picture squashes them down to 2.",
+      analogy: "A city map where every word has an address and similar words share a neighbourhood.",
+      detail:
+        "Tools like PCA, t-SNE or UMAP make these 2D/3D pictures. They distort distances, so use them for intuition only, never to measure similarity: always compare the full vectors.\n\nThe groups emerge because the model was trained (often contrastively) to pull matching pairs together and push non-matching pairs apart.",
+      stage: { kind: "map", mode: "map", points: MAP_POINTS, note: "colour = topic group · position = meaning (squashed to 2D)" },
       highlight: ["vector", "space"],
       packets: [{ from: "vector", to: "space", label: "plot all vectors", tone: "amber" }],
-      viz: [
-        {
-          kind: "scatter",
-          title: "2D view: three clusters + the query",
-          points: POINTS.map((p) => ({ x: p.x, y: p.y, label: p.word, tone: TONE_OF[p.group] })),
-          query: { x: KITTEN.x, y: KITTEN.y, label: "kitten", neighbours: NEIGHBOURS },
-          x: [-1, 1],
-          y: [-1, 1],
-          caption: `Nearest by cosine: ${NEIGHBOURS.map((i) => `${POINTS[i].word} (${f(COS_2D[i], 3)})`).join(", ")}.`,
-        },
-        { kind: "three-embed", title: "3D view (drag to rotate)", caption: "Same idea in 3D. The pink point is a query; dashed lines join its 3 nearest neighbours." },
-      ],
+      viz: {
+        only: "interview",
+        kind: "three-embed",
+        title: "3D view (drag to rotate)",
+        caption: "Same idea in 3D. The pink point is a query; dashed lines join its 3 nearest neighbours.",
+      },
       deeper: {
         text: "Dimensionality-reduction tools like PCA, t-SNE or UMAP make these pictures. They distort distances, so use them for intuition, never to measure similarity — always compare the full vectors.",
       },
-      log: NEIGHBOURS.map((i, k) => ({ tone: "green" as const, cells: { stage: `neighbour ${k + 1}`, item: POINTS[i].word, score: f(COS_2D[i], 3), note: POINTS[i].group } })),
+      log: GROUPS.map((g) => ({ tone: g.tone, cells: { stage: "cluster", item: g.group, score: g.words.length, note: g.words.join(", ") } })),
     },
+    // 4 ─────────────────────────────────────────────────────────────
     {
       id: "cosine",
-      title: "Cosine similarity, worked out",
-      explain:
-        "{{cosine-similarity|Cosine similarity}} asks: **do two arrows point the same way?** It ignores how long they are.\n\nRecipe: multiply matching numbers and add them up (the {{dot-product|dot product}}), then divide by the two lengths. 1 means same direction, 0 means unrelated, −1 means opposite.\n\nWith toy 4-number vectors — [animal, small/young, vehicle, wheels] — “kitten” is close to “cat” and “puppy”, and far from “car”. “Toy car” shares the *small* idea, so it sits in between.",
+      title: "Do the arrows point the same way?",
+      simple: "Draw each text as an arrow. The smaller the angle between two arrows, the more alike they are.",
+      explain: `{{cosine-similarity|Cosine similarity}} turns that angle into a score: **1** = same direction, **0** = unrelated (a right angle), **−1** = opposite. Kitten and cat are ${deg(PAIR_COS[0])}° apart, a cosine of **${f(PAIR_COS[0], 2)}**. Kitten and truck are almost at a right angle: **${f(PAIR_COS[2], 2)}**.`,
+      analogy: "Two people pointing at the same star are “similar” even if one arm is longer than the other: length doesn't matter, direction does.",
+      detail: `Recipe: multiply matching numbers and add them (the {{dot-product|dot product}}), then divide by both lengths: cos(a, b) = a·b / (‖a‖‖b‖).\n\nWorked with toy 4-number vectors [animal, small/young, vehicle, wheels]: kitten = ${vec(W.kitten, 1)}, cat = ${vec(W.cat, 1)} → dot = ${f(DOT_KC, 2)}, lengths ${f(N_K, 3)} and ${f(N_C, 3)}, cos = **${f(COS_KC, 3)}**. cos(kitten, car) = ${f(COS_KCAR, 3)}. For unit-length vectors cosine is just the dot product, and ranking by Euclidean distance gives the same order.`,
+      stage: { kind: "map", mode: "angle", points: ANGLE_WORDS, pairs: PAIRS, note: "smaller angle = more similar · the cosine is worked out from the arrows" },
       highlight: ["space"],
       packets: [{ from: "space", to: "space", label: "cos(kitten, ·)", tone: "amber" }],
       viz: [
         {
+          only: "interview",
           kind: "table",
-          title: "cos(kitten, cat) step by step",
+          title: "cos(kitten, cat) step by step (4 toy dims)",
           columns: ["", "value"],
           rows: [
             ["kitten", vec(W.kitten, 1)],
@@ -233,8 +296,9 @@ print(v.shape)   # (dim,)  e.g. (384,) or (768,)`,
           highlightRow: 5,
         },
         {
+          only: "interview",
           kind: "bars",
-          title: "Similarity to “kitten”",
+          title: "Similarity to “kitten” (4 toy dims)",
           items: COS_KITTEN.map(({ w, c }) => ({ label: w, value: c, tone: c > 0.8 ? ("green" as const) : c > 0.4 ? ("amber" as const) : ("slate" as const) })),
           max: 1,
           format: "fixed3",
@@ -247,64 +311,144 @@ print(v.shape)   # (dim,)  e.g. (384,) or (768,)`,
           `‖a‖ = ${f(N_K, 3)},  ‖b‖ = ${f(N_C, 3)}  →  cos = ${f(COS_KC, 3)}`,
           "If both vectors are unit length, cos = a · b, and ‖a − b‖² = 2 − 2·cos — so ranking by Euclidean distance gives the same order.",
         ],
+        code: { lang: "python", src: `import numpy as np\ncos = a @ b / (np.linalg.norm(a) * np.linalg.norm(b))` },
       },
-      log: COS_KITTEN.map(({ w, c }) => ({ tone: (c > 0.8 ? "green" : "slate") as Tone, cells: { stage: "cosine", item: `kitten ↔ ${w}`, score: f(c, 3), note: c > 0.8 ? "close" : c > 0.4 ? "partly related" : "unrelated" } })),
-      interviewTip: `Be ready to compute one by hand. Here cos(kitten, car) = ${f(COS_KCAR, 3)}: nearly unrelated.`,
+      log: PAIRS.map((p, k) => ({ tone: (PAIR_COS[k] > 0.8 ? "green" : PAIR_COS[k] > 0.3 ? "amber" : "slate") as Tone, cells: { stage: "cosine", item: `kitten ↔ ${ANGLE_WORDS[p.b].label}`, score: f(PAIR_COS[k], 3), note: p.verdict } })),
+      interviewTip: `Be ready to compute one by hand. With the toy 4-number vectors, cos(kitten, car) = ${f(COS_KCAR, 3)}: nearly unrelated.`,
     },
+    // 5 ─────────────────────────────────────────────────────────────
     {
-      id: "keyword-vs-semantic",
-      title: "Keyword (BM25) vs semantic search",
-      explain:
-        "Two ways to search the same five help-desk articles:\n\n- **{{bm25|BM25}}** scores documents by shared words, giving more weight to rare words.\n- **Semantic** compares embeddings, so it matches meaning.\n\nQuery A, “error e1043”: only BM25 finds the right article, because “e1043” is an exact code the embedding blurs into “some error”.\n\nQuery B, “reset my password”: BM25 grabs the *router* article (it shares the word “reset”), while semantic search finds “recover a forgotten login credential” — no shared words at all.\n\nNeither wins everywhere. That is why production systems often run both ({{hybrid-search|hybrid search}}).",
-      analogy: "BM25 is a librarian who matches the exact words on the spine. Semantic search is one who understands what you meant but sometimes mishears part numbers.",
+      id: "nearest",
+      title: "Search = find the nearest",
+      simple: "To search, turn the question into numbers too, then pick the dots that sit closest to it.",
+      explain: `The word “kitten” is not in our list, yet its dot lands right among the animals. Its three nearest neighbours by cosine are ${NEIGHBOURS.map((i) => `**${POINTS[i].word}**`).join(", ")}: exactly the results you'd want. That is semantic search (search by meaning, not by matching letters).`,
+      analogy: "Dropping a pin on the map and asking “who lives closest?”",
+      detail: `Nearest by cosine: ${NEIGHBOURS.map((i) => `${POINTS[i].word} (${f(COS_2D[i], 3)})`).join(", ")}. Returning the k best matches is called top-k retrieval (here k = 3). In production the query is embedded at request time, while document vectors are computed once and stored, which is why this style (a bi-encoder) is fast.`,
+      stage: { kind: "map", mode: "map", points: MAP_POINTS, query: { x: KITTEN.x, y: KITTEN.y, label: "kitten" }, neighbours: NEIGHBOURS, note: "the star is the question · numbers = closest first" },
+      highlight: ["user", "model", "space"],
+      packets: [
+        { from: "user", to: "model", label: "“kitten”", tone: "cyan" },
+        { from: "vector", to: "space", label: "nearest 3", tone: "amber" },
+      ],
+      viz: {
+        only: "interview",
+        kind: "scatter",
+        title: "The same search as a plot",
+        points: MAP_POINTS,
+        query: { x: KITTEN.x, y: KITTEN.y, label: "kitten", neighbours: NEIGHBOURS },
+        x: [-1, 1],
+        y: [-1, 1],
+      },
+      log: NEIGHBOURS.map((i, k) => ({ tone: "green" as const, cells: { stage: `neighbour ${k + 1}`, item: POINTS[i].word, score: f(COS_2D[i], 3), note: POINTS[i].group } })),
+      interviewTip: "Distinguish the offline step (embed and store documents once) from the online step (embed the query, search) — it explains why bi-encoders scale.",
+    },
+    // 6 ─────────────────────────────────────────────────────────────
+    {
+      id: "keyword-wins",
+      title: "When exact words matter",
+      simple: "For codes, names and IDs, plain word matching beats meaning search.",
+      explain: `Query “${QA.text}” on five help-desk articles. {{bm25|Keyword search (BM25)}} (scores shared words, rare words count more) puts **${DOCS[best(BM_A)].title}** first, because “e1043” is a rare exact match. Meaning search blurs the code into “some error” and ranks **${DOCS[best(SEM_A)].title}** first.`,
+      analogy: "Looking up a part number: you want the exact number, not “something similar”.",
+      detail: `BM25 rewards documents containing rare query words, with diminishing returns for repeats and a length penalty. “e1043” appears in 1 of 5 docs → IDF = ${f(Math.log(1 + (5 - 1 + 0.5) / (1 + 0.5)), 3)}; “error” in 2 of 5 → IDF = ${f(Math.log(1 + (5 - 2 + 0.5) / (2 + 0.5)), 3)}. Embeddings are bad at rare tokens (codes, SKUs, new product names) because they were rarely seen in training.`,
+      stage: {
+        kind: "cards",
+        zones: [
+          { id: "q", label: "the question", icon: "person", tone: "cyan", text: `“${QA.text}”` },
+          { id: "kw", label: "keyword (BM25)", icon: "search", tone: "amber", cards: ranked("a-kw", BM_A, QA.right, 2) },
+          { id: "sem", label: "meaning (vectors)", icon: "box", tone: "blue", cards: ranked("a-sem", SEM_A, QA.right, 3) },
+        ],
+        note: "green = the article that actually answers it",
+      },
       highlight: ["bm25", "vdb", "results"],
       packets: [
-        { from: "bm25", to: "results", label: `A → ${DOCS[best(BM_A)].id} · B → ${DOCS[best(BM_B)].id}`, sub: "keyword", tone: "amber" },
-        { from: "vdb", to: "results", label: `A → ${DOCS[best(SEM_A)].id} · B → ${DOCS[best(SEM_B)].id}`, sub: "semantic", tone: "blue" },
+        { from: "bm25", to: "results", label: `A → ${DOCS[best(BM_A)].id}`, sub: "keyword", tone: "amber" },
+        { from: "vdb", to: "results", label: `A → ${DOCS[best(SEM_A)].id}`, sub: "semantic", tone: "blue" },
       ],
-      viz: [
-        {
-          kind: "table",
-          title: "Scores per document",
-          columns: ["doc", "BM25 · A", "cos · A", "BM25 · B", "cos · B"],
-          rows: DOCS.map((d, i) => [`${d.id} ${d.text.split(" ").slice(0, 3).join(" ")}…`, f(BM_A[i]), f(SEM_A[i], 3), f(BM_B[i]), f(SEM_B[i], 3)]),
-          caption: `A “${QA.text}”: BM25 top = ${DOCS[best(BM_A)].id}, semantic top = ${DOCS[best(SEM_A)].id}. B “${QB.text}”: BM25 top = ${DOCS[best(BM_B)].id}, semantic top = ${DOCS[best(SEM_B)].id}. Semantic vectors are toy values.`,
-        },
-        {
-          kind: "bars",
-          title: `Query B “${QB.text}” — semantic`,
-          items: DOCS.map((d, i) => ({ label: d.id, value: SEM_B[i], tone: i === best(SEM_B) ? ("green" as const) : ("blue" as const) })),
-          max: 1,
-          format: "fixed3",
-        },
-      ],
+      viz: {
+        only: "interview",
+        kind: "table",
+        title: `Scores for “${QA.text}”`,
+        columns: ["doc", "BM25", "cosine"],
+        rows: DOCS.map((d, i) => [`${d.id} ${d.title}`, f(BM_A[i]), f(SEM_A[i], 3)]),
+        caption: "Semantic vectors are toy values.",
+      },
       deeper: {
         math: [
           "BM25(q, d) = Σ_t IDF(t) · tf·(k₁+1) / (tf + k₁·(1 − b + b·|d|/avgdl))",
           "IDF(t) = ln(1 + (N − n_t + 0.5)/(n_t + 0.5)),  k₁ = 1.2,  b = 0.75",
-          `“e1043” appears in 1 of 5 docs → IDF = ${f(Math.log(1 + (5 - 1 + 0.5) / (1 + 0.5)), 3)}; “error” in 2 of 5 → IDF = ${f(Math.log(1 + (5 - 2 + 0.5) / (2 + 0.5)), 3)}`,
         ],
       },
       log: [
         { tone: "amber", cells: { stage: "bm25 · A", item: `${DOCS[best(BM_A)].id} “${DOCS[best(BM_A)].text}”`, score: f(Math.max(...BM_A)), note: "exact code wins" } },
         { tone: "rose", cells: { stage: "cos · A", item: `${DOCS[best(SEM_A)].id} “${DOCS[best(SEM_A)].text}”`, score: f(Math.max(...SEM_A), 3), note: "semantic blurs the code" } },
-        { tone: "rose", cells: { stage: "bm25 · B", item: `${DOCS[best(BM_B)].id} “${DOCS[best(BM_B)].text}”`, score: f(Math.max(...BM_B)), note: "shares “reset”, wrong topic" } },
-        { tone: "green", cells: { stage: "cos · B", item: `${DOCS[best(SEM_B)].id} “${DOCS[best(SEM_B)].text}”`, score: f(Math.max(...SEM_B), 3), note: "meaning match" } },
       ],
       interviewTip: "Give a concrete case where BM25 beats embeddings (codes, SKUs, names) — it shows you have run search in production, not just read about it.",
     },
+    // 7 ─────────────────────────────────────────────────────────────
+    {
+      id: "meaning-wins",
+      title: "When the words are different",
+      simple: "When people ask in their own words, meaning search finds the right page and word matching doesn't.",
+      explain: `Query “${QB.text}”. Keyword search grabs **${DOCS[best(BM_B)].title}**, because it shares the word “reset”. Meaning search finds **${DOCS[best(SEM_B)].title}**, which shares no words at all with the question. Neither method wins everywhere, so real systems often run both ({{hybrid-search|hybrid search}}).`,
+      analogy: "BM25 is a librarian who matches the exact words on the spine. Semantic search is one who understands what you meant but sometimes mishears part numbers.",
+      detail: "Hybrid search runs BM25 and vector search in parallel and merges the two ranked lists, often with Reciprocal Rank Fusion (score = Σ 1/(k + rank)), which needs no score calibration between the two systems. A re-ranker can then reorder the merged top results.",
+      stage: {
+        kind: "cards",
+        zones: [
+          { id: "q", label: "the question", icon: "person", tone: "cyan", text: `“${QB.text}”` },
+          { id: "kw", label: "keyword (BM25)", icon: "search", tone: "amber", cards: ranked("b-kw", BM_B, QB.right, 2) },
+          { id: "sem", label: "meaning (vectors)", icon: "box", tone: "blue", cards: ranked("b-sem", SEM_B, QB.right, 3) },
+        ],
+        note: "green = the article that actually answers it",
+      },
+      highlight: ["bm25", "vdb", "results"],
+      packets: [
+        { from: "bm25", to: "results", label: `B → ${DOCS[best(BM_B)].id}`, sub: "keyword", tone: "amber" },
+        { from: "vdb", to: "results", label: `B → ${DOCS[best(SEM_B)].id}`, sub: "semantic", tone: "blue" },
+      ],
+      viz: {
+        only: "interview",
+        kind: "table",
+        title: `Scores for “${QB.text}”`,
+        columns: ["doc", "BM25", "cosine"],
+        rows: DOCS.map((d, i) => [`${d.id} ${d.title}`, f(BM_B[i]), f(SEM_B[i], 3)]),
+        caption: "Semantic vectors are toy values.",
+      },
+      log: [
+        { tone: "rose", cells: { stage: "bm25 · B", item: `${DOCS[best(BM_B)].id} “${DOCS[best(BM_B)].text}”`, score: f(Math.max(...BM_B)), note: "shares “reset”, wrong topic" } },
+        { tone: "green", cells: { stage: "cos · B", item: `${DOCS[best(SEM_B)].id} “${DOCS[best(SEM_B)].text}”`, score: f(Math.max(...SEM_B), 3), note: "meaning match" } },
+      ],
+      interviewTip: "When asked “keyword or vector?”, answer “both, measured”: hybrid search with fusion is the common production default.",
+    },
+    // 8 ─────────────────────────────────────────────────────────────
     {
       id: "chunking",
-      title: "Chunking: size and overlap",
-      explain:
-        "A whole manual squeezed into one vector is too blurry to search, and embedding models have an input limit. So we split documents into {{chunk|chunks}} first.\n\nHere a 2,000-token document is cut into 500-token chunks that **overlap** by 100 tokens, so a sentence that falls on a boundary still appears whole in at least one chunk.\n\nSmaller chunks = sharper matches but less context each; bigger chunks = more context but fuzzier vectors. There is no universal best size — test a few on your own questions.",
+      title: "Cut long documents into pieces",
+      simple: "Long documents are cut into overlapping pieces, and each piece gets its own list of numbers.",
+      explain: `One vector for a whole manual would be too blurry to search, and models have an input limit. So we cut it into {{chunk|chunks}} (pieces). Here a ${fmtInt(DOC_TOKENS)}-token document becomes **${N_CHUNKS}** chunks of ${CHUNK} tokens, each **overlapping** the last by ${OVERLAP}, so no sentence is lost on a cut.`,
       analogy: "Cutting a long scroll into index cards, letting each card repeat the last line of the previous one so no sentence is cut in half.",
+      detail: `Stride = size − overlap = ${STRIDE}; chunks = ⌈(${DOC_TOKENS} − ${OVERLAP}) / ${STRIDE}⌉ = ${N_CHUNKS}; ${fmtInt(STORED)} tokens stored (${f(STORED / DOC_TOKENS, 2)}× the original).\n\nSmaller chunks = sharper matches but less context each; bigger chunks = more context but fuzzier vectors. There is no universal best size: test a few on your own questions. Split on structure first (headings, paragraphs, table rows), then fall back to size, and keep source, page and heading as metadata.`,
+      stage: {
+        kind: "cards",
+        zones: [
+          { id: "doc", label: "the document", icon: "doc", tone: "slate", cards: [{ id: "manual", title: "Router manual", sub: `${fmtInt(DOC_TOKENS)} tokens`, tone: "slate" }] },
+          { id: "cut", label: "chunker", icon: "scissors", tone: "violet", text: `size ${CHUNK}, overlap ${OVERLAP}` },
+          {
+            id: "chunks",
+            label: `${N_CHUNKS} chunks`,
+            icon: "shelf",
+            tone: "blue",
+            cards: CHUNKS.map(([a, b], i) => ({ id: `chunk-${i + 1}`, title: `c${i + 1} · tokens ${a}–${b}`, sub: i > 0 ? `repeats the last ${OVERLAP} of c${i}` : "first piece", tone: "blue" as const })),
+          },
+        ],
+      },
       highlight: ["docs", "chunker"],
       packets: [
         { from: "docs", to: "chunker", label: `${fmtInt(DOC_TOKENS)} tokens`, tone: "slate" },
         { from: "chunker", to: "model", label: `${N_CHUNKS} chunks × ≤${CHUNK}`, sub: `overlap ${OVERLAP}`, tone: "violet" },
       ],
       viz: {
+        only: "interview",
         kind: "table",
         title: `Chunk ranges (size ${CHUNK}, overlap ${OVERLAP}, stride ${STRIDE})`,
         columns: ["chunk", "tokens", "length"],
@@ -316,41 +460,47 @@ print(v.shape)   # (dim,)  e.g. (384,) or (768,)`,
         text: "Better than fixed windows: split on structure first (headings, paragraphs, table rows), then fall back to size. Store the source, page and heading with every chunk as metadata.",
       },
       log: CHUNKS.map(([a, b], i) => ({ tone: "violet" as const, cells: { stage: "chunk", item: `c${i + 1}: tokens ${a}–${b}`, score: b - a, note: i > 0 ? `overlaps c${i} by ${OVERLAP}` : "first" } })),
+      interviewTip: "Say how you would pick a chunk size: build a small set of real questions, try 2–3 sizes, and measure retrieval recall.",
     },
+    // 9 ─────────────────────────────────────────────────────────────
     {
       id: "vectordb",
-      title: "Vector databases: exact vs approximate",
-      explain:
-        "Comparing a query with every stored vector is **exact** but slow once you have millions. A {{vector-db|vector database}} builds an index for {{ann|approximate nearest-neighbour}} search instead.\n\nThe popular {{hnsw|HNSW}} index links each vector to a few close neighbours in layered graphs. A search starts at the top layer and hops greedily toward the query, checking only a small fraction of the vectors.\n\nThe price: it can occasionally miss a true neighbour. You tune that trade-off (speed vs recall) and you should measure it.",
+      title: "Searching millions, fast",
+      simple: "A vector database finds the closest lists quickly by checking only a few likely ones, not all of them.",
+      explain: `Comparing a question with every stored vector is **exact** but slow: ${fmtInt(N_VEC)} vectors × ${DIM} numbers = ${fmtInt(MACS)} multiplications per search. A {{vector-db|vector database}} builds an index for {{ann|approximate}} search instead. It is far faster, but can occasionally miss a true neighbour.`,
       analogy: "Finding a house by asking neighbours for directions, street by street, instead of knocking on every door in the country.",
+      detail:
+        "The popular {{hnsw|HNSW}} index links each vector to a few close neighbours in layered graphs. A search starts at the sparse top layer and hops greedily toward the query, checking only a small fraction of the vectors. Knobs: M (links per node), efConstruction (build effort), efSearch (search effort: higher → better recall, slower).\n\nMemory matters too: storing vectors as int8 or binary instead of float32 cuts memory a lot, usually with a re-scoring pass to recover accuracy.",
+      stage: {
+        kind: "viz",
+        viz: [
+          {
+            kind: "table",
+            title: "Exact vs approximate",
+            columns: ["", "Check everything (exact)", "HNSW (approximate)"],
+            rows: [
+              ["Work per search", "every vector", "a small slice, via graph hops"],
+              ["Finds the true nearest", "always (100%)", "almost always, tunable"],
+              ["Good for", "up to ~100k vectors", "millions, low latency"],
+            ],
+          },
+          {
+            kind: "bars",
+            title: `Memory for ${fmtInt(N_VEC)} vectors × ${DIM} numbers`,
+            items: [
+              { label: "float32", value: FLOAT32_GB, tone: "rose", note: "GB" },
+              { label: "int8", value: INT8_GB, tone: "amber", note: "GB" },
+              { label: "binary", value: BINARY_GB, tone: "green", note: "GB" },
+            ],
+            format: "fixed3",
+            caption: "Smaller number formats shrink memory, at a small accuracy cost.",
+          },
+        ],
+      },
       highlight: ["vector", "vdb"],
       packets: [
         { from: "vector", to: "vdb", label: "upsert(id, v, metadata)", tone: "blue" },
         { from: "vdb", to: "results", label: "query → top-k ids", tone: "green" },
-      ],
-      viz: [
-        {
-          kind: "table",
-          title: "Flat (exact) vs HNSW (approximate)",
-          columns: ["", "Flat / brute force", "HNSW"],
-          rows: [
-            ["Work per query", "every vector", "a small slice, via graph hops"],
-            ["Recall", "100%", "below 100%, tunable (efSearch)"],
-            ["Memory", "vectors", "vectors + graph links"],
-            ["Good for", "≤ ~100k vectors, or exact needs", "millions of vectors, low latency"],
-          ],
-        },
-        {
-          kind: "bars",
-          title: `Memory for ${fmtInt(N_VEC)} vectors × ${DIM} dims`,
-          items: [
-            { label: "float32", value: FLOAT32_GB, tone: "rose", note: "GB" },
-            { label: "int8", value: INT8_GB, tone: "amber", note: "GB" },
-            { label: "binary", value: BINARY_GB, tone: "green", note: "GB" },
-          ],
-          format: "fixed3",
-          caption: `Brute force = ${fmtInt(MACS)} multiply-adds per query. Quantising vectors (int8, binary) cuts memory a lot, usually with a re-scoring pass to recover accuracy.`,
-        },
       ],
       deeper: {
         math: [`float32: ${fmtInt(N_VEC)} × ${DIM} × 4 bytes = ${f(FLOAT32_GB, 2)} GB`, `int8: × 1 byte = ${f(INT8_GB, 3)} GB;  binary: ÷ 8 = ${f(BINARY_GB, 3)} GB`, "HNSW knobs: M (links per node), efConstruction (build effort), efSearch (search effort ↑ → recall ↑, latency ↑)."],
@@ -363,11 +513,23 @@ print(v.shape)   # (dim,)  e.g. (384,) or (768,)`,
       ],
       interviewTip: "Always pair “ANN” with “measure recall against exact search on a sample”. It shows you know approximate means approximate.",
     },
+    // 10 ────────────────────────────────────────────────────────────
     {
       id: "search",
       title: "A full search, with scores",
-      explain:
-        `A user types “${QC.text}”. The same embedding model turns it into a vector, the vector DB returns the closest chunks with their cosine scores, and anything below a cut-off (here ${THRESHOLD}) is dropped rather than shown as a bad match.\n\nThe result “reset the router to fix wifi drops” shares only one word with the query (“wifi”), yet it ranks first by a wide margin because the *meaning* matches.`,
+      simple: "Turn the question into numbers, score every chunk, keep the close ones and drop the weak ones.",
+      explain: `A user types “${QC.text}”. The same model embeds it, the vector database scores the chunks, and anything below a cut-off of **${THRESHOLD}** is dropped instead of shown as a bad match. **${SEM_C[0].title}** wins with ${f(SEM_C[0].s, 3)}, though it shares only the word “wifi”.`,
+      analogy: "A shop assistant who only shows you the shoes that actually fit, not every shoe in the store.",
+      detail: `Scores: ${SEM_C.map((r) => `${r.id} ${f(r.s, 3)}`).join(", ")}. Score cut-offs are model-specific: a 0.5 from one embedding model is not a 0.5 from another, so calibrate the threshold on labelled examples. Many systems keep a fixed top-k and let a re-ranker or the LLM judge relevance instead of a hard cut-off.`,
+      stage: {
+        kind: "cards",
+        zones: [
+          { id: "q", label: "the question", icon: "person", tone: "cyan", text: `“${QC.text}”` },
+          { id: "scored", label: `below ${THRESHOLD}: dropped`, icon: "box", tone: "slate", cards: DROPPED.map((r) => ({ id: `c-${r.id}`, title: r.title, score: f(r.s, 3), tone: "slate" as const, struck: true })) },
+          { id: "kept", label: "shown to the user", icon: "check", tone: "green", cards: KEPT.map((r) => ({ id: `c-${r.id}`, title: r.title, score: f(r.s, 3), tone: "green" as const })) },
+        ],
+        note: "score = cosine similarity to the question (toy vectors)",
+      },
       highlight: ["user", "model", "vdb", "results"],
       packets: [
         { from: "user", to: "model", label: `“${QC.text}”`, tone: "cyan" },
@@ -376,12 +538,13 @@ print(v.shape)   # (dim,)  e.g. (384,) or (768,)`,
         { from: "vdb", to: "results", label: `${SEM_C[0].id} ${f(SEM_C[0].s, 3)}`, tone: "green" },
       ],
       viz: {
+        only: "interview",
         kind: "bars",
         title: `Cosine to “${QC.text}”`,
         items: SEM_C.map((r) => ({ label: r.id, value: r.s, tone: r.s >= THRESHOLD ? ("green" as const) : ("slate" as const), note: r.s >= THRESHOLD ? "" : "below cut-off" })),
         max: 1,
         format: "fixed3",
-        caption: `${SEM_C.filter((r) => r.s >= THRESHOLD).length} result(s) above ${THRESHOLD}. Toy vectors.`,
+        caption: `${KEPT.length} result(s) above ${THRESHOLD}. Toy vectors.`,
       },
       deeper: {
         code: {
