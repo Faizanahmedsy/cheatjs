@@ -232,11 +232,14 @@ export type NetworkStage = {
   layers: { title: string; nodes: { label: string; value?: number }[] }[];
   /** weights[l][i][j]: from node i in layer l to node j in layer l + 1. */
   weights: number[][][];
-  /** structure: draw it · forward: numbers flow right · backward: blame flows left · update: lines change to newWeights. */
-  mode: "structure" | "forward" | "backward" | "update";
+  /**
+   * structure: draw it · forward: numbers flow right, neurons light up · error: the guess
+   * is compared with the right answer · backward: blame flows left · update: lines change to newWeights.
+   */
+  mode: "structure" | "forward" | "error" | "backward" | "update";
   newWeights?: number[][][];
-  /** Shown next to the output in backward/update modes. */
-  target?: { label: string; value: number };
+  /** Shown next to the output in forward/error/backward/update modes. `was` = the output before the update. */
+  target?: { label: string; value: number; was?: number };
   /** Show a little ReLU gate on hidden neurons (open when the value is above 0). */
   gates?: boolean;
   /** Per-node blame for the backward pass, same shape as layers' nodes. */
@@ -290,12 +293,16 @@ export type FitStage = {
 
 export type DescentStage = {
   kind: "descent";
-  /** The loss curve as (w, loss) points. */
+  /** The loss curve as (w, loss) points, sorted by w. */
   curve: [number, number][];
-  /** Positions of w at each step, in order. */
+  /** Positions of w at each step, in order. The ball walks through them. */
   steps: number[];
   xLabel: string;
   yLabel: string;
+  /** Label for the main ball, e.g. "learning rate 0.1". */
+  label?: string;
+  /** Extra balls on the same curve (e.g. too-small / too-big learning rates), drawn with their own tone. */
+  compare?: { label: string; tone: Tone; steps: number[] }[];
   note?: string;
 };
 
@@ -338,7 +345,8 @@ export type ChatStage = {
   note?: string;
 };
 
-export type VizStage = { kind: "viz"; viz: Viz };
+/** A panel visual drawn big. Two or three side by side compare well (e.g. a line vs a curve). */
+export type VizStage = { kind: "viz"; viz: Viz | Viz[]; note?: string };
 
 export type Stage = NeuronStage | NetworkStage | TokensStage | FitStage | DescentStage | MapStage | CardsStage | ChatStage | VizStage;
 

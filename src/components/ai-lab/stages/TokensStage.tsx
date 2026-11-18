@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import type { TokensStage as TokensStageSpec } from "../engine/types";
 import { toneFill, toneVar } from "../engine/tones";
-import { fmtNum, H, timing, W, type StageProps } from "./common";
+import { fmtNum, GEN_TOKEN_S, H, timing, W, type StageProps } from "./common";
 
 const ROW_Y = 300;
 const BLOCK_H = 46;
@@ -57,7 +57,7 @@ export default function TokensStage({ stage, animate, speed, runKey }: StageProp
     mode === "generate" ? 120 + row * 70 : mode === "attention" ? ROW_Y + 40 : mode === "next" ? 80 + row * 70 : mode === "qkv" || mode === "vectors" ? 110 + row * 70 : ROW_Y - 60 + row * 70;
 
   const promptCount = stage.promptCount ?? tokens.length;
-  const genDelay = (i: number) => (i < promptCount ? 0 : 0.6 + (i - promptCount) * 0.7);
+  const genDelay = (i: number) => (i < promptCount ? 0 : 0.6 + (i - promptCount) * GEN_TOKEN_S);
 
   const block = (i: number, label: string, tone: "blue" | "green" | "amber" | "slate" = "blue", extra?: React.ReactNode, delay = 0) => {
     const p = pos[i];

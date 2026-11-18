@@ -506,7 +506,9 @@ function Network({ v }: { v: NetworkViz }) {
   );
 }
 
-export function VizView({ viz }: { viz: Viz }) {
+/** `big`: drawn as the centre stage, so the 3D views get more height. */
+export function VizView({ viz, big }: { viz: Viz; big?: boolean }) {
+  const threeH = big ? "h-[min(56vh,420px)]" : "h-[260px]";
   switch (viz.kind) {
     case "bars":
       return <Bars v={viz} />;
@@ -533,7 +535,7 @@ export function VizView({ viz }: { viz: Viz }) {
     case "three-loss":
       return (
         <Frame title={viz.title} caption={viz.caption}>
-          <div className="h-[260px] overflow-hidden rounded bg-lab-scene">
+          <div className={`${threeH} overflow-hidden rounded bg-lab-scene`}>
             <ThreeLoss />
           </div>
         </Frame>
@@ -541,7 +543,7 @@ export function VizView({ viz }: { viz: Viz }) {
     case "three-embed":
       return (
         <Frame title={viz.title} caption={viz.caption}>
-          <div className="h-[260px] overflow-hidden rounded bg-lab-scene">
+          <div className={`${threeH} overflow-hidden rounded bg-lab-scene`}>
             <ThreeEmbed />
           </div>
         </Frame>

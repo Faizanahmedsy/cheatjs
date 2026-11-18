@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight, Lightbulb, MessageSquareQuote, Sigma } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight, Code, GraduationCap, Lightbulb, ListChecks, MessageSquareQuote, Play, Sigma, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { InterviewQuestion, Level, Scenario } from "../engine/types";
+import type { InterviewQuestion, Level, Scenario, Viz } from "../engine/types";
 import { RichText } from "../engine/RichText";
+import { useLabMode, type LabMode } from "../engine/mode";
 import { VizView } from "../viz/VizView";
 import { toneFill, toneVar } from "../engine/tones";
 
@@ -17,8 +18,12 @@ type Props = {
   onTab: (t: PanelTab) => void;
   onPrev: () => void;
   onNext: () => void;
+  /** Go to step 1 without auto-play. */
+  onStart: () => void;
+  onStep: (i: number) => void;
   openQuestion: string | null;
   onOpenQuestion: (id: string | null) => void;
+  className?: string;
 };
 
 export const LEVEL_LABEL: Record<Level, string> = { fresher: "Fresher", mid: "1–2 yrs", senior: "3 yrs" };
@@ -41,7 +46,61 @@ function Callout({ icon: Icon, tone, title, children }: { icon: typeof Lightbulb
   );
 }
 
-function Overview({ s }: { s: Scenario }) {
+/** "Step N of M" with a thin bar. Used in the panel and on the centre stage. */
+export function StepProgress({ i, total, className }: { i: number; total: number; className?: string }) {
+  const pct = total ? (Math.max(0, i + 1) / total) * 100 : 0;
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-lab-accent tabular-nums">{i < 0 ? `${total} steps` : `Step ${i + 1} of ${total}`}</span>
+      <div className="h-1.5 min-w-[40px] flex-1 overflow-hidden rounded-full bg-lab-raised" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={Math.max(0, i + 1)} aria-label="Progress through the steps">
+        <div className="h-full rounded-full bg-lab-accent transition-[width] duration-500" style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
+const visibleVizzes = (viz: Viz | Viz[] | undefined, mode: LabMode) => (viz ? (Array.isArray(viz) ? viz : [viz]) : []).filter((v) => !v.only || v.only === mode);
+
+function StartButton({ onStart, label = "Start" }: { onStart: () => void; label?: string }) {
+  return (
+    <button onClick={onStart} className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-lab-accent px-4 py-2.5 text-[13px] font-bold uppercase tracking-wider text-lab-accent hover:bg-lab-raised">
+      <Play className="h-4 w-4" /> {label}
+    </button>
+  );
+}
+
+function SimpleOverview({ s, onStart, onStep }: { s: Scenario; onStart: () => void; onStep: (i: number) => void }) {
+  return (
+    <div>
+      <h2 className="text-[16px] font-semibold leading-snug text-lab-text">{s.title}</h2>
+      <p className="mt-1 font-body text-[12.5px] text-lab-muted">{s.tagline}</p>
+      {s.imagine && (
+        <Callout icon={Sparkles} tone="amber" title="Imagine">
+          <RichText text={s.imagine} className="text-[14px] leading-relaxed" />
+        </Callout>
+      )}
+      <SectionLabel>In plain words</SectionLabel>
+      <RichText text={s.overview.plain ?? s.overview.definition} className={prose} />
+      <SectionLabel>What you will see</SectionLabel>
+      <ol className="space-y-1">
+        {s.steps.map((st, i) => (
+          <li key={st.id}>
+            <button onClick={() => onStep(i)} className="flex w-full items-start gap-2 rounded-md px-1.5 py-1 text-left font-body text-[13px] leading-snug text-lab-text hover:bg-lab-raised">
+              <span className="w-5 shrink-0 font-labmono text-[11px] tabular-nums text-lab-accent">{i + 1}</span>
+              <span>{st.title}</span>
+            </button>
+          </li>
+        ))}
+      </ol>
+      <StartButton onStart={onStart} />
+      <p className="mt-2 text-center font-body text-[11.5px] text-lab-muted">
+        Want the terms and the questions too? Switch to <span className="font-semibold text-lab-text">Interview</span> at the top.
+      </p>
+    </div>
+  );
+}
+
+function InterviewOverview({ s, onStart }: { s: Scenario; onStart: () => void }) {
   return (
     <div>
       <h2 className="text-[15px] font-semibold leading-snug text-lab-text">{s.title}</h2>
@@ -70,34 +129,76 @@ function Overview({ s }: { s: Scenario }) {
           <RichText text={s.overview.whereUsed} className={prose} />
         </>
       )}
-      <p className="mt-4 rounded-md border border-dashed border-lab-border p-2.5 text-[11px] text-lab-muted">
-        Press <span className="text-lab-text">PLAY</span> to run all {s.steps.length} steps, or <span className="text-lab-text">→</span> to go one at a time. The <span className="text-lab-text">Interview</span> tab has {s.interview.length} questions and the{" "}
-        <span className="text-lab-text">Quiz</span> has {s.quiz.length}.
+      <StartButton onStart={onStart} />
+      <p className="mt-3 rounded-md border border-dashed border-lab-border p-2.5 text-[11px] text-lab-muted">
+        <span className="text-lab-text">Start</span> walks the {s.steps.length} steps one at a time (<span className="text-lab-text">→</span> for the next), and <span className="text-lab-text">Play</span> runs them all. The{" "}
+        <span className="text-lab-text">Interview</span> tab has {s.interview.length} questions and the <span className="text-lab-text">Quiz</span> has {s.quiz.length}.
       </p>
     </div>
   );
 }
 
-function StepDetails({ s, i, onPrev, onNext }: { s: Scenario; i: number; onPrev: () => void; onNext: () => void }) {
-  const [deep, setDeep] = useState(false);
+function Toggle({ open, onClick, icon: Icon, children }: { open: boolean; onClick: () => void; icon: typeof Sigma; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-expanded={open}
+      className="flex w-full items-center gap-1.5 rounded-md border border-lab-border px-2.5 py-1.5 text-left text-[11px] font-semibold uppercase tracking-wider text-lab-muted hover:text-lab-text"
+    >
+      <Icon className="h-3.5 w-3.5" /> {children}
+      <ChevronDown className={cn("ml-auto h-3.5 w-3.5 transition-transform", open && "rotate-180")} />
+    </button>
+  );
+}
+
+function StepDetails({ s, i, onPrev, onNext, onStart, onQuiz }: { s: Scenario; i: number; onPrev: () => void; onNext: () => void; onStart: () => void; onQuiz: () => void }) {
+  const mode = useLabMode();
+  const [maths, setMaths] = useState(false);
+  const [code, setCode] = useState(false);
   const step = s.steps[i];
-  useEffect(() => setDeep(false), [s.id, i]);
+  useEffect(() => {
+    setMaths(false);
+    setCode(false);
+  }, [s.id, i]);
   if (!step)
     return (
       <div className="font-body text-[13px] text-lab-muted">
-        No step running yet. Press <span className="font-labmono text-lab-text">PLAY</span> or <span className="font-labmono text-lab-text">→</span>.
+        Nothing running yet.
+        <StartButton onStart={onStart} />
       </div>
     );
-  const vizzes = step.viz ? (Array.isArray(step.viz) ? step.viz : [step.viz]) : [];
+  const vizzes = visibleVizzes(step.viz, mode);
+  const isLast = i >= s.steps.length - 1;
+  const nextStep = s.steps[i + 1];
+  const hasMaths = !!(step.deeper?.text || step.deeper?.math?.length);
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-[0.16em] text-lab-accent">
-        Step {i + 1} of {s.steps.length}
-      </p>
-      <h2 className="mt-0.5 text-[15px] font-semibold leading-snug text-lab-text">{step.title}</h2>
-      <RichText text={step.explain} className={cn(prose, "mt-2")} />
+      <div className="mb-3 flex items-center gap-2">
+        <button onClick={onPrev} className="flex shrink-0 items-center gap-1 rounded-md border border-lab-border px-2 py-1 text-[11px] text-lab-muted hover:text-lab-text" aria-label="Back one step">
+          <ChevronLeft className="h-3.5 w-3.5" /> Back
+        </button>
+        <StepProgress i={i} total={s.steps.length} className="min-w-0 flex-1" />
+        <button
+          onClick={onNext}
+          disabled={isLast}
+          className="flex shrink-0 items-center gap-1 rounded-md border border-lab-accent px-2 py-1 text-[11px] font-semibold text-lab-accent disabled:border-lab-border disabled:text-lab-muted disabled:opacity-40"
+          aria-label="Next step"
+        >
+          Next <ChevronRight className="h-3.5 w-3.5" />
+        </button>
+      </div>
+      <h2 className="text-[16px] font-semibold leading-snug text-lab-text">{step.title}</h2>
+      {step.simple && (
+        <div className="mt-2.5 rounded-lg border-l-4 px-3 py-2.5" style={{ borderColor: toneVar("cyan"), background: toneFill("cyan", 9) }}>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: toneVar("cyan") }}>
+            In simple words
+          </p>
+          <p className="font-body text-[16px] font-medium leading-snug text-lab-text">{step.simple}</p>
+        </div>
+      )}
+      <RichText text={step.explain} className={cn(prose, "mt-3")} />
       {step.analogy && (
-        <Callout icon={Lightbulb} tone="amber" title="Analogy">
+        <Callout icon={Lightbulb} tone="amber" title="Think of it like">
           <RichText text={step.analogy} />
         </Callout>
       )}
@@ -108,54 +209,94 @@ function StepDetails({ s, i, onPrev, onNext }: { s: Scenario; i: number; onPrev:
           ))}
         </div>
       )}
-      {step.deeper && (
-        <div className="mt-3">
-          <button
-            onClick={() => setDeep((d) => !d)}
-            aria-expanded={deep}
-            className="flex w-full items-center gap-1.5 rounded-md border border-lab-border px-2.5 py-1.5 text-left text-[11px] font-semibold uppercase tracking-wider text-lab-muted hover:text-lab-text"
-          >
-            <Sigma className="h-3.5 w-3.5" /> Go deeper: the maths / code
-            <ChevronDown className={cn("ml-auto h-3.5 w-3.5 transition-transform", deep && "rotate-180")} />
-          </button>
-          {deep && (
-            <div className="mt-2 space-y-2">
-              {step.deeper.text && <RichText text={step.deeper.text} className={prose} />}
-              {step.deeper.math && (
-                <div className="space-y-1 rounded-md border border-lab-border bg-lab-raised p-2.5 text-[11.5px] leading-relaxed text-lab-text">
-                  {step.deeper.math.map((m, k) => (
-                    <div key={k} className="whitespace-pre-wrap break-words">
-                      {m}
+
+      {mode === "interview" && (
+        <>
+          {step.detail && (
+            <div className="mt-4 rounded-md border border-lab-border bg-lab-raised px-3 py-2.5">
+              <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-lab-accent">
+                <GraduationCap className="h-3.5 w-3.5" /> Interview depth
+              </p>
+              <RichText text={step.detail} className={prose} />
+            </div>
+          )}
+          {(hasMaths || step.deeper?.code) && (
+            <div className="mt-3 space-y-2">
+              {hasMaths && (
+                <div>
+                  <Toggle open={maths} onClick={() => setMaths((d) => !d)} icon={Sigma}>
+                    Show the maths
+                  </Toggle>
+                  {maths && (
+                    <div className="mt-2 space-y-2">
+                      {step.deeper?.text && <RichText text={step.deeper.text} className={prose} />}
+                      {step.deeper?.math && (
+                        <div className="space-y-1 rounded-md border border-lab-border bg-lab-raised p-2.5 text-[11.5px] leading-relaxed text-lab-text">
+                          {step.deeper.math.map((m, k) => (
+                            <div key={k} className="whitespace-pre-wrap break-words">
+                              {m}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
-              {step.deeper.code && (
-                <pre className="overflow-x-auto rounded-md border border-lab-border bg-lab-raised p-2.5 text-[11px] leading-relaxed text-lab-text">
-                  <code>{step.deeper.code.src.trim()}</code>
-                </pre>
+              {step.deeper?.code && (
+                <div>
+                  <Toggle open={code} onClick={() => setCode((d) => !d)} icon={Code}>
+                    Show the code
+                  </Toggle>
+                  {code && (
+                    <pre className="mt-2 overflow-x-auto rounded-md border border-lab-border bg-lab-raised p-2.5 text-[11px] leading-relaxed text-lab-text">
+                      <code>{step.deeper.code.src.trim()}</code>
+                    </pre>
+                  )}
+                </div>
               )}
             </div>
           )}
+          {step.interviewTip && (
+            <Callout icon={MessageSquareQuote} tone="violet" title="In an interview">
+              <RichText text={step.interviewTip} />
+            </Callout>
+          )}
+        </>
+      )}
+
+      {isLast ? (
+        <div className="mt-5 rounded-lg border px-3 py-3" style={{ borderColor: toneVar("green"), background: toneFill("green", 8) }}>
+          <p className="mb-1.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: toneVar("green") }}>
+            <ListChecks className="h-3.5 w-3.5" /> What you just learned
+          </p>
+          {s.recap ? (
+            <ul className="list-disc space-y-1 pl-5 font-body text-[13.5px] leading-snug text-lab-text">
+              {s.recap.map((r) => (
+                <li key={r}>
+                  <RichText text={r} />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="font-body text-[13px] text-lab-text">{s.tagline}</p>
+          )}
+          <button onClick={onQuiz} className="mt-3 flex w-full items-center justify-center gap-2 rounded-md border px-3 py-2 text-[12px] font-bold uppercase tracking-wider" style={{ borderColor: toneVar("green"), color: toneVar("green") }}>
+            Take the quiz <ArrowRight className="h-4 w-4" />
+          </button>
         </div>
-      )}
-      {step.interviewTip && (
-        <Callout icon={MessageSquareQuote} tone="violet" title="In an interview">
-          <RichText text={step.interviewTip} />
-        </Callout>
-      )}
-      <div className="mt-4 flex justify-between">
-        <button onClick={onPrev} className="flex items-center gap-1 rounded-md border border-lab-border px-2 py-1 text-[11px] text-lab-muted hover:text-lab-text">
-          <ChevronLeft className="h-3.5 w-3.5" /> Back
-        </button>
+      ) : (
         <button
           onClick={onNext}
-          disabled={i >= s.steps.length - 1}
-          className="flex items-center gap-1 rounded-md border border-lab-border px-2 py-1 text-[11px] text-lab-muted hover:text-lab-text disabled:opacity-40"
+          className="mt-5 flex w-full items-center justify-between gap-2 rounded-lg border border-lab-accent px-3 py-2.5 text-left text-lab-accent hover:bg-lab-raised"
         >
-          Next <ChevronRight className="h-3.5 w-3.5" />
+          <span className="min-w-0">
+            <span className="block text-[10px] font-semibold uppercase tracking-[0.14em]">Next step</span>
+            <span className="block truncate font-body text-[13px] font-medium text-lab-text">{nextStep?.title}</span>
+          </span>
+          <ArrowRight className="h-4 w-4 shrink-0" />
         </button>
-      </div>
+      )}
     </div>
   );
 }
@@ -334,15 +475,16 @@ function Quiz({ s }: { s: Scenario }) {
   );
 }
 
-export function RightPanel({ scenario, stepIndex, tab, onTab, onPrev, onNext, openQuestion, onOpenQuestion }: Props) {
+export function RightPanel({ scenario, stepIndex, tab, onTab, onPrev, onNext, onStart, onStep, openQuestion, onOpenQuestion, className }: Props) {
+  const mode = useLabMode();
   const tabs: [PanelTab, string][] = [
     ["overview", "Overview"],
-    ["step", "Step details"],
+    ["step", mode === "simple" ? "Explain" : "Step details"],
     ["interview", "Interview"],
     ["quiz", "Quiz"],
   ];
   return (
-    <aside className="flex min-h-0 flex-col border-t border-lab-border bg-lab-panel lg:border-t-0">
+    <aside className={cn("flex min-h-0 flex-col border-t border-lab-border bg-lab-panel lg:border-t-0", className)}>
       <div className="flex border-b border-lab-border" role="tablist" aria-label="Panel">
         {tabs.map(([k, label]) => (
           <button
@@ -363,9 +505,13 @@ export function RightPanel({ scenario, stepIndex, tab, onTab, onPrev, onNext, op
         {!scenario ? (
           <p className="text-[11px] text-lab-muted">loading…</p>
         ) : tab === "overview" ? (
-          <Overview s={scenario} />
+          mode === "simple" ? (
+            <SimpleOverview s={scenario} onStart={onStart} onStep={onStep} />
+          ) : (
+            <InterviewOverview s={scenario} onStart={onStart} />
+          )
         ) : tab === "step" ? (
-          <StepDetails s={scenario} i={stepIndex} onPrev={onPrev} onNext={onNext} />
+          <StepDetails s={scenario} i={stepIndex} onPrev={onPrev} onNext={onNext} onStart={onStart} onQuiz={() => onTab("quiz")} />
         ) : tab === "interview" ? (
           <Interview s={scenario} openId={openQuestion} onOpen={onOpenQuestion} />
         ) : (

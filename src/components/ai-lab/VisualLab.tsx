@@ -1,20 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MotionConfig, useReducedMotion } from "framer-motion";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import { ArrowLeft, Moon, Network, Search, Sun, Workflow } from "lucide-react";
+import { ArrowLeft, Eye, GraduationCap, Moon, Network, Play, Search, Sparkles, Sun, Workflow } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DEFAULT_SCENARIO, SCENARIOS } from "./scenarios";
 import type { Scenario } from "./engine/types";
 import { IsoScene, stepDurationMs } from "./engine/IsoScene";
-import { LabThemeContext, type LabTheme } from "./engine/RichText";
+import { LabThemeContext, RichText, type LabTheme } from "./engine/RichText";
+import { LabModeContext, readMode, saveMode, type LabMode } from "./engine/mode";
+import { toneFill, toneVar } from "./engine/tones";
+import { StageView, stageDurationMs } from "./stages/StageView";
 import { TopicList } from "./parts/TopicList";
 import { SequenceView } from "./parts/SequenceView";
 import { TracePanel } from "./parts/TracePanel";
-import { RightPanel, type PanelTab } from "./parts/RightPanel";
+import { RightPanel, StepProgress, type PanelTab } from "./parts/RightPanel";
 import { CommandPalette, type PaletteTarget } from "./parts/CommandPalette";
 
 const THEME_KEY = "ai-lab-theme";
@@ -40,6 +43,41 @@ export async function loadScenario(id: string): Promise<Scenario | null> {
   return mod.default;
 }
 
+type CentreView = "visual" | "scene" | "sequence";
+
+/** Before step 1: the "Imagine…" card and one big Start button over the topic's map. */
+function StartOverlay({ s, onStart, onPlay, reduced }: { s: Scenario; onStart: () => void; onPlay: () => void; reduced: boolean }) {
+  return (
+    <div className="absolute inset-0 z-20 flex overflow-y-auto p-3 sm:p-6" style={{ background: "color-mix(in srgb, var(--lab-scene) 84%, transparent)", backdropFilter: "blur(3px)" }}>
+      <div className="m-auto w-full max-w-lg rounded-xl border bg-lab-panel p-4 shadow-xl sm:p-6" style={{ borderColor: toneVar("amber") }}>
+        <p className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: toneVar("amber") }}>
+          <Sparkles className="h-3.5 w-3.5" /> {s.title}
+        </p>
+        <RichText text={s.imagine ?? s.overview.plain ?? s.tagline} className="font-body text-[15px] leading-relaxed text-lab-text sm:text-[16px]" />
+        <button
+          onClick={onStart}
+          autoFocus
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-[14px] font-bold uppercase tracking-wider"
+          style={{ background: toneVar("blue"), color: "var(--lab-bg)" }}
+        >
+          <Play className="h-5 w-5" /> Start
+        </button>
+        <p className="mt-2.5 text-center font-body text-[12px] text-lab-muted">
+          {s.steps.length} short steps. Go at your own pace with Next, or{" "}
+          {reduced ? (
+            "use Next to step through."
+          ) : (
+            <button onClick={onPlay} className="font-semibold underline decoration-dotted underline-offset-4 hover:text-lab-text">
+              play them all
+            </button>
+          )}
+          {reduced ? "" : "."}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function VisualLab() {
   const router = useRouter();
   const pathname = usePathname();
@@ -52,17 +90,24 @@ export function VisualLab() {
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [run, setRun] = useState(0);
-  const [view, setView] = useState<"scene" | "sequence">("scene");
+  const [view, setView] = useState<CentreView>("visual");
   const [tab, setTab] = useState<PanelTab>("overview");
   const [openQuestion, setOpenQuestion] = useState<string | null>(null);
   const [theme, setTheme] = useState<LabTheme>("dark");
+  const [mode, setMode] = useState<LabMode>("simple");
+  const [traceOpen, setTraceOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const pendingStep = useRef<number | null>(null);
 
   const reduced = useReducedMotion() ?? false;
   const animate = !reduced;
 
-  useEffect(() => setTheme(readTheme()), []);
+  useEffect(() => {
+    setTheme(readTheme());
+    const m = readMode();
+    setMode(m);
+    setTraceOpen(m === "interview");
+  }, []);
   const toggleTheme = () => {
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
@@ -71,6 +116,12 @@ export function VisualLab() {
     } catch {
       /* private mode: theme just won't persist */
     }
+  };
+  const chooseMode = (m: LabMode) => {
+    setMode(m);
+    saveMode(m);
+    // Simple keeps the screen calm; Interview opens the full trace.
+    setTraceOpen(m === "interview");
   };
 
   // Load the topic's module whenever the topic changes.
@@ -98,6 +149,7 @@ export function VisualLab() {
 
   const steps = scenario?.steps ?? [];
   const step = stepIndex >= 0 ? steps[stepIndex] ?? null : null;
+  const showStage = view === "visual" && !!step?.stage;
 
   const goTo = useCallback(
     (i: number) => {
@@ -128,16 +180,16 @@ export function VisualLab() {
     [goTo, pathname, router, topicId],
   );
 
-  // Auto-advance while playing.
+  // Auto-advance while playing. A step with a big visual waits for it to finish.
   useEffect(() => {
     if (!playing || !scenario) return;
-    const ms = stepIndex < 0 ? 250 : stepDurationMs(step ?? undefined) / speed;
+    const ms = stepIndex < 0 ? 250 : Math.max(stepDurationMs(step ?? undefined), showStage ? stageDurationMs(step?.stage) : 0) / speed;
     const t = window.setTimeout(() => {
       if (stepIndex >= scenario.steps.length - 1) setPlaying(false);
       else goTo(stepIndex + 1);
     }, ms);
     return () => window.clearTimeout(t);
-  }, [playing, stepIndex, speed, scenario, step, goTo, run]);
+  }, [playing, stepIndex, speed, scenario, step, goTo, run, showStage]);
 
   const play = useCallback(() => {
     if (reduced || !scenario) return;
@@ -154,6 +206,11 @@ export function VisualLab() {
     setPlaying(false);
     goTo(stepIndex - 1);
   }, [goTo, stepIndex]);
+  const start = useCallback(() => {
+    setPlaying(false);
+    goTo(0);
+    setTab("step");
+  }, [goTo]);
   const reset = useCallback(() => {
     setPlaying(false);
     setStepIndex(-1);
@@ -208,82 +265,115 @@ export function VisualLab() {
   };
 
   const runKey = `${topicId}-${stepIndex}-${run}`;
-  const stepLabel = useMemo(() => (step ? `${String(stepIndex + 1).padStart(2, "0")} / ${String(steps.length).padStart(2, "0")}` : "OVERVIEW"), [step, stepIndex, steps.length]);
+  const views: [CentreView, string, typeof Eye][] = [
+    ["visual", "Visual", Eye],
+    ["scene", "Flow", Network],
+    ["sequence", "Sequence", Workflow],
+  ];
 
   return (
     <LabThemeContext.Provider value={theme}>
-      <TooltipPrimitive.Provider delayDuration={150}>
-        <MotionConfig reducedMotion="user">
-          <div data-theme={theme} className="ai-lab flex min-h-[calc(100dvh-3.5rem)] flex-col bg-lab-bg font-labmono text-lab-text lg:h-[calc(100dvh-3.5rem)] lg:min-h-0">
-            {/* top bar */}
-            <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-lab-border bg-lab-panel px-4 py-2">
-              <Link href="/ai-engineering" className="flex items-center gap-1 text-[11px] text-lab-muted hover:text-lab-text">
-                <ArrowLeft className="h-3.5 w-3.5" /> AI Engineering
-              </Link>
-              <div className="flex min-w-0 items-center gap-2 text-[12px]">
-                <span className="font-bold tracking-[0.2em] text-lab-accent">AI VISUAL LAB</span>
-                <span className="text-lab-muted">/</span>
-                <span className="truncate">
-                  {String(meta.num).padStart(2, "0")} {meta.title}
-                </span>
-              </div>
-              <div className="ml-auto flex items-center gap-2">
-                <div className="flex overflow-hidden rounded-md border border-lab-border text-[11px]" role="tablist" aria-label="View">
-                  {(
-                    [
-                      ["scene", "Network", Network],
-                      ["sequence", "Sequence", Workflow],
-                    ] as const
-                  ).map(([v, label, Icon]) => (
-                    <button
-                      key={v}
-                      role="tab"
-                      aria-selected={view === v}
-                      onClick={() => setView(v)}
-                      className={cn("flex items-center gap-1.5 px-2.5 py-1.5 uppercase tracking-wider", view === v ? "bg-lab-raised text-lab-accent" : "text-lab-muted hover:text-lab-text")}
-                    >
-                      <Icon className="h-3.5 w-3.5" /> {label}
-                    </button>
-                  ))}
+      <LabModeContext.Provider value={mode}>
+        <TooltipPrimitive.Provider delayDuration={150}>
+          <MotionConfig reducedMotion="user">
+            <div data-theme={theme} className="ai-lab flex min-h-[calc(100dvh-3.5rem)] flex-col bg-lab-bg font-labmono text-lab-text lg:h-[calc(100dvh-3.5rem)] lg:min-h-0">
+              {/* top bar */}
+              <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-lab-border bg-lab-panel px-4 py-2">
+                <Link href="/ai-engineering" className="flex items-center gap-1 text-[11px] text-lab-muted hover:text-lab-text">
+                  <ArrowLeft className="h-3.5 w-3.5" /> AI Engineering
+                </Link>
+                <div className="flex min-w-0 items-center gap-2 text-[12px]">
+                  <span className="font-bold tracking-[0.2em] text-lab-accent">AI VISUAL LAB</span>
+                  <span className="text-lab-muted">/</span>
+                  <span className="truncate">
+                    {String(meta.num).padStart(2, "0")} {meta.title}
+                  </span>
                 </div>
-                <button
-                  onClick={() => setPaletteOpen(true)}
-                  className="flex items-center gap-2 rounded-md border border-lab-border px-2.5 py-1.5 text-[11px] text-lab-muted hover:text-lab-text"
-                  aria-label="Search topics, steps, questions and terms"
-                >
-                  <Search className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Search</span>
-                  <kbd className="hidden rounded border border-lab-border px-1 text-[10px] sm:inline">Ctrl K</kbd>
-                </button>
-                <button onClick={toggleTheme} className="rounded-md border border-lab-border p-1.5 text-lab-muted hover:text-lab-text" aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>
-                  {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-                </button>
-              </div>
-            </header>
-
-            <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[250px_minmax(0,1fr)_minmax(340px,390px)]">
-              <TopicList activeId={topicId} scenario={scenario} stepIndex={stepIndex} onTopic={(id) => selectTopic(id)} onStep={(i) => selectTopic(topicId, i)} />
-
-              <section className="flex min-h-0 min-w-0 flex-col border-lab-border lg:border-x">
-                <div className="relative h-[52vh] min-h-[300px] bg-lab-scene lg:h-auto lg:min-h-[240px] lg:flex-1">
-                  <div className="pointer-events-none absolute left-3 top-2 z-10 max-w-[70%] text-[10px] uppercase tracking-[0.16em] text-lab-muted">
-                    <span className="text-lab-accent">{stepLabel}</span>
-                    {step && <span className="ml-2 normal-case tracking-normal text-lab-text">{step.title}</span>}
+                <div className="ml-auto flex flex-wrap items-center gap-2">
+                  {/* Simple | Interview */}
+                  <div className="flex overflow-hidden rounded-md border border-lab-border text-[11px]" role="radiogroup" aria-label="Explanation level">
+                    {(
+                      [
+                        ["simple", "Simple", Sparkles, "Plain words, one idea per step"],
+                        ["interview", "Interview", GraduationCap, "Adds the terms, the maths, the code and typical questions"],
+                      ] as const
+                    ).map(([m, label, Icon, hint]) => (
+                      <button
+                        key={m}
+                        role="radio"
+                        aria-checked={mode === m}
+                        title={hint}
+                        onClick={() => chooseMode(m)}
+                        className={cn("flex items-center gap-1.5 px-2.5 py-1.5 font-semibold uppercase tracking-wider", mode === m ? "text-lab-bg" : "text-lab-muted hover:text-lab-text")}
+                        style={mode === m ? { background: toneVar(m === "simple" ? "cyan" : "violet") } : undefined}
+                      >
+                        <Icon className="h-3.5 w-3.5" /> {label}
+                      </button>
+                    ))}
                   </div>
-                  {reduced && (
-                    <div className="absolute right-3 top-2 z-10 rounded border border-lab-border bg-lab-panel px-2 py-0.5 text-[10px] text-lab-muted">reduced motion: step mode</div>
-                  )}
-                  {!scenario ? (
-                    <div className="grid h-full place-items-center text-xs text-lab-muted">loading {meta.title.toLowerCase()}…</div>
-                  ) : view === "scene" ? (
-                    <div className="h-full p-2 pt-6">
-                      <IsoScene scenario={scenario} step={step} runKey={runKey} animate={animate} speed={speed} />
-                    </div>
-                  ) : (
-                    <SequenceView scenario={scenario} stepIndex={stepIndex} onStep={(i) => selectTopic(topicId, i)} />
-                  )}
+                  <div className="flex overflow-hidden rounded-md border border-lab-border text-[11px]" role="tablist" aria-label="Centre view">
+                    {views.map(([v, label, Icon]) => (
+                      <button
+                        key={v}
+                        role="tab"
+                        aria-selected={view === v}
+                        onClick={() => setView(v)}
+                        title={v === "visual" ? "The big picture for each step" : v === "scene" ? "The whole system as a flow diagram" : "Every message in order"}
+                        className={cn("flex items-center gap-1.5 px-2.5 py-1.5 uppercase tracking-wider", view === v ? "bg-lab-raised text-lab-accent" : "text-lab-muted hover:text-lab-text")}
+                      >
+                        <Icon className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setPaletteOpen(true)}
+                    className="flex items-center gap-2 rounded-md border border-lab-border px-2.5 py-1.5 text-[11px] text-lab-muted hover:text-lab-text"
+                    aria-label="Search topics, steps, questions and terms"
+                  >
+                    <Search className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Search</span>
+                    <kbd className="hidden rounded border border-lab-border px-1 text-[10px] sm:inline">Ctrl K</kbd>
+                  </button>
+                  <button onClick={toggleTheme} className="rounded-md border border-lab-border p-1.5 text-lab-muted hover:text-lab-text" aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>
+                    {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                  </button>
                 </div>
+              </header>
+
+              {/* Phones: topics → visual → explanation → trace. Desktop: topics | visual over trace | explanation. */}
+              <div className="grid min-h-0 flex-1 grid-cols-1 [grid-template-areas:'list'_'scene'_'panel'_'trace'] lg:grid-cols-[250px_minmax(0,1fr)_minmax(340px,390px)] lg:grid-rows-[minmax(0,1fr)_auto] lg:[grid-template-areas:'list_scene_panel'_'list_trace_panel']">
+                <TopicList className="[grid-area:list]" activeId={topicId} scenario={scenario} stepIndex={stepIndex} onTopic={(id) => selectTopic(id)} onStep={(i) => selectTopic(topicId, i)} />
+
+                <section className="flex min-h-0 min-w-0 flex-col border-lab-border bg-lab-scene [grid-area:scene] lg:border-x">
+                  <div className="flex items-center gap-3 border-b border-lab-border px-3 py-1.5">
+                    <StepProgress i={stepIndex} total={steps.length} className="w-[min(46%,260px)] shrink-0" />
+                    <span className="min-w-0 truncate font-body text-[13px] font-medium text-lab-text">{step ? step.title : "Overview"}</span>
+                    {reduced && <span className="ml-auto shrink-0 rounded border border-lab-border bg-lab-panel px-2 py-0.5 text-[10px] text-lab-muted">reduced motion: step mode</span>}
+                  </div>
+                  {/* the step in one plain sentence, right above the picture */}
+                  {step?.simple && (
+                    <p className="border-b border-lab-border px-3 py-1.5 font-body text-[14px] font-medium leading-snug text-lab-text sm:text-[15px]" style={{ background: toneFill("cyan", 6) }}>
+                      {step.simple}
+                    </p>
+                  )}
+                  <div className="relative h-[min(62vh,440px)] min-h-[300px] lg:h-auto lg:min-h-[240px] lg:flex-1">
+                    {!scenario ? (
+                      <div className="grid h-full place-items-center text-xs text-lab-muted">loading {meta.title.toLowerCase()}…</div>
+                    ) : view === "sequence" ? (
+                      <SequenceView scenario={scenario} stepIndex={stepIndex} onStep={(i) => selectTopic(topicId, i)} />
+                    ) : showStage && step?.stage ? (
+                      <StageView stage={step.stage} animate={animate} speed={speed} runKey={runKey} scenarioId={scenario.id} />
+                    ) : (
+                      <div className="h-full p-2 pt-4">
+                        <IsoScene scenario={scenario} step={step} runKey={runKey} animate={animate} speed={speed} />
+                      </div>
+                    )}
+                    {scenario && stepIndex < 0 && view === "visual" && <StartOverlay s={scenario} onStart={start} onPlay={play} reduced={reduced} />}
+                  </div>
+                </section>
+
                 <TracePanel
+                  className="[grid-area:trace]"
                   scenario={scenario}
                   stepIndex={stepIndex}
                   playing={playing}
@@ -295,25 +385,30 @@ export function VisualLab() {
                   onNext={next}
                   onPrev={prev}
                   onReset={reset}
+                  open={traceOpen}
+                  onToggle={() => setTraceOpen((o) => !o)}
                 />
-              </section>
 
-              <RightPanel
-                scenario={scenario}
-                stepIndex={stepIndex}
-                tab={tab}
-                onTab={setTab}
-                onPrev={prev}
-                onNext={next}
-                openQuestion={openQuestion}
-                onOpenQuestion={setOpenQuestion}
-              />
+                <RightPanel
+                  className="[grid-area:panel]"
+                  scenario={scenario}
+                  stepIndex={stepIndex}
+                  tab={tab}
+                  onTab={setTab}
+                  onPrev={prev}
+                  onNext={next}
+                  onStart={start}
+                  onStep={(i) => selectTopic(topicId, i)}
+                  openQuestion={openQuestion}
+                  onOpenQuestion={setOpenQuestion}
+                />
+              </div>
+
+              {paletteOpen && <CommandPalette theme={theme} onClose={() => setPaletteOpen(false)} onPick={onPalettePick} />}
             </div>
-
-            {paletteOpen && <CommandPalette theme={theme} onClose={() => setPaletteOpen(false)} onPick={onPalettePick} />}
-          </div>
-        </MotionConfig>
-      </TooltipPrimitive.Provider>
+          </MotionConfig>
+        </TooltipPrimitive.Provider>
+      </LabModeContext.Provider>
     </LabThemeContext.Provider>
   );
 }

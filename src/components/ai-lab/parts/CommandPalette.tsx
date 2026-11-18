@@ -50,7 +50,7 @@ export function CommandPalette({ theme, onClose, onPick }: { theme: LabTheme; on
           group: "Steps",
           title: st.title,
           sub: `${s.title} · step ${i + 1}`,
-          hay: `${st.title} ${s.title} ${st.explain}`.toLowerCase(),
+          hay: `${st.title} ${s.title} ${st.simple ?? ""} ${st.explain}`.toLowerCase(),
           target: { kind: "step", topic: s.id, step: i },
         }),
       );

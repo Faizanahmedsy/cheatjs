@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import type { FitStage as FitStageSpec, Tone } from "../engine/types";
 import { toneFill, toneVar } from "../engine/tones";
-import { H, timing, W, type StageProps } from "./common";
+import { H, timing, TRAIN_FRAME_S, W, type StageProps } from "./common";
 
 const SET_TONE: Record<string, Tone> = { train: "blue", val: "amber", test: "violet" };
 const SET_NAME: Record<string, string> = { train: "training", val: "validation", test: "test" };
@@ -72,7 +72,7 @@ export default function FitStage({ stage, animate, speed, runKey }: StageProps<F
       k += 1;
       if (k >= lines.length) window.clearInterval(id);
       else setFrame(k);
-    }, 480 / speed);
+    }, (TRAIN_FRAME_S * 1000) / speed);
     return () => window.clearInterval(id);
   }, [mode, animate, speed, lines.length, runKey]);
 

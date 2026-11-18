@@ -98,11 +98,14 @@ export default function NetworkStage({ stage, animate, speed }: StageProps<Netwo
           m.map((row, i) =>
             row.map((w, j) => {
               const v = layers[l].nodes[i].value ?? 1;
-              const tone = v * w >= 0 ? "cyan" : "rose";
+              // A neuron that outputs 0 (an input of 0, or a shut gate) sends nothing.
+              if (Math.abs(v) < 1e-9) return null;
+              const signal = v * w;
+              const tone = signal >= 0 ? "cyan" : "rose";
               return (
                 <motion.circle
                   key={`f-${l}-${i}-${j}`}
-                  r={5}
+                  r={3.5 + Math.min(4, Math.abs(signal) * 5)}
                   initial={{ cx: xs[l] + R, cy: ys[l][i], opacity: 0 }}
                   animate={{ cx: xs[l + 1] - R, cy: ys[l + 1][j], opacity: [0, 1, 1, 0] }}
                   transition={t(0.85, 0.3 + l * HOP)}
@@ -160,9 +163,25 @@ export default function NetworkStage({ stage, animate, speed }: StageProps<Netwo
           const stroke = mode === "backward" && blame !== undefined ? toneVar("rose") : toneVar(tone);
           const sw = mode === "backward" && blame !== undefined ? 2 + (Math.abs(blame) / blameMax) * 4 : 2;
           const isHidden = l > 0 && l < L - 1;
+          // A computed neuron "lights up" when it fires (output above 0) and stays dark when its gate is shut.
+          const computed = l > 0 && node.value !== undefined && mode !== "structure";
+          const fires = computed && (node.value ?? 0) > 1e-9;
+          const dark = computed && !fires;
           return (
             <g key={`${l}-${i}`}>
-              <motion.g initial={{ opacity: mode === "structure" && animate ? 0 : 1 }} animate={{ opacity: 1 }} transition={t(0.4, mode === "structure" ? l * 0.5 : 0)}>
+              {fires && (
+                <motion.circle
+                  cx={x}
+                  cy={y}
+                  r={R + 7}
+                  strokeWidth={3}
+                  initial={{ opacity: animate && mode === "forward" ? 0 : 0.85 }}
+                  animate={{ opacity: 0.85 }}
+                  transition={t(0.5, delay + 0.4)}
+                  style={{ fill: "none", stroke: toneVar(tone), filter: `drop-shadow(0 0 8px ${toneVar(tone)})` }}
+                />
+              )}
+              <motion.g initial={{ opacity: mode === "structure" && animate ? 0 : 1 }} animate={{ opacity: dark ? 0.55 : 1 }} transition={t(0.4, mode === "structure" ? l * 0.5 : mode === "forward" ? delay + 0.4 : 0)}>
                 <circle cx={x} cy={y} r={R} strokeWidth={sw} style={{ fill: toneFill(tone, 8), stroke }} />
                 <g clipPath={`url(#${uid}-c-${l}-${i})`}>
                   <motion.rect
@@ -209,7 +228,7 @@ export default function NetworkStage({ stage, animate, speed }: StageProps<Netwo
                 </text>
               )}
               {/* ReLU gate under hidden neurons */}
-              {isHidden && stage.gates && node.value !== undefined && mode !== "structure" && (
+              {isHidden && stage.gates && node.value !== undefined && (mode === "forward" || mode === "error") && (
                 <motion.g initial={{ opacity: animate && mode === "forward" ? 0 : 1 }} animate={{ opacity: 1 }} transition={t(0.3, delay + 0.5)}>
                   <rect x={x - 30} y={y + R + 5} width={60} height={18} rx={9} style={{ fill: toneFill(node.value > 0 ? "green" : "rose", 16), stroke: toneVar(node.value > 0 ? "green" : "rose") }} />
                   <text x={x} y={y + R + 18} textAnchor="middle" fontSize={10.5} fontWeight={700} style={{ fill: toneVar(node.value > 0 ? "green" : "rose"), fontFamily: "var(--lab-mono)" }}>
@@ -228,17 +247,48 @@ export default function NetworkStage({ stage, animate, speed }: StageProps<Netwo
       )}
 
       {/* target vs guess */}
-      {stage.target && err !== null && (mode === "backward" || mode === "update" || mode === "forward") && (
-        <motion.g initial={{ opacity: animate ? 0 : 1 }} animate={{ opacity: 1 }} transition={t(0.4, mode === "forward" ? arrive(L - 1) + 0.6 : 0.2)}>
-          <rect x={xs[L - 1] - 95} y={ys[L - 1][0] + 52} width={190} height={50} rx={8} style={{ fill: toneFill(Math.abs(err) < 0.05 ? "green" : "rose", 10), stroke: toneVar(Math.abs(err) < 0.05 ? "green" : "rose") }} />
-          <text x={xs[L - 1]} y={ys[L - 1][0] + 72} textAnchor="middle" fontSize={12.5} style={{ fill: "var(--lab-text)", fontFamily: "var(--lab-mono)" }}>
-            {stage.target.label}: {fmtNum(stage.target.value, 2)}
-          </text>
-          <text x={xs[L - 1]} y={ys[L - 1][0] + 91} textAnchor="middle" fontSize={12.5} fontWeight={700} style={{ fill: toneVar(Math.abs(err) < 0.05 ? "green" : "rose"), fontFamily: "var(--lab-mono)" }}>
-            {Math.abs(err) < 0.005 ? "spot on" : `guess is ${err < 0 ? "too low" : "too high"} by ${fmtNum(Math.abs(err), 2)}`}
-          </text>
-        </motion.g>
-      )}
+      {stage.target &&
+        err !== null &&
+        mode !== "structure" &&
+        (() => {
+          const ox = xs[L - 1];
+          const oy = ys[L - 1][0];
+          const close = Math.abs(err) < 0.05;
+          const tone = close ? "green" : stage.target.was !== undefined ? "amber" : "rose";
+          const miss = (e: number) => (Math.abs(e) < 0.005 ? "spot on" : `${e < 0 ? "too low" : "too high"} by ${fmtNum(Math.abs(e), 2)}`);
+          const wasErr = stage.target.was !== undefined ? stage.target.was - stage.target.value : null;
+          const rows = wasErr !== null ? 3 : 2;
+          const h = 22 + rows * 19;
+          return (
+            <motion.g initial={{ opacity: animate ? 0 : 1 }} animate={{ opacity: 1 }} transition={t(0.4, mode === "forward" ? arrive(L - 1) + 0.6 : mode === "update" ? 2 : 0.2)}>
+              {mode === "error" && (
+                <motion.circle
+                  cx={ox}
+                  cy={oy}
+                  r={R + 6}
+                  fill="none"
+                  strokeWidth={3}
+                  initial={{ opacity: 0.2 }}
+                  animate={animate ? { opacity: [0.2, 1, 0.2] } : { opacity: 1 }}
+                  transition={animate ? { duration: 1.4 / speed, repeat: 2 } : { duration: 0 }}
+                  style={{ stroke: toneVar("rose") }}
+                />
+              )}
+              <rect x={ox - 105} y={oy + 50} width={210} height={h} rx={8} style={{ fill: toneFill(tone, 10), stroke: toneVar(tone) }} />
+              <text x={ox} y={oy + 70} textAnchor="middle" fontSize={12.5} style={{ fill: "var(--lab-text)", fontFamily: "var(--lab-mono)" }}>
+                {stage.target.label}: {fmtNum(stage.target.value, 2)}
+              </text>
+              {wasErr !== null && (
+                <text x={ox} y={oy + 89} textAnchor="middle" fontSize={12.5} style={{ fill: "var(--lab-muted)", fontFamily: "var(--lab-mono)" }}>
+                  before: {fmtNum(stage.target.was!, 2)} ({miss(wasErr)})
+                </text>
+              )}
+              <text x={ox} y={oy + (wasErr !== null ? 108 : 89)} textAnchor="middle" fontSize={12.5} fontWeight={700} style={{ fill: toneVar(tone), fontFamily: "var(--lab-mono)" }}>
+                {wasErr !== null ? `now: ${fmtNum(out.value!, 2)} (${miss(err)})` : `guess is ${miss(err)}`}
+              </text>
+            </motion.g>
+          );
+        })()}
 
       {stage.note && (
         <text x={W / 2} y={H - 14} textAnchor="middle" fontSize={13} style={{ fill: "var(--lab-muted)", fontFamily: "var(--lab-mono)" }}>

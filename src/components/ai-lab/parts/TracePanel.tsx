@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { Pause, Play, RotateCcw, SkipBack, SkipForward } from "lucide-react";
+import { ChevronDown, ChevronUp, Pause, Play, RotateCcw, SkipBack, SkipForward } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Scenario, Tone } from "../engine/types";
 import { toneFill, toneVar } from "../engine/tones";
@@ -18,6 +18,10 @@ type Props = {
   onNext: () => void;
   onPrev: () => void;
   onReset: () => void;
+  /** Collapsed = just the slim control bar. */
+  open: boolean;
+  onToggle: () => void;
+  className?: string;
 };
 
 const SPEEDS = [0.5, 1, 1.5, 2];
@@ -39,7 +43,7 @@ function CtrlButton({ onClick, disabled, label, children, primary }: { onClick: 
 }
 
 /** The bottom "trace": controls plus a numbered, colour-coded log that fills in as steps run. */
-export function TracePanel({ scenario, stepIndex, playing, reduced, speed, onSpeed, onPlay, onPause, onNext, onPrev, onReset }: Props) {
+export function TracePanel({ scenario, stepIndex, playing, reduced, speed, onSpeed, onPlay, onPause, onNext, onPrev, onReset, open, onToggle, className }: Props) {
   const rows = useMemo(() => {
     if (!scenario) return [];
     const out: { step: number; tone: Tone; cells: Record<string, string | number>; latest: boolean }[] = [];
@@ -59,11 +63,18 @@ export function TracePanel({ scenario, stepIndex, playing, reduced, speed, onSpe
   const atEnd = stepIndex >= total - 1;
 
   return (
-    <div className="flex h-auto flex-col border-t border-lab-border bg-lab-panel lg:h-[clamp(190px,30vh,260px)]">
-      <div className="flex flex-wrap items-center gap-2 border-b border-lab-border px-3 py-2">
-        <span className="mr-1 text-[10px] uppercase tracking-[0.16em] text-lab-muted">
-          Trace · <span className="text-lab-text">{scenario?.logTitle ?? "…"}</span>
-        </span>
+    <div className={cn("flex h-auto flex-col border-t border-lab-border bg-lab-panel lg:border-x", open && "lg:h-[clamp(190px,30vh,260px)]", className)}>
+      <div className={cn("flex flex-wrap items-center gap-2 px-3 py-2", open && "border-b border-lab-border")}>
+        <button onClick={onToggle} aria-expanded={open} className="mr-1 flex items-center gap-1 text-[10px] uppercase tracking-[0.16em] text-lab-muted hover:text-lab-text" title={open ? "Hide the step-by-step log" : "Show the step-by-step log"}>
+          {open ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronUp className="h-3.5 w-3.5" />}
+          {open ? "Hide trace" : "Show trace"}
+          {open && (
+            <span className="hidden normal-case tracking-normal sm:inline">
+              {" "}
+              · <span className="text-lab-text">{scenario?.logTitle ?? "…"}</span>
+            </span>
+          )}
+        </button>
         <div className="ml-auto flex flex-wrap items-center gap-1.5">
           {playing ? (
             <CtrlButton onClick={onPause} label="Pause (Space)" primary>
@@ -79,7 +90,7 @@ export function TracePanel({ scenario, stepIndex, playing, reduced, speed, onSpe
             <span className="sr-only">Back</span>
           </CtrlButton>
           <CtrlButton onClick={onNext} disabled={!scenario || atEnd} label="Next step (→)">
-            <SkipForward className="h-3 w-3" /> Step
+            <SkipForward className="h-3 w-3" /> Next
           </CtrlButton>
           <CtrlButton onClick={onReset} label="Reset (R)">
             <RotateCcw className="h-3 w-3" /> Reset
@@ -101,7 +112,7 @@ export function TracePanel({ scenario, stepIndex, playing, reduced, speed, onSpe
           <span className="w-16 text-right text-[10px] tabular-nums text-lab-muted">{stepIndex < 0 ? `0/${total}` : `${stepIndex + 1}/${total}`}</span>
         </div>
       </div>
-      <div ref={body} className="max-h-64 min-h-[120px] flex-1 overflow-auto lg:max-h-none">
+      <div ref={body} className={cn("max-h-64 min-h-[120px] flex-1 overflow-auto lg:max-h-none", !open && "hidden")}>
         {rows.length === 0 ? (
           <p className="p-4 text-[11px] text-lab-muted">Press PLAY (or → to go one step at a time). Each step adds its rows here, so you can read the whole run back.</p>
         ) : (

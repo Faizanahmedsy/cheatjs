@@ -181,7 +181,20 @@ export default function NeuronStage({ stage, animate, speed }: StageProps<Neuron
         {activation === "relu" ? "negative → 0, positive passes" : "squashes to 0…1"}
       </text>
 
-      {/* output */}
+      {/* output: lights up when the neuron fires */}
+      {showOut && gateOpen && out > 0 && (
+        <motion.circle
+          cx={OUT.x}
+          cy={OUT.y}
+          r={OUT.r + 9}
+          fill="none"
+          strokeWidth={4}
+          initial={{ opacity: animate ? 0 : 0.9 }}
+          animate={{ opacity: 0.9 }}
+          transition={t(0.5, 1.5)}
+          style={{ stroke: toneVar("green"), filter: `drop-shadow(0 0 10px ${toneVar("green")})` }}
+        />
+      )}
       <circle cx={OUT.x} cy={OUT.y} r={OUT.r} strokeWidth={3} style={{ fill: toneFill("green", showOut ? 30 : 8), stroke: toneVar(showOut ? "green" : "slate") }} />
       <motion.text
         x={OUT.x}

@@ -14,9 +14,9 @@ type Props = {
 };
 
 /** Left rail: every topic, with the open one expanded into its numbered steps. */
-export function TopicList({ activeId, scenario, stepIndex, onTopic, onStep }: Props) {
+export function TopicList({ activeId, scenario, stepIndex, onTopic, onStep, className }: Props & { className?: string }) {
   return (
-    <aside className="min-h-0 border-b border-lab-border bg-lab-panel lg:overflow-y-auto lg:border-b-0">
+    <aside className={cn("min-h-0 border-b border-lab-border bg-lab-panel lg:overflow-y-auto lg:border-b-0", className)}>
       <p className="px-4 pb-1 pt-3 text-[10px] uppercase tracking-[0.18em] text-lab-muted">Topics</p>
       {/* Narrow screens: a horizontal strip of topics. */}
       <div className="flex gap-1.5 overflow-x-auto px-3 pb-2 lg:hidden">
