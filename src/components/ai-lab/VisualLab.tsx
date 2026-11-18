@@ -350,9 +350,9 @@ export function VisualLab() {
                     <span className="min-w-0 truncate font-body text-[13px] font-medium text-lab-text">{step ? step.title : "Overview"}</span>
                     {reduced && <span className="ml-auto shrink-0 rounded border border-lab-border bg-lab-panel px-2 py-0.5 text-[10px] text-lab-muted">reduced motion: step mode</span>}
                   </div>
-                  {/* the step in one plain sentence, right above the picture */}
+                  {/* the step in one plain sentence, right above the picture (desktop shows it first in the panel beside it) */}
                   {step?.simple && (
-                    <p className="border-b border-lab-border px-3 py-1.5 font-body text-[14px] font-medium leading-snug text-lab-text sm:text-[15px]" style={{ background: toneFill("cyan", 6) }}>
+                    <p className="border-b border-lab-border px-3 py-1.5 font-body text-[14px] font-medium leading-snug text-lab-text sm:text-[15px] lg:hidden" style={{ background: toneFill("cyan", 6) }}>
                       {step.simple}
                     </p>
                   )}
