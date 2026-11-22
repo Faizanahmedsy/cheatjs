@@ -5,6 +5,8 @@ import { extractToc, notionToMarkdown } from "@/lib/aws-v2/convert";
 import { loadPage } from "@/lib/aws-v2/notion";
 import { AWS_TRACK, notionUrlFor, type Track, type V2Page } from "@/lib/aws-v2/pages";
 import { cn } from "@/lib/utils";
+import { PageActions } from "@/components/study/PageActions";
+import { hrefFor } from "@/lib/aws-v2/pages";
 
 function formatDate(iso: string): string {
   try {
@@ -68,6 +70,7 @@ export async function Article({
               Open in Notion <ExternalLink className="h-3 w-3" />
             </a>
           </div>
+          <PageActions id={`${track.id}:${page.slug}`} title={page.title} href={hrefFor(page.slug, track)} track={track.id} />
           {loaded.note ? <p className="mt-3 text-xs text-amber-300">{loaded.note}</p> : null}
         </header>
 

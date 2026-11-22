@@ -1,13 +1,18 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/components/ui/toaster";
 import { Navbar } from "@/components/Navbar";
+import { PwaRegister } from "@/components/PwaRegister";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Cheat JS",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, title: "Cheat JS", statusBarStyle: "black-translucent" },
   description:
     "The easiest to understand resource to learn frontend development on planet earth.",
 };
+
+export const viewport: Viewport = { themeColor: "#0f172a" };
 
 export default function RootLayout({
   children,
@@ -54,6 +59,7 @@ export default function RootLayout({
           <div className="flex-grow">{children}</div>
         </div>
         <Toaster />
+        <PwaRegister />
       </body>
     </html>
   );

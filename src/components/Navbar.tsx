@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Code2, Download, Menu } from "lucide-react";
+import { Code2, Download, Menu, Search } from "lucide-react";
+import { SearchDialog } from "./SearchDialog";
 import { cn } from "@/lib/utils";
 import { PDFDownloadModal } from "./PDFDownloadModal";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -18,16 +19,33 @@ const navLinks = [
   { href: "/aws-saa-v2", label: "AWS SAA v2" },
   { href: "/gen-ai", label: "Gen AI" },
   { href: "/visualizer", label: "JS Visualizer" },
+  { href: "/study", label: "Study" },
+  { href: "/flashcards", label: "Flashcards" },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+      } else if (e.key === "/" && !/^(INPUT|TEXTAREA|SELECT)$/.test((e.target as HTMLElement)?.tagName) && !(e.target as HTMLElement)?.isContentEditable) {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-background/80 backdrop-blur-sm px-3 sm:px-4 lg:px-6 xl:px-16">
+      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-background/80 backdrop-blur-sm px-3 sm:px-4 lg:px-6 2xl:px-16">
         <div className="container mx-auto flex h-14 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2">
@@ -38,7 +56,7 @@ export function Navbar() {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden xl:flex items-center gap-4 text-sm whitespace-nowrap">
+            <nav className="hidden xl:flex items-center gap-3 text-[13px] whitespace-nowrap">
               {navLinks.map(({ href, label }) => (
                 <Link
                   key={href}
@@ -57,6 +75,15 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSearchOpen(true)}
+              aria-label="Search (Ctrl+K)"
+              className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-400 hover:text-slate-200"
+            >
+              <Search size={16} />
+              <span className="hidden lg:inline">Search</span>
+              <kbd className="hidden rounded border border-slate-600 px-1 text-[10px] lg:inline">Ctrl K</kbd>
+            </button>
             {/* Download Button - Icon only on mobile */}
             <button
               onClick={() => setIsModalOpen(true)}
@@ -105,6 +132,7 @@ export function Navbar() {
         </div>
       </header>
 
+      <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
       {/* PDF Download Modal */}
       <PDFDownloadModal
         isOpen={isModalOpen}

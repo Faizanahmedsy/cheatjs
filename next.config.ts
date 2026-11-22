@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
     '/aws-saa-v2/[slug]': ['./content/aws-v2/**/*'],
     '/gen-ai': ['./content/gen-ai/**/*'],
     '/gen-ai/[slug]': ['./content/gen-ai/**/*'],
+    '/search-index.json': ['./content/**/*'],
+    '/flashcards': ['./content/**/*'],
   },
   typescript: {
     ignoreBuildErrors: true,

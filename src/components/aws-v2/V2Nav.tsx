@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useStudy } from "@/lib/study";
 import { AWS_TRACK, GENAI_TRACK, hrefFor, type Track } from "@/lib/aws-v2/pages";
 
 const TRACKS: Record<Track["id"], Track> = { aws: AWS_TRACK, "gen-ai": GENAI_TRACK };
@@ -11,6 +12,8 @@ export function V2Nav({ trackId = "aws" }: { trackId?: Track["id"] }) {
   const track = TRACKS[trackId];
   const GROUPS = track.groups;
   const pathname = usePathname();
+  const { study } = useStudy();
+  const mark = (slug: string) => (study.done[`${track.id}:${slug}`] ? "✓ " : "");
   const isActive = (slug: string) => pathname === hrefFor(slug, track);
 
   return (
@@ -32,7 +35,7 @@ export function V2Nav({ trackId = "aws" }: { trackId?: Track["id"] }) {
                 : "border-slate-700 text-slate-400 hover:text-slate-200"
             )}
           >
-            <span className="mr-1">{p.icon}</span>
+            <span className="mr-1">{mark(p.slug)}{p.icon}</span>
             {p.group === "Domains" || p.group === "Parts" ? `${track.unitName} ${p.slug.slice(-1)}` : p.title.replace("AWS ", "")}
           </Link>
         ))}
@@ -60,8 +63,8 @@ export function V2Nav({ trackId = "aws" }: { trackId?: Track["id"] }) {
                 >
                   <span aria-hidden className="mt-0.5">{p.icon}</span>
                   <span className="min-w-0">
-                    <span className="block leading-snug">{p.title}</span>
-                    {p.weight ? <span className="text-xs text-slate-500">{p.weight} of exam</span> : null}
+                    <span className="block leading-snug">{study.done[`${track.id}:${p.slug}`] ? <span className="text-emerald-400">✓ </span> : null}{p.title}</span>
+                    {p.weight ? <span className="text-xs text-slate-500">{track.id === "aws" ? `${p.weight} of exam` : p.weight}</span> : null}
                   </span>
                 </Link>
               ))}
