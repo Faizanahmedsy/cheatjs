@@ -2,6 +2,11 @@ import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
+  // The AWS v2 pages read their Notion snapshots from content/aws-v2 at runtime.
+  outputFileTracingIncludes: {
+    '/aws-saa-v2': ['./content/aws-v2/**/*'],
+    '/aws-saa-v2/[slug]': ['./content/aws-v2/**/*'],
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

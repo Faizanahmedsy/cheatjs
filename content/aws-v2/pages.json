@@ -1,0 +1,76 @@
+[
+  {
+    "slug": "home",
+    "notionId": "420a2e51-2ddf-814b-af88-ceb06c4f7b0b",
+    "title": "Exam Preparation",
+    "subtitle": "AWS Solutions Architect Associate (SAA-C03)",
+    "icon": "☁️",
+    "blurb": "Exam facts, full syllabus, progress tracker and the AI writer instructions.",
+    "group": "Start here",
+    "snapshotEditedAt": "2026-11-22T07:00:08.169Z"
+  },
+  {
+    "slug": "playbook",
+    "notionId": "420a2e51-2ddf-818f-8ce5-e51d8f2c90f8",
+    "title": "Scenario Question Playbook",
+    "subtitle": "How to crack SAA-C03 questions",
+    "icon": "🎯",
+    "blurb": "5-step method, keyword decoder, DR strategies, classic traps, exam-day tactics.",
+    "group": "Start here",
+    "snapshotEditedAt": "2026-11-22T06:00:33.111Z"
+  },
+  {
+    "slug": "domain-1",
+    "notionId": "420a2e51-2ddf-81aa-8c6d-db088d2636ba",
+    "title": "Domain 1: Secure Architectures",
+    "subtitle": "30% of the exam",
+    "icon": "🔐",
+    "blurb": "IAM, VPC security, encryption, KMS, WAF, Shield, GuardDuty and more.",
+    "group": "Domains",
+    "weight": "30%",
+    "snapshotEditedAt": "2026-11-22T06:52:46.755Z"
+  },
+  {
+    "slug": "domain-2",
+    "notionId": "420a2e51-2ddf-8129-ae56-e5ad3339fc08",
+    "title": "Domain 2: Resilient Architectures",
+    "subtitle": "26% of the exam",
+    "icon": "🛡️",
+    "blurb": "Scaling, loose coupling, high availability, disaster recovery.",
+    "group": "Domains",
+    "weight": "26%",
+    "snapshotEditedAt": "2026-11-22T07:04:56.632Z"
+  },
+  {
+    "slug": "domain-3",
+    "notionId": "420a2e51-2ddf-81d0-8ad7-c706d37b66bd",
+    "title": "Domain 3: High-Performing Architectures",
+    "subtitle": "24% of the exam",
+    "icon": "⚡",
+    "blurb": "Storage, compute, databases, networking, data ingestion.",
+    "group": "Domains",
+    "weight": "24%",
+    "snapshotEditedAt": "2026-11-22T07:05:00.159Z"
+  },
+  {
+    "slug": "domain-4",
+    "notionId": "420a2e51-2ddf-8135-a7cd-ff19e48ac5ad",
+    "title": "Domain 4: Cost-Optimized Architectures",
+    "subtitle": "20% of the exam",
+    "icon": "💰",
+    "blurb": "Storage, compute, database and network cost optimization.",
+    "group": "Domains",
+    "weight": "20%",
+    "snapshotEditedAt": "2026-11-22T06:00:33.162Z"
+  },
+  {
+    "slug": "encyclopedia",
+    "notionId": "420a2e51-2ddf-8166-b10d-de62c6cc4823",
+    "title": "AWS Services Encyclopedia",
+    "subtitle": "Every in-scope service, simply explained",
+    "icon": "🧰",
+    "blurb": "About 120 services with a Like-I'm-5 analogy and exam clue words.",
+    "group": "Reference",
+    "snapshotEditedAt": "2026-11-22T06:01:54.323Z"
+  }
+]
