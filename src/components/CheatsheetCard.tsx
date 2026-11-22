@@ -9,6 +9,16 @@ import { StackVisualization } from "./visualizations/StackVisualization";
 import { QueueVisualization } from "./visualizations/QueueVisualization";
 import { LinkedListVisualization } from "./visualizations/LinkedListVisualization";
 import { BinarySearchTreeVisualization } from "./visualizations/BinarySearchTreeVisualization";
+import { HeapVisualization } from "./visualizations/HeapVisualization";
+import { GraphVisualization } from "./visualizations/GraphVisualization";
+import { TrieVisualization } from "./visualizations/TrieVisualization";
+import { SetVisualization } from "./visualizations/SetVisualization";
+import { SortingVisualization } from "./visualizations/SortingVisualization";
+import { BinarySearchVisualization } from "./visualizations/BinarySearchVisualization";
+import { RecursionVisualization } from "./visualizations/RecursionVisualization";
+import { TwoPointersVisualization } from "./visualizations/TwoPointersVisualization";
+import { SlidingWindowVisualization } from "./visualizations/SlidingWindowVisualization";
+import { FastSlowVisualization } from "./visualizations/FastSlowVisualization";
 
 const colorVariants = {
   cyan: "bg-cyan-400/20 text-cyan-300",
@@ -24,6 +34,16 @@ const visualizationComponents: { [key: string]: React.ComponentType<any> } = {
   Queue: QueueVisualization,
   LinkedList: LinkedListVisualization,
   BinarySearchTree: BinarySearchTreeVisualization,
+  Heap: HeapVisualization,
+  Graph: GraphVisualization,
+  Trie: TrieVisualization,
+  Set: SetVisualization,
+  Sorting: SortingVisualization,
+  BinarySearch: BinarySearchVisualization,
+  Recursion: RecursionVisualization,
+  TwoPointers: TwoPointersVisualization,
+  SlidingWindow: SlidingWindowVisualization,
+  FastSlow: FastSlowVisualization,
 };
 
 export function CheatsheetCard({

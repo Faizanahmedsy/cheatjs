@@ -238,13 +238,29 @@ export function CheatsheetTabs() {
               </div>
             </TabsContent>
             <TabsContent value="Algorithms">
-              <div className="text-center text-slate-400">
-                Content for Algorithms coming soon!
+              <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2">
+                {dsaCategory?.subCategories
+                  ?.find((sc) => sc.name === "Algorithms")
+                  ?.snippets?.map((snippet) => (
+                    <CheatsheetCard
+                      key={snippet.title}
+                      snippet={snippet}
+                      color="red"
+                    />
+                  ))}
               </div>
             </TabsContent>
             <TabsContent value="Patterns">
-              <div className="text-center text-slate-400">
-                Content for Patterns coming soon!
+              <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2">
+                {dsaCategory?.subCategories
+                  ?.find((sc) => sc.name === "Patterns")
+                  ?.snippets?.map((snippet) => (
+                    <CheatsheetCard
+                      key={snippet.title}
+                      snippet={snippet}
+                      color="red"
+                    />
+                  ))}
               </div>
             </TabsContent>
           </Tabs>

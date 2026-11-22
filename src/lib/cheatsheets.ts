@@ -2732,16 +2732,188 @@ class BinarySearchTree {
 }`
             ,
             language: 'javascript'
+          },
+          {
+            "title": "Min Heap (Priority Queue)",
+            "description": "A heap is a tree stored in an array where every parent is smaller (min-heap) than its children, so the smallest value is always at the top. It powers priority queues, schedulers, Dijkstra and 'top K' problems.",
+            "visualization": "Heap",
+            "pros": [
+              "Peek the smallest value in O(1).",
+              "Insert and extract in O(log n).",
+              "Stored in a plain array, no pointers needed."
+            ],
+            "cons": [
+              "Searching for an arbitrary value is O(n).",
+              "Not fully sorted, only the top is guaranteed.",
+              "Needs sift-up / sift-down logic."
+            ],
+            "code": "class MinHeap {\n  constructor() { this.items = []; }\n\n  insert(value) {\n    this.items.push(value);\n    let i = this.items.length - 1;\n    while (i > 0) {\n      const parent = Math.floor((i - 1) / 2);\n      if (this.items[parent] <= this.items[i]) break;\n      [this.items[parent], this.items[i]] = [this.items[i], this.items[parent]];\n      i = parent;\n    }\n  }\n\n  extractMin() {\n    if (this.items.length === 0) return undefined;\n    const min = this.items[0];\n    const last = this.items.pop();\n    if (this.items.length > 0) {\n      this.items[0] = last;\n      let i = 0;\n      while (true) {\n        const left = 2 * i + 1;\n        const right = left + 1;\n        let smallest = i;\n        if (left < this.items.length && this.items[left] < this.items[smallest]) smallest = left;\n        if (right < this.items.length && this.items[right] < this.items[smallest]) smallest = right;\n        if (smallest === i) break;\n        [this.items[smallest], this.items[i]] = [this.items[i], this.items[smallest]];\n        i = smallest;\n      }\n    }\n    return min;\n  }\n}",
+            "language": "javascript"
+          },
+          {
+            "title": "Graph (BFS and DFS)",
+            "description": "A graph is a set of nodes connected by edges. Breadth-First Search (BFS) uses a queue and visits level by level. Depth-First Search (DFS) uses a stack and goes as deep as possible before backing up.",
+            "visualization": "Graph",
+            "pros": [
+              "Models real networks: maps, friends, dependencies.",
+              "BFS finds the shortest path in an unweighted graph.",
+              "DFS is the base of cycle detection and topological sort."
+            ],
+            "cons": [
+              "Can use a lot of memory for big graphs.",
+              "Needs a visited set or it loops forever on cycles.",
+              "Many problems need extra care for disconnected parts."
+            ],
+            "code": "const graph = {\n  A: ['B', 'C'],\n  B: ['A', 'D', 'E'],\n  C: ['A', 'F'],\n  D: ['B'],\n  E: ['B', 'G'],\n  F: ['C', 'G'],\n  G: ['E', 'F'],\n};\n\nfunction bfs(start) {\n  const visited = new Set([start]);\n  const queue = [start];\n  const order = [];\n  while (queue.length > 0) {\n    const node = queue.shift();\n    order.push(node);\n    for (const neighbour of graph[node]) {\n      if (!visited.has(neighbour)) {\n        visited.add(neighbour);\n        queue.push(neighbour);\n      }\n    }\n  }\n  return order;\n}\n\nfunction dfs(start) {\n  const visited = new Set([start]);\n  const stack = [start];\n  const order = [];\n  while (stack.length > 0) {\n    const node = stack.pop();\n    order.push(node);\n    for (const neighbour of [...graph[node]].reverse()) {\n      if (!visited.has(neighbour)) {\n        visited.add(neighbour);\n        stack.push(neighbour);\n      }\n    }\n  }\n  return order;\n}\n\nconsole.log(bfs('A'));\nconsole.log(dfs('A'));",
+            "language": "javascript"
+          },
+          {
+            "title": "Trie (Prefix Tree)",
+            "description": "A trie stores words letter by letter in a tree, so words with the same beginning share the same path. It is the structure behind autocomplete and spell checkers.",
+            "visualization": "Trie",
+            "pros": [
+              "Prefix search takes O(length of word), not O(number of words).",
+              "Great for autocomplete and dictionaries.",
+              "Shared prefixes save space."
+            ],
+            "cons": [
+              "Uses more memory than a plain Set when words share little.",
+              "More code than a hash map.",
+              "Poor fit for exact-match-only lookups."
+            ],
+            "code": "class TrieNode {\n  constructor() {\n    this.children = new Map();\n    this.isWord = false;\n  }\n}\n\nclass Trie {\n  constructor() { this.root = new TrieNode(); }\n\n  insert(word) {\n    let node = this.root;\n    for (const letter of word) {\n      if (!node.children.has(letter)) node.children.set(letter, new TrieNode());\n      node = node.children.get(letter);\n    }\n    node.isWord = true;\n  }\n\n  find(prefix) {\n    let node = this.root;\n    for (const letter of prefix) {\n      node = node.children.get(letter);\n      if (!node) return null;\n    }\n    return node;\n  }\n\n  search(word) { const node = this.find(word); return node !== null && node.isWord; }\n  startsWith(prefix) { return this.find(prefix) !== null; }\n}",
+            "language": "javascript"
+          },
+          {
+            "title": "Set",
+            "description": "A Set stores unique values only. Adding a value that already exists changes nothing. Under the hood it is a hash table, so add, delete and has are O(1) on average.",
+            "visualization": "Set",
+            "pros": [
+              "Automatically removes duplicates.",
+              "Fast membership check: has() is O(1) on average.",
+              "Built in to JavaScript."
+            ],
+            "cons": [
+              "No index access like an array.",
+              "Does not guarantee sorted order.",
+              "Objects are compared by reference, not by content."
+            ],
+            "code": "const seen = new Set();\n\nseen.add('A');\nseen.add('B');\nseen.add('A'); // ignored, already exists\n\nconsole.log(seen.size);   // 2\nconsole.log(seen.has('B')); // true\n\nseen.delete('B');\nconsole.log([...seen]);   // ['A']\n\n// Remove duplicates from an array\nconst unique = [...new Set([1, 2, 2, 3, 3, 3])];\nconsole.log(unique); // [1, 2, 3]",
+            "language": "javascript"
           }
         ]
       },
       {
         name: 'Algorithms',
-        snippets: []
+        snippets: [
+          {
+            "title": "Sorting Algorithms",
+            "description": "Sorting puts values in order. Watch Bubble, Selection, Insertion, Merge and Quick sort work on the same data and compare how many comparisons and swaps each one needs.",
+            "visualization": "Sorting",
+            "pros": [
+              "Merge and Quick sort run in O(n log n) and handle large inputs.",
+              "Insertion sort is very fast on nearly sorted data.",
+              "Seeing the steps makes the idea stick."
+            ],
+            "cons": [
+              "Bubble, Selection and Insertion are O(n\u00b2), too slow for big inputs.",
+              "Merge sort needs extra memory.",
+              "Quick sort worst case is O(n\u00b2) with a bad pivot."
+            ],
+            "code": "// Bubble sort: biggest value bubbles to the end each pass\nfunction bubbleSort(values) {\n  const arr = [...values];\n  for (let pass = 0; pass < arr.length - 1; pass++) {\n    for (let i = 0; i < arr.length - pass - 1; i++) {\n      if (arr[i] > arr[i + 1]) {\n        [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];\n      }\n    }\n  }\n  return arr;\n}\n\n// Merge sort: split, sort halves, merge\nfunction mergeSort(arr) {\n  if (arr.length <= 1) return arr;\n  const mid = Math.floor(arr.length / 2);\n  const left = mergeSort(arr.slice(0, mid));\n  const right = mergeSort(arr.slice(mid));\n  const merged = [];\n  let i = 0;\n  let j = 0;\n  while (i < left.length && j < right.length) {\n    merged.push(left[i] <= right[j] ? left[i++] : right[j++]);\n  }\n  return [...merged, ...left.slice(i), ...right.slice(j)];\n}\n\nconsole.log(bubbleSort([64, 25, 12, 90, 33]));\nconsole.log(mergeSort([64, 25, 12, 90, 33]));",
+            "language": "javascript"
+          },
+          {
+            "title": "Binary Search",
+            "description": "Binary search finds a value in a sorted array by checking the middle and throwing away half of the values each step. 1,000,000 items need only about 20 steps.",
+            "visualization": "BinarySearch",
+            "pros": [
+              "O(log n) time, extremely fast.",
+              "Simple loop, no extra memory.",
+              "The idea also solves 'search on answer' problems."
+            ],
+            "cons": [
+              "The data must already be sorted.",
+              "Off-by-one mistakes with lo, hi and mid are common.",
+              "Not useful for a one-time search in unsorted data."
+            ],
+            "code": "function binarySearch(sortedValues, target) {\n  let low = 0;\n  let high = sortedValues.length - 1;\n\n  while (low <= high) {\n    const mid = Math.floor((low + high) / 2);\n    if (sortedValues[mid] === target) return mid;\n    if (sortedValues[mid] < target) low = mid + 1;\n    else high = mid - 1;\n  }\n  return -1; // not found\n}\n\nconst data = [2, 5, 8, 12, 16, 23, 38, 42, 56];\nconsole.log(binarySearch(data, 23)); // 5\nconsole.log(binarySearch(data, 7));  // -1",
+            "language": "javascript"
+          },
+          {
+            "title": "Recursion and Memoization",
+            "description": "A recursive function calls itself on a smaller problem. Plain Fibonacci repeats the same calls many times. Memoization saves each answer, so every sub-problem is solved only once. This is the heart of dynamic programming.",
+            "visualization": "Recursion",
+            "pros": [
+              "Turns a big problem into small identical problems.",
+              "Memoization cuts Fibonacci from O(2^n) to O(n).",
+              "Natural fit for trees and backtracking."
+            ],
+            "cons": [
+              "Deep recursion can overflow the call stack.",
+              "Plain recursion can repeat work.",
+              "Harder to debug than a loop."
+            ],
+            "code": "// Slow: O(2^n), repeats the same calls\nfunction fibSlow(n) {\n  if (n <= 1) return n;\n  return fibSlow(n - 1) + fibSlow(n - 2);\n}\n\n// Fast: O(n), each answer is saved in a Map\nfunction fibMemo(n, memo = new Map()) {\n  if (n <= 1) return n;\n  if (memo.has(n)) return memo.get(n);\n  const result = fibMemo(n - 1, memo) + fibMemo(n - 2, memo);\n  memo.set(n, result);\n  return result;\n}\n\nconsole.log(fibSlow(10)); // 55\nconsole.log(fibMemo(50)); // 12586269025",
+            "language": "javascript"
+          }
+        ]
       },
       {
         name: 'Patterns',
-        snippets: []
+        snippets: [
+          {
+            "title": "Two Pointers",
+            "description": "Use two pointers that walk through the data, often from both ends. On a sorted array this finds a pair with a target sum in one pass instead of checking every pair.",
+            "visualization": "TwoPointers",
+            "pros": [
+              "Turns O(n\u00b2) pair checks into O(n).",
+              "Uses no extra memory.",
+              "Works for palindromes, merging, removing duplicates."
+            ],
+            "cons": [
+              "Usually needs sorted data.",
+              "Moving the wrong pointer gives wrong answers.",
+              "Does not fit every problem shape."
+            ],
+            "code": "function pairWithTarget(sortedValues, target) {\n  let left = 0;\n  let right = sortedValues.length - 1;\n\n  while (left < right) {\n    const sum = sortedValues[left] + sortedValues[right];\n    if (sum === target) return [left, right];\n    if (sum < target) left++;   // need a bigger sum\n    else right--;               // need a smaller sum\n  }\n  return null;\n}\n\nconsole.log(pairWithTarget([1, 3, 4, 6, 8, 10, 13, 17], 14)); // [0, 6]",
+            "language": "javascript"
+          },
+          {
+            "title": "Sliding Window",
+            "description": "Keep a window of k items and slide it one step at a time: add the new item, remove the old one. This gives the best sum, longest substring or similar answers in a single pass.",
+            "visualization": "SlidingWindow",
+            "pros": [
+              "O(n) instead of O(n\u00b7k).",
+              "Easy to extend to variable-size windows.",
+              "Used for substrings and subarrays."
+            ],
+            "cons": [
+              "Mostly for contiguous ranges.",
+              "Variable windows need careful shrink logic.",
+              "Negative numbers can break some versions."
+            ],
+            "code": "function maxWindowSum(values, k) {\n  let windowSum = 0;\n  for (let i = 0; i < k; i++) windowSum += values[i];\n\n  let best = windowSum;\n  for (let i = k; i < values.length; i++) {\n    windowSum += values[i] - values[i - k]; // add new, remove old\n    best = Math.max(best, windowSum);\n  }\n  return best;\n}\n\nconsole.log(maxWindowSum([2, 1, 5, 1, 3, 2, 9, 7], 3)); // 18",
+            "language": "javascript"
+          },
+          {
+            "title": "Fast and Slow Pointers",
+            "description": "Move one pointer one step and another two steps. In a linked list with a loop, the fast pointer eventually catches the slow one. This is Floyd's cycle detection, and it also finds the middle of a list.",
+            "visualization": "FastSlow",
+            "pros": [
+              "Detects a cycle in O(n) time and O(1) memory.",
+              "Finds the middle node in one pass.",
+              "No extra Set needed."
+            ],
+            "cons": [
+              "Mostly for linked lists and sequences.",
+              "The idea is not obvious at first.",
+              "Finding where the cycle starts needs a second step."
+            ],
+            "code": "function hasCycle(head) {\n  let slow = head;\n  let fast = head;\n\n  while (fast !== null && fast.next !== null) {\n    slow = slow.next;        // 1 step\n    fast = fast.next.next;   // 2 steps\n    if (slow === fast) return true;\n  }\n  return false;\n}\n\nfunction middleNode(head) {\n  let slow = head;\n  let fast = head;\n  while (fast !== null && fast.next !== null) {\n    slow = slow.next;\n    fast = fast.next.next;\n  }\n  return slow;\n}",
+            "language": "javascript"
+          }
+        ]
       }
     ]
   }
