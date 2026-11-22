@@ -38,8 +38,8 @@ export async function Article({
       className="lg:h-full lg:overflow-hidden xl:grid xl:grid-cols-[minmax(0,1fr)_17rem]"
     >
       {/* Centre column: scrolls on its own on desktop */}
-      <div className="min-w-0 px-4 pb-24 pt-8 sm:px-8 lg:h-full lg:overflow-y-auto xl:pr-10">
-      <article className="mx-auto w-full min-w-0 max-w-3xl">
+      <div data-reader-scroll className="min-w-0 px-4 pb-24 pt-8 sm:px-8 lg:h-full lg:overflow-y-auto xl:pr-10">
+      <article className="reader-article mx-auto w-full min-w-0 max-w-3xl">
         <header className="mb-8">
           <p className="text-sm text-slate-500">{page.subtitle}</p>
           <h1 className="mt-1 font-headline text-3xl font-bold text-slate-100 md:text-4xl">
@@ -58,6 +58,7 @@ export async function Article({
             >
               {live ? "Live from Notion" : "Notion snapshot"} · edited {formatDate(loaded.editedAt)}
             </span>
+            <span className="text-slate-500">~{Math.max(1, Math.round(markdown.split(/\s+/).length / 200))} min read</span>
             <a
               href={notionUrlFor(page)}
               target="_blank"
@@ -74,7 +75,7 @@ export async function Article({
 
         {/* Mobile / tablet table of contents */}
         {toc.length > 0 ? (
-          <details className="mb-8 rounded-xl border border-slate-700/60 bg-slate-800/40 xl:hidden">
+          <details data-reader-hide className="mb-8 rounded-xl border border-slate-700/60 bg-slate-800/40 xl:hidden">
             <summary className="cursor-pointer select-none px-4 py-3 text-sm font-semibold text-slate-200">
               On this page ({toc.length} sections)
             </summary>
@@ -94,7 +95,7 @@ export async function Article({
 
       {/* Desktop table of contents */}
       {toc.length > 0 ? (
-        <aside className="hidden xl:block xl:h-full xl:overflow-y-auto xl:pb-24 xl:pr-6 xl:pt-8">
+        <aside data-reader-hide className="hidden xl:block xl:h-full xl:overflow-y-auto xl:pb-24 xl:pr-6 xl:pt-8">
           <div>
             <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-500">On this page</p>
             <ul className="space-y-1 border-l border-slate-700/60 text-sm">

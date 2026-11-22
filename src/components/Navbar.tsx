@@ -27,18 +27,18 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-background/80 backdrop-blur-sm px-4 md:px-8 lg:px-32">
+      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-background/80 backdrop-blur-sm px-3 sm:px-4 lg:px-6 xl:px-16">
         <div className="container mx-auto flex h-14 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2">
               <Code2 className="h-6 w-6 text-cyan-400" />
-              <span className="font-bold text-lg text-slate-200 font-headline">
+              <span className="font-bold text-lg text-slate-200 font-headline whitespace-nowrap">
                 Cheat JS
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-4 text-sm">
+            <nav className="hidden xl:flex items-center gap-4 text-sm whitespace-nowrap">
               {navLinks.map(({ href, label }) => (
                 <Link
                   key={href}
@@ -60,10 +60,10 @@ export function Navbar() {
             {/* Download Button - Icon only on mobile */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-lg text-sm"
+              className="flex items-center gap-2 px-3 md:px-4 py-2 whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-lg text-sm"
             >
               <Download size={16} />
-              <span className="hidden sm:inline">Download PDF</span>
+              <span className="hidden md:inline">Download PDF</span>
             </button>
 
             {/* Mobile Menu Button */}
@@ -72,7 +72,7 @@ export function Navbar() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="md:hidden text-slate-400 hover:text-slate-200"
+                  className="xl:hidden text-slate-400 hover:text-slate-200"
                 >
                   <Menu className="h-6 w-6" />
                   <span className="sr-only">Toggle menu</span>
