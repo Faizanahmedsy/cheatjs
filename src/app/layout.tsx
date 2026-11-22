@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/toaster";
 import { Navbar } from "@/components/Navbar";
 import "./globals.css";
-import { PrototypeBanner } from "@/components/PrototypeBanner";
 
 export const metadata: Metadata = {
   title: "Cheat JS",
@@ -51,7 +50,6 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <div className="flex flex-col min-h-screen">
-          <PrototypeBanner />
           <Navbar />
           <div className="flex-grow">{children}</div>
         </div>

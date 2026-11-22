@@ -36,7 +36,7 @@ export function V2Nav() {
       </nav>
 
       {/* Desktop: sidebar */}
-      <aside className="hidden w-72 flex-shrink-0 border-r border-slate-700/50 bg-slate-900/80 lg:sticky lg:top-14 lg:block lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto">
+      <aside className="hidden w-72 flex-shrink-0 border-r border-slate-700/50 bg-slate-900/80 lg:block lg:h-full lg:overflow-y-auto">
         <nav aria-label="AWS SAA v2 pages" className="flex flex-col gap-1 p-4">
           <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wider text-cyan-400">
             AWS SAA-C03 · v2
