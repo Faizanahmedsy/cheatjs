@@ -1,10 +1,58 @@
 "use client";
 
 import { CheatsheetCard } from "@/components/CheatsheetCard";
-import { cheatsheets } from "@/lib/cheatsheets";
+import { cheatsheets, type Snippet } from "@/lib/cheatsheets";
+import { ALGORITHM_CATEGORIES, PATTERN_CATEGORIES } from "@/lib/dsa-interview";
+import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+
+function FilteredGrid({
+  snippets,
+  categories,
+  param,
+}: {
+  snippets: Snippet[];
+  categories: readonly string[];
+  param: string;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const active = searchParams.get(param) ?? "All";
+  const counts = new Map<string, number>();
+  snippets.forEach((sn) => counts.set(sn.category ?? "", (counts.get(sn.category ?? "") ?? 0) + 1));
+  const shown = active === "All" ? snippets : snippets.filter((sn) => sn.category === active);
+  const pick = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === "All") params.delete(param);
+    else params.set(param, value);
+    router.push(pathname + "?" + params.toString(), { scroll: false });
+  };
+  const chip = (on: boolean) =>
+    cn(
+      "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+      on ? "border-red-300 bg-red-400/15 text-red-200" : "border-slate-600 text-slate-300 hover:border-slate-400"
+    );
+  return (
+    <div>
+      <div className="mb-5 flex flex-wrap gap-2" role="group" aria-label="Filter by topic">
+        <button type="button" onClick={() => pick("All")} className={chip(active === "All")}>All ({snippets.length})</button>
+        {categories.filter((c) => counts.get(c)).map((c) => (
+          <button key={c} type="button" onClick={() => pick(c)} className={chip(active === c)}>
+            {c} ({counts.get(c)})
+          </button>
+        ))}
+      </div>
+      <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2">
+        {shown.map((snippet) => (
+          <CheatsheetCard key={snippet.title} snippet={snippet} color="red" />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function CheatsheetTabs() {
   const router = useRouter();
@@ -238,30 +286,18 @@ export function CheatsheetTabs() {
               </div>
             </TabsContent>
             <TabsContent value="Algorithms">
-              <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2">
-                {dsaCategory?.subCategories
-                  ?.find((sc) => sc.name === "Algorithms")
-                  ?.snippets?.map((snippet) => (
-                    <CheatsheetCard
-                      key={snippet.title}
-                      snippet={snippet}
-                      color="red"
-                    />
-                  ))}
-              </div>
+              <FilteredGrid
+                snippets={dsaCategory?.subCategories?.find((sc) => sc.name === "Algorithms")?.snippets ?? []}
+                categories={ALGORITHM_CATEGORIES}
+                param="topic"
+              />
             </TabsContent>
             <TabsContent value="Patterns">
-              <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2">
-                {dsaCategory?.subCategories
-                  ?.find((sc) => sc.name === "Patterns")
-                  ?.snippets?.map((snippet) => (
-                    <CheatsheetCard
-                      key={snippet.title}
-                      snippet={snippet}
-                      color="red"
-                    />
-                  ))}
-              </div>
+              <FilteredGrid
+                snippets={dsaCategory?.subCategories?.find((sc) => sc.name === "Patterns")?.snippets ?? []}
+                categories={PATTERN_CATEGORIES}
+                param="ptopic"
+              />
             </TabsContent>
           </Tabs>
         )}

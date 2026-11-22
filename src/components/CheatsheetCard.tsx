@@ -27,6 +27,16 @@ const colorVariants = {
   red: "bg-red-400/20 text-red-300",
 };
 
+import { DPTableVisualization } from "@/components/visualizations/DPTableVisualization";
+import { GraphAlgoVisualization } from "@/components/visualizations/GraphAlgoVisualization";
+import { UnionFindVisualization } from "@/components/visualizations/UnionFindVisualization";
+import { NQueensVisualization } from "@/components/visualizations/NQueensVisualization";
+import { ArrayAlgoVisualization } from "@/components/visualizations/ArrayAlgoVisualization";
+import { LinkedListReverseVisualization } from "@/components/visualizations/LinkedListReverseVisualization";
+import { LRUCacheVisualization } from "@/components/visualizations/LRUCacheVisualization";
+import { IntervalsVisualization } from "@/components/visualizations/IntervalsVisualization";
+import { SieveVisualization } from "@/components/visualizations/SieveVisualization";
+
 const visualizationComponents: { [key: string]: React.ComponentType<any> } = {
   HashMap: HashMapVisualization,
   Array: ArrayVisualization,
@@ -44,6 +54,15 @@ const visualizationComponents: { [key: string]: React.ComponentType<any> } = {
   TwoPointers: TwoPointersVisualization,
   SlidingWindow: SlidingWindowVisualization,
   FastSlow: FastSlowVisualization,
+  DPTable: DPTableVisualization,
+  GraphAlgo: GraphAlgoVisualization,
+  UnionFind: UnionFindVisualization,
+  NQueens: NQueensVisualization,
+  ArrayAlgo: ArrayAlgoVisualization,
+  LinkedListReverse: LinkedListReverseVisualization,
+  LRUCache: LRUCacheVisualization,
+  Intervals: IntervalsVisualization,
+  Sieve: SieveVisualization,
 };
 
 export function CheatsheetCard({

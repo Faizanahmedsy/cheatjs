@@ -2,6 +2,7 @@
 
 import { FileCode, ToyBrick, Zap, Share2, Component, Puzzle } from 'lucide-react';
 import type { ElementType } from 'react';
+import { INTERVIEW_ALGORITHMS, INTERVIEW_PATTERNS } from './dsa-interview';
 
 export type Snippet = {
   title: string;
@@ -9,6 +10,7 @@ export type Snippet = {
   code: string;
   language: string;
   visualization?: string; // e.g., 'HashMap'
+  category?: string; // filter chip on the DSA tab
   pros?: string[];
   cons?: string[];
 };
@@ -2918,3 +2920,19 @@ class BinarySearchTree {
     ]
   }
 ];
+
+
+// Interview algorithms and patterns are kept in their own file; add them to the DSA tab lists.
+{
+  const dsa = cheatsheets.find((c) => c.name === 'DSA');
+  const algos = dsa?.subCategories?.find((sc) => sc.name === 'Algorithms');
+  const patterns = dsa?.subCategories?.find((sc) => sc.name === 'Patterns');
+  algos?.snippets?.forEach((sn) => {
+    sn.category ??= sn.title.startsWith('Sorting') ? 'Sorting' : sn.title.startsWith('Recursion') ? 'Dynamic Programming' : 'Searching';
+  });
+  patterns?.snippets?.forEach((sn) => {
+    sn.category ??= 'Array patterns';
+  });
+  algos?.snippets?.push(...INTERVIEW_ALGORITHMS);
+  patterns?.snippets?.push(...INTERVIEW_PATTERNS);
+}
