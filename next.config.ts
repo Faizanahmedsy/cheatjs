@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     '/aws-saa-v2': ['./content/aws-v2/**/*'],
     '/aws-saa-v2/[slug]': ['./content/aws-v2/**/*'],
+    '/gen-ai': ['./content/gen-ai/**/*'],
+    '/gen-ai/[slug]': ['./content/gen-ai/**/*'],
   },
   typescript: {
     ignoreBuildErrors: true,

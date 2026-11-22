@@ -1,11 +1,11 @@
-import { findPageByNotionId, hrefFor } from "./pages";
+import { AWS_TRACK, findPageByNotionId, hrefFor, type Track } from "./pages";
 
 /**
  * Turns Notion-flavored markdown into markdown that react-markdown + rehype-raw
  * can render. Only the Notion-specific block tags need work; <b>, <br /> and
  * friends are handled by rehype-raw.
  */
-export function notionToMarkdown(source: string): string {
+export function notionToMarkdown(source: string, track: Track = AWS_TRACK): string {
   let s = source.replace(/\r\n/g, "\n");
 
   // <callout icon="x" color="blue_bg">body</callout>  ->  styled div with markdown body
@@ -24,8 +24,8 @@ export function notionToMarkdown(source: string): string {
     /<page\s+url="([^"]*)"[^>]*>\n?([\s\S]*?)\n?<\/page>/g,
     (_m, url: string, title: string) => {
       const id = /([0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i.exec(url)?.[1];
-      const page = id ? findPageByNotionId(id) : undefined;
-      return page ? `- [${page.icon} ${title.trim()}](${hrefFor(page.slug)})` : "";
+      const page = id ? findPageByNotionId(id, track) : undefined;
+      return page ? `- [${page.icon} ${title.trim()}](${hrefFor(page.slug, track)})` : "";
     }
   );
 

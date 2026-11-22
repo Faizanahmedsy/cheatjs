@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { computeStats } from "@/lib/aws-v2/convert";
 import { loadPage } from "@/lib/aws-v2/notion";
-import { V2_PAGES, hrefFor } from "@/lib/aws-v2/pages";
+import { AWS_TRACK, hrefFor, type Track } from "@/lib/aws-v2/pages";
 
-export async function HubCards() {
-  const pages = V2_PAGES.filter((p) => p.slug !== "home");
+export async function HubCards({ track = AWS_TRACK }: { track?: Track }) {
+  const pages = track.pages.filter((p) => p.slug !== "home");
   const stats = await Promise.all(
-    pages.map(async (p) => computeStats((await loadPage(p)).markdown))
+    pages.map(async (p) => computeStats((await loadPage(p, track)).markdown))
   );
 
   return (
@@ -15,11 +15,11 @@ export async function HubCards() {
       <div className="grid gap-4 sm:grid-cols-2">
         {pages.map((p, i) => {
           const s = stats[i];
-          const isDomain = p.slug.startsWith("domain-");
+          const isDomain = p.group === "Domains" || p.group === "Parts";
           return (
             <Link
               key={p.slug}
-              href={hrefFor(p.slug)}
+              href={hrefFor(p.slug, track)}
               className="group rounded-xl border border-slate-700/60 bg-slate-800/40 p-4 transition-colors hover:border-cyan-400/50 hover:bg-slate-800"
             >
               <div className="flex items-start justify-between gap-3">

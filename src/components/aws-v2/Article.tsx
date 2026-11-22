@@ -3,7 +3,7 @@ import { ExternalLink } from "lucide-react";
 import { Markdown } from "./Markdown";
 import { extractToc, notionToMarkdown } from "@/lib/aws-v2/convert";
 import { loadPage } from "@/lib/aws-v2/notion";
-import { notionUrlFor, type V2Page } from "@/lib/aws-v2/pages";
+import { AWS_TRACK, notionUrlFor, type Track, type V2Page } from "@/lib/aws-v2/pages";
 import { cn } from "@/lib/utils";
 
 function formatDate(iso: string): string {
@@ -18,15 +18,23 @@ function formatDate(iso: string): string {
   }
 }
 
-export async function Article({ page, before }: { page: V2Page; before?: React.ReactNode }) {
-  const loaded = await loadPage(page);
-  const markdown = notionToMarkdown(loaded.markdown);
+export async function Article({
+  page,
+  before,
+  track = AWS_TRACK,
+}: {
+  page: V2Page;
+  before?: React.ReactNode;
+  track?: Track;
+}) {
+  const loaded = await loadPage(page, track);
+  const markdown = notionToMarkdown(loaded.markdown, track);
   const toc = extractToc(markdown, new GithubSlugger());
   const live = loaded.source === "notion";
 
   return (
     <div
-      key={page.slug}
+      key={`${track.id}-${page.slug}`}
       className="lg:h-full lg:overflow-hidden xl:grid xl:grid-cols-[minmax(0,1fr)_17rem]"
     >
       {/* Centre column: scrolls on its own on desktop */}

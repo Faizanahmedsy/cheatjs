@@ -1,4 +1,5 @@
-import pagesJson from "../../../content/aws-v2/pages.json";
+import awsPagesJson from "../../../content/aws-v2/pages.json";
+import genAiPagesJson from "../../../content/gen-ai/pages.json";
 
 export type V2Page = {
   slug: string;
@@ -7,28 +8,66 @@ export type V2Page = {
   subtitle: string;
   icon: string;
   blurb: string;
-  group: "Start here" | "Domains" | "Reference";
+  group: "Start here" | "Domains" | "Parts" | "Reference";
   weight?: string;
   snapshotEditedAt: string;
 };
 
-export const V2_PAGES = pagesJson as V2Page[];
+export type Track = {
+  id: "aws" | "gen-ai";
+  base: string;
+  dir: string;
+  label: string;
+  shortLabel: string;
+  groups: readonly V2Page["group"][];
+  unitName: "Domain" | "Part";
+  backHref: string;
+  backLabel: string;
+  pages: V2Page[];
+};
 
-export const V2_BASE = "/aws-saa-v2";
+export const AWS_TRACK: Track = {
+  id: "aws",
+  base: "/aws-saa-v2",
+  dir: "aws-v2",
+  label: "AWS SAA-C03 · v2",
+  shortLabel: "AWS SAA v2",
+  groups: ["Start here", "Domains", "Reference"],
+  unitName: "Domain",
+  backHref: "/aws-saa",
+  backLabel: "← Original AWS cheat sheets (v1)",
+  pages: awsPagesJson as V2Page[],
+};
 
-export function hrefFor(slug: string): string {
-  return slug === "home" ? V2_BASE : `${V2_BASE}/${slug}`;
+export const GENAI_TRACK: Track = {
+  id: "gen-ai",
+  base: "/gen-ai",
+  dir: "gen-ai",
+  label: "Generative AI Mastery",
+  shortLabel: "Gen AI",
+  groups: ["Start here", "Parts", "Reference"],
+  unitName: "Part",
+  backHref: "/ai-engineering",
+  backLabel: "← AI Engineering cheat sheets",
+  pages: genAiPagesJson as V2Page[],
+};
+
+export const V2_PAGES = AWS_TRACK.pages;
+export const V2_BASE = AWS_TRACK.base;
+
+export function hrefFor(slug: string, track: Track = AWS_TRACK): string {
+  return slug === "home" ? track.base : `${track.base}/${slug}`;
 }
 
 export function notionUrlFor(page: V2Page): string {
   return `https://www.notion.so/${page.notionId.replace(/-/g, "")}`;
 }
 
-export function findPageBySlug(slug: string): V2Page | undefined {
-  return V2_PAGES.find((p) => p.slug === slug);
+export function findPageBySlug(slug: string, track: Track = AWS_TRACK): V2Page | undefined {
+  return track.pages.find((p) => p.slug === slug);
 }
 
-export function findPageByNotionId(id: string): V2Page | undefined {
+export function findPageByNotionId(id: string, track: Track = AWS_TRACK): V2Page | undefined {
   const clean = id.replace(/-/g, "").toLowerCase();
-  return V2_PAGES.find((p) => p.notionId.replace(/-/g, "").toLowerCase() === clean);
+  return track.pages.find((p) => p.notionId.replace(/-/g, "").toLowerCase() === clean);
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Refresh the committed snapshots in content/aws-v2 from Notion.
-//   NOTION_API_KEY=secret_xxx node scripts/sync-notion.mjs
+// Refresh the committed snapshots in content/<track> from Notion.
+//   NOTION_API_KEY=secret_xxx node scripts/sync-notion.mjs [aws-v2|gen-ai]
 // The Notion integration must be connected to the "Exam Preparation" page.
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -11,7 +11,8 @@ if (!token) {
   process.exit(1);
 }
 
-const dir = path.join(process.cwd(), "content", "aws-v2");
+const track = process.argv[2] || "aws-v2"; // aws-v2 or gen-ai
+const dir = path.join(process.cwd(), "content", track);
 const pages = JSON.parse(await readFile(path.join(dir, "pages.json"), "utf8"));
 const headers = { Authorization: `Bearer ${token}`, "Notion-Version": "2026-03-11" };
 

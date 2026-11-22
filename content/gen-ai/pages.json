@@ -1,0 +1,98 @@
+[
+  {
+    "slug": "home",
+    "notionId": "420a2e51-2ddf-8161-9c05-f7eeb98947ab",
+    "title": "Generative AI Mastery",
+    "subtitle": "LLMs, GPTs, RAG, Agents and MCP",
+    "icon": "🤖",
+    "blurb": "Goal, full syllabus, progress tracker and the AI writer instructions.",
+    "group": "Start here",
+    "snapshotEditedAt": "2026-11-22T07:30:00.000Z"
+  },
+  {
+    "slug": "playbook",
+    "notionId": "420a2e51-2ddf-8131-bb1f-ef6a038fda70",
+    "title": "Interview and Build Playbook",
+    "subtitle": "How to think and answer GenAI questions",
+    "icon": "🎯",
+    "blurb": "5-step method, RAG vs fine-tuning, decoder table, production checklist, classic traps.",
+    "group": "Start here",
+    "snapshotEditedAt": "2026-11-22T07:30:00.000Z"
+  },
+  {
+    "slug": "part-1",
+    "notionId": "420a2e51-2ddf-8101-9fcd-c258db9e76fe",
+    "title": "Part 1: Foundations",
+    "subtitle": "LLMs, Transformers and GPT",
+    "icon": "🧱",
+    "blurb": "Tokens, embeddings, attention, context window, sampling, hallucinations.",
+    "group": "Parts",
+    "weight": "20 topics",
+    "snapshotEditedAt": "2026-11-22T07:30:00.000Z"
+  },
+  {
+    "slug": "part-2",
+    "notionId": "420a2e51-2ddf-814d-a936-eb4b662e7f02",
+    "title": "Part 2: Models and Products",
+    "subtitle": "Models, GPTs and AI products",
+    "icon": "🧰",
+    "blurb": "GPT family, Claude, Gemini, open models, Custom GPTs, APIs, Hugging Face.",
+    "group": "Parts",
+    "weight": "20 topics",
+    "snapshotEditedAt": "2026-11-22T07:30:00.000Z"
+  },
+  {
+    "slug": "part-3",
+    "notionId": "420a2e51-2ddf-81d6-bf29-cd4a633320da",
+    "title": "Part 3: Prompting and Context",
+    "subtitle": "Prompting, context and structured output",
+    "icon": "✍️",
+    "blurb": "Prompt patterns, JSON schema, function calling, injection defence, context engineering.",
+    "group": "Parts",
+    "weight": "20 topics",
+    "snapshotEditedAt": "2026-11-22T07:30:00.000Z"
+  },
+  {
+    "slug": "part-4",
+    "notionId": "420a2e51-2ddf-81d7-a9c6-f8d68d29689c",
+    "title": "Part 4: RAG and Vector DBs",
+    "subtitle": "RAG, embeddings and vector databases",
+    "icon": "📚",
+    "blurb": "Chunking, vector search, hybrid search, reranking, RAG evaluation.",
+    "group": "Parts",
+    "weight": "20 topics",
+    "snapshotEditedAt": "2026-11-22T07:30:00.000Z"
+  },
+  {
+    "slug": "part-5",
+    "notionId": "420a2e51-2ddf-81d2-b19f-f69d6d1dc740",
+    "title": "Part 5: Agents and MCP",
+    "subtitle": "Agents, tool use and MCP",
+    "icon": "🛠️",
+    "blurb": "Agent loop, frameworks, MCP servers, security, multi-agent, coding agents.",
+    "group": "Parts",
+    "weight": "20 topics",
+    "snapshotEditedAt": "2026-11-22T07:30:00.000Z"
+  },
+  {
+    "slug": "part-6",
+    "notionId": "420a2e51-2ddf-8196-9230-e4cdb28c2455",
+    "title": "Part 6: Evals and Shipping",
+    "subtitle": "Fine-tuning, evals, safety and shipping",
+    "icon": "🚀",
+    "blurb": "LoRA, evals, guardrails, observability, cost, deployment, GenAI system design.",
+    "group": "Parts",
+    "weight": "20 topics",
+    "snapshotEditedAt": "2026-11-22T07:30:00.000Z"
+  },
+  {
+    "slug": "encyclopedia",
+    "notionId": "420a2e51-2ddf-8194-ac8f-caab0b275218",
+    "title": "Tools and Terms Encyclopedia",
+    "subtitle": "Every tool and word, simply explained",
+    "icon": "🧳",
+    "blurb": "Models, frameworks, vector DBs, MCP pieces, eval and serving tools.",
+    "group": "Reference",
+    "snapshotEditedAt": "2026-11-22T07:30:00.000Z"
+  }
+]

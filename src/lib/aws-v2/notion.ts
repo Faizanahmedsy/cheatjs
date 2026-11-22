@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import type { V2Page } from "./pages";
+import { AWS_TRACK, type Track, type V2Page } from "./pages";
 
 const NOTION_VERSION = "2026-03-11";
 const API = "https://api.notion.com/v1/pages";
@@ -73,12 +73,20 @@ async function fetchFullMarkdown(id: string, token: string, depth = 0): Promise<
   return markdown;
 }
 
-async function readSnapshot(page: V2Page): Promise<string> {
-  const file = path.join(process.cwd(), "content", "aws-v2", `${page.slug}.md`);
-  return fs.readFile(file, "utf8");
+async function readSnapshot(page: V2Page, track: Track): Promise<string> {
+  const file = path.join(process.cwd(), "content", track.dir, `${page.slug}.md`);
+  try {
+    return await fs.readFile(file, "utf8");
+  } catch {
+    return [
+      "<callout icon=\"🔌\" color=\"yellow_bg\">",
+      "<b>Not connected yet.</b> This page loads live from Notion. In Notion, open the page, click the ⋯ menu, choose Connections and add the <b>cheatjs</b> integration. The content appears here within 5 minutes.",
+      "</callout>",
+    ].join("\n");
+  }
 }
 
-export async function loadPage(page: V2Page): Promise<LoadedPage> {
+export async function loadPage(page: V2Page, track: Track = AWS_TRACK): Promise<LoadedPage> {
   const token = getToken();
   if (token) {
     try {
@@ -89,7 +97,7 @@ export async function loadPage(page: V2Page): Promise<LoadedPage> {
       return { markdown, source: "notion", editedAt: editedAt ?? new Date().toISOString() };
     } catch (err) {
       const message = err instanceof Error ? err.message : "unknown error";
-      const markdown = await readSnapshot(page);
+      const markdown = await readSnapshot(page, track);
       return {
         markdown,
         source: "snapshot",
@@ -98,6 +106,6 @@ export async function loadPage(page: V2Page): Promise<LoadedPage> {
       };
     }
   }
-  const markdown = await readSnapshot(page);
+  const markdown = await readSnapshot(page, track);
   return { markdown, source: "snapshot", editedAt: page.snapshotEditedAt };
 }
