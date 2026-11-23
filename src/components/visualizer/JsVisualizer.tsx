@@ -26,7 +26,14 @@ import { MobileControls } from "./MobileControls";
 import { OutputPanel } from "./OutputPanel";
 import { PlaybackControls, type Speed } from "./PlaybackControls";
 import { ProblemPanel } from "./ProblemPanel";
-import { TraceStage, changedVarNames, type TraceSummary } from "./TraceStage";
+import { TraceStage, changedVarNames, type MobileTab, type TraceSummary } from "./TraceStage";
+import { guessTarget, insideFunction, isKeyMoment } from "@/lib/visualizer/insights";
+import { cn } from "@/lib/utils";
+import { ProblemBrowser } from "./ProblemBrowser";
+import { QuizCard, type QuizState } from "./QuizCard";
+import { ViewOptions } from "./ViewOptions";
+import { useProgress } from "./use-progress";
+import { useVizOptions } from "./use-viz-options";
 import { useBeginnerMode } from "./use-beginner-mode";
 import { useTraceRunner } from "./use-trace-runner";
 
@@ -58,6 +65,14 @@ export function JsVisualizer() {
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState<Speed>(1);
   const [beginner, setBeginner] = useBeginnerMode();
+  const [options, setOptions] = useVizOptions();
+  const { done, markDone } = useProgress();
+  const [quiz, setQuiz] = useState<QuizState | null>(null);
+  const [mobileTab, setMobileTab] = useState<MobileTab>("picture");
+  const quizzedAt = useRef<number>(-1);
+  const touchX = useRef<number | null>(null);
+  const barRef = useRef<HTMLDivElement>(null);
+  const [barHeight, setBarHeight] = useState(80);
   const { state, run } = useTraceRunner();
   // ?step=7 in the URL: reopen on the same step after a refresh or a shared link.
   const startStep = useRef<number | null>(null);
@@ -106,21 +121,72 @@ export function JsVisualizer() {
   const jump = useCallback(
     (next: number) => {
       setPlaying(false);
+      setQuiz(null);
       goTo(next);
     },
     [goTo],
   );
 
-  // Auto-play.
+  const steps = trace?.steps;
+  const hasCalls = useMemo(() => Boolean(steps?.some(insideFunction)), [steps]);
+  /** One step forward or back, hopping over top-level setup lines when that option is on. */
+  const stepFrom = useCallback(
+    (from: number, dir: 1 | -1) => {
+      if (!steps) return from;
+      let i = from + dir;
+      if (options.skipSetup && hasCalls) {
+        while (i > 0 && i < steps.length - 1 && !insideFunction(steps[i])) i += dir;
+      }
+      return Math.max(0, Math.min(i, steps.length - 1));
+    },
+    [steps, options.skipSetup, hasCalls],
+  );
+
+  const forward = useCallback(() => {
+    if (!steps || safeIndex >= steps.length - 1) return;
+    setPlaying(false);
+    const target = stepFrom(safeIndex, 1);
+    if (options.quiz && quizzedAt.current !== safeIndex) {
+      const guess = guessTarget(steps[safeIndex], steps[target]);
+      if (guess) {
+        setQuiz({ from: safeIndex, to: target, name: guess.name, answer: guess.answer, line: steps[safeIndex].line, guess: "", checked: false });
+        return;
+      }
+    }
+    setQuiz(null);
+    goTo(target);
+  }, [steps, safeIndex, stepFrom, options.quiz, goTo]);
+
+  const back = useCallback(() => {
+    setPlaying(false);
+    setQuiz(null);
+    goTo(stepFrom(safeIndex, -1));
+  }, [goTo, stepFrom, safeIndex]);
+
+  /** Every control funnels through here, so ±1 moves get quiz + skip-setup behaviour. */
+  const navigate = useCallback(
+    (next: number) => {
+      if (next === safeIndex + 1) forward();
+      else if (next === safeIndex - 1) back();
+      else jump(next);
+    },
+    [safeIndex, forward, back, jump],
+  );
+
+  // Auto-play; smart play stops on key moments.
   useEffect(() => {
-    if (!playing || mode !== "view") return;
+    if (!playing || mode !== "view" || !steps) return;
     if (index >= total - 1) {
       setPlaying(false);
       return;
     }
-    const timer = window.setTimeout(() => setIndex((i) => i + 1), BASE_DELAY_MS / speed);
+    const timer = window.setTimeout(() => {
+      const next = stepFrom(index, 1);
+      setIndex(next);
+      if (options.smartPlay && isKeyMoment(steps, next)) setPlaying(false);
+    }, BASE_DELAY_MS / speed);
     return () => window.clearTimeout(timer);
-  }, [playing, index, total, speed, mode]);
+  }, [playing, index, total, speed, mode, steps, stepFrom, options.smartPlay]);
 
   // ← / → when focus isn't in a text field.
   useEffect(() => {
@@ -129,21 +195,35 @@ export function JsVisualizer() {
       if (event.altKey || event.ctrlKey || event.metaKey || isTypingTarget(event.target)) return;
       if (event.key === "ArrowRight") {
         event.preventDefault();
-        setPlaying(false);
-        setIndex((i) => Math.min(i + 1, total - 1));
+        forward();
       } else if (event.key === "ArrowLeft") {
         event.preventDefault();
-        setPlaying(false);
-        setIndex((i) => Math.max(i - 1, 0));
+        back();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [mode, total]);
+  }, [mode, forward, back]);
+
+  // Reaching the last step of a problem ticks it as done.
+  useEffect(() => {
+    if (problem && total > 0 && safeIndex === total - 1 && mode === "view") markDone(problem.id);
+  }, [problem, total, safeIndex, mode, markDone]);
+
+  // The sticky code column sits right under the sticky control bar, whatever its height.
+  useEffect(() => {
+    const bar = barRef.current;
+    if (!bar) return;
+    const observer = new ResizeObserver(() => setBarHeight(bar.offsetHeight));
+    observer.observe(bar);
+    return () => observer.disconnect();
+  });
 
   const choose = (next: Selection) => {
     const picked = findEntry(next);
     if (!picked) return;
+    setQuiz(null);
+    quizzedAt.current = -1;
     setSelection(next);
     setCode(picked.code);
     window.history.replaceState(window.history.state, "", urlForSelection(window.location.href, next));
@@ -184,7 +264,8 @@ export function JsVisualizer() {
           <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
             <h1 className="font-headline text-2xl font-bold text-slate-100 md:text-3xl">DSA Visualizer</h1>
             <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center lg:max-w-2xl">
-              <ExamplePicker value={selection} onChange={choose} />
+              <ExamplePicker value={selection} onChange={choose} done={done} />
+              <ProblemBrowser currentId={problem?.id ?? null} done={done} onPick={(id) => choose({ kind: "problem", id })} />
               {mode === "view" ? (
                 <button
                   type="button"
@@ -241,31 +322,81 @@ export function JsVisualizer() {
               <Legend />
             </CollapsibleContent>
           </Collapsible>
-          {problem && <ProblemPanel problem={problem} changedNames={changedNames} beginner={beginner} />}
+          {problem && (
+            <ProblemPanel problem={problem} changedNames={changedNames} beginner={beginner} done={done} onPick={(id) => choose({ kind: "problem", id })} />
+          )}
         </header>
 
         {/* Playback sits above both columns and stays pinned under the navbar,
             so Forward / Back are always at hand while reading the code and the
             state side by side (it used to sit under the code, off screen). */}
         {viewing && (
-      <div className="sticky top-16 z-30 mb-4 hidden rounded-xl border border-slate-700/60 bg-slate-800/95 px-3 py-2 backdrop-blur shadow-lg shadow-slate-950/40 lg:block">
+      <div ref={barRef} className="sticky top-16 z-30 mb-4 hidden rounded-xl border border-slate-700/60 bg-slate-800/95 px-3 py-2 backdrop-blur shadow-lg shadow-slate-950/40 lg:block">
             <PlaybackControls
               index={safeIndex}
               total={total}
-              onChange={jump}
+              onChange={navigate}
               playing={playing}
-              onTogglePlay={() => setPlaying((p) => !p)}
+              onTogglePlay={() => {
+                setQuiz(null);
+                setPlaying((p) => !p);
+              }}
               speed={speed}
               onSpeedChange={setSpeed}
               marks={summary.marks}
+              extra={<ViewOptions options={options} onChange={setOptions} />}
             />
             {trace.notice && <p className="mt-3 rounded-lg bg-amber-400/10 px-3 py-2 text-sm text-amber-200">{trace.notice}</p>}
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-          {/* Left: code, problem, output */}
-          <div className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-[9.75rem] lg:self-start">
+        {viewing && (
+          <div className="sticky top-16 z-30 -mx-4 mb-3 flex items-center gap-2 border-b border-slate-800 bg-slate-900/95 px-4 py-2 backdrop-blur lg:hidden" role="tablist" aria-label="View">
+            {(
+              [
+                ["code", "Code"],
+                ["picture", "Picture"],
+                ["story", "Story"],
+              ] as const
+            ).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={mobileTab === key}
+                onClick={() => setMobileTab(key)}
+                className={cn(
+                  "flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
+                  mobileTab === key ? "bg-cyan-400 text-slate-950" : "bg-slate-800 text-slate-300",
+                )}
+              >
+                {label}
+              </button>
+            ))}
+            <ViewOptions options={options} onChange={setOptions} />
+          </div>
+        )}
+
+        <div
+          className="grid grid-cols-1 gap-5 lg:grid-cols-2"
+          style={{ ["--viz-top" as string]: `${64 + barHeight + 28}px` }}
+          onTouchStart={(event) => {
+            touchX.current = event.touches[0]?.clientX ?? null;
+          }}
+          onTouchEnd={(event) => {
+            const start = touchX.current;
+            touchX.current = null;
+            const end = event.changedTouches[0]?.clientX;
+            if (start === null || end === undefined || Math.abs(end - start) < 70 || !viewing) return;
+            const order: MobileTab[] = ["code", "picture", "story"];
+            const at = order.indexOf(mobileTab) + (end < start ? 1 : -1);
+            if (at >= 0 && at < order.length) setMobileTab(order[at]);
+          }}
+        >
+          {/* Left: code */}
+          <div
+            className={cn("flex min-w-0 flex-col gap-4 lg:sticky lg:top-[var(--viz-top)] lg:self-start", viewing && mobileTab !== "code" && "max-lg:hidden")}
+          >
             <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-3">
               {viewing ? (
                 <CodeTraceView
@@ -275,6 +406,7 @@ export function JsVisualizer() {
                   isError={step.event === "exception"}
                   large={beginner}
                   notes={notes}
+                  hideComments={options.hideComments}
                 />
               ) : (
                 <CodeEditor code={code} onChange={editCode} errorLine={failure?.line} />
@@ -299,8 +431,31 @@ export function JsVisualizer() {
           <div className="min-w-0">
             {viewing ? (
               <div className="flex flex-col gap-4">
-                <TraceStage trace={trace} index={safeIndex} summary={summary} code={code} beginner={beginner} onJump={jump} />
-                <OutputPanel stdout={step.stdout} error={step.event === "exception" ? step.error : undefined} />
+                {quiz && (
+                  <QuizCard
+                    quiz={quiz}
+                    onGuess={(guess) => setQuiz({ ...quiz, guess })}
+                    onCheck={() => setQuiz({ ...quiz, checked: true })}
+                    onContinue={() => {
+                      quizzedAt.current = quiz.from;
+                      setQuiz(null);
+                      goTo(quiz.to);
+                    }}
+                  />
+                )}
+                <TraceStage
+                  trace={trace}
+                  index={safeIndex}
+                  summary={summary}
+                  code={code}
+                  beginner={beginner}
+                  onJump={navigate}
+                  problem={problem}
+                  mobileTab={mobileTab}
+                />
+                <div className={cn(mobileTab !== "story" && "max-lg:hidden")}>
+                  <OutputPanel stdout={step.stdout} error={step.event === "exception" ? step.error : undefined} />
+                </div>
               </div>
             ) : (
               <div className="flex h-full min-h-[16rem] items-center justify-center rounded-xl border border-dashed border-slate-700 p-8 text-center text-slate-400">
@@ -319,7 +474,7 @@ export function JsVisualizer() {
         </div>
 
         {viewing && (
-          <MobileControls index={safeIndex} total={total} playing={playing} onChange={jump} onTogglePlay={() => setPlaying((p) => !p)} />
+          <MobileControls index={safeIndex} total={total} playing={playing} onChange={navigate} onTogglePlay={() => setPlaying((p) => !p)} />
         )}
       </div>
     </TooltipProvider>

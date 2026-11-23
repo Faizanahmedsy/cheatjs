@@ -1,5 +1,6 @@
 import { previewValue, type Pointer, type StepChanges } from "@/lib/visualizer/analysis";
 import type { StringVar } from "@/lib/visualizer/cells";
+import type { Lookup } from "@/lib/visualizer/insights";
 import type { TraceStep, Value } from "@/lib/visualizer/types";
 
 /** Everything the state panel's pieces need to draw one step. */
@@ -20,6 +21,10 @@ export interface StepView {
   strings: StringVar[];
   /** Beginner mode: bigger text, fewer panels, explained terms. */
   beginner: boolean;
+  /** Pointers of the same frame one step earlier, drawn faded where they moved from. */
+  prevPointers: Pointer[];
+  /** Map / set keys the line that just ran looked up. */
+  lookups: Lookup[];
 }
 
 /** Text for a value as it was on the previous step. */

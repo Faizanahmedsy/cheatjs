@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Pause, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronsLeft, Flag, Pause, Play, SkipBack, SkipForward } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import type { TimelineMark } from "@/lib/visualizer/analysis";
@@ -15,6 +15,8 @@ interface PlaybackControlsProps {
   speed: Speed;
   onSpeedChange: (speed: Speed) => void;
   marks: TimelineMark[];
+  /** Extra controls at the end of the button row (the options menu). */
+  extra?: ReactNode;
 }
 
 function NavButton({ label, onClick, disabled, children, wide, primary }: { label: string; onClick: () => void; disabled: boolean; children: ReactNode; wide?: boolean; primary?: boolean }) {
@@ -42,7 +44,10 @@ const MARK_COLOR: Record<TimelineMark["kind"], string> = {
   error: "bg-red-400",
 };
 
-export function PlaybackControls({ index, total, onChange, playing, onTogglePlay, speed, onSpeedChange, marks }: PlaybackControlsProps) {
+export function PlaybackControls({ index, total, onChange, playing, onTogglePlay, speed, onSpeedChange, marks, extra }: PlaybackControlsProps) {
+  const passes = marks.filter((mark) => mark.kind === "iteration").map((mark) => mark.index);
+  const prevPass = [...passes].reverse().find((at) => at < index);
+  const nextPass = passes.find((at) => at > index);
   const last = total - 1;
   const atStart = index <= 0;
   const atEnd = index >= last;
@@ -65,9 +70,18 @@ export function PlaybackControls({ index, total, onChange, playing, onTogglePlay
           <span className="hidden sm:inline">{atEnd ? "The end" : "Next step"}</span>
           <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </NavButton>
-        <NavButton label="Last step" onClick={() => onChange(last)} disabled={atEnd}>
-          <span className="hidden 2xl:inline">Last</span>
-          <ChevronsRight className="h-4 w-4" aria-hidden="true" />
+        <span className="mx-1 hidden h-6 w-px bg-slate-700 sm:block" aria-hidden="true" />
+        <NavButton label="Previous loop pass" onClick={() => prevPass !== undefined && onChange(prevPass)} disabled={prevPass === undefined}>
+          <SkipBack className="h-4 w-4" aria-hidden="true" />
+          <span className="hidden 2xl:inline">Pass</span>
+        </NavButton>
+        <NavButton label="Next loop pass" onClick={() => nextPass !== undefined && onChange(nextPass)} disabled={nextPass === undefined}>
+          <span className="hidden 2xl:inline">Pass</span>
+          <SkipForward className="h-4 w-4" aria-hidden="true" />
+        </NavButton>
+        <NavButton label="Skip to the answer (last step)" onClick={() => onChange(last)} disabled={atEnd}>
+          <Flag className="h-4 w-4" aria-hidden="true" />
+          <span className="hidden sm:inline">Answer</span>
         </NavButton>
         <label className="ml-auto flex lg:order-last lg:ml-0 items-center gap-2 text-sm text-slate-400">
           Speed
@@ -83,9 +97,10 @@ export function PlaybackControls({ index, total, onChange, playing, onTogglePlay
             ))}
           </select>
         </label>
+        {extra}
       </div>
 
-      <div className="lg:min-w-0 lg:flex-1">
+      <div className="lg:min-w-[14rem] lg:flex-1">
         <input
           type="range"
           min={0}

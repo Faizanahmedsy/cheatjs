@@ -45,6 +45,11 @@ export interface Cell {
 /** A horizontal row of cells, index under each, pointer variables under that, window band behind. */
 export function CellRow({ cells, pointers, view, hidden = 0, label }: { cells: Cell[]; pointers: Pointer[]; view: StepView; hidden?: number; label: string }) {
   const range = windowRange(pointers, cells.length);
+  // Where each moved pointer was one step ago, drawn faded so the jump is visible.
+  const ghosts = view.prevPointers.filter((old) => {
+    const now = pointers.find((p) => p.name === old.name);
+    return now !== undefined && now.value !== old.value && old.value < cells.length;
+  });
   return (
     <div>
       <div className="flex flex-wrap items-start gap-1" role="list" aria-label={label}>
@@ -69,6 +74,13 @@ export function CellRow({ cells, pointers, view, hidden = 0, label }: { cells: C
               </div>
               <span className="mt-1 font-code text-xs text-slate-400">{index}</span>
               <PointerTags pointers={here} className="mt-0.5" />
+              {ghosts
+                .filter((g) => g.value === index)
+                .map((g) => (
+                  <span key={`ghost-${g.name}`} className={cn("font-code text-[11px] leading-4 opacity-50", g.color.text)} title={`${g.name} was here one step ago`}>
+                    ▵ {g.name} was
+                  </span>
+                ))}
             </div>
           );
         })}

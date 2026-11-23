@@ -24,17 +24,50 @@ function kindLabel(object: HeapObject, isGrid: boolean): string {
 }
 
 /** A dictionary (Map or plain object) as a key → value table; changed rows flash, new keys get a badge. */
+/** "🔍 looked for 2 → found / not there" under a map or set, for the line that just ran. */
+function LookupNote({ id, view }: { id: number; view: StepView }) {
+  const lookups = view.lookups.filter((l) => l.heapId === id && (l.verb === "has" || l.verb === "get"));
+  if (lookups.length === 0) return null;
+  return (
+    <div className="mb-2 flex flex-col gap-1">
+      {lookups.map((l) => (
+        <p
+          key={l.key + l.verb}
+          className={cn(
+            "rounded-md px-2 py-1 text-sm",
+            l.found ? "bg-emerald-500/15 text-emerald-100 ring-1 ring-emerald-400/50" : "bg-rose-500/10 text-rose-100 ring-1 ring-rose-400/40",
+          )}
+        >
+          <span aria-hidden="true">🔍 </span>
+          Looked for <span className="font-code font-semibold">{l.label}</span> → {l.found ? "found it ✓" : "not here ✗"}
+        </p>
+      ))}
+    </div>
+  );
+}
+
 function KeyValueRows({
   rows,
   changedCells,
   view,
+  id,
 }: {
   rows: { cellKey: string; key: ReactNode; value: Value }[];
   changedCells?: Map<string, Value | null>;
   view: StepView;
+  id?: number;
 }) {
-  if (rows.length === 0) return <p className="font-code text-sm italic text-slate-500">empty — no keys yet</p>;
+  const looked = new Set(view.lookups.filter((l) => l.heapId === id && l.found).map((l) => l.key));
+  if (rows.length === 0)
+    return (
+      <>
+        {id !== undefined && <LookupNote id={id} view={view} />}
+        <p className="font-code text-sm italic text-slate-500">empty — no keys yet</p>
+      </>
+    );
   return (
+    <>
+    {id !== undefined && <LookupNote id={id} view={view} />}
     <table className="w-full min-w-[10rem] border-collapse text-base">
       <thead>
         <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
@@ -48,7 +81,14 @@ function KeyValueRows({
           const isNewKey = isChanged && changedCells?.get(row.cellKey) === null && view.stepIndex > 0;
           const was = isChanged ? oldText(view, changedCells?.get(row.cellKey)) : null;
           return (
-            <tr key={row.cellKey} className={cn("border-t border-slate-700/60", isChanged && "bg-amber-300/10")}>
+            <tr
+              key={row.cellKey}
+              className={cn(
+                "border-t border-slate-700/60",
+                isChanged && "bg-amber-300/10",
+                looked.has(row.cellKey) && "bg-emerald-500/15 outline outline-2 -outline-offset-2 outline-emerald-400",
+              )}
+            >
               <th scope="row" className="py-1.5 pr-3 text-left align-middle font-code text-sm font-normal text-slate-300">
                 {row.key}
               </th>
@@ -67,6 +107,7 @@ function KeyValueRows({
         })}
       </tbody>
     </table>
+    </>
   );
 }
 
@@ -107,6 +148,7 @@ function Body({ id, object, view }: { id: number; object: HeapObject; view: Step
     case "map":
       return (
         <KeyValueRows
+          id={id}
           view={view}
           changedCells={changedCells}
           rows={object.entries.map((entry) => ({
@@ -116,8 +158,12 @@ function Body({ id, object, view }: { id: number; object: HeapObject; view: Step
           }))}
         />
       );
-    case "set":
-      return object.items.length === 0 ? (
+    case "set": {
+      const looked = new Set(view.lookups.filter((l) => l.heapId === id && l.found).map((l) => l.key));
+      return (
+        <>
+        <LookupNote id={id} view={view} />
+        {object.items.length === 0 ? (
         <p className="font-code text-sm italic text-slate-500">empty set</p>
       ) : (
         <div className="flex flex-wrap gap-1.5">
@@ -130,6 +176,7 @@ function Body({ id, object, view }: { id: number; object: HeapObject; view: Step
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-full border-2 border-slate-600 bg-slate-800/80 px-3 py-1 text-lg",
                   isChanged && "viz-flash",
+                  looked.has(key) && "border-emerald-400 bg-emerald-500/15",
                 )}
               >
                 <ValueView value={item} heap={view.step.heap} boxed={view.boxed} />
@@ -138,7 +185,10 @@ function Body({ id, object, view }: { id: number; object: HeapObject; view: Step
             );
           })}
         </div>
+      )}
+        </>
       );
+    }
     case "function":
       return <p className="font-code text-sm text-slate-300">{functionLabel(object)}</p>;
     case "other":

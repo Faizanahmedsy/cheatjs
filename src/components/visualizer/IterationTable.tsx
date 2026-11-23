@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Table2 } from "lucide-react";
+import { Copy, Download, Table2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   autoColumns,
@@ -42,6 +42,7 @@ export function IterationTable({ steps, table, index, onJump, beginner }: Iterat
   const position = table.at[index];
   const group = position ? table.groups.get(position.key) : undefined;
   const [picked, setPicked] = useState<Record<string, string[]>>({});
+  const [copied, setCopied] = useState(false);
   const currentRef = useRef<HTMLTableRowElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -72,6 +73,41 @@ export function IterationTable({ steps, table, index, onJump, beginner }: Iterat
     setPicked((all) => ({ ...all, [group.key]: next }));
   };
 
+  /** The whole table (every pass, not just up to this step) as rows of text. */
+  const exportRows = () => {
+    const last = steps.length - 1;
+    const head = [isLoop ? "pass" : "step", ...columns, ...(showCondition ? ["check"] : []), "lines"];
+    const body = group.rows.map((row) => {
+      const check = showCondition ? conditionCell(steps[row.steps[0]], group.loopLine) : null;
+      return [
+        row.label,
+        ...columns.map((name) => rowValue(steps, group, row, name, last) || "—"),
+        ...(showCondition ? [check ? `${check.detail || check.text} → ${check.result}` : "—"] : []),
+        rowLines(steps, row, last),
+      ];
+    });
+    return [head, ...body];
+  };
+  const copyTable = () => {
+    const rows = exportRows();
+    const widths = rows[0].map((_, c) => Math.max(...rows.map((r) => String(r[c]).length)));
+    const text = rows.map((r) => r.map((cell, c) => String(cell).padEnd(widths[c])).join(" | ")).join("\n");
+    void navigator.clipboard?.writeText(text);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1500);
+  };
+  const downloadCsv = () => {
+    const csv = exportRows()
+      .map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `dry-run-${group.frameName.replace(/\W+/g, "-").toLowerCase()}-line-${group.loopLine ?? "steps"}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const where = group.frameName === "Global frame" ? "global code" : `${group.frameName}()`;
   const title = isLoop ? `${group.loopKind} loop on line ${group.loopLine} · ${where}` : `step by step · ${where}`;
 
@@ -90,6 +126,22 @@ export function IterationTable({ steps, table, index, onJump, beginner }: Iterat
         </h2>
         <span className="text-sm text-slate-400">{title}</span>
         {position.row === -1 && <span className="text-xs text-slate-500">(loop finished)</span>}
+        <span className="ml-auto flex gap-1.5">
+          <button
+            type="button"
+            onClick={copyTable}
+            className="inline-flex items-center gap-1 rounded-md border border-slate-700 px-2 py-1 text-xs text-slate-300 hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+          >
+            <Copy className="h-3.5 w-3.5" aria-hidden="true" /> {copied ? "Copied!" : "Copy"}
+          </button>
+          <button
+            type="button"
+            onClick={downloadCsv}
+            className="inline-flex items-center gap-1 rounded-md border border-slate-700 px-2 py-1 text-xs text-slate-300 hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+          >
+            <Download className="h-3.5 w-3.5" aria-hidden="true" /> CSV
+          </button>
+        </span>
       </header>
       <p className="mb-2 text-sm text-slate-400">
         {isLoop

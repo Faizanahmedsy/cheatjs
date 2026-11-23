@@ -16,7 +16,7 @@ const TONE_ICON = {
 } as const;
 
 interface StepStoryProps {
-  explanation: Explanation;
+  explanation: Explanation & { lineRef?: number };
   hints: StepHints;
   index: number;
   total: number;
@@ -85,6 +85,8 @@ function LoopTracker({ table, index, partial, onJump }: Pick<StepStoryProps, "ta
 }
 
 /** The big "what is happening right now" card, in plain words, with the Back / Next buttons right under it. */
+export type StoryExplanation = Explanation & { lineRef?: number };
+
 export function StepStory({ explanation, hints, index, total, table, partial, beginner, onJump }: StepStoryProps) {
   const Icon = TONE_ICON[explanation.tone];
   const isError = explanation.tone === "error";
@@ -112,6 +114,11 @@ export function StepStory({ explanation, hints, index, total, table, partial, be
           <p className={cn("break-words font-semibold leading-snug", beginner ? "text-2xl" : "text-xl", isError ? "text-red-100" : "text-slate-50")}>
             {explanation.title}
           </p>
+          {explanation.lineRef !== undefined && (
+            <p className="mt-0.5 text-xs text-slate-500">
+              from <span className="font-code text-emerald-300">line {explanation.lineRef}</span> (green arrow in the code)
+            </p>
+          )}
           {explanation.details.length > 0 && (
             <ul className="mt-1.5 space-y-0.5">
               {explanation.details.map((detail, i) => (

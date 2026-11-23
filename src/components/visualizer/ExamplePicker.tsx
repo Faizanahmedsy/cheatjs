@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, CheckCircle2, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,7 @@ function Tick({ on }: { on: boolean }) {
 }
 
 /** "Problems & examples": searchable by number or title, keyboard friendly (↑ ↓ Enter, Esc). */
-export function ExamplePicker({ value, onChange }: { value: Selection; onChange: (selection: Selection) => void }) {
+export function ExamplePicker({ value, onChange, done }: { value: Selection; onChange: (selection: Selection) => void; done?: Set<string> }) {
   const [open, setOpen] = useState(false);
   const current = value.kind === "custom" ? "My code" : (findEntry(value)?.label ?? "Problems & examples");
   const pick = (selection: Selection) => {
@@ -64,6 +64,7 @@ export function ExamplePicker({ value, onChange }: { value: Selection; onChange:
                       />
                       <span className="truncate">{problemLabel(problem)}</span>
                       <span className="sr-only">, {problem.difficulty}</span>
+                      {done?.has(problem.id) && <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" aria-label="done" />}
                       <Tick on={sameSelection(value, selection)} />
                     </CommandItem>
                   );
