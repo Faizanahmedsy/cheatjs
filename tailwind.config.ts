@@ -12,6 +12,22 @@ const PALETTES = ['slate', 'gray', 'zinc', 'neutral', 'stone', 'red', 'orange', 
 const SHADES = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'] as const;
 const FLIP: Record<string, string> = { '50': '950', '100': '900', '200': '800', '300': '700', '400': '600', '500': '500', '600': '400', '700': '300', '800': '200', '900': '100', '950': '50' };
 
+/**
+ * Ustad Billu's palette (ustadbillu.vercel.app): "slate" becomes a warm scale
+ * from Billu's paper (#f7f1e6) down to his ink (#1b2a22), and "cyan", the
+ * site's main accent, becomes Billu's terra orange (#e5603a).
+ */
+const BILLU_OVERRIDES: Record<string, Record<string, string>> = {
+  slate: {
+    '50': '#fbf7ef', '100': '#f7f1e6', '200': '#ebe2d0', '300': '#d6cab3', '400': '#a99d87', '500': '#7e7565',
+    '600': '#5b574c', '700': '#3e4339', '800': '#2b342e', '900': '#1f2823', '950': '#151c18',
+  },
+  cyan: {
+    '50': '#fff4ed', '100': '#ffe5d4', '200': '#fec7a8', '300': '#fca172', '400': '#f5793f', '500': '#e5603a',
+    '600': '#c2532f', '700': '#9c4127', '800': '#7c3624', '900': '#652f21', '950': '#37150e',
+  },
+};
+
 function rgb(hex: string): string {
   const h = hex.replace('#', '');
   return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)).join(' ');
@@ -22,7 +38,7 @@ const varColors = Object.fromEntries(
 );
 
 const paletteVars = plugin(({ addBase }) => {
-  const palette = twColors as unknown as Record<string, Record<string, string>>;
+  const palette = { ...(twColors as unknown as Record<string, Record<string, string>>), ...BILLU_OVERRIDES };
   const dark: Record<string, string> = {};
   const light: Record<string, string> = {};
   for (const name of PALETTES) {
@@ -45,7 +61,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['Inter', 'sans-serif'],
-        headline: ['Lexend', 'sans-serif'],
+        headline: ['Fraunces', 'Georgia', 'serif'],
         code: ['Source Code Pro', 'monospace'],
         labmono: ['var(--lab-mono)'],
       },

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     "Ustad Billu ki Class (formerly Cheat JS): free visual lessons for DSA, Gen AI, AWS and JavaScript, from Ustad Billu.",
 };
 
-export const viewport: Viewport = { themeColor: "#0f172a" };
+export const viewport: Viewport = { themeColor: "#151c18" };
 
 export default function RootLayout({
   children,
@@ -43,7 +43,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Lexend:wght@700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap"
           rel="stylesheet"
         />
         <link

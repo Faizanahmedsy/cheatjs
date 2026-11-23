@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 173 90% 65%;
+    --background: 146 15% 9%;
+    --foreground: 39 52% 94%;
+    --card: 146 15% 11%;
+    --card-foreground: 39 52% 94%;
+    --popover: 146 15% 11%;
+    --popover-foreground: 39 52% 94%;
+    --primary: 18 89% 60%;
     --primary-foreground: 210 20% 98%;
-    --secondary: 215 27.9% 16.9%;
+    --secondary: 140 9% 19%;
     --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
+    --muted: 140 9% 19%;
+    --muted-foreground: 39 12% 62%;
     --accent: 54 96% 76%;
     --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 173 90% 65%;
+    --border: 140 9% 22%;
+    --input: 140 9% 22%;
+    --ring: 18 89% 60%;
     --radius: 1rem;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -30,7 +30,7 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    --sidebar-background: 224 71.4% 4.1%;
+    --sidebar-background: 146 15% 9%;
     --sidebar-foreground: 210 20% 98%;
     --sidebar-primary: 173 90% 65%;
     --sidebar-primary-foreground: 210 20% 98%;
@@ -40,25 +40,25 @@
     --sidebar-ring: 173 90% 65%;
   }
   .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 173 90% 65%;
+    --background: 146 15% 9%;
+    --foreground: 39 52% 94%;
+    --card: 146 15% 11%;
+    --card-foreground: 39 52% 94%;
+    --popover: 146 15% 11%;
+    --popover-foreground: 39 52% 94%;
+    --primary: 18 89% 60%;
     --primary-foreground: 210 20% 98%;
-    --secondary: 215 27.9% 16.9%;
+    --secondary: 140 9% 19%;
     --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
+    --muted: 140 9% 19%;
+    --muted-foreground: 39 12% 62%;
     --accent: 54 96% 76%;
     --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 173 90% 65%;
+    --border: 140 9% 22%;
+    --input: 140 9% 22%;
+    --ring: 18 89% 60%;
     --radius: 1rem;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -66,7 +66,7 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    --sidebar-background: 224 71.4% 4.1%;
+    --sidebar-background: 146 15% 9%;
     --sidebar-foreground: 210 20% 98%;
     --sidebar-primary: 173 90% 65%;
     --sidebar-primary-foreground: 210 20% 98%;
@@ -297,23 +297,23 @@
 /* White mode: shadcn tokens (palette colours flip via the Tailwind plugin). */
 html[data-mode="light"] {
   color-scheme: light !important;
-  --background: 210 40% 98%;
-  --foreground: 222 47% 11%;
-  --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 11%;
-  --primary: 188 94% 30%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 214 32% 91%;
-  --secondary-foreground: 222 47% 11%;
-  --muted: 214 32% 91%;
-  --muted-foreground: 215 16% 40%;
-  --accent: 45 93% 47%;
-  --accent-foreground: 222 47% 11%;
-  --border: 214 32% 86%;
-  --input: 214 32% 86%;
-  --ring: 188 94% 35%;
+  --background: 39 52% 94%;
+  --foreground: 146 22% 14%;
+  --card: 43 100% 99%;
+  --card-foreground: 146 22% 14%;
+  --popover: 43 100% 99%;
+  --popover-foreground: 146 22% 14%;
+  --primary: 14 61% 47%;
+  --primary-foreground: 43 100% 99%;
+  --secondary: 39 40% 88%;
+  --secondary-foreground: 146 22% 14%;
+  --muted: 39 40% 88%;
+  --muted-foreground: 40 8% 38%;
+  --accent: 40 87% 63%;
+  --accent-foreground: 146 22% 14%;
+  --border: 39 30% 80%;
+  --input: 39 30% 80%;
+  --ring: 14 61% 47%;
 }
 html[data-mode="light"] body {
   background: hsl(var(--background));
