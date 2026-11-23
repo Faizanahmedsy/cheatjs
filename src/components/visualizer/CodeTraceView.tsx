@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { InlineNote } from "@/lib/visualizer/inline-notes";
+import { highlightLine } from "./highlight";
 
 interface CodeTraceViewProps {
   code: string;
@@ -14,10 +16,12 @@ interface CodeTraceViewProps {
   isError: boolean;
   /** Beginner mode: bigger text. */
   large?: boolean;
+  /** What the line that just ran changed, shown beside that line. */
+  notes?: InlineNote[];
 }
 
 /** Read-only code with Python Tutor style arrows: green = just ran, red = runs next. */
-export function CodeTraceView({ code, nextLine, doneLine, isError, large = false }: CodeTraceViewProps) {
+export function CodeTraceView({ code, nextLine, doneLine, isError, large = false, notes = [] }: CodeTraceViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const lines = code.split("\n");
 
@@ -65,10 +69,27 @@ export function CodeTraceView({ code, nextLine, doneLine, isError, large = false
               {line}
             </span>
             <span className="whitespace-pre text-slate-200">
-              {text || " "}
+              {text ? highlightLine(text) : " "}
               {isNext && <span className="sr-only"> (runs next)</span>}
               {isDone && <span className="sr-only"> (just ran)</span>}
             </span>
+            {isDone && notes.length > 0 && (
+              <span className="ml-6 flex items-center gap-2 whitespace-nowrap font-code text-[0.8em]" aria-label="What this line changed">
+                {notes.map((note) => (
+                  <span key={note.name} className="inline-flex items-center gap-1 rounded-md bg-amber-300/15 px-2 py-0.5 text-amber-100 ring-1 ring-amber-300/40">
+                    <span className="font-semibold">{note.name}</span>
+                    {note.was !== undefined && (
+                      <>
+                        <s className="text-slate-400">{note.was}</s>
+                        <span aria-hidden="true">→</span>
+                      </>
+                    )}
+                    {note.was === undefined && <span aria-hidden="true">=</span>}
+                    <span className="font-semibold text-amber-50">{note.now}</span>
+                  </span>
+                ))}
+              </span>
+            )}
           </div>
         );
       })}

@@ -25,7 +25,7 @@ const navLinks = [
   { href: "/ai-engineering/visual-lab", label: "Visual Lab" },
   { href: "/gen-ai", label: "Gen AI" },
   { href: "/aws-saa-v2", label: "AWS SAA v2" },
-  { href: "/visualizer", label: "JS Visualizer" },
+  { href: "/visualizer", label: "DSA Visualizer" },
   { href: "/study", label: "Study" },
   { href: "/flashcards", label: "Flashcards" },
 ];

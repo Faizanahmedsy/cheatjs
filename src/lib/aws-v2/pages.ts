@@ -71,3 +71,15 @@ export function findPageByNotionId(id: string, track: Track = AWS_TRACK): V2Page
   const clean = id.replace(/-/g, "").toLowerCase();
   return track.pages.find((p) => p.notionId.replace(/-/g, "").toLowerCase() === clean);
 }
+
+/** Pages in the order the sidebar shows them (group by group), including the home page. */
+export function orderedPages(track: Track = AWS_TRACK): V2Page[] {
+  return track.groups.flatMap((group) => track.pages.filter((p) => p.group === group));
+}
+
+export function neighboursOf(slug: string, track: Track = AWS_TRACK): { prev?: V2Page; next?: V2Page } {
+  const list = orderedPages(track);
+  const at = list.findIndex((p) => p.slug === slug);
+  if (at < 0) return {};
+  return { prev: list[at - 1], next: list[at + 1] };
+}

@@ -16,7 +16,9 @@ import { stepHints } from "@/lib/visualizer/explain-why";
 import type { IterationIndex } from "@/lib/visualizer/iteration-table";
 import type { TraceStep, TraceSuccess } from "@/lib/visualizer/types";
 import { CallTree } from "./CallTree";
-import { ExplanationBar } from "./ExplanationBar";
+import { ConditionCard } from "./ConditionCard";
+import { StepStory } from "./StepStory";
+import { VariableCards } from "./VariableCards";
 import { IterationTable } from "./IterationTable";
 import { StatePanel } from "./StatePanel";
 import type { StepView } from "./view-context";
@@ -74,15 +76,24 @@ export function TraceStage({ trace, index, summary, code, beginner, onJump }: Tr
   const lines = useMemo(() => code.split("\n"), [code]);
   const explanation = useMemo(() => explainStep(trace.steps, index), [trace, index]);
   const hints = useMemo(() => stepHints(trace.steps, index, lines), [trace, index, lines]);
-  const loop = view.step.loop;
-  const loopInfo = loop ? { loop, total: summary.totals.get(loop.instance) ?? loop.iteration, partial: Boolean(trace.notice) } : undefined;
   // Beginner mode only shows the call tree for recursion; otherwise any code with calls gets it.
   const showTree = summary.tree.recursive || (!beginner && summary.tree.roots.length > 0);
 
   return (
     <div className="flex flex-col gap-4">
-      <ExplanationBar explanation={explanation} loopInfo={loopInfo} hints={hints} beginner={beginner} />
-      <StatePanel view={view} heapIds={heapIds} />
+      <StepStory
+        explanation={explanation}
+        hints={hints}
+        index={index}
+        total={trace.steps.length}
+        table={summary.table}
+        partial={Boolean(trace.notice)}
+        beginner={beginner}
+        onJump={onJump}
+      />
+      <ConditionCard prevStep={view.prevStep} />
+      <VariableCards view={view} />
+      <StatePanel view={view} heapIds={heapIds} objectsOnly />
       <IterationTable steps={trace.steps} table={summary.table} index={index} onJump={onJump} beginner={beginner} />
       {showTree && (
         <CallTree roots={summary.tree.roots} stepIndex={index} activeFrameIds={view.step.frames.slice(1).map((frame) => frame.id)} />

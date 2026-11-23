@@ -71,6 +71,7 @@ export function urlForSelection(href: string, selection: Selection): string {
   const url = new URL(href);
   url.searchParams.delete("problem");
   url.searchParams.delete("example");
+  url.searchParams.delete("step");
   if (selection.kind !== "custom") url.searchParams.set(selection.kind, selection.id);
   return `${url.pathname}${url.search}${url.hash}`;
 }

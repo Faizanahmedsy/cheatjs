@@ -76,28 +76,26 @@ export function IterationTable({ steps, table, index, onJump, beginner }: Iterat
   const title = isLoop ? `${group.loopKind} loop on line ${group.loopLine} · ${where}` : `step by step · ${where}`;
 
   return (
-    <section aria-label="Iteration table" className="rounded-xl border border-cyan-400/30 bg-slate-800/40 p-4">
+    <section aria-label="Iteration table" className="rounded-2xl border border-cyan-400/30 bg-slate-800/40 p-4">
       <header className="mb-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-cyan-200">
           <Table2 className="h-4 w-4" aria-hidden="true" />
           {isLoop ? (
             <Term name="iteration" enabled={beginner}>
-              Iteration table
+              Dry-run table: every loop pass on paper
             </Term>
           ) : (
-            "Dry-run table"
+            "Dry-run table: every step on paper"
           )}
         </h2>
         <span className="text-sm text-slate-400">{title}</span>
         {position.row === -1 && <span className="text-xs text-slate-500">(loop finished)</span>}
       </header>
-      {beginner && (
-        <p className="mb-2 text-sm text-slate-400">
-          {isLoop
-            ? "One row per pass, values as each pass starts — just like a dry run on paper. Click a row to jump there."
-            : "No loop here yet, so each row is one step. Click a row to jump there."}
-        </p>
-      )}
+      <p className="mb-2 text-sm text-slate-400">
+        {isLoop
+          ? "Each row is one pass of the loop. Each column is a variable, so you can see exactly what it held in every pass. Click a row to jump there."
+          : "No loop here yet, so each row is one step. Click a row to jump there."}
+      </p>
 
       {candidates.length > 1 && (
         <div className="mb-2 flex flex-wrap items-center gap-1.5" role="group" aria-label="Columns to show">

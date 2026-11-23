@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { GraduationCap, Loader2, Pencil, Play } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { GraduationCap, Loader2, MousePointerClick, Pencil, Play, Search, Footprints } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { buildCallTree, loopTotals, timelineMarks } from "@/lib/visualizer/analysis";
@@ -15,11 +15,13 @@ import {
   type Selection,
 } from "@/lib/visualizer/catalog";
 import { indexIterations } from "@/lib/visualizer/iteration-table";
+import { inlineNotes } from "@/lib/visualizer/inline-notes";
 import type { TraceSuccess } from "@/lib/visualizer/types";
 import { CodeEditor } from "./CodeEditor";
 import { CodeTraceView } from "./CodeTraceView";
 import { ExamplePicker } from "./ExamplePicker";
 import { Legend } from "./Legend";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { MobileControls } from "./MobileControls";
 import { OutputPanel } from "./OutputPanel";
 import { PlaybackControls, type Speed } from "./PlaybackControls";
@@ -57,6 +59,8 @@ export function JsVisualizer() {
   const [speed, setSpeed] = useState<Speed>(1);
   const [beginner, setBeginner] = useBeginnerMode();
   const { state, run } = useTraceRunner();
+  // ?step=7 in the URL: reopen on the same step after a refresh or a shared link.
+  const startStep = useRef<number | null>(null);
 
   const trace = state.status === "done" ? state.trace : null;
   const summary = useTraceSummary(trace);
@@ -72,7 +76,9 @@ export function JsVisualizer() {
       setPlaying(false);
       const next = await run(source);
       if (next.status === "done") {
-        setIndex(0);
+        const wanted = startStep.current;
+        startStep.current = null;
+        setIndex(wanted !== null ? Math.max(0, Math.min(wanted, next.trace.steps.length - 1)) : 0);
         setMode("view");
       } else if (next.status === "failed") {
         setMode("edit");
@@ -83,6 +89,8 @@ export function JsVisualizer() {
 
   // On load: open the problem / example named in the URL (default: problem 1) and run it straight away.
   useEffect(() => {
+    const stepParam = Number.parseInt(new URLSearchParams(window.location.search).get("step") ?? "", 10);
+    startStep.current = Number.isFinite(stepParam) && stepParam >= 1 ? stepParam - 1 : null;
     const fromUrl = selectionFromSearch(window.location.search);
     const start = fromUrl ? findEntry(fromUrl) : null;
     if (fromUrl && start) {
@@ -150,29 +158,64 @@ export function JsVisualizer() {
     }
   };
 
+  const notes = useMemo(() => (step ? inlineNotes(prevStep, step) : []), [prevStep, step]);
   const changedNames = useMemo(() => (step ? changedVarNames(prevStep, step) : new Set<string>()), [prevStep, step]);
 
   const failure = state.status === "failed" ? state.failure : null;
   const running = state.status === "running";
   const viewing = mode === "view" && trace && step && summary;
 
+  // Keep ?step= in the URL while stepping (no new history entry).
+  useEffect(() => {
+    if (!viewing) return;
+    const url = new URL(window.location.href);
+    if (safeIndex > 0) url.searchParams.set("step", String(safeIndex + 1));
+    else url.searchParams.delete("step");
+    const next = `${url.pathname}${url.search}${url.hash}`;
+    if (next !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+      window.history.replaceState(window.history.state, "", next);
+    }
+  }, [viewing, safeIndex]);
+
   return (
     <TooltipProvider delayDuration={200}>
       <div className={viewing ? "mx-auto w-full max-w-[1500px] px-4 pb-24 pt-6 sm:px-6 lg:py-8" : "mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6 lg:py-8"}>
-        <header className="mb-6 space-y-3">
+        <header className="mb-6 space-y-4">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            <h1 className="font-headline text-3xl font-bold text-slate-100 md:text-4xl">JS Visualizer</h1>
+            <h1 className="font-headline text-3xl font-bold text-slate-100 md:text-4xl">DSA Visualizer</h1>
             <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5 text-sm text-slate-200 sm:ml-auto">
               <GraduationCap className="h-4 w-4 text-cyan-300" aria-hidden="true" />
-              Beginner mode
-              <Switch checked={beginner} onCheckedChange={setBeginner} aria-label="Beginner mode" />
+              Big text and tips
+              <Switch checked={beginner} onCheckedChange={setBeginner} aria-label="Big text and tips" />
             </label>
           </div>
           <p className="max-w-3xl text-base text-slate-400 md:text-lg">
-            Dry-run JavaScript one line at a time — variables, arrays, strings, maps and the call stack, with a paper-style
-            iteration table. Pick one of the {PROBLEMS.length} practice problems or an example, or paste your own code.
+            Watch a program run one line at a time, like a dry run on paper. You see every variable, every loop pass and every yes / no
+            check, so no DSA knowledge is needed. {PROBLEMS.length} questions are ready.
           </p>
-          <Legend />
+          <ol className="grid gap-3 sm:grid-cols-3" aria-label="How to use">
+            {[
+              { icon: Search, title: "1. Pick a question", text: "Use the box below. Start with Two Sum." },
+              { icon: Footprints, title: "2. Press Next step", text: "The code moves one line. Red arrow = runs next. Green = just ran." },
+              { icon: MousePointerClick, title: "3. Read the cards", text: "Plain words say what happened. Glowing variables just changed." },
+            ].map(({ icon: Icon, title, text }) => (
+              <li key={title} className="flex items-start gap-3 rounded-xl border border-slate-700/60 bg-slate-800/40 p-3">
+                <Icon className="mt-0.5 h-5 w-5 shrink-0 text-cyan-300" aria-hidden="true" />
+                <span>
+                  <span className="block font-semibold text-slate-100">{title}</span>
+                  <span className="text-sm text-slate-400">{text}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+          <Collapsible>
+            <CollapsibleTrigger className="text-sm font-medium text-cyan-300 hover:text-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400">
+              What do the colours mean?
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-2">
+              <Legend />
+            </CollapsibleContent>
+          </Collapsible>
         </header>
 
         {/* Playback sits above both columns and stays pinned under the navbar,
@@ -234,6 +277,7 @@ export function JsVisualizer() {
                   doneLine={prevStep?.line ?? 0}
                   isError={step.event === "exception"}
                   large={beginner}
+                  notes={notes}
                 />
               ) : (
                 <CodeEditor code={code} onChange={editCode} errorLine={failure?.line} />

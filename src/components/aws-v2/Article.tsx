@@ -1,12 +1,13 @@
 import GithubSlugger from "github-slugger";
-import { ExternalLink } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { Markdown } from "./Markdown";
 import { extractToc, notionToMarkdown } from "@/lib/aws-v2/convert";
 import { loadPage } from "@/lib/aws-v2/notion";
 import { AWS_TRACK, notionUrlFor, type Track, type V2Page } from "@/lib/aws-v2/pages";
 import { cn } from "@/lib/utils";
 import { PageActions } from "@/components/study/PageActions";
-import { hrefFor } from "@/lib/aws-v2/pages";
+import { hrefFor, neighboursOf } from "@/lib/aws-v2/pages";
 
 function formatDate(iso: string): string {
   try {
@@ -33,6 +34,7 @@ export async function Article({
   const markdown = notionToMarkdown(loaded.markdown, track);
   const toc = extractToc(markdown, new GithubSlugger());
   const live = loaded.source === "notion";
+  const { prev, next } = neighboursOf(page.slug, track);
 
   return (
     <div
@@ -93,6 +95,42 @@ export async function Article({
         ) : null}
 
         <Markdown>{markdown}</Markdown>
+
+        {/* Previous / next page, in sidebar order */}
+        {prev || next ? (
+          <nav data-reader-hide aria-label="Previous and next page" className="mt-12 grid gap-3 border-t border-slate-700/60 pt-6 sm:grid-cols-2">
+            {prev ? (
+              <Link
+                href={hrefFor(prev.slug, track)}
+                className="group flex flex-col gap-1 rounded-xl border border-slate-700/60 bg-slate-800/40 p-4 transition-colors hover:border-cyan-400/60 hover:bg-slate-800"
+              >
+                <span className="flex items-center gap-1 text-xs font-medium uppercase tracking-wider text-slate-500">
+                  <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Previous
+                </span>
+                <span className="font-headline text-base font-semibold text-slate-200 group-hover:text-cyan-300">
+                  <span aria-hidden className="mr-2">{prev.icon}</span>
+                  {prev.title}
+                </span>
+              </Link>
+            ) : (
+              <span className="hidden sm:block" />
+            )}
+            {next ? (
+              <Link
+                href={hrefFor(next.slug, track)}
+                className="group flex flex-col items-end gap-1 rounded-xl border border-cyan-400/40 bg-cyan-400/5 p-4 text-right transition-colors hover:border-cyan-300 hover:bg-cyan-400/10 sm:col-start-2"
+              >
+                <span className="flex items-center gap-1 text-xs font-medium uppercase tracking-wider text-cyan-300">
+                  Next <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </span>
+                <span className="font-headline text-base font-semibold text-slate-100 group-hover:text-cyan-200">
+                  <span aria-hidden className="mr-2">{next.icon}</span>
+                  {next.title}
+                </span>
+              </Link>
+            ) : null}
+          </nav>
+        ) : null}
       </article>
       </div>
 

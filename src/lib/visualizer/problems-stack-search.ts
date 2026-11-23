@@ -11,26 +11,26 @@ export const STACK_SEARCH_PROBLEMS: Problem[] = [
     difficulty: "Easy",
     statement:
       "Given a string made only of brackets ( ) [ ] { }, decide whether it is balanced. Every opening bracket must be closed by the same kind, in the right order.",
-    example: 's = "{[()]}()" → true',
+    example: 'text = "{[()]}()" → true',
     approach:
       "Push every opening bracket onto a stack. When a closing bracket arrives, it must match the bracket on top of the stack, the most recent one still open; pop it if it does. The string is valid only if nothing ever mismatches and the stack is empty at the end.",
     watch: [
       "`stack` grows on `{`, `[`, `(` and shrinks on each closing bracket",
       "`pairs` maps each closing bracket to the opening one it needs",
-      "the check `stack.pop() !== pairs[ch]` is where a wrong order would fail",
+      "the check `stack.pop() !== pairs[character]` is where a wrong order would fail",
       "at the end `stack.length === 0` means every bracket was closed",
     ],
     complexity: { time: "O(n)", space: "O(n)" },
-    code: `function isValid(s) {
+    code: `function isValid(text) {
   // each closing bracket and the opening bracket it needs
   const pairs = { ")": "(", "]": "[", "}": "{" };
   const stack = []; // opening brackets still waiting to be closed
 
-  for (let i = 0; i < s.length; i++) {
-    const ch = s[i];
-    if (ch === "(" || ch === "[" || ch === "{") {
-      stack.push(ch); // remember it until its partner shows up
-    } else if (stack.pop() !== pairs[ch]) {
+  for (let charIndex = 0; charIndex < text.length; charIndex++) {
+    const character = text[charIndex];
+    if (character === "(" || character === "[" || character === "{") {
+      stack.push(character); // remember it until its partner shows up
+    } else if (stack.pop() !== pairs[character]) {
       return false; // the most recent open bracket is the wrong kind
     }
   }
@@ -63,10 +63,10 @@ console.log(isValid("{[()]}()")); // expected: true`,
     this.stack = []; // the values
     this.mins = []; // mins[i] = smallest of stack[0..i]
   }
-  push(val) {
-    this.stack.push(val);
-    const last = this.mins.length ? this.mins[this.mins.length - 1] : val;
-    this.mins.push(Math.min(val, last)); // smallest so far
+  push(value) {
+    this.stack.push(value);
+    const last = this.mins.length ? this.mins[this.mins.length - 1] : value;
+    this.mins.push(Math.min(value, last)); // smallest so far
   }
   pop() {
     this.stack.pop();
@@ -80,18 +80,18 @@ console.log(isValid("{[()]}()")); // expected: true`,
   }
 }
 
-const ms = new MinStack();
+const minStack = new MinStack();
 const results = [];
-ms.push(5);
-ms.push(3);
-ms.push(7);
-results.push(ms.getMin()); // 3
-ms.pop(); // removes 7
-ms.push(2);
-results.push(ms.getMin()); // 2
-ms.pop(); // removes 2
-results.push(ms.top()); // 3 is on top again
-results.push(ms.getMin()); // 3
+minStack.push(5);
+minStack.push(3);
+minStack.push(7);
+results.push(minStack.getMin()); // 3
+minStack.pop(); // removes 7
+minStack.push(2);
+results.push(minStack.getMin()); // 2
+minStack.pop(); // removes 2
+results.push(minStack.top()); // 3 is on top again
+results.push(minStack.getMin()); // 3
 console.log(results); // expected: [3, 2, 3, 3]`,
   },
   {
@@ -107,7 +107,7 @@ console.log(results); // expected: [3, 2, 3, 3]`,
       "Read the tokens left to right. Numbers go onto a stack. An operator pops the top two numbers, applies itself (second-popped is the left side), and pushes the result back. When the tokens run out, the single number left is the answer.",
     watch: [
       "numbers pile up on `stack` until an operator arrives",
-      "`b` is popped first, then `a`: order matters for `-` and `/`",
+      "`rightOperand` is popped first, then `leftOperand`: order matters for `-` and `/`",
       "13 / 5 becomes 2 because `Math.trunc` drops the fraction",
       "the stack shrinks by one on every operator",
     ],
@@ -115,19 +115,19 @@ console.log(results); // expected: [3, 2, 3, 3]`,
     code: `function evalRPN(tokens) {
   const stack = []; // numbers waiting for an operator
 
-  for (let i = 0; i < tokens.length; i++) {
-    const t = tokens[i];
-    if (t === "+" || t === "-" || t === "*" || t === "/") {
-      const b = stack.pop(); // right operand (pushed last)
-      const a = stack.pop(); // left operand
-      let res;
-      if (t === "+") res = a + b;
-      else if (t === "-") res = a - b;
-      else if (t === "*") res = a * b;
-      else res = Math.trunc(a / b); // divide toward zero
-      stack.push(res);
+  for (let tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
+    const token = tokens[tokenIndex];
+    if (token === "+" || token === "-" || token === "*" || token === "/") {
+      const rightOperand = stack.pop(); // right operand (pushed last)
+      const leftOperand = stack.pop(); // left operand
+      let calculation;
+      if (token === "+") calculation = leftOperand + rightOperand;
+      else if (token === "-") calculation = leftOperand - rightOperand;
+      else if (token === "*") calculation = leftOperand * rightOperand;
+      else calculation = Math.trunc(leftOperand / rightOperand); // divide toward zero
+      stack.push(calculation);
     } else {
-      stack.push(Number(t)); // a number: save it
+      stack.push(Number(token)); // a number: save it
     }
   }
   return stack[0]; // the only value left
@@ -145,11 +145,11 @@ console.log(evalRPN(["4", "13", "5", "/", "+"])); // expected: 6`,
       "For each day's temperature, find how many days you must wait for a warmer day. If no warmer day comes, the answer for that day is 0.",
     example: "temps = [73,74,75,71,69,72,76,73] → [1,1,4,2,1,1,0,0]",
     approach:
-      "Keep a stack of day indexes that are still waiting for a warmer day; their temperatures go down from bottom to top. When today is warmer than the day on top, that day's wait is over: pop it and record `i - day`. Each index is pushed and popped at most once, so the whole thing is linear.",
+      "Keep a stack of day indexes that are still waiting for a warmer day; their temperatures go down from bottom to top. When today is warmer than the day on top, that day's wait is over: pop it and record `dayIndex - day`. Each index is pushed and popped at most once, so the whole thing is linear.",
     watch: [
       "`stack` holds indexes, not temperatures",
       "a warm day can pop several waiting days at once (day 6, 76°, pops three)",
-      "`answer[day] = i - day` is the wait in days",
+      "`answer[day] = dayIndex - day` is the wait in days",
       "days still on the stack at the end keep their 0",
     ],
     complexity: { time: "O(n)", space: "O(n)" },
@@ -157,13 +157,13 @@ console.log(evalRPN(["4", "13", "5", "/", "+"])); // expected: 6`,
   const answer = new Array(temps.length).fill(0);
   const stack = []; // indexes of days still waiting for a warmer day
 
-  for (let i = 0; i < temps.length; i++) {
+  for (let dayIndex = 0; dayIndex < temps.length; dayIndex++) {
     // today is warmer than the waiting day on top: its wait ends now
-    while (stack.length && temps[i] > temps[stack[stack.length - 1]]) {
+    while (stack.length && temps[dayIndex] > temps[stack[stack.length - 1]]) {
       const day = stack.pop();
-      answer[day] = i - day;
+      answer[day] = dayIndex - day;
     }
-    stack.push(i); // today waits too
+    stack.push(dayIndex); // today waits too
   }
   return answer;
 }
@@ -184,27 +184,27 @@ console.log(dailyTemperatures(temps)); // expected: [1, 1, 4, 2, 1, 1, 0, 0]`,
       "Walk `nums2` once with a stack of values still waiting for a bigger one. When a bigger value arrives, pop the smaller ones and record it as their next greater element in a Map. Then each query in `nums1` is a single Map lookup.",
     watch: [
       "`stack` holds values that have not found a bigger one yet",
-      "when 3 arrives it pops 1, so `next` gets 1 → 3",
+      "when 3 arrives it pops 1, so `nextGreaterOf` gets 1 → 3",
       "values left on the stack at the end have no bigger value: -1",
-      "the final loop just reads answers out of `next`",
+      "the final loop just reads answers out of `nextGreaterOf`",
     ],
     complexity: { time: "O(n + m)", space: "O(n)" },
     code: `function nextGreaterElement(nums1, nums2) {
-  const next = new Map(); // value -> next greater value in nums2
+  const nextGreaterOf = new Map(); // value -> next greater value in nums2
   const stack = []; // values still waiting for a bigger one
 
-  for (let i = 0; i < nums2.length; i++) {
-    const n = nums2[i];
+  for (let nums2Index = 0; nums2Index < nums2.length; nums2Index++) {
+    const currentNumber = nums2[nums2Index];
     // n is the answer for every smaller value on top of the stack
-    while (stack.length && stack[stack.length - 1] < n) {
-      next.set(stack.pop(), n);
+    while (stack.length && stack[stack.length - 1] < currentNumber) {
+      nextGreaterOf.set(stack.pop(), currentNumber);
     }
-    stack.push(n);
+    stack.push(currentNumber);
   }
 
   const result = [];
-  for (let j = 0; j < nums1.length; j++) {
-    result.push(next.has(nums1[j]) ? next.get(nums1[j]) : -1);
+  for (let nums1Index = 0; nums1Index < nums1.length; nums1Index++) {
+    result.push(nextGreaterOf.has(nums1[nums1Index]) ? nextGreaterOf.get(nums1[nums1Index]) : -1);
   }
   return result;
 }
@@ -234,8 +234,8 @@ console.log(nextGreaterElement([4, 1, 2], [1, 3, 4, 2])); // expected: [-1, 3, -
     this.inbox = []; // new items go here
     this.outbox = []; // items come out from here, oldest on top
   }
-  push(x) {
-    this.inbox.push(x);
+  push(value) {
+    this.inbox.push(value);
   }
   move() {
     // only refill when outbox is empty, or the order would break
@@ -256,16 +256,16 @@ console.log(nextGreaterElement([4, 1, 2], [1, 3, 4, 2])); // expected: [-1, 3, -
   }
 }
 
-const q = new MyQueue();
+const myQueue = new MyQueue();
 const results = [];
-q.push(1);
-q.push(2);
-results.push(q.peek()); // 1 is at the front
-results.push(q.pop()); // removes 1
-q.push(3);
-results.push(q.pop()); // 2
-results.push(q.pop()); // 3
-results.push(q.empty()); // true
+myQueue.push(1);
+myQueue.push(2);
+results.push(myQueue.peek()); // 1 is at the front
+results.push(myQueue.pop()); // removes 1
+myQueue.push(3);
+results.push(myQueue.pop()); // 2
+results.push(myQueue.pop()); // 3
+results.push(myQueue.empty()); // true
 console.log(results); // expected: [1, 1, 2, 3, true]`,
   },
   {
@@ -290,10 +290,10 @@ console.log(results); // expected: [1, 1, 2, 3, true]`,
   constructor() {
     this.queue = []; // front is queue[0]
   }
-  push(x) {
-    this.queue.push(x); // add at the back
+  push(value) {
+    this.queue.push(value); // add at the back
     // move every older item behind x so x is at the front
-    for (let i = 0; i < this.queue.length - 1; i++) {
+    for (let rotationIndex = 0; rotationIndex < this.queue.length - 1; rotationIndex++) {
       this.queue.push(this.queue.shift());
     }
   }
@@ -308,15 +308,15 @@ console.log(results); // expected: [1, 1, 2, 3, true]`,
   }
 }
 
-const st = new MyStack();
+const myStack = new MyStack();
 const results = [];
-st.push(1);
-st.push(2);
-st.push(3);
-results.push(st.top()); // 3
-results.push(st.pop()); // 3
-results.push(st.pop()); // 2
-results.push(st.empty()); // false: 1 is still inside
+myStack.push(1);
+myStack.push(2);
+myStack.push(3);
+results.push(myStack.top()); // 3
+results.push(myStack.pop()); // 3
+results.push(myStack.pop()); // 2
+results.push(myStack.empty()); // false: 1 is still inside
 console.log(results); // expected: [3, 3, 2, false]`,
   },
   {
@@ -327,7 +327,7 @@ console.log(results); // expected: [3, 3, 2, false]`,
     difficulty: "Easy",
     statement:
       "Repeatedly delete two equal letters that sit next to each other, until no such pair is left. Return the final string.",
-    example: 's = "abbaca" → "ca"',
+    example: 'text = "abbaca" → "ca"',
     approach:
       "Use a stack as the string being built. For each letter, if it equals the letter on top of the stack, the two cancel: pop. Otherwise push it. Removing a pair can bring two new equal letters together, and the stack handles that automatically.",
     watch: [
@@ -337,15 +337,15 @@ console.log(results); // expected: [3, 3, 2, false]`,
       "joining the stack at the end gives the answer",
     ],
     complexity: { time: "O(n)", space: "O(n)" },
-    code: `function removeDuplicates(s) {
+    code: `function removeDuplicates(text) {
   const stack = []; // letters kept so far
 
-  for (let i = 0; i < s.length; i++) {
-    const ch = s[i];
-    if (stack.length && stack[stack.length - 1] === ch) {
+  for (let charIndex = 0; charIndex < text.length; charIndex++) {
+    const character = text[charIndex];
+    if (stack.length && stack[stack.length - 1] === character) {
       stack.pop(); // same as the last kept letter: both vanish
     } else {
-      stack.push(ch); // keep it for now
+      stack.push(character); // keep it for now
     }
   }
   return stack.join("");
@@ -361,7 +361,7 @@ console.log(JSON.stringify(removeDuplicates("abbaca"))); // expected: "ca"`,
     difficulty: "Medium",
     statement:
       "Each `*` in the string deletes itself and the closest non-star character to its left. Return the string after all stars are processed.",
-    example: 's = "leet**cod*e" → "lecoe"',
+    example: 'text = "leet**cod*e" → "lecoe"',
     approach:
       "Walk the string with a stack of kept characters. A normal character is pushed; a star pops the most recent kept character, which is exactly the closest one to its left. The stack at the end is the answer.",
     watch: [
@@ -371,14 +371,14 @@ console.log(JSON.stringify(removeDuplicates("abbaca"))); // expected: "ca"`,
       "the stars themselves are never pushed",
     ],
     complexity: { time: "O(n)", space: "O(n)" },
-    code: `function removeStars(s) {
+    code: `function removeStars(text) {
   const stack = []; // characters that survive so far
 
-  for (let i = 0; i < s.length; i++) {
-    if (s[i] === "*") {
+  for (let charIndex = 0; charIndex < text.length; charIndex++) {
+    if (text[charIndex] === "*") {
       stack.pop(); // a star erases the closest kept character
     } else {
-      stack.push(s[i]);
+      stack.push(text[charIndex]);
     }
   }
   return stack.join("");
@@ -401,28 +401,28 @@ console.log(JSON.stringify(removeStars("leet**cod*e"))); // expected: "lecoe"`,
       "`-5` meets `10` on top and is destroyed: `alive` becomes false",
       "`-12` pops `10` and then `5`, and survives",
       "`3` moves right, so it never collides with `-12` on its left",
-      "the `while` loop runs only while the top moves right and `a` moves left",
+      "the `while` loop runs only while the top moves right and `asteroid` moves left",
     ],
     complexity: { time: "O(n)", space: "O(n)" },
     code: `function asteroidCollision(asteroids) {
   const stack = []; // survivors so far, left to right
 
-  for (let i = 0; i < asteroids.length; i++) {
-    const a = asteroids[i];
+  for (let asteroidIndex = 0; asteroidIndex < asteroids.length; asteroidIndex++) {
+    const asteroid = asteroids[asteroidIndex];
     let alive = true;
     // a collision: top moves right, a moves left
-    while (alive && a < 0 && stack.length && stack[stack.length - 1] > 0) {
-      const top = stack[stack.length - 1];
-      if (top < -a) {
+    while (alive && asteroid < 0 && stack.length && stack[stack.length - 1] > 0) {
+      const topAsteroid = stack[stack.length - 1];
+      if (topAsteroid < -asteroid) {
         stack.pop(); // top is smaller: it explodes, a keeps going
-      } else if (top === -a) {
+      } else if (topAsteroid === -asteroid) {
         stack.pop(); // same size: both explode
         alive = false;
       } else {
         alive = false; // a is smaller: it explodes
       }
     }
-    if (alive) stack.push(a);
+    if (alive) stack.push(asteroid);
   }
   return stack;
 }
@@ -439,35 +439,35 @@ console.log(asteroidCollision([5, 10, -5, -12, 3])); // expected: [-12, 3]`,
     difficulty: "Easy",
     statement:
       "Given a sorted array and a target, return the target's index, or -1 if it is not there. The search must take O(log n) time.",
-    example: "nums = [-1,0,3,5,9,12,15], target = 9 → 4",
+    example: "numbers = [-1,0,3,5,9,12,15], target = 9 → 4",
     approach:
       "Look at the middle element. If it is the target, done; if it is smaller, the target can only be in the right half, otherwise only in the left half. Each look throws away half of what is left, so only about log n looks are needed.",
     watch: [
-      "`lo` and `hi` mark the part of the array still possible",
-      "`mid` sits halfway between them",
-      "`nums[mid] < target` moves `lo` past `mid`; otherwise `hi` moves before it",
-      "if `lo` passes `hi`, the target is not in the array",
+      "`lowIndex` and `highIndex` mark the part of the array still possible",
+      "`middleIndex` sits halfway between them",
+      "`numbers[middleIndex] < target` moves `lowIndex` past `middleIndex`; otherwise `highIndex` moves before it",
+      "if `lowIndex` passes `highIndex`, the target is not in the array",
     ],
     complexity: { time: "O(log n)", space: "O(1)" },
-    code: `function search(nums, target) {
-  let lo = 0;
-  let hi = nums.length - 1;
+    code: `function search(numbers, target) {
+  let lowIndex = 0;
+  let highIndex = numbers.length - 1;
 
-  while (lo <= hi) {
-    const mid = Math.floor((lo + hi) / 2);
-    if (nums[mid] === target) {
-      return mid; // found it
-    } else if (nums[mid] < target) {
-      lo = mid + 1; // target is in the right half
+  while (lowIndex <= highIndex) {
+    const middleIndex = Math.floor((lowIndex + highIndex) / 2);
+    if (numbers[middleIndex] === target) {
+      return middleIndex; // found it
+    } else if (numbers[middleIndex] < target) {
+      lowIndex = middleIndex + 1; // target is in the right half
     } else {
-      hi = mid - 1; // target is in the left half
+      highIndex = middleIndex - 1; // target is in the left half
     }
   }
   return -1; // the range is empty: not there
 }
 
-const nums = [-1, 0, 3, 5, 9, 12, 15];
-console.log(search(nums, 9)); // expected: 4`,
+const numbers = [-1, 0, 3, 5, 9, 12, 15];
+console.log(search(numbers, 9)); // expected: 4`,
   },
   {
     id: "search-insert-position",
@@ -477,34 +477,34 @@ console.log(search(nums, 9)); // expected: 4`,
     difficulty: "Easy",
     statement:
       "Given a sorted array of distinct numbers and a target, return the target's index if it is present. If not, return the index where it would be inserted to keep the array sorted.",
-    example: "nums = [1,3,5,6,8], target = 7 → 4",
+    example: "numbers = [1,3,5,6,8], target = 7 → 4",
     approach:
-      "Run a normal binary search. If the target is missing, the loop ends with `lo` just past `hi`, and `lo` is the first index whose value is bigger than the target: exactly where it belongs.",
+      "Run a normal binary search. If the target is missing, the loop ends with `lowIndex` just past `highIndex`, and `lowIndex` is the first index whose value is bigger than the target: exactly where it belongs.",
     watch: [
-      "`lo` and `hi` close in on the target's spot",
-      "7 is never found, so the loop runs until `lo > hi`",
-      "at the end `lo` points at 8, the first value bigger than 7",
-      "returning `lo` gives the insert position",
+      "`lowIndex` and `highIndex` close in on the target's spot",
+      "7 is never found, so the loop runs until `lowIndex > highIndex`",
+      "at the end `lowIndex` points at 8, the first value bigger than 7",
+      "returning `lowIndex` gives the insert position",
     ],
     complexity: { time: "O(log n)", space: "O(1)" },
-    code: `function searchInsert(nums, target) {
-  let lo = 0;
-  let hi = nums.length - 1;
+    code: `function searchInsert(numbers, target) {
+  let lowIndex = 0;
+  let highIndex = numbers.length - 1;
 
-  while (lo <= hi) {
-    const mid = Math.floor((lo + hi) / 2);
-    if (nums[mid] === target) return mid; // already there
-    if (nums[mid] < target) {
-      lo = mid + 1; // goes somewhere to the right
+  while (lowIndex <= highIndex) {
+    const middleIndex = Math.floor((lowIndex + highIndex) / 2);
+    if (numbers[middleIndex] === target) return middleIndex; // already there
+    if (numbers[middleIndex] < target) {
+      lowIndex = middleIndex + 1; // goes somewhere to the right
     } else {
-      hi = mid - 1; // goes somewhere to the left
+      highIndex = middleIndex - 1; // goes somewhere to the left
     }
   }
-  return lo; // first index with a bigger value
+  return lowIndex; // first index with a bigger value
 }
 
-const nums = [1, 3, 5, 6, 8];
-console.log(searchInsert(nums, 7)); // expected: 4`,
+const numbers = [1, 3, 5, 6, 8];
+console.log(searchInsert(numbers, 7)); // expected: 4`,
   },
   {
     id: "first-bad-version",
@@ -513,36 +513,36 @@ console.log(searchInsert(nums, 7)); // expected: 4`,
     group: "Binary Search",
     difficulty: "Easy",
     statement:
-      "Versions 1 to n were released, and once a version is bad every later one is bad too. Using the given `isBadVersion(v)` check, find the first bad version with as few checks as possible.",
-    example: "n = 8, first bad = 5 → 5",
+      "Versions 1 to n were released, and once a version is bad every later one is bad too. Using the given `isBadVersion(version)` check, find the first bad version with as few checks as possible.",
+    example: "lastVersion = 8, first bad = 5 → 5",
     approach:
-      "The versions look like good, good, …, bad, bad: a sorted yes/no list. Binary search for the boundary: if `mid` is bad, the first bad one is `mid` or earlier, so keep it with `hi = mid`; if it is good, the answer is after it. When `lo` meets `hi`, that is the first bad version.",
+      "The versions look like good, good, …, bad, bad: a sorted yes/no list. Binary search for the boundary: if `middleIndex` is bad, the first bad one is `middleIndex` or earlier, so keep it with `highIndex = middleIndex`; if it is good, the answer is after it. When `lowIndex` meets `highIndex`, that is the first bad version.",
     watch: [
       "`isBadVersion` is the only way to learn about a version",
-      "a bad `mid` sets `hi = mid` (it may be the answer, so it stays in range)",
-      "a good `mid` sets `lo = mid + 1`",
-      "the loop stops when `lo === hi`, after about log n checks",
+      "a bad `middleIndex` sets `highIndex = middleIndex` (it may be the answer, so it stays in range)",
+      "a good `middleIndex` sets `lowIndex = middleIndex + 1`",
+      "the loop stops when `lowIndex === highIndex`, after about log n checks",
     ],
     complexity: { time: "O(log n)", space: "O(1)" },
     code: `// the API the problem gives you (here: versions 5 and up are bad)
 const bad = 5;
-function isBadVersion(v) {
-  return v >= bad;
+function isBadVersion(version) {
+  return version >= bad;
 }
 
-function firstBadVersion(n) {
-  let lo = 1;
-  let hi = n;
+function firstBadVersion(lastVersion) {
+  let lowIndex = 1;
+  let highIndex = lastVersion;
 
-  while (lo < hi) {
-    const mid = Math.floor((lo + hi) / 2);
-    if (isBadVersion(mid)) {
-      hi = mid; // mid could be the first bad one: keep it
+  while (lowIndex < highIndex) {
+    const middleIndex = Math.floor((lowIndex + highIndex) / 2);
+    if (isBadVersion(middleIndex)) {
+      highIndex = middleIndex; // mid could be the first bad one: keep it
     } else {
-      lo = mid + 1; // mid is good: the first bad is later
+      lowIndex = middleIndex + 1; // mid is good: the first bad is later
     }
   }
-  return lo; // lo === hi: the first bad version
+  return lowIndex; // lowIndex === hi: the first bad version
 }
 
 console.log(firstBadVersion(8)); // expected: 5`,
@@ -555,43 +555,43 @@ console.log(firstBadVersion(8)); // expected: 5`,
     difficulty: "Medium",
     statement:
       "Given a sorted array and a target, return the first and last index where the target appears. If it is not there, return [-1, -1].",
-    example: "nums = [5,7,7,8,8,8,10], target = 8 → [3,5]",
+    example: "numbers = [5,7,7,8,8,8,10], target = 8 → [3,5]",
     approach:
-      "Run binary search twice. When `mid` hits the target, do not stop: save it, then keep searching left for the first copy, or right for the last copy. Each search is O(log n), so the whole thing is too.",
+      "Run binary search twice. When `middleIndex` hits the target, do not stop: save it, then keep searching left for the first copy, or right for the last copy. Each search is O(log n), so the whole thing is too.",
     watch: [
       "`findBound` is called twice: once looking left, once looking right",
-      "on a match, `found` saves `mid` and the search keeps going",
-      "searching left, a match moves `hi`; searching right, it moves `lo`",
+      "on a match, `found` saves `middleIndex` and the search keeps going",
+      "searching left, a match moves `highIndex`; searching right, it moves `lowIndex`",
       "the last saved `found` in each call is the boundary",
     ],
     complexity: { time: "O(log n)", space: "O(1)" },
     code: `// goLeft = true finds the first copy, false finds the last copy
-function findBound(nums, target, goLeft) {
-  let lo = 0;
-  let hi = nums.length - 1;
+function findBound(numbers, target, goLeft) {
+  let lowIndex = 0;
+  let highIndex = numbers.length - 1;
   let found = -1;
 
-  while (lo <= hi) {
-    const mid = Math.floor((lo + hi) / 2);
-    if (nums[mid] === target) {
-      found = mid; // a copy: remember it, but keep looking
-      if (goLeft) hi = mid - 1;
-      else lo = mid + 1;
-    } else if (nums[mid] < target) {
-      lo = mid + 1;
+  while (lowIndex <= highIndex) {
+    const middleIndex = Math.floor((lowIndex + highIndex) / 2);
+    if (numbers[middleIndex] === target) {
+      found = middleIndex; // a copy: remember it, but keep looking
+      if (goLeft) highIndex = middleIndex - 1;
+      else lowIndex = middleIndex + 1;
+    } else if (numbers[middleIndex] < target) {
+      lowIndex = middleIndex + 1;
     } else {
-      hi = mid - 1;
+      highIndex = middleIndex - 1;
     }
   }
   return found;
 }
 
-function searchRange(nums, target) {
-  return [findBound(nums, target, true), findBound(nums, target, false)];
+function searchRange(numbers, target) {
+  return [findBound(numbers, target, true), findBound(numbers, target, false)];
 }
 
-const nums = [5, 7, 7, 8, 8, 8, 10];
-console.log(searchRange(nums, 8)); // expected: [3, 5]`,
+const numbers = [5, 7, 7, 8, 8, 8, 10];
+console.log(searchRange(numbers, 8)); // expected: [3, 5]`,
   },
   {
     id: "search-in-rotated-sorted-array",
@@ -601,39 +601,39 @@ console.log(searchRange(nums, 8)); // expected: [3, 5]`,
     difficulty: "Medium",
     statement:
       "A sorted array of distinct numbers was rotated at some unknown point, e.g. [0,1,2,4,5,6,7] became [4,5,6,7,0,1,2]. Find the target's index in O(log n) time, or return -1.",
-    example: "nums = [4,5,6,7,0,1,2], target = 0 → 4",
+    example: "numbers = [4,5,6,7,0,1,2], target = 0 → 4",
     approach:
-      "At any `mid`, at least one half is still properly sorted. Check which one by comparing `nums[lo]` with `nums[mid]`. If the target lies inside the sorted half's range, search there; otherwise search the other half.",
+      "At any `middleIndex`, at least one half is still properly sorted. Check which one by comparing `numbers[lowIndex]` with `numbers[middleIndex]`. If the target lies inside the sorted half's range, search there; otherwise search the other half.",
     watch: [
-      "`nums[lo] <= nums[mid]` means the left half is sorted",
+      "`numbers[lowIndex] <= numbers[middleIndex]` means the left half is sorted",
       "the target is tested against the sorted half's two ends",
-      "first pass: left half 4..7 is sorted but 0 is not in it, so `lo` jumps right",
+      "first pass: left half 4..7 is sorted but 0 is not in it, so `lowIndex` jumps right",
       "the search still halves the range each pass",
     ],
     complexity: { time: "O(log n)", space: "O(1)" },
-    code: `function search(nums, target) {
-  let lo = 0;
-  let hi = nums.length - 1;
+    code: `function search(numbers, target) {
+  let lowIndex = 0;
+  let highIndex = numbers.length - 1;
 
-  while (lo <= hi) {
-    const mid = Math.floor((lo + hi) / 2);
-    if (nums[mid] === target) return mid;
+  while (lowIndex <= highIndex) {
+    const middleIndex = Math.floor((lowIndex + highIndex) / 2);
+    if (numbers[middleIndex] === target) return middleIndex;
 
-    if (nums[lo] <= nums[mid]) {
+    if (numbers[lowIndex] <= numbers[middleIndex]) {
       // left half lo..mid is sorted
-      if (nums[lo] <= target && target < nums[mid]) hi = mid - 1;
-      else lo = mid + 1;
+      if (numbers[lowIndex] <= target && target < numbers[middleIndex]) highIndex = middleIndex - 1;
+      else lowIndex = middleIndex + 1;
     } else {
       // right half mid..hi is sorted
-      if (nums[mid] < target && target <= nums[hi]) lo = mid + 1;
-      else hi = mid - 1;
+      if (numbers[middleIndex] < target && target <= numbers[highIndex]) lowIndex = middleIndex + 1;
+      else highIndex = middleIndex - 1;
     }
   }
   return -1;
 }
 
-const nums = [4, 5, 6, 7, 0, 1, 2];
-console.log(search(nums, 0)); // expected: 4`,
+const numbers = [4, 5, 6, 7, 0, 1, 2];
+console.log(search(numbers, 0)); // expected: 4`,
   },
   {
     id: "find-minimum-in-rotated-sorted-array",
@@ -643,33 +643,33 @@ console.log(search(nums, 0)); // expected: 4`,
     difficulty: "Medium",
     statement:
       "A sorted array of distinct numbers was rotated at an unknown point. Find its smallest value in O(log n) time.",
-    example: "nums = [4,5,6,7,0,1,2] → 0",
+    example: "numbers = [4,5,6,7,0,1,2] → 0",
     approach:
-      "Compare `nums[mid]` with the last value of the range, `nums[hi]`. If it is bigger, the drop (and the minimum) is to the right of `mid`. Otherwise `mid..hi` is sorted, so the minimum is `mid` or to its left. When `lo` meets `hi`, it sits on the minimum.",
+      "Compare `numbers[middleIndex]` with the last value of the range, `numbers[highIndex]`. If it is bigger, the drop (and the minimum) is to the right of `middleIndex`. Otherwise `middleIndex..hi` is sorted, so the minimum is `middleIndex` or to its left. When `lowIndex` meets `highIndex`, it sits on the minimum.",
     watch: [
-      "`nums[mid] > nums[hi]` means the drop is to the right: `lo = mid + 1`",
-      "otherwise `hi = mid`: `mid` itself might be the minimum",
-      "the range shrinks until `lo === hi`",
-      "no target value is needed, only the comparison with `nums[hi]`",
+      "`numbers[middleIndex] > numbers[highIndex]` means the drop is to the right: `lowIndex = middleIndex + 1`",
+      "otherwise `highIndex = middleIndex`: `middleIndex` itself might be the minimum",
+      "the range shrinks until `lowIndex === highIndex`",
+      "no target value is needed, only the comparison with `numbers[highIndex]`",
     ],
     complexity: { time: "O(log n)", space: "O(1)" },
-    code: `function findMin(nums) {
-  let lo = 0;
-  let hi = nums.length - 1;
+    code: `function findMin(numbers) {
+  let lowIndex = 0;
+  let highIndex = numbers.length - 1;
 
-  while (lo < hi) {
-    const mid = Math.floor((lo + hi) / 2);
-    if (nums[mid] > nums[hi]) {
-      lo = mid + 1; // the drop is after mid
+  while (lowIndex < highIndex) {
+    const middleIndex = Math.floor((lowIndex + highIndex) / 2);
+    if (numbers[middleIndex] > numbers[highIndex]) {
+      lowIndex = middleIndex + 1; // the drop is after mid
     } else {
-      hi = mid; // mid..hi is sorted: min is mid or earlier
+      highIndex = middleIndex; // mid..hi is sorted: min is mid or earlier
     }
   }
-  return nums[lo];
+  return numbers[lowIndex];
 }
 
-const nums = [4, 5, 6, 7, 0, 1, 2];
-console.log(findMin(nums)); // expected: 0`,
+const numbers = [4, 5, 6, 7, 0, 1, 2];
+console.log(findMin(numbers)); // expected: 0`,
   },
   {
     id: "search-a-2d-matrix",
@@ -681,28 +681,28 @@ console.log(findMin(nums)); // expected: 0`,
       "Each row of the matrix is sorted, and each row starts with a value bigger than the last value of the row above. Decide whether the target is in the matrix in O(log(m·n)) time.",
     example: "matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3 → true",
     approach:
-      "Read row by row, the matrix is one long sorted list of m·n values. Binary search over positions 0 to m·n − 1 and turn each `mid` into a cell: `row = Math.floor(mid / cols)`, `col = mid % cols`.",
+      "Read row by row, the matrix is one long sorted list of m·n values. Binary search over positions 0 to m·n − 1 and turn each `middleIndex` into a cell: `currentRow = Math.floor(middleIndex / columnCount)`, `currentColumn = middleIndex % columnCount`.",
     watch: [
-      "`lo` and `hi` are positions in the flattened list, not cells",
-      "`row` and `col` turn `mid` back into a cell",
+      "`lowIndex` and `highIndex` are positions in the flattened list, not cells",
+      "`currentRow` and `currentColumn` turn `middleIndex` back into a cell",
       "the search moves just like plain Binary Search",
       "3 is found at row 0, col 1",
     ],
     complexity: { time: "O(log(m·n))", space: "O(1)" },
     code: `function searchMatrix(matrix, target) {
-  const rows = matrix.length;
-  const cols = matrix[0].length;
-  let lo = 0;
-  let hi = rows * cols - 1; // positions in the flattened matrix
+  const rowCount = matrix.length;
+  const columnCount = matrix[0].length;
+  let lowIndex = 0;
+  let highIndex = rowCount * columnCount - 1; // positions in the flattened matrix
 
-  while (lo <= hi) {
-    const mid = Math.floor((lo + hi) / 2);
-    const row = Math.floor(mid / cols); // which row mid falls in
-    const col = mid % cols; // and which column
-    const val = matrix[row][col];
-    if (val === target) return true;
-    if (val < target) lo = mid + 1;
-    else hi = mid - 1;
+  while (lowIndex <= highIndex) {
+    const middleIndex = Math.floor((lowIndex + highIndex) / 2);
+    const currentRow = Math.floor(middleIndex / columnCount); // which row mid falls in
+    const currentColumn = middleIndex % columnCount; // and which column
+    const value = matrix[currentRow][currentColumn];
+    if (value === target) return true;
+    if (value < target) lowIndex = middleIndex + 1;
+    else highIndex = middleIndex - 1;
   }
   return false;
 }
@@ -722,31 +722,31 @@ console.log(searchMatrix(matrix, 3)); // expected: true`,
     difficulty: "Easy",
     statement:
       "Given a non-negative integer x, return its square root rounded down to a whole number. Do not use a built-in power or square-root function.",
-    example: "x = 20 → 4",
+    example: "number = 20 → 4",
     approach:
-      "The answer is the largest whole number `mid` with `mid * mid <= x`. Binary search over 0..x: if `mid` squared fits, save it and try bigger; if it is too big, try smaller. The last saved value is the answer.",
+      "The answer is the largest whole number `middleIndex` with `middleIndex * middleIndex <= number`. Binary search over 0..x: if `middleIndex` squared fits, save it and try bigger; if it is too big, try smaller. The last saved value is the answer.",
     watch: [
-      "`lo` and `hi` are candidate answers, not array indexes",
-      "`mid * mid <= x` means `mid` is a possible answer: it goes into `ans`",
-      "a square that is too big moves `hi` below `mid`",
-      "`ans` holds 4 at the end, since 4·4 = 16 ≤ 20 but 5·5 = 25 > 20",
+      "`lowIndex` and `highIndex` are candidate answers, not array indexes",
+      "`middleIndex * middleIndex <= number` means `middleIndex` is a possible answer: it goes into `bestRoot`",
+      "a square that is too big moves `highIndex` below `middleIndex`",
+      "`bestRoot` holds 4 at the end, since 4·4 = 16 ≤ 20 but 5·5 = 25 > 20",
     ],
     complexity: { time: "O(log x)", space: "O(1)" },
-    code: `function mySqrt(x) {
-  let lo = 0;
-  let hi = x;
-  let ans = 0; // best answer found so far
+    code: `function mySqrt(number) {
+  let lowIndex = 0;
+  let highIndex = number;
+  let bestRoot = 0; // best answer found so far
 
-  while (lo <= hi) {
-    const mid = Math.floor((lo + hi) / 2);
-    if (mid * mid <= x) {
-      ans = mid; // fits: remember it and try bigger
-      lo = mid + 1;
+  while (lowIndex <= highIndex) {
+    const middleIndex = Math.floor((lowIndex + highIndex) / 2);
+    if (middleIndex * middleIndex <= number) {
+      bestRoot = middleIndex; // fits: remember it and try bigger
+      lowIndex = middleIndex + 1;
     } else {
-      hi = mid - 1; // too big: try smaller
+      highIndex = middleIndex - 1; // too big: try smaller
     }
   }
-  return ans;
+  return bestRoot;
 }
 
 console.log(mySqrt(20)); // expected: 4`,
@@ -759,26 +759,26 @@ console.log(mySqrt(20)); // expected: 4`,
     difficulty: "Easy",
     statement:
       "Given a positive integer, decide whether it is a perfect square (the square of some whole number). Do not use a built-in square-root function.",
-    example: "num = 49 → true",
+    example: "number = 49 → true",
     approach:
-      "Binary search for a whole number whose square equals `num`. If `mid` squared is too small, go right; if too big, go left. Finding an exact match means it is a perfect square; an empty range means it is not.",
+      "Binary search for a whole number whose square equals `number`. If `middleIndex` squared is too small, go right; if too big, go left. Finding an exact match means it is a perfect square; an empty range means it is not.",
     watch: [
-      "`sq` is `mid * mid`, compared with `num` each pass",
-      "too small moves `lo` up, too big moves `hi` down",
-      "`sq === num` happens at `mid = 7`",
+      "`square` is `middleIndex * middleIndex`, compared with `number` each pass",
+      "too small moves `lowIndex` up, too big moves `highIndex` down",
+      "`square === number` happens at `middleIndex = 7`",
       "the range only spans 1..num, so about log num passes",
     ],
     complexity: { time: "O(log n)", space: "O(1)" },
-    code: `function isPerfectSquare(num) {
-  let lo = 1;
-  let hi = num;
+    code: `function isPerfectSquare(number) {
+  let lowIndex = 1;
+  let highIndex = number;
 
-  while (lo <= hi) {
-    const mid = Math.floor((lo + hi) / 2);
-    const sq = mid * mid;
-    if (sq === num) return true; // an exact square root
-    if (sq < num) lo = mid + 1; // too small
-    else hi = mid - 1; // too big
+  while (lowIndex <= highIndex) {
+    const middleIndex = Math.floor((lowIndex + highIndex) / 2);
+    const square = middleIndex * middleIndex;
+    if (square === number) return true; // an exact square root
+    if (square < number) lowIndex = middleIndex + 1; // too small
+    else highIndex = middleIndex - 1; // too big
   }
   return false;
 }
@@ -793,34 +793,34 @@ console.log(isPerfectSquare(49)); // expected: true`,
     difficulty: "Medium",
     statement:
       "Koko has piles of bananas and h hours. Each hour she picks one pile and eats up to k bananas from it. Find the smallest whole speed k that lets her finish every pile within h hours.",
-    example: "piles = [3,6,7,11], h = 8 → 4",
+    example: "piles = [3,6,7,11], hoursAllowed = 8 → 4",
     approach:
-      "Speed 1 is slowest and the biggest pile is the fastest speed ever needed. Faster speeds always take fewer hours, so binary search the speed: if `mid` finishes in time, it might be the answer, so search left keeping it; otherwise search right.",
+      "Speed 1 is slowest and the biggest pile is the fastest speed ever needed. Faster speeds always take fewer hours, so binary search the speed: if `middleIndex` finishes in time, it might be the answer, so search left keeping it; otherwise search right.",
     watch: [
-      "`lo` and `hi` are speeds, not indexes",
-      "`hours` adds up `Math.ceil(pile / mid)` for each pile",
-      "`hours <= h` means fast enough: `hi = mid`",
-      "too slow means `lo = mid + 1`; they meet at the slowest speed that works",
+      "`lowIndex` and `highIndex` are speeds, not indexes",
+      "`hours` adds up `Math.ceil(pile / middleIndex)` for each pile",
+      "`hours <= hoursAllowed` means fast enough: `highIndex = middleIndex`",
+      "too slow means `lowIndex = middleIndex + 1`; they meet at the slowest speed that works",
     ],
     complexity: { time: "O(n log m)", space: "O(1)" },
-    code: `function minEatingSpeed(piles, h) {
-  let lo = 1; // slowest possible speed
-  let hi = Math.max(...piles); // eating a whole pile each hour
+    code: `function minEatingSpeed(piles, hoursAllowed) {
+  let lowIndex = 1; // slowest possible speed
+  let highIndex = Math.max(...piles); // eating a whole pile each hour
 
-  while (lo < hi) {
-    const mid = Math.floor((lo + hi) / 2);
+  while (lowIndex < highIndex) {
+    const middleIndex = Math.floor((lowIndex + highIndex) / 2);
     // hours needed at speed mid
     let hours = 0;
-    for (let i = 0; i < piles.length; i++) {
-      hours += Math.ceil(piles[i] / mid);
+    for (let pileIndex = 0; pileIndex < piles.length; pileIndex++) {
+      hours += Math.ceil(piles[pileIndex] / middleIndex);
     }
-    if (hours <= h) {
-      hi = mid; // fast enough: try slower, but keep mid
+    if (hours <= hoursAllowed) {
+      highIndex = middleIndex; // fast enough: try slower, but keep mid
     } else {
-      lo = mid + 1; // too slow: must eat faster
+      lowIndex = middleIndex + 1; // too slow: must eat faster
     }
   }
-  return lo;
+  return lowIndex;
 }
 
 console.log(minEatingSpeed([3, 6, 7, 11], 8)); // expected: 4`,

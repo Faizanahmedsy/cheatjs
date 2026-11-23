@@ -78,6 +78,9 @@ function StartOverlay({ s, onStart, onPlay, reduced }: { s: Scenario; onStart: (
   );
 }
 
+const PANEL_TABS: PanelTab[] = ["overview", "step", "interview", "quiz"];
+const CENTRE_VIEWS: CentreView[] = ["visual", "scene", "sequence"];
+
 export function VisualLab() {
   const router = useRouter();
   const pathname = usePathname();
@@ -90,14 +93,18 @@ export function VisualLab() {
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [run, setRun] = useState(0);
-  const [view, setView] = useState<CentreView>("visual");
-  const [tab, setTab] = useState<PanelTab>("overview");
+  // The page the URL names: ?topic=…&step=3&tab=step&view=scene. Reading it on first render keeps a refresh on the same page.
+  const urlTab = PANEL_TABS.find((t) => t === params.get("tab")) ?? null;
+  const urlStep = Number.parseInt(params.get("step") ?? "", 10);
+  const [view, setView] = useState<CentreView>(() => CENTRE_VIEWS.find((v) => v === params.get("view")) ?? "visual");
+  const [tab, setTab] = useState<PanelTab>(() => urlTab ?? "overview");
   const [openQuestion, setOpenQuestion] = useState<string | null>(null);
   const [theme, setTheme] = useState<LabTheme>("dark");
   const [mode, setMode] = useState<LabMode>("simple");
   const [traceOpen, setTraceOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const pendingStep = useRef<number | null>(null);
+  const pendingStep = useRef<number | null>(Number.isFinite(urlStep) && urlStep >= 1 ? urlStep - 1 : null);
+  const restoreTab = useRef<PanelTab | null>(urlTab);
 
   const reduced = useReducedMotion() ?? false;
   const animate = !reduced;
@@ -134,11 +141,14 @@ export function VisualLab() {
       setScenario(s);
       const target = pendingStep.current;
       pendingStep.current = null;
+      const savedTab = restoreTab.current;
+      restoreTab.current = null;
       if (target !== null) {
-        setStepIndex(target);
-        setTab("step");
+        setStepIndex(Math.min(target, s.steps.length - 1));
+        setTab(savedTab ?? "step");
       } else {
         setStepIndex(-1);
+        if (savedTab) setTab(savedTab);
       }
       setRun((r) => r + 1);
     });
@@ -146,6 +156,21 @@ export function VisualLab() {
       live = false;
     };
   }, [topicId]);
+
+  // Write the current page into the URL (no new history entry), so refresh and shared links land on the same step.
+  useEffect(() => {
+    if (!scenario || scenario.id !== topicId) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("topic", topicId);
+    const put = (key: string, value: string | null) => (value === null ? url.searchParams.delete(key) : url.searchParams.set(key, value));
+    put("step", stepIndex >= 0 ? String(stepIndex + 1) : null);
+    put("tab", tab === "overview" ? null : tab);
+    put("view", view === "visual" ? null : view);
+    const next = `${url.pathname}${url.search}${url.hash}`;
+    if (next !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+      window.history.replaceState(window.history.state, "", next);
+    }
+  }, [scenario, topicId, stepIndex, tab, view]);
 
   const steps = scenario?.steps ?? [];
   const step = stepIndex >= 0 ? steps[stepIndex] ?? null : null;
