@@ -19,6 +19,7 @@ import { inlineNotes } from "@/lib/visualizer/inline-notes";
 import type { TraceSuccess } from "@/lib/visualizer/types";
 import { CodeEditor } from "./CodeEditor";
 import { CodeTraceView } from "./CodeTraceView";
+import { LANGS, availableLangs, getTranslation, translationKey, type CodeLang } from "@/lib/visualizer/translations";
 import { ExamplePicker } from "./ExamplePicker";
 import { Legend } from "./Legend";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -68,6 +69,7 @@ export function JsVisualizer() {
   const [options, setOptions] = useVizOptions();
   const { done, markDone } = useProgress();
   const [quiz, setQuiz] = useState<QuizState | null>(null);
+  const [lang, setLang] = useState<CodeLang>("js");
   const [mobileTab, setMobileTab] = useState<MobileTab>("picture");
   const quizzedAt = useRef<number>(-1);
   const touchX = useRef<number | null>(null);
@@ -244,6 +246,10 @@ export function JsVisualizer() {
   const failure = state.status === "failed" ? state.failure : null;
   const running = state.status === "running";
   const viewing = mode === "view" && trace && step && summary;
+  const tKey = selection.kind === "custom" ? null : translationKey(selection);
+  const langs = useMemo(() => availableLangs(tKey), [tKey]);
+  const shownLang: CodeLang = langs.has(lang) ? lang : "js";
+  const mapped = useMemo(() => getTranslation(tKey, shownLang), [tKey, shownLang]);
 
   // Keep ?step= in the URL while stepping (no new history entry).
   useEffect(() => {
@@ -398,8 +404,28 @@ export function JsVisualizer() {
             className={cn("flex min-w-0 flex-col gap-4 lg:sticky lg:top-[var(--viz-top)] lg:self-start", viewing && mobileTab !== "code" && "max-lg:hidden")}
           >
             <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-3">
+              {viewing && langs.size > 1 && (
+                <div role="tablist" aria-label="Code language" className="mb-2 flex flex-wrap gap-1">
+                  {LANGS.filter((l) => langs.has(l.id)).map((l) => (
+                    <button
+                      key={l.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={shownLang === l.id}
+                      onClick={() => setLang(l.id)}
+                      className={cn(
+                        "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+                        shownLang === l.id ? "bg-slate-700 text-slate-50" : "text-slate-400 hover:bg-slate-800 hover:text-slate-200",
+                      )}
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+              )}
               {viewing ? (
                 <CodeTraceView
+                  mapped={mapped}
                   code={code}
                   nextLine={step.event === "end" ? 0 : step.line}
                   doneLine={prevStep?.line ?? 0}

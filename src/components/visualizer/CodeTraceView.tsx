@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import type { InlineNote } from "@/lib/visualizer/inline-notes";
 import { stripComment } from "@/lib/visualizer/insights";
 import { highlightLine } from "./highlight";
+import type { MappedCode } from "@/lib/visualizer/translations";
 
 interface CodeTraceViewProps {
   code: string;
@@ -21,23 +22,32 @@ interface CodeTraceViewProps {
   notes?: InlineNote[];
   /** Drop `//` comments from the display (line numbers stay the same). */
   hideComments?: boolean;
+  /** Show this translation instead of `code`; the JS line numbers still drive the arrows. */
+  mapped?: MappedCode | null;
 }
 
 /** Read-only code with Python Tutor style arrows: green = just ran, red = runs next. */
-export function CodeTraceView({ code, nextLine, doneLine, isError, large = false, notes = [], hideComments = false }: CodeTraceViewProps) {
+export function CodeTraceView({ code, nextLine, doneLine, isError, large = false, notes = [], hideComments = false, mapped = null }: CodeTraceViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const lines = code.split("\n");
+  const lines = mapped ? mapped.lines : code.split("\n");
+  const nextSet = new Set(mapped ? (mapped.fromJs.get(nextLine) ?? []) : [nextLine]);
+  const doneSet = new Set(mapped ? (mapped.fromJs.get(doneLine) ?? []) : [doneLine]);
+  const nextFirst = Math.min(...nextSet, Infinity);
+  const doneFirst = Math.min(...doneSet, Infinity);
+  // In a translation the gutter shows the JS line number (the story text says "line N" = JS line).
+  const gutter = new Map<number, number>();
+  if (mapped) for (const [js, shown] of mapped.fromJs) for (const d of shown) if (!gutter.has(d)) gutter.set(d, js);
 
   // Keep the next line in view without scrolling the whole page.
   useEffect(() => {
     const container = containerRef.current;
-    const target = container?.querySelector<HTMLElement>(`[data-line="${nextLine || doneLine}"]`);
+    const target = container?.querySelector<HTMLElement>(`[data-line="${nextFirst !== Infinity ? nextFirst : doneFirst}"]`);
     if (!container || !target) return;
     const top = target.offsetTop;
     const bottom = top + target.offsetHeight;
     if (top < container.scrollTop + 24) container.scrollTop = Math.max(0, top - 48);
     else if (bottom > container.scrollTop + container.clientHeight - 24) container.scrollTop = bottom - container.clientHeight + 48;
-  }, [nextLine, doneLine]);
+  }, [nextFirst, doneFirst]);
 
   return (
     <div
@@ -50,10 +60,10 @@ export function CodeTraceView({ code, nextLine, doneLine, isError, large = false
       role="region"
     >
       {lines.map((raw, index) => {
-        const text = hideComments ? stripComment(raw) : raw;
+        const text = hideComments && !mapped ? stripComment(raw) : raw;
         const line = index + 1;
-        const isNext = line === nextLine;
-        const isDone = line === doneLine;
+        const isNext = nextSet.has(line);
+        const isDone = doneSet.has(line);
         return (
           <div
             key={index}
@@ -70,7 +80,7 @@ export function CodeTraceView({ code, nextLine, doneLine, isError, large = false
               {isNext && <ArrowRight className="h-4 w-4 text-red-400" strokeWidth={3} />}
             </span>
             <span className="w-8 shrink-0 select-none pr-3 text-right text-slate-600" aria-hidden="true">
-              {line}
+              {mapped ? (gutter.get(line) ?? "") : line}
             </span>
             <span
               className="min-w-0 flex-1 whitespace-pre-wrap break-words text-slate-200"
@@ -80,7 +90,7 @@ export function CodeTraceView({ code, nextLine, doneLine, isError, large = false
               {isNext && <span className="sr-only"> (runs next)</span>}
               {isDone && <span className="sr-only"> (just ran)</span>}
             </span>
-            {isDone && notes.length > 0 && (
+            {isDone && line === doneFirst && notes.length > 0 && (
               <span className="flex basis-full flex-wrap items-center gap-2 pb-1 pl-20 font-code text-[0.8em]" aria-label="What this line changed">
                 {notes.map((note) => (
                   <span key={note.name} className="inline-flex items-center gap-1 rounded-md bg-amber-300/15 px-2 py-0.5 text-amber-100 ring-1 ring-amber-300/40">
