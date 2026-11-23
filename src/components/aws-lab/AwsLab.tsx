@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { toneFill, toneVar } from "@/components/ai-lab/engine/tones";
 import { readMode, saveMode, type LabMode } from "@/components/ai-lab/engine/mode";
 import { ArchCanvas } from "./ArchCanvas";
-import { LESSONS } from "./lessons";
+import { CATEGORIES, LESSONS } from "./lessons";
 import type { AwsLesson } from "./types";
 
 const THEME_KEY = "aws-lab-theme";
@@ -85,6 +85,7 @@ export function AwsLab() {
     return urlStep !== null && Number.isFinite(n) ? Math.max(-1, Math.min(startLesson.steps.length, n - 1)) : -1;
   });
   const [tab, setTab] = useState<"learn" | "quiz">("learn");
+  const [cat, setCat] = useState<string>(startLesson.category);
   const [broken, setBroken] = useState(false);
   const [mode, setMode] = useState<LabMode>("simple");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
@@ -120,6 +121,8 @@ export function AwsLab() {
     [steps.length]
   );
   const pick = (id: string) => {
+    const l = LESSONS.find((x) => x.id === id);
+    if (l) setCat(l.category);
     setLessonId(id);
     setBroken(false);
     setTab("learn");
@@ -168,13 +171,22 @@ export function AwsLab() {
 
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] lg:grid-rows-[auto_minmax(0,1fr)]">
         {/* lessons */}
-        <nav aria-label="Lessons" className="flex gap-2 overflow-x-auto border-b border-lab-border bg-lab-panel p-2 lg:col-span-2">
-          {LESSONS.map((l) => (
-            <button key={l.id} onClick={() => pick(l.id)} title={l.tagline} className={cn("shrink-0 rounded-lg border px-3 py-1.5 text-left transition-colors", l.id === lessonId ? "border-lab-accent bg-lab-raised text-lab-accent" : "border-transparent text-lab-muted hover:bg-lab-raised/60 hover:text-lab-text")}>
-              <span className="block whitespace-nowrap text-[13px] font-semibold">{String(l.num).padStart(2, "0")} {l.short}</span>
-            </button>
-          ))}
-        </nav>
+        <div className="border-b border-lab-border bg-lab-panel lg:col-span-2">
+          <div className="flex gap-1.5 overflow-x-auto px-2 pt-2" role="tablist" aria-label="Service groups">
+            {CATEGORIES.map((c) => (
+              <button key={c} role="tab" aria-selected={cat === c} onClick={() => { setCat(c); const first = LESSONS.find((l) => l.category === c); if (first && first.category !== lesson.category) pick(first.id); }} className={cn("shrink-0 rounded-full px-3 py-1 text-[12px] font-semibold transition-colors", cat === c ? "text-lab-bg" : "bg-lab-raised text-lab-muted hover:text-lab-text")} style={cat === c ? { background: toneVar("cyan") } : undefined}>
+                {c} <span className="opacity-70">{LESSONS.filter((l) => l.category === c).length}</span>
+              </button>
+            ))}
+          </div>
+          <nav aria-label="Lessons" className="flex gap-2 overflow-x-auto p-2">
+            {LESSONS.filter((l) => l.category === cat).map((l) => (
+              <button key={l.id} onClick={() => pick(l.id)} title={l.tagline} className={cn("shrink-0 rounded-lg border px-3 py-1.5 text-left transition-colors", l.id === lessonId ? "border-lab-accent bg-lab-raised text-lab-accent" : "border-transparent text-lab-muted hover:bg-lab-raised/60 hover:text-lab-text")}>
+                <span className="block whitespace-nowrap text-[13px] font-semibold">{String(l.num).padStart(2, "0")} {l.short}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
 
         {/* picture */}
         <section className="flex min-h-0 min-w-0 flex-col bg-lab-scene">

@@ -69,8 +69,11 @@ export type AwsStep = {
 
 export type AwsQuiz = { id: string; q: string; options: string[]; correct: number; explain: string };
 
+export type Category = "Start" | "Compute" | "Storage" | "Database" | "Network" | "Integration" | "Analytics" | "Security" | "Management";
+
 export type AwsLesson = {
   id: string;
+  category: Category;
   num: number;
   title: string;
   short: string;
