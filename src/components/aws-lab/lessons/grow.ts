@@ -126,9 +126,9 @@ export const grow = lesson({
       detail: "**CloudFront** CDN with edge locations, cache behaviours, TTLs and origin access control for S3. It also absorbs traffic spikes and works with AWS WAF and Shield for protection.",
       analogy: "A newspaper printed in every city instead of shipped from one printing press.",
       tip: "Static, global audience, 'reduce latency' → CloudFront.",
-      update: { user: { x: 60 }, dns: { x: 345 } },
+      update: { user: { x: 70 }, dns: { x: 360 } },
       remove: ["user>dns"],
-      add: { nodes: [N("cdn", "cdn", "CloudFront", 200, 250, { sub: "nearby copies", tone: "green" })], links: [L("user", "cdn"), L("cdn", "dns")] },
+      add: { nodes: [N("cdn", "cdn", "CloudFront", 215, 250, { sub: "nearby copies", tone: "green" })], links: [L("user", "cdn"), L("cdn", "dns")] },
     },
     {
       id: "queue",

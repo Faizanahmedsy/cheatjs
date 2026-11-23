@@ -10,8 +10,8 @@ const ICON: Record<NodeKind, string> = {
   policy: "📜", monitor: "📊", box: "▣",
 };
 
-export const NODE_W = 112;
-export const NODE_H = 76;
+export const NODE_W = 128;
+export const NODE_H = 88;
 
 export type Analysis = {
   down: Set<string>;
@@ -94,7 +94,7 @@ export function ArchCanvas({ scene, chaos, broken, animate = true }: { scene: Aw
           return (
             <g key={z.id} opacity={dead ? 0.55 : 1}>
               <rect x={z.x} y={z.y} width={z.w} height={z.h} rx={16} fill={toneFill(z.tone ?? "slate", dead ? 4 : 7)} stroke={dead ? toneVar("rose") : toneVar(z.tone ?? "slate")} strokeDasharray="7 6" strokeWidth={1.5} />
-              <text x={z.x + 12} y={z.y + 19} fontSize={12} fontWeight={700} letterSpacing={0.8} fill={dead ? toneVar("rose") : toneVar(z.tone ?? "slate")}>
+              <text x={z.x + z.w - 12} y={z.y + 20} textAnchor="end" fontSize={13} fontWeight={700} letterSpacing={0.8} fill={dead ? toneVar("rose") : toneVar(z.tone ?? "slate")}>
                 {z.label.toUpperCase()}{dead ? " · DOWN" : ""}
               </text>
             </g>
@@ -115,8 +115,8 @@ export function ArchCanvas({ scene, chaos, broken, animate = true }: { scene: Aw
               {l.flow && on && animate && <Traffic link={l} a={f} b={t} spike={spike} />}
               {l.label && (
                 <g>
-                  <rect x={mx - l.label.length * 3.4 - 6} y={my - 10} width={l.label.length * 6.8 + 12} height={18} rx={9} fill="var(--lab-bg)" stroke="var(--lab-border)" />
-                  <text x={mx} y={my + 3} textAnchor="middle" fontSize={10.5} fill="var(--lab-muted)">{l.label}</text>
+                  <rect x={mx - l.label.length * 3.8 - 7} y={my - 12} width={l.label.length * 7.6 + 14} height={21} rx={10} fill="var(--lab-bg)" stroke="var(--lab-border)" />
+                  <text x={mx} y={my + 4} textAnchor="middle" fontSize={12} fill="var(--lab-muted)">{l.label}</text>
                 </g>
               )}
             </g>
@@ -138,16 +138,16 @@ export function ArchCanvas({ scene, chaos, broken, animate = true }: { scene: Aw
                 style={{ transformBox: "fill-box", transformOrigin: "center" }}
               >
                 <rect x={-NODE_W / 2} y={-NODE_H / 2} width={NODE_W} height={NODE_H} rx={14} fill={toneFill(tn, dead ? 8 : 16)} stroke={toneVar(tn)} strokeWidth={n.goal ? 2.6 : 1.6} />
-                <text y={-8} textAnchor="middle" fontSize={26} style={{ filter: dead ? "grayscale(1)" : undefined }}>{ICON[n.kind]}</text>
-                <text y={17} textAnchor="middle" fontSize={12.5} fontWeight={700} fill="var(--lab-text)">{n.label}</text>
-                {n.sub && <text y={30} textAnchor="middle" fontSize={10} fill="var(--lab-muted)">{dead ? "not working" : n.sub}</text>}
+                <text y={-9} textAnchor="middle" fontSize={32} style={{ filter: dead ? "grayscale(1)" : undefined }}>{ICON[n.kind]}</text>
+                <text y={20} textAnchor="middle" fontSize={15} fontWeight={700} fill="var(--lab-text)">{n.label}</text>
+                {n.sub && <text y={36} textAnchor="middle" fontSize={11.5} fill="var(--lab-muted)">{dead ? "not working" : n.sub}</text>}
                 {dead && (
                   <g>
                     <circle cx={NODE_W / 2 - 4} cy={-NODE_H / 2 + 4} r={11} fill={toneVar("rose")} />
                     <text x={NODE_W / 2 - 4} y={-NODE_H / 2 + 9} textAnchor="middle" fontSize={14} fontWeight={800} fill="#fff">✕</text>
                   </g>
                 )}
-                {idle && <text y={-NODE_H / 2 - 5} textAnchor="middle" fontSize={10} fill={toneVar("amber")}>no traffic</text>}
+                {idle && <text y={-NODE_H / 2 - 5} textAnchor="middle" fontSize={11.5} fill={toneVar("amber")}>no traffic</text>}
               </motion.g>
             );
           })}

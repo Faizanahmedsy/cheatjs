@@ -166,14 +166,12 @@ export function AwsLab() {
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[230px_minmax(0,1fr)_390px]">
+      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] lg:grid-rows-[auto_minmax(0,1fr)]">
         {/* lessons */}
-        <nav aria-label="Lessons" className="flex gap-2 overflow-x-auto border-b border-lab-border bg-lab-panel p-2 lg:block lg:space-y-1 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:p-3">
-          <p className="mb-2 hidden px-2 text-[11px] font-semibold uppercase tracking-wider text-lab-muted lg:block">Lessons</p>
+        <nav aria-label="Lessons" className="flex gap-2 overflow-x-auto border-b border-lab-border bg-lab-panel p-2 lg:col-span-2">
           {LESSONS.map((l) => (
-            <button key={l.id} onClick={() => pick(l.id)} className={cn("shrink-0 rounded-lg px-3 py-2 text-left transition-colors lg:w-full", l.id === lessonId ? "bg-lab-raised text-lab-accent" : "text-lab-muted hover:bg-lab-raised/60 hover:text-lab-text")}>
-              <span className="block whitespace-nowrap text-[13px] font-semibold lg:whitespace-normal">{String(l.num).padStart(2, "0")} {l.short}</span>
-              <span className="mt-0.5 hidden text-[11.5px] leading-snug opacity-80 lg:block">{l.tagline}</span>
+            <button key={l.id} onClick={() => pick(l.id)} title={l.tagline} className={cn("shrink-0 rounded-lg border px-3 py-1.5 text-left transition-colors", l.id === lessonId ? "border-lab-accent bg-lab-raised text-lab-accent" : "border-transparent text-lab-muted hover:bg-lab-raised/60 hover:text-lab-text")}>
+              <span className="block whitespace-nowrap text-[13px] font-semibold">{String(l.num).padStart(2, "0")} {l.short}</span>
             </button>
           ))}
         </nav>
