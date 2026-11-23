@@ -68,6 +68,7 @@ export function PageActions({
     <div className="flex flex-wrap gap-2" data-reader-hide>
       <button
         type="button"
+        data-shortcut="done"
         onClick={() => toggleDone(id)}
         aria-pressed={done}
         className={cn(btn, done ? "border-emerald-400/60 bg-emerald-400/10 text-emerald-300" : "border-slate-600 bg-slate-800 text-slate-300 hover:border-slate-400")}
@@ -77,6 +78,7 @@ export function PageActions({
       </button>
       <button
         type="button"
+        data-shortcut="bookmark"
         onClick={() => toggleMark(id, title, href)}
         aria-pressed={marked}
         className={cn(btn, marked ? "border-amber-400/60 bg-amber-400/10 text-amber-300" : "border-slate-600 bg-slate-800 text-slate-300 hover:border-slate-400")}

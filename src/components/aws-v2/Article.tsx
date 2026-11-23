@@ -102,6 +102,7 @@ export async function Article({
           <nav data-reader-hide aria-label="Previous and next page" className="mt-12 grid gap-3 border-t border-slate-700/60 pt-6 sm:grid-cols-2">
             {prev ? (
               <Link
+                data-shortcut="prev"
                 href={hrefFor(prev.slug, track)}
                 className="group flex flex-col gap-1 rounded-xl border border-slate-700/60 bg-slate-800/40 p-4 transition-colors hover:border-cyan-400/60 hover:bg-slate-800"
               >
@@ -117,6 +118,7 @@ export async function Article({
             )}
             {next ? (
               <Link
+                data-shortcut="next"
                 href={hrefFor(next.slug, track)}
                 className="group flex flex-col items-end gap-1 rounded-xl border border-cyan-400/40 bg-cyan-400/5 p-4 text-right transition-colors hover:border-cyan-300 hover:bg-cyan-400/10 sm:col-start-2"
               >
@@ -137,7 +139,7 @@ export async function Article({
 
       {/* Desktop table of contents */}
       {toc.length > 0 ? (
-        <aside data-reader-hide className="scroll-quiet hidden xl:block xl:h-full xl:overflow-y-auto xl:pb-24 xl:pl-4 xl:pr-6 xl:pt-8">
+        <aside data-reader-hide className="scroll-quiet hidden xl:block xl:h-full xl:overflow-y-auto xl:pb-24 xl:pl-4 xl:pr-0 xl:pt-8">
           <div>
             <TocNav toc={toc} />
           </div>

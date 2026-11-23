@@ -23,6 +23,7 @@ export function ModeToggle() {
   return (
     <button
       type="button"
+      data-shortcut="theme"
       onClick={flip}
       aria-label={light ? "Switch to dark mode" : "Switch to white mode"}
       title={light ? "Dark mode" : "White mode"}

@@ -5,6 +5,7 @@ import { SubjectBar } from "@/components/SubjectBar";
 import { SiteFooter } from "@/components/SiteFooter";
 import { FooterGate } from "@/components/FooterGate";
 import { BilluPeek } from "@/components/BilluPeek";
+import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { MODE_SCRIPT } from "@/components/ModeToggle";
 import { BASE_PATH } from "@/lib/base-path";
 import { JsonLd, ORGANIZATION_LD, SITE_ORIGIN, WEBSITE_LD, pageMeta } from "@/lib/seo";
@@ -81,6 +82,7 @@ export default function RootLayout({
         </div>
         <JsonLd data={[ORGANIZATION_LD, WEBSITE_LD]} />
         <BilluPeek />
+        <KeyboardShortcuts />
         <Toaster />
         <PwaRegister />
       </body>

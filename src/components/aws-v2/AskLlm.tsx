@@ -31,6 +31,7 @@ export function AskLlm({ title, mdUrl, pageUrl }: { title: string; mdUrl: string
       <DropdownMenuTrigger asChild>
         <button
           type="button"
+          data-shortcut="llm"
           className="inline-flex items-center gap-1.5 rounded-full border border-slate-600 px-3 py-1 text-xs font-medium text-slate-200 transition-colors hover:border-cyan-400 hover:text-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
         >
           <Sparkles className="h-3.5 w-3.5 text-cyan-300" aria-hidden="true" />

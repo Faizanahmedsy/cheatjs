@@ -217,7 +217,7 @@ export function ReaderShell({ children }: { children: React.ReactNode }) {
         </div>
       ) : null}
 
-      <div className="mx-auto max-w-[1500px] lg:flex lg:h-full">{children}</div>
+      <div className="container mx-auto lg:flex lg:h-full">{children}</div>
 
       {/* Floating buttons */}
       <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2">
