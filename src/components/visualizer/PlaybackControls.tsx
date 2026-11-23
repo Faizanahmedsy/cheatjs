@@ -17,7 +17,7 @@ interface PlaybackControlsProps {
   marks: TimelineMark[];
 }
 
-function NavButton({ label, onClick, disabled, children, wide }: { label: string; onClick: () => void; disabled: boolean; children: ReactNode; wide?: boolean }) {
+function NavButton({ label, onClick, disabled, children, wide, primary }: { label: string; onClick: () => void; disabled: boolean; children: ReactNode; wide?: boolean; primary?: boolean }) {
   return (
     <button
       type="button"
@@ -28,6 +28,7 @@ function NavButton({ label, onClick, disabled, children, wide }: { label: string
       className={cn(
         "inline-flex h-10 items-center justify-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-3 text-sm text-slate-200 transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:cursor-not-allowed disabled:opacity-40",
         wide && "min-w-[6.5rem]",
+        primary && "h-11 min-w-[9rem] border-cyan-300 bg-cyan-400 px-5 text-base font-bold text-slate-950 shadow-lg shadow-cyan-400/20 hover:bg-cyan-300",
       )}
     >
       {children}
@@ -46,11 +47,11 @@ export function PlaybackControls({ index, total, onChange, playing, onTogglePlay
   const atStart = index <= 0;
   const atEnd = index >= last;
   return (
-    <div className="space-y-3 xl:flex xl:items-center xl:gap-5 xl:space-y-0">
-      <div className="flex flex-wrap items-center gap-2 xl:flex-nowrap">
+    <div className="space-y-3 lg:flex lg:items-center lg:gap-4 lg:space-y-0">
+      <div className="flex flex-wrap items-center gap-2 lg:flex-nowrap">
         <NavButton label="First step" onClick={() => onChange(0)} disabled={atStart}>
           <ChevronsLeft className="h-4 w-4" aria-hidden="true" />
-          <span className="hidden sm:inline">First</span>
+          <span className="hidden 2xl:inline">First</span>
         </NavButton>
         <NavButton label="Back one step" onClick={() => onChange(index - 1)} disabled={atStart}>
           <ChevronLeft className="h-4 w-4" aria-hidden="true" />
@@ -60,15 +61,15 @@ export function PlaybackControls({ index, total, onChange, playing, onTogglePlay
           {playing ? <Pause className="h-4 w-4" aria-hidden="true" /> : <Play className="h-4 w-4" aria-hidden="true" />}
           {playing ? "Pause" : "Play"}
         </NavButton>
-        <NavButton label="Forward one step" onClick={() => onChange(index + 1)} disabled={atEnd}>
-          <span className="hidden sm:inline">Forward</span>
+        <NavButton label="Next step" onClick={() => onChange(index + 1)} disabled={atEnd} primary>
+          <span className="hidden sm:inline">{atEnd ? "The end" : "Next step"}</span>
           <ChevronRight className="h-4 w-4" aria-hidden="true" />
         </NavButton>
         <NavButton label="Last step" onClick={() => onChange(last)} disabled={atEnd}>
-          <span className="hidden sm:inline">Last</span>
+          <span className="hidden 2xl:inline">Last</span>
           <ChevronsRight className="h-4 w-4" aria-hidden="true" />
         </NavButton>
-        <label className="ml-auto flex items-center gap-2 text-sm text-slate-400">
+        <label className="ml-auto flex lg:order-last lg:ml-0 items-center gap-2 text-sm text-slate-400">
           Speed
           <select
             value={speed}
@@ -84,7 +85,7 @@ export function PlaybackControls({ index, total, onChange, playing, onTogglePlay
         </label>
       </div>
 
-      <div className="xl:min-w-0 xl:flex-1">
+      <div className="lg:min-w-0 lg:flex-1">
         <input
           type="range"
           min={0}
@@ -110,7 +111,7 @@ export function PlaybackControls({ index, total, onChange, playing, onTogglePlay
           <span>
             Step <span className="font-code text-slate-200">{index + 1}</span> of <span className="font-code">{total}</span>
           </span>
-          <span className="hidden text-xs text-slate-500 sm:inline">← / → keys step · ticks: cyan = call, grey = loop pass</span>
+          <span className="hidden text-xs text-slate-500 sm:inline">← / → keys also work</span>
         </div>
       </div>
     </div>

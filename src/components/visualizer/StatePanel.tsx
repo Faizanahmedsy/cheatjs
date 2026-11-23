@@ -30,10 +30,10 @@ export function StatePanel({ view, heapIds, objectsOnly = false }: { view: StepV
         {showFrames && <FramesColumn view={view} />}
         {showObjects && (
           <div className="flex min-w-0 flex-col gap-3">
-            <h2 className="text-sm font-medium uppercase tracking-wide text-slate-400">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-cyan-200">
               {objectsOnly ? (
                 <>
-                  <span aria-hidden="true">🧩 </span>Lists, words and objects
+                  <span aria-hidden="true">🖼️ </span>Picture of the data right now
                 </>
               ) : (
                 <>

@@ -40,7 +40,7 @@ export function CodeTraceView({ code, nextLine, doneLine, isError, large = false
     <div
       ref={containerRef}
       className={cn(
-        "relative h-[22rem] overflow-auto rounded-lg border border-slate-700/60 bg-slate-950 py-3 font-code lg:h-[30rem]",
+        "relative h-[22rem] overflow-auto rounded-lg border border-slate-700/60 bg-slate-950 py-3 font-code lg:h-[calc(100vh-12.5rem)] lg:min-h-[22rem]",
         large ? "text-[17px] leading-8" : "text-[15px] leading-7",
       )}
       aria-label="Code being visualized"

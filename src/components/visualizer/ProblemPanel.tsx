@@ -50,8 +50,9 @@ function Chip({ icon: Icon, label, value }: { icon: typeof Clock; label: string;
 export function ProblemPanel({ problem, changedNames, beginner }: { problem: Problem; changedNames: Set<string>; beginner: boolean }) {
   const [open, setOpen] = useState(false);
   return (
-    <section aria-label={`Problem ${problem.number}: ${problem.title}`} className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-4">
+    <section aria-label={`Problem ${problem.number}: ${problem.title}`} className="rounded-xl border border-cyan-400/20 bg-slate-800/50 p-4">
       <header className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <span className="rounded-full bg-cyan-400/15 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-cyan-200">The question</span>
         <h2 className="font-headline text-xl font-bold text-slate-100">
           <span className="text-slate-400">{problem.number}.</span> {problem.title}
         </h2>
@@ -59,26 +60,25 @@ export function ProblemPanel({ problem, changedNames, beginner }: { problem: Pro
         <span className="text-xs text-slate-500">{problem.group}</span>
       </header>
 
-      <p className={cn("mt-2 text-slate-300", beginner ? "text-base" : "text-sm")}>
+      <div className="mt-2 grid gap-2 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+      <p className={cn("text-slate-300", beginner ? "text-base" : "text-sm")}>
         <RichText text={problem.statement} />
       </p>
-      <p className="mt-2 rounded-lg bg-slate-950/60 px-3 py-2 font-code text-sm text-slate-200">
+      <p className="rounded-lg bg-slate-950/60 px-3 py-2 font-code text-sm text-slate-200">
         <span className="font-body text-slate-400">Example: </span>
         {problem.example}
       </p>
+      </div>
 
-      <Collapsible open={open} onOpenChange={setOpen} className="mt-3">
+      <Collapsible open={open} onOpenChange={setOpen} className="mt-2">
         <CollapsibleTrigger className="inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-cyan-300 hover:text-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400">
           <ChevronDown className={cn("h-4 w-4 transition-transform motion-reduce:transition-none", open && "rotate-180")} aria-hidden="true" />
-          How it works
+          {open ? "Hide the idea" : "Show the idea and what to watch"}
         </CollapsibleTrigger>
         <CollapsibleContent>
           <p className="mt-2 text-sm leading-relaxed text-slate-300">
             <RichText text={problem.approach} />
           </p>
-        </CollapsibleContent>
-      </Collapsible>
-
       {problem.watch.length > 0 && (
         <div className="mt-3">
           <h3 className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-slate-400">
@@ -111,6 +111,8 @@ export function ProblemPanel({ problem, changedNames, beginner }: { problem: Pro
         <Chip icon={Clock} label="Time" value={problem.complexity.time} />
         <Chip icon={HardDrive} label="Space" value={problem.complexity.space} />
       </div>
+        </CollapsibleContent>
+      </Collapsible>
     </section>
   );
 }

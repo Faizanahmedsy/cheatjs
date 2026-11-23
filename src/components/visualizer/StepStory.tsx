@@ -40,8 +40,8 @@ function LoopTracker({ table, index, partial, onJump }: Pick<StepStoryProps, "ta
   const where = group.frameName === "Global frame" ? "" : ` in ${group.frameName}()`;
 
   return (
-    <div className="mt-4 rounded-lg border border-slate-700/60 bg-slate-900/50 p-3">
-      <p className="text-sm font-medium text-slate-200">
+    <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-slate-700/60 bg-slate-900/50 px-3 py-2">
+      <p className="text-sm font-medium text-slate-200" title="One dot = one time the loop runs its code. Click a dot to jump to that pass.">
         <span aria-hidden="true">🔁 </span>
         <Term name="iteration">Loop</Term> on line {group.loopLine}
         {where}:{" "}
@@ -54,8 +54,7 @@ function LoopTracker({ table, index, partial, onJump }: Pick<StepStoryProps, "ta
           </span>
         )}
       </p>
-      <p className="mt-0.5 text-xs text-slate-400">One dot = one time the loop runs its code. Click a dot to jump to that pass.</p>
-      <ol className="mt-2 flex max-h-24 flex-wrap gap-1.5 overflow-y-auto" aria-label="Loop passes">
+      <ol className="flex max-h-20 flex-wrap gap-1.5 overflow-y-auto" aria-label="Loop passes">
         {passes.map((row) => {
           const isCurrent = row.label === currentLabel;
           const isDone = currentLabel !== undefined ? Number(row.label) < Number(currentLabel) : finished;
@@ -96,7 +95,7 @@ export function StepStory({ explanation, hints, index, total, table, partial, be
     <section
       aria-label="What is happening"
       aria-live="polite"
-      className={cn("rounded-2xl border p-5", isError ? "border-red-500/60 bg-red-950/30" : "border-cyan-400/30 bg-gradient-to-br from-slate-800/80 to-slate-900/80")}
+      className={cn("rounded-2xl border p-4", isError ? "border-red-500/60 bg-red-950/30" : "border-cyan-400/30 bg-gradient-to-br from-slate-800/80 to-slate-900/80")}
     >
       <div className="mb-2 flex items-center justify-between gap-3">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-400/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-cyan-200">
@@ -145,7 +144,7 @@ export function StepStory({ explanation, hints, index, total, table, partial, be
 
       <LoopTracker table={table} index={index} partial={partial} onJump={onJump} />
 
-      <div className="mt-4 flex items-center gap-3">
+      <div className="mt-4 flex items-center gap-3 lg:hidden">
         <button
           type="button"
           onClick={() => onJump(index - 1)}
@@ -163,7 +162,7 @@ export function StepStory({ explanation, hints, index, total, table, partial, be
           {atEnd ? "The end" : "Next step"} <ChevronRight className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
-      <p className="mt-2 hidden text-center text-xs text-slate-500 sm:block">Tip: use the ← and → keys on your keyboard.</p>
+      <p className="mt-2 hidden text-center text-xs text-slate-500 sm:block lg:hidden">Tip: use the ← and → keys on your keyboard.</p>
     </section>
   );
 }

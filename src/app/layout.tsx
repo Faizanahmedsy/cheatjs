@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="dark overflow-x-hidden"
+      className="dark overflow-x-clip"
       style={{ colorScheme: "dark" }}
       suppressHydrationWarning
     >
@@ -51,7 +51,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="font-body antialiased bg-background overflow-x-hidden"
+        className="font-body antialiased bg-background overflow-x-clip"
         suppressHydrationWarning
       >
         <div className="flex flex-col min-h-screen">

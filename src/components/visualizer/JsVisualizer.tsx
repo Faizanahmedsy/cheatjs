@@ -180,49 +180,75 @@ export function JsVisualizer() {
   return (
     <TooltipProvider delayDuration={200}>
       <div className={viewing ? "mx-auto w-full max-w-[1500px] px-4 pb-24 pt-6 sm:px-6 lg:py-8" : "mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6 lg:py-8"}>
-        <header className="mb-6 space-y-4">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            <h1 className="font-headline text-3xl font-bold text-slate-100 md:text-4xl">DSA Visualizer</h1>
+        <header className="mb-4 space-y-3">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+            <h1 className="font-headline text-2xl font-bold text-slate-100 md:text-3xl">DSA Visualizer</h1>
+            <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center lg:max-w-2xl">
+              <ExamplePicker value={selection} onChange={choose} />
+              {mode === "view" ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPlaying(false);
+                    setMode("edit");
+                  }}
+                  className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-slate-600 bg-slate-800 px-4 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                >
+                  <Pencil className="h-4 w-4" aria-hidden="true" />
+                  Edit code
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => void visualize(code)}
+                  disabled={running}
+                  className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-cyan-400 px-4 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-60"
+                >
+                  {running ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Play className="h-4 w-4" aria-hidden="true" />}
+                  {running ? "Running…" : "Visualize"}
+                </button>
+              )}
+            </div>
             <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5 text-sm text-slate-200 sm:ml-auto">
               <GraduationCap className="h-4 w-4 text-cyan-300" aria-hidden="true" />
               Big text and tips
               <Switch checked={beginner} onCheckedChange={setBeginner} aria-label="Big text and tips" />
             </label>
           </div>
-          <p className="max-w-3xl text-base text-slate-400 md:text-lg">
-            Watch a program run one line at a time, like a dry run on paper. You see every variable, every loop pass and every yes / no
-            check, so no DSA knowledge is needed. {PROBLEMS.length} questions are ready.
-          </p>
-          <ol className="grid gap-3 sm:grid-cols-3" aria-label="How to use">
-            {[
-              { icon: Search, title: "1. Pick a question", text: "Use the box below. Start with Two Sum." },
-              { icon: Footprints, title: "2. Press Next step", text: "The code moves one line. Red arrow = runs next. Green = just ran." },
-              { icon: MousePointerClick, title: "3. Read the cards", text: "Plain words say what happened. Glowing variables just changed." },
-            ].map(({ icon: Icon, title, text }) => (
-              <li key={title} className="flex items-start gap-3 rounded-xl border border-slate-700/60 bg-slate-800/40 p-3">
-                <Icon className="mt-0.5 h-5 w-5 shrink-0 text-cyan-300" aria-hidden="true" />
-                <span>
-                  <span className="block font-semibold text-slate-100">{title}</span>
-                  <span className="text-sm text-slate-400">{text}</span>
-                </span>
-              </li>
-            ))}
-          </ol>
           <Collapsible>
-            <CollapsibleTrigger className="text-sm font-medium text-cyan-300 hover:text-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400">
-              What do the colours mean?
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-2">
+            <p className="text-sm text-slate-400">
+              Watch code run one line at a time, like a dry run on paper. {PROBLEMS.length} questions ready.{" "}
+              <CollapsibleTrigger className="font-medium text-cyan-300 hover:text-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400">
+                How to read this screen?
+              </CollapsibleTrigger>
+            </p>
+            <CollapsibleContent className="mt-3 space-y-3">
+              <ol className="grid gap-3 sm:grid-cols-3" aria-label="How to use">
+                {[
+                  { icon: Search, title: "1. Read the question", text: "The box at the top says what the code must find." },
+                  { icon: Footprints, title: "2. Press Next step", text: "The code moves one line. Red arrow = runs next. Green = just ran." },
+                  { icon: MousePointerClick, title: "3. Look at the picture", text: "Boxes show the data, arrows show where i / j point. Glowing = just changed." },
+                ].map(({ icon: Icon, title, text }) => (
+                  <li key={title} className="flex items-start gap-3 rounded-xl border border-slate-700/60 bg-slate-800/40 p-3">
+                    <Icon className="mt-0.5 h-5 w-5 shrink-0 text-cyan-300" aria-hidden="true" />
+                    <span>
+                      <span className="block font-semibold text-slate-100">{title}</span>
+                      <span className="text-sm text-slate-400">{text}</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
               <Legend />
             </CollapsibleContent>
           </Collapsible>
+          {problem && <ProblemPanel problem={problem} changedNames={changedNames} beginner={beginner} />}
         </header>
 
         {/* Playback sits above both columns and stays pinned under the navbar,
             so Forward / Back are always at hand while reading the code and the
             state side by side (it used to sit under the code, off screen). */}
         {viewing && (
-      <div className="sticky top-16 z-30 mb-4 hidden rounded-xl border border-slate-700/60 bg-slate-800/95 p-3 shadow-lg shadow-slate-950/40 lg:block">
+      <div className="sticky top-16 z-30 mb-4 hidden rounded-xl border border-slate-700/60 bg-slate-800/95 px-3 py-2 backdrop-blur shadow-lg shadow-slate-950/40 lg:block">
             <PlaybackControls
               index={safeIndex}
               total={total}
@@ -237,39 +263,10 @@ export function JsVisualizer() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           {/* Left: code, problem, output */}
-          <div className="flex min-w-0 flex-col gap-4">
-            <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-4">
-              <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center">
-                <ExamplePicker value={selection} onChange={choose} />
-                <div className="flex gap-2 sm:ml-auto">
-                  {mode === "view" ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setPlaying(false);
-                        setMode("edit");
-                      }}
-                      className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-600 bg-slate-800 px-4 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
-                    >
-                      <Pencil className="h-4 w-4" aria-hidden="true" />
-                      Edit code
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => void visualize(code)}
-                      disabled={running}
-                      className="inline-flex h-10 items-center gap-2 rounded-lg bg-cyan-400 px-4 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-60"
-                    >
-                      {running ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Play className="h-4 w-4" aria-hidden="true" />}
-                      {running ? "Running…" : "Visualize"}
-                    </button>
-                  )}
-                </div>
-              </div>
-
+          <div className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-[9.75rem] lg:self-start">
+            <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-3">
               {viewing ? (
                 <CodeTraceView
                   code={code}
@@ -296,15 +293,15 @@ export function JsVisualizer() {
               )}
             </div>
 
-            {problem && <ProblemPanel problem={problem} changedNames={changedNames} beginner={beginner} />}
-
-            {viewing && <OutputPanel stdout={step.stdout} error={step.event === "exception" ? step.error : undefined} />}
           </div>
 
           {/* Right: explanation, iteration table, call tree, frames + objects */}
           <div className="min-w-0">
             {viewing ? (
-              <TraceStage trace={trace} index={safeIndex} summary={summary} code={code} beginner={beginner} onJump={jump} />
+              <div className="flex flex-col gap-4">
+                <TraceStage trace={trace} index={safeIndex} summary={summary} code={code} beginner={beginner} onJump={jump} />
+                <OutputPanel stdout={step.stdout} error={step.event === "exception" ? step.error : undefined} />
+              </div>
             ) : (
               <div className="flex h-full min-h-[16rem] items-center justify-center rounded-xl border border-dashed border-slate-700 p-8 text-center text-slate-400">
                 {running ? (

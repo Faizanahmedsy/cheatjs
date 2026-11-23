@@ -91,9 +91,9 @@ export function TraceStage({ trace, index, summary, code, beginner, onJump }: Tr
         beginner={beginner}
         onJump={onJump}
       />
+      <StatePanel view={view} heapIds={heapIds} objectsOnly />
       <ConditionCard prevStep={view.prevStep} />
       <VariableCards view={view} />
-      <StatePanel view={view} heapIds={heapIds} objectsOnly />
       <IterationTable steps={trace.steps} table={summary.table} index={index} onJump={onJump} beginner={beginner} />
       {showTree && (
         <CallTree roots={summary.tree.roots} stepIndex={index} activeFrameIds={view.step.frames.slice(1).map((frame) => frame.id)} />
