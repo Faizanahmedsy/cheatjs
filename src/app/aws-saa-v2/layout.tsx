@@ -3,7 +3,7 @@ import { V2Nav } from "@/components/aws-v2/V2Nav";
 import { ReaderShell } from "@/components/aws-v2/ReaderShell";
 
 export const metadata: Metadata = {
-  title: "AWS SAA-C03 v2 | Cheat JS",
+  title: "AWS SAA-C03 notes · Ustad Billu ki Class",
   description:
     "AWS Solutions Architect Associate (SAA-C03) study notes in simple words, powered by Notion.",
 };

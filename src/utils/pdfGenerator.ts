@@ -68,7 +68,7 @@ function addCoverPage(
   pdf.setTextColor(255, 255, 255);
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(72);
-  pdf.text('Cheat JS', contentX, contentY);
+  pdf.text('Ustad Billu ki Class', contentX, contentY);
 
   // --- NEW: Add the tagline ---
   const tagline = [
@@ -256,7 +256,7 @@ function addAdvertisementPage(
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(48);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('Cheat JS', pageWidth / 2, 40, { align: 'center' });
+  pdf.text('Ustad Billu ki Class', pageWidth / 2, 40, { align: 'center' });
 
   const contentStartY = 85;
 
@@ -327,7 +327,7 @@ function addAdvertisementPage(
   pdf.setFontSize(9);
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(148, 163, 184);
-  pdf.text('© 2025 Cheat JS. All rights reserved.', pageWidth / 2, pageHeight - 15, { align: 'center' });
+  pdf.text('© Ustad Billu ki Class. All rights reserved.', pageWidth / 2, pageHeight - 15, { align: 'center' });
 }
 
 // New function for DSA PDF generation

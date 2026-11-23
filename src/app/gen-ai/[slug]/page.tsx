@@ -17,7 +17,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const page = findPageBySlug(slug, GENAI_TRACK);
-  return { title: page ? `${page.title} | Gen AI | Cheat JS` : "Gen AI" };
+  return { title: page ? `${page.title} · Gen AI · Ustad Billu ki Class` : "Gen AI" };
 }
 
 export default async function GenAIPage({ params }: { params: Promise<{ slug: string }> }) {

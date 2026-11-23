@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Cheat JS",
-    short_name: "Cheat JS",
+    name: "Ustad Billu ki Class",
+    short_name: "Ustad Billu ki Class",
     description: "Cheatsheets, AWS SAA-C03 and Gen AI study notes with flashcards.",
     start_url: "/study",
     display: "standalone",

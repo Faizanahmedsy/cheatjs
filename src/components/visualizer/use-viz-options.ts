@@ -11,9 +11,11 @@ export interface VizOptions {
   skipSetup: boolean;
   /** Ask "what will x be?" before a step that changes a variable. */
   quiz: boolean;
+  /** Fold variables, the dry-run table and the call tree into "More details". */
+  focus: boolean;
 }
 
-const DEFAULTS: VizOptions = { hideComments: false, smartPlay: true, skipSetup: false, quiz: false };
+const DEFAULTS: VizOptions = { hideComments: false, smartPlay: true, skipSetup: false, quiz: false, focus: true };
 const KEY = "viz-options";
 
 /** Visualizer options, remembered in this browser. */

@@ -1,4 +1,38 @@
 import type {Config} from 'tailwindcss';
+import twColors from 'tailwindcss/colors';
+import plugin from 'tailwindcss/plugin';
+
+/**
+ * Site-wide white mode: every palette colour is a CSS variable. In white mode
+ * (html[data-mode="light"]) each scale is flipped (50<->950, 100<->900, ...),
+ * so dark backgrounds turn light and pale text turns dark, on every page,
+ * without touching the components.
+ */
+const PALETTES = ['slate', 'gray', 'zinc', 'neutral', 'stone', 'red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'] as const;
+const SHADES = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'] as const;
+const FLIP: Record<string, string> = { '50': '950', '100': '900', '200': '800', '300': '700', '400': '600', '500': '500', '600': '400', '700': '300', '800': '200', '900': '100', '950': '50' };
+
+function rgb(hex: string): string {
+  const h = hex.replace('#', '');
+  return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)).join(' ');
+}
+
+const varColors = Object.fromEntries(
+  PALETTES.map((name) => [name, Object.fromEntries(SHADES.map((shade) => [shade, `rgb(var(--c-${name}-${shade}) / <alpha-value>)`]))]),
+);
+
+const paletteVars = plugin(({ addBase }) => {
+  const palette = twColors as unknown as Record<string, Record<string, string>>;
+  const dark: Record<string, string> = {};
+  const light: Record<string, string> = {};
+  for (const name of PALETTES) {
+    for (const shade of SHADES) {
+      dark[`--c-${name}-${shade}`] = rgb(palette[name][shade]);
+      light[`--c-${name}-${shade}`] = rgb(palette[name][FLIP[shade]]);
+    }
+  }
+  addBase({ ':root': dark, 'html[data-mode="light"]': light });
+});
 
 export default {
   darkMode: ['class'],
@@ -16,6 +50,7 @@ export default {
         labmono: ['var(--lab-mono)'],
       },
       colors: {
+        ...varColors,
         lab: {
           bg: 'var(--lab-bg)',
           scene: 'var(--lab-scene)',
@@ -106,5 +141,5 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('tailwindcss-animate'), paletteVars],
 } satisfies Config;

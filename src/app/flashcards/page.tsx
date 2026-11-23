@@ -6,7 +6,7 @@ import { loadPage } from "@/lib/aws-v2/notion";
 import { AWS_TRACK, GENAI_TRACK } from "@/lib/aws-v2/pages";
 
 export const revalidate = 300;
-export const metadata: Metadata = { title: "Flashcards | Cheat JS" };
+export const metadata: Metadata = { title: "Flashcards · Ustad Billu ki Class" };
 
 export default async function FlashcardsPage() {
   const cards: Card[] = [];

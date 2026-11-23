@@ -452,6 +452,7 @@ export function JsVisualizer() {
                   onJump={navigate}
                   problem={problem}
                   mobileTab={mobileTab}
+                  focus={options.focus}
                 />
                 <div className={cn(mobileTab !== "story" && "max-lg:hidden")}>
                   <OutputPanel stdout={step.stdout} error={step.event === "exception" ? step.error : undefined} />

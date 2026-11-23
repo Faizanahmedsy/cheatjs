@@ -1,15 +1,19 @@
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/components/ui/toaster";
 import { Navbar } from "@/components/Navbar";
+import { SubjectBar } from "@/components/SubjectBar";
+import { SiteFooter } from "@/components/SiteFooter";
+import { BilluPeek } from "@/components/BilluPeek";
+import { MODE_SCRIPT } from "@/components/ModeToggle";
 import { PwaRegister } from "@/components/PwaRegister";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Cheat JS",
+  title: { default: "Ustad Billu ki Class · Visual DSA, Gen AI, AWS and JS", template: "%s" },
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "Cheat JS", statusBarStyle: "black-translucent" },
+  appleWebApp: { capable: true, title: "Billu ki Class", statusBarStyle: "black-translucent" },
   description:
-    "The easiest to understand resource to learn frontend development on planet earth.",
+    "Ustad Billu ki Class (formerly Cheat JS): free visual lessons for DSA, Gen AI, AWS and JavaScript, from Ustad Billu.",
 };
 
 export const viewport: Viewport = { themeColor: "#0f172a" };
@@ -27,6 +31,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <script dangerouslySetInnerHTML={{ __html: MODE_SCRIPT }} />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
@@ -56,8 +61,11 @@ export default function RootLayout({
       >
         <div className="flex flex-col min-h-screen">
           <Navbar />
+          <SubjectBar />
           <div className="flex-grow">{children}</div>
+          <SiteFooter />
         </div>
+        <BilluPeek />
         <Toaster />
         <PwaRegister />
       </body>

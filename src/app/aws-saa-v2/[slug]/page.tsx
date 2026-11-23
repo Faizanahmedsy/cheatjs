@@ -17,7 +17,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const page = findPageBySlug(slug);
-  return { title: page ? `${page.title} | AWS SAA v2 | Cheat JS` : "AWS SAA v2" };
+  return { title: page ? `${page.title} · AWS · Ustad Billu ki Class` : "AWS SAA v2" };
 }
 
 export default async function AWSV2Page({ params }: { params: Promise<{ slug: string }> }) {

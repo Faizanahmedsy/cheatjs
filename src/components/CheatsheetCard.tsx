@@ -87,28 +87,14 @@ export function CheatsheetCard({
         >
           {snippet.title}
         </div>
-        <p className="text-slate-400 mt-6 mb-2 text-sm font-body">
+        <p className="mt-6 mb-2 font-body text-[15px] leading-relaxed text-slate-300">
           {snippet.description}
         </p>
 
         {snippet.pros && snippet.cons && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 my-4 text-xs font-code">
-            <div>
-              <h4 className="font-bold text-green-400 mb-1">Pros</h4>
-              <ul className="list-disc list-inside text-slate-400 space-y-1">
-                {snippet.pros.map((p) => (
-                  <li key={p}>{p}</li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-red-400 mb-1">Cons</h4>
-              <ul className="list-disc list-inside text-slate-400 space-y-1">
-                {snippet.cons.map((c) => (
-                  <li key={c}>{c}</li>
-                ))}
-              </ul>
-            </div>
+          <div className="my-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <ProsCons title="Good" mark="✓" items={snippet.pros} tone="good" />
+            <ProsCons title="Watch out" mark="✗" items={snippet.cons} tone="bad" />
           </div>
         )}
 
@@ -122,6 +108,38 @@ export function CheatsheetCard({
           <CodeBlock code={snippet.code} language={snippet.language} />
         </div>
       </div>
+    </div>
+  );
+}
+
+/** "Fast access: O(1) …" → bold "Fast access" + plain rest, one item per line with a ✓ or ✗. */
+function ProsCons({ title, mark, items, tone }: { title: string; mark: string; items: string[]; tone: "good" | "bad" }) {
+  return (
+    <div className={cn("rounded-lg border p-3", tone === "good" ? "border-emerald-500/30 bg-emerald-500/5" : "border-rose-500/30 bg-rose-500/5")}>
+      <h4 className={cn("mb-2 text-sm font-bold", tone === "good" ? "text-emerald-300" : "text-rose-300")}>{title}</h4>
+      <ul className="space-y-2 font-body text-sm leading-relaxed text-slate-300">
+        {items.map((item) => {
+          const at = item.indexOf(":");
+          const head = at > 0 && at < 40 ? item.slice(0, at) : null;
+          return (
+            <li key={item} className="flex gap-2">
+              <span aria-hidden="true" className={cn("font-bold", tone === "good" ? "text-emerald-400" : "text-rose-400")}>
+                {mark}
+              </span>
+              <span>
+                {head ? (
+                  <>
+                    <strong className="font-semibold text-slate-100">{head}:</strong>
+                    {item.slice(at + 1)}
+                  </>
+                ) : (
+                  item
+                )}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }

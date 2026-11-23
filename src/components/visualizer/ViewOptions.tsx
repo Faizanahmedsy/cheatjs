@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import type { VizOptions } from "./use-viz-options";
 
 const ROWS: { key: keyof VizOptions; title: string; text: string }[] = [
+  { key: "focus", title: "Focus mode", text: "Show only the code, the picture and what is happening. Variables and the dry-run table fold into More details." },
   { key: "quiz", title: "Quiz me (predict)", text: "Before a line changes a variable, guess the new value first." },
   { key: "smartPlay", title: "Smart play", text: "Play stops by itself at key moments: a true if, a return, a print, the end." },
   { key: "skipSetup", title: "Skip setup lines", text: "Next / Back jump over the top-level setup and stay inside the function." },
@@ -14,7 +15,7 @@ const ROWS: { key: keyof VizOptions; title: string; text: string }[] = [
 
 /** The ⚙ menu in the control bar. */
 export function ViewOptions({ options, onChange }: { options: VizOptions; onChange: (patch: Partial<VizOptions>) => void }) {
-  const count = ROWS.filter((row) => options[row.key]).length;
+  const count = ROWS.filter((row) => row.key !== "focus" && options[row.key]).length;
   return (
     <Popover>
       <PopoverTrigger asChild>

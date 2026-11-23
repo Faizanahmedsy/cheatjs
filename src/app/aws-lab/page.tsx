@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { AwsLab } from "@/components/aws-lab/AwsLab";
 
 export const metadata: Metadata = {
-  title: "AWS Lab · Cheat JS",
+  title: "AWS Lab · Ustad Billu ki Class",
   description: "Watch AWS services work, step by step. Grow one app from a single server to a multi-region setup, break parts and see what survives.",
 };
 

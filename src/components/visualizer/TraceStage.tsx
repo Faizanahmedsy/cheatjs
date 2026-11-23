@@ -61,6 +61,8 @@ interface TraceStageProps {
   problem: Problem | null;
   /** Phones show one tab at a time; desktop shows everything. */
   mobileTab: MobileTab;
+  /** Fold the extra panels into "More details". */
+  focus?: boolean;
 }
 
 /** Index of the next step after `from` where the current frame's variable `name` changes, or -1. */
@@ -82,7 +84,7 @@ function nextChange(steps: TraceSuccess["steps"], from: number, name: string): n
 }
 
 /** Everything on the right: what happened, the iteration table, the call tree and the state. */
-export function TraceStage({ trace, index, summary, code, beginner, onJump, problem, mobileTab }: TraceStageProps) {
+export function TraceStage({ trace, index, summary, code, beginner, onJump, problem, mobileTab, focus = false }: TraceStageProps) {
   const view = useMemo<StepView>(() => {
     const step = trace.steps[index];
     const prevStep = index > 0 ? trace.steps[index - 1] : undefined;
@@ -149,6 +151,15 @@ export function TraceStage({ trace, index, summary, code, beginner, onJump, prob
       <div className={cn("empty:hidden", tab("story"))}>
         <ConditionCard prevStep={view.prevStep} />
       </div>
+      {focus ? (
+        <details className={cn("group rounded-2xl border border-slate-700/60 bg-slate-800/30", tab("story"))}>
+          <summary className="cursor-pointer list-none px-4 py-3 text-sm font-semibold text-slate-300 hover:text-slate-100 [&::-webkit-details-marker]:hidden">
+            <span className="inline-block transition-transform group-open:rotate-90" aria-hidden="true">
+              ▸
+            </span>{" "}
+            More details: all variables, dry-run table{showTree ? ", call tree" : ""}
+          </summary>
+          <div className="flex flex-col gap-4 px-3 pb-3">
       <div className={tab("picture")}>
         <VariableCards
           view={view}
@@ -165,6 +176,29 @@ export function TraceStage({ trace, index, summary, code, beginner, onJump, prob
         <div className={tab("story")}>
           <CallTree roots={summary.tree.roots} stepIndex={index} activeFrameIds={view.step.frames.slice(1).map((frame) => frame.id)} />
         </div>
+      )}
+          </div>
+        </details>
+      ) : (
+        <>
+      <div className={tab("picture")}>
+        <VariableCards
+          view={view}
+          onNextChange={(name) => {
+            const at = nextChange(trace.steps, index, name);
+            if (at >= 0) onJump(at);
+          }}
+        />
+      </div>
+      <div className={cn("empty:hidden", tab("story"))}>
+        <IterationTable steps={trace.steps} table={summary.table} index={index} onJump={onJump} beginner={beginner} />
+      </div>
+      {showTree && (
+        <div className={tab("story")}>
+          <CallTree roots={summary.tree.roots} stepIndex={index} activeFrameIds={view.step.frames.slice(1).map((frame) => frame.id)} />
+        </div>
+      )}
+        </>
       )}
     </div>
   );

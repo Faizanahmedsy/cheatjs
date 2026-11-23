@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { JsVisualizer } from "@/components/visualizer/JsVisualizer";
 
 export const metadata: Metadata = {
-  title: "DSA Visualizer · Cheat JS",
+  title: "DSA Visualizer · Ustad Billu ki Class",
   description: "Watch DSA questions run line by line: every variable, every loop pass and every yes / no check, in plain words.",
 };
 

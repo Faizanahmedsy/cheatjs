@@ -39,6 +39,11 @@ export function FlashcardApp({ cards, units }: { cards: Card[]; units: Unit[] })
   const [scope, setScope] = useState<Scope>("due");
   const [trackF, setTrackF] = useState<string>("all");
   const [unitF, setUnitF] = useState<string>("all");
+  // ?track=aws or ?track=gen-ai (from a subject's Practice tab) opens on that track.
+  useEffect(() => {
+    const track = new URLSearchParams(window.location.search).get("track");
+    if (track === "aws" || track === "gen-ai") setTrackF(track);
+  }, []);
   const [kinds, setKinds] = useState<Set<Card["kind"]>>(new Set(["term", "exam", "topic", "trap", "qa"]));
   const [order, setOrder] = useState<string[]>([]);
   const [idx, setIdx] = useState(0);
