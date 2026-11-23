@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { Archive, BarChart3, ChevronDown, Download, Menu, Search, Youtube } from "lucide-react";
+import { Archive, ArrowLeft, BarChart3, ChevronDown, Download, Menu, Search, Youtube } from "lucide-react";
 import { ARCHIVED, BILLU, SITE_NAME, SUBJECTS, findSubject } from "@/lib/subjects";
 import { SearchDialog } from "./SearchDialog";
 import { ModeToggle } from "./ModeToggle";
@@ -51,6 +51,15 @@ export function Navbar() {
       <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-background/80 backdrop-blur-sm px-3 sm:px-4 lg:px-6 2xl:px-16">
         <div className="container mx-auto flex h-14 items-center justify-between">
           <div className="flex items-center gap-4">
+            <a
+              href={BILLU.site}
+              title="Back to the Ustad Billu home page"
+              aria-label="Back to the Ustad Billu home page"
+              className="-mr-1 inline-flex h-8 items-center gap-1 rounded-full border border-slate-700 px-2 text-xs font-medium text-slate-300 transition-colors hover:border-slate-500 hover:bg-slate-800 hover:text-slate-50 sm:px-2.5"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden sm:inline">Ustad Billu</span>
+            </a>
             <Link href="/" className="flex items-center gap-2">
               <Image src={BILLU.mascot} alt="" width={30} height={30} className="h-8 w-8 rounded-full bg-[#fdf3dc] object-contain p-0.5" priority />
               <span className="flex flex-col leading-none">
@@ -167,6 +176,13 @@ export function Navbar() {
                 className="w-[280px] bg-slate-900 border-slate-800"
               >
                 <nav className="flex flex-col gap-2 mt-8 overflow-y-auto">
+                  <a
+                    href={BILLU.site}
+                    className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800"
+                  >
+                    <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                    Back to Ustad Billu home
+                  </a>
                   {SUBJECTS.map((subject) => (
                     <div key={subject.id} className="rounded-lg bg-slate-800/40 p-2">
                       <p className="px-2 pb-1 text-sm font-semibold text-slate-200">
