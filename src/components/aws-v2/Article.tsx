@@ -8,6 +8,8 @@ import { AWS_TRACK, notionUrlFor, type Track, type V2Page } from "@/lib/aws-v2/p
 import { cn } from "@/lib/utils";
 import { PageActions } from "@/components/study/PageActions";
 import { hrefFor, neighboursOf } from "@/lib/aws-v2/pages";
+import { FastScroller } from "./FastScroller";
+import { TocNav } from "./TocNav";
 
 function formatDate(iso: string): string {
   try {
@@ -39,10 +41,11 @@ export async function Article({
   return (
     <div
       key={`${track.id}-${page.slug}`}
-      className="lg:h-full lg:overflow-hidden xl:grid xl:grid-cols-[minmax(0,1fr)_17rem]"
+      className="lg:h-full lg:overflow-hidden xl:grid xl:grid-cols-[minmax(0,1fr)_17rem] xl:grid-rows-[minmax(0,1fr)]"
     >
-      {/* Centre column: scrolls on its own on desktop */}
-      <div data-reader-scroll className="min-w-0 px-4 pb-24 pt-8 sm:px-8 lg:h-full lg:overflow-y-auto xl:pr-10">
+      {/* Centre column: scrolls on its own on desktop, with the big fast-scroll handle on its right edge */}
+      <div className="relative min-w-0 lg:h-full lg:min-h-0 lg:overflow-hidden">
+      <div data-reader-scroll className="no-native-scrollbar min-w-0 px-4 pb-24 pt-8 sm:px-8 lg:h-full lg:overflow-y-auto xl:pr-12">
       <article className="reader-article mx-auto w-full min-w-0 max-w-3xl">
         <header className="mb-8">
           <p className="text-sm text-slate-500">{page.subtitle}</p>
@@ -133,27 +136,14 @@ export async function Article({
         ) : null}
       </article>
       </div>
+      <FastScroller />
+      </div>
 
       {/* Desktop table of contents */}
       {toc.length > 0 ? (
-        <aside data-reader-hide className="scroll-quiet hidden xl:block xl:h-full xl:overflow-y-auto xl:pb-24 xl:pr-6 xl:pt-8">
+        <aside data-reader-hide className="scroll-quiet hidden xl:block xl:h-full xl:overflow-y-auto xl:pb-24 xl:pl-4 xl:pr-6 xl:pt-8">
           <div>
-            <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-500">On this page</p>
-            <ul className="space-y-1 border-l border-slate-700/60 text-sm">
-              {toc.map((t) => (
-                <li key={t.id}>
-                  <a
-                    href={`#${t.id}`}
-                    className={cn(
-                      "block -ml-px border-l border-transparent py-0.5 text-slate-400 hover:border-cyan-400 hover:text-cyan-300",
-                      t.level === 3 ? "pl-6 text-[13px]" : "pl-3 font-medium text-slate-300"
-                    )}
-                  >
-                    {t.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <TocNav toc={toc} />
           </div>
         </aside>
       ) : null}

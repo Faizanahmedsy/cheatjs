@@ -363,3 +363,17 @@ html[data-mode="light"] body {
   background: rgb(var(--c-slate-700) / 0.8);
   background-clip: padding-box;
 }
+
+/* The docs reader uses its own big fast-scroll handle on desktop. */
+@media (min-width: 1024px) {
+  .no-native-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-native-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+/* Headings land below the top edge when jumped to. */
+.reader-article :is(h2, h3)[id] {
+  scroll-margin-top: 1.5rem;
+}
