@@ -47,6 +47,11 @@ export function V2Nav({ trackId = "aws" }: { trackId?: Track["id"] }) {
           <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wider text-cyan-400">
             {track.label}
           </p>
+          {track.id === "aws" && (
+            <Link href="/aws-lab" className="mb-3 flex items-center gap-2 rounded-md border border-cyan-400/40 bg-cyan-400/10 px-3 py-2 text-sm font-semibold text-cyan-300 transition-colors hover:bg-cyan-400/20">
+              <span aria-hidden>🧪</span> AWS Lab: watch services work
+            </Link>
+          )}
           {GROUPS.map((group) => (
             <div key={group} className="mb-4">
               <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wider text-slate-500">{group}</p>
