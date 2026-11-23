@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { GraduationCap, Loader2, MousePointerClick, Pencil, Play, Search, Footprints } from "lucide-react";
+import { GraduationCap, Loader2, MousePointerClick, Pencil, Play, Search, Footprints, Maximize2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { buildCallTree, loopTotals, timelineMarks } from "@/lib/visualizer/analysis";
@@ -19,6 +19,7 @@ import { inlineNotes } from "@/lib/visualizer/inline-notes";
 import type { TraceSuccess } from "@/lib/visualizer/types";
 import { CodeEditor } from "./CodeEditor";
 import { CodeTraceView } from "./CodeTraceView";
+import { FocusPlayer } from "./FocusPlayer";
 import { LANGS, availableLangs, getTranslation, translationKey, type CodeLang } from "@/lib/visualizer/translations";
 import { ExamplePicker } from "./ExamplePicker";
 import { Legend } from "./Legend";
@@ -70,6 +71,22 @@ export function JsVisualizer() {
   const { done, markDone } = useProgress();
   const [quiz, setQuiz] = useState<QuizState | null>(null);
   const [lang, setLang] = useState<CodeLang>("js");
+  const [focusOn, setFocusOnState] = useState(false);
+  useEffect(() => {
+    try {
+      if (window.localStorage.getItem("viz-focus-player") === "1" || new URLSearchParams(window.location.search).get("focus") === "1") setFocusOnState(true);
+    } catch {
+      // storage blocked
+    }
+  }, []);
+  const setFocusOn = useCallback((on: boolean) => {
+    setFocusOnState(on);
+    try {
+      window.localStorage.setItem("viz-focus-player", on ? "1" : "0");
+    } catch {
+      // storage blocked
+    }
+  }, []);
   const [mobileTab, setMobileTab] = useState<MobileTab>("picture");
   const quizzedAt = useRef<number>(-1);
   const touchX = useRef<number | null>(null);
@@ -148,7 +165,7 @@ export function JsVisualizer() {
     if (!steps || safeIndex >= steps.length - 1) return;
     setPlaying(false);
     const target = stepFrom(safeIndex, 1);
-    if (options.quiz && quizzedAt.current !== safeIndex) {
+    if (options.quiz && !focusOn && quizzedAt.current !== safeIndex) {
       const guess = guessTarget(steps[safeIndex], steps[target]);
       if (guess) {
         setQuiz({ from: safeIndex, to: target, name: guess.name, answer: guess.answer, line: steps[safeIndex].line, guess: "", checked: false });
@@ -157,7 +174,7 @@ export function JsVisualizer() {
     }
     setQuiz(null);
     goTo(target);
-  }, [steps, safeIndex, stepFrom, options.quiz, goTo]);
+  }, [steps, safeIndex, stepFrom, options.quiz, focusOn, goTo]);
 
   const back = useCallback(() => {
     setPlaying(false);
@@ -296,7 +313,12 @@ export function JsVisualizer() {
                 </button>
               )}
             </div>
-            <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5 text-sm text-slate-200 sm:ml-auto">
+            <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-cyan-400/50 bg-cyan-400/10 px-3 py-1.5 text-sm font-semibold text-slate-100 sm:ml-auto">
+              <Maximize2 className="h-4 w-4 text-cyan-300" aria-hidden="true" />
+              Focus mode
+              <Switch checked={focusOn} onCheckedChange={setFocusOn} aria-label="Focus mode: full screen, simple view" />
+            </label>
+            <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5 text-sm text-slate-200">
               <GraduationCap className="h-4 w-4 text-cyan-300" aria-hidden="true" />
               Big text and tips
               <Switch checked={beginner} onCheckedChange={setBeginner} aria-label="Big text and tips" />
@@ -504,6 +526,30 @@ export function JsVisualizer() {
           <MobileControls index={safeIndex} total={total} playing={playing} onChange={navigate} onTogglePlay={() => setPlaying((p) => !p)} />
         )}
       </div>
+      {focusOn && viewing && (
+        <FocusPlayer
+          steps={trace.steps}
+          index={safeIndex}
+          code={code}
+          title={problem ? problem.title : (entry?.label ?? "Your code")}
+          goal={problem?.statement}
+          mapped={mapped}
+          langs={langs}
+          lang={shownLang}
+          onLang={setLang}
+          playing={playing}
+          onTogglePlay={() => {
+            setQuiz(null);
+            setPlaying((p) => !p);
+          }}
+          speed={speed}
+          onSpeed={setSpeed}
+          onNext={forward}
+          onBack={back}
+          onJump={jump}
+          onExit={() => setFocusOn(false)}
+        />
+      )}
     </TooltipProvider>
   );
 }

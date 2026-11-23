@@ -377,3 +377,19 @@ html[data-mode="light"] body {
 .reader-article :is(h2, h3)[id] {
   scroll-margin-top: 1.5rem;
 }
+
+/* Focus mode: a value that just changed pops once. */
+@keyframes fx-pop {
+  0% { transform: scale(0.85); }
+  55% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.fx-pop { animation: fx-pop 0.45s ease-out; }
+@keyframes fx-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.fx-in { animation: fx-in 0.3s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .fx-pop, .fx-in { animation: none; }
+}

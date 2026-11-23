@@ -3,7 +3,6 @@
 import { useMemo } from "react";
 import {
   diffSteps,
-  explainStep,
   topFrame,
   framePointers,
   heapNames,
@@ -13,7 +12,8 @@ import {
   type TimelineMark,
 } from "@/lib/visualizer/analysis";
 import { frameStrings } from "@/lib/visualizer/cells";
-import { describeCheck, describeLine, lineLookups } from "@/lib/visualizer/insights";
+import { lineLookups } from "@/lib/visualizer/insights";
+import { storyFor } from "@/lib/visualizer/story";
 import type { Problem } from "@/lib/visualizer/problem-types";
 import { cn } from "@/lib/utils";
 import { GoalBar } from "./GoalBar";
@@ -106,22 +106,7 @@ export function TraceStage({ trace, index, summary, code, beginner, onJump, prob
   }, [trace, index, beginner, code]);
   const heapIds = useMemo(() => [...view.boxed], [view.boxed]);
   const lines = useMemo(() => code.split("\n"), [code]);
-  const explanation = useMemo<StoryExplanation>(() => {
-    const base = explainStep(trace.steps, index);
-    const prev = trace.steps[index - 1];
-    if (!prev || base.tone === "error" || base.tone === "call" || base.tone === "return") return base;
-    if (/^Line \d+: check /.test(base.title) && prev.condition) {
-      const isLoop = prev.loop?.line === prev.line;
-      return { ...base, title: describeCheck(prev.condition.text, prev.condition.result, isLoop), lineRef: prev.line };
-    }
-    if (/^Line \d+ ran/.test(base.title)) {
-      const plain = describeLine(lines[prev.line - 1] ?? "", prev, trace.steps[index]);
-      const finished = base.tone === "done";
-      const title = plain ? (finished ? `${plain} — program finished` : plain) : finished ? "Program finished" : base.title;
-      return { ...base, title, lineRef: prev.line };
-    }
-    return base;
-  }, [trace, index, lines]);
+  const explanation = useMemo<StoryExplanation>(() => storyFor(trace.steps, index, lines), [trace, index, lines]);
   const hints = useMemo(() => stepHints(trace.steps, index, lines), [trace, index, lines]);
   // Beginner mode only shows the call tree for recursion; otherwise any code with calls gets it.
   const showTree = summary.tree.recursive || (!beginner && summary.tree.roots.length > 0);

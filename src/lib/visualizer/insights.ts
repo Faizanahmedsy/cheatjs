@@ -105,7 +105,14 @@ export function describeLine(lineText: string, before: TraceStep, after: TraceSt
   let m: RegExpExecArray | null;
 
   if ((m = /^console\.log\((.*)\)$/.exec(code))) return "Print the result on the screen";
-  if ((m = /^\[\s*([^,\]]+),\s*([^\]]+)\]\s*=\s*\[/.exec(code))) return `Swap ${m[1].trim()} and ${m[2].trim()}`;
+  if ((m = /^\[(.+)\]\s*=\s*\[(.+)\]$/.exec(code))) {
+    const [a, b] = splitArgs(m[1]);
+    if (a && b) {
+      const va = resolveExpr(a, before);
+      const vb = resolveExpr(b, before);
+      return `Swap ${a} and ${b}${va && vb ? ` (${previewValue(va, before)} ↔ ${previewValue(vb, before)})` : ""}`;
+    }
+  }
   if ((m = /^(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(.+)$/.exec(code))) {
     const [, name, expr] = m;
     if (/^new Map\(\)$/.test(expr)) return `Make an empty map called ${name} (a lookup table: key → value)`;
@@ -273,3 +280,41 @@ export function parseGrowth(time: string): Growth | null {
 
 export const PAIR_CHECK: Growth = { label: "O(n²)", f: (n) => n * n };
 export const TRY_ALL: Growth = { label: "O(2ⁿ)", f: (n) => 2 ** Math.min(n, 60) };
+
+export interface WorkedOut {
+  name: string;
+  /** The right-hand side as written, e.g. "target - nums[i]". */
+  expr: string;
+  /** The same with values filled in, e.g. "26 - 7". */
+  filled: string;
+  /** The new value, e.g. "19". */
+  result: string;
+}
+
+const NOT_A_VALUE = new Set(["Math", "true", "false", "null", "undefined", "new", "typeof", "Infinity", "NaN"]);
+
+/** For an assignment line, the sum worked out with real values: need = target - nums[i] = 26 - 7 = 19. */
+export function workedOut(lineText: string, before: TraceStep, after: TraceStep): WorkedOut | null {
+  const code = codeOf(lineText);
+  const m = /^(?:const\s+|let\s+|var\s+)?([A-Za-z_$][\w$]*)\s*([+\-*/%]?)=\s*([^=].*)$/.exec(code);
+  if (!m) return null;
+  const [, name, op, rhs] = m;
+  const expr = op ? `${name} ${op} ${rhs.trim()}` : rhs.trim();
+  if (/^-?\d+(\.\d+)?$|^(['"]).*\2$|^\[\]$|^\{\}$|^new\s/.test(expr)) return null;
+  let replaced = 0;
+  const filled = expr.replace(/[A-Za-z_$][\w$]*(?:\.length|\[[^\]\[]+\])?/g, (token, offset: number, all: string) => {
+    const before1 = all[offset - 1];
+    const after1 = all[offset + token.length];
+    if (before1 === "." || after1 === "(" || after1 === "." || NOT_A_VALUE.has(token)) return token;
+    const value = resolveExpr(token, before);
+    if (!value || value.type !== "prim") return token;
+    replaced++;
+    return value.value;
+  });
+  if (replaced === 0) return null;
+  const now = findVar(topFrame(after), name);
+  if (!now) return null;
+  const result = previewValue(now, after);
+  if (filled.trim() === result.trim()) return { name, expr, filled: "", result };
+  return { name, expr, filled, result };
+}

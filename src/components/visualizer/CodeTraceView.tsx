@@ -24,10 +24,12 @@ interface CodeTraceViewProps {
   hideComments?: boolean;
   /** Show this translation instead of `code`; the JS line numbers still drive the arrows. */
   mapped?: MappedCode | null;
+  /** Fill the parent height instead of the fixed panel height (Focus mode). */
+  fill?: boolean;
 }
 
 /** Read-only code with Python Tutor style arrows: green = just ran, red = runs next. */
-export function CodeTraceView({ code, nextLine, doneLine, isError, large = false, notes = [], hideComments = false, mapped = null }: CodeTraceViewProps) {
+export function CodeTraceView({ code, nextLine, doneLine, isError, large = false, notes = [], hideComments = false, mapped = null, fill = false }: CodeTraceViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const lines = mapped ? mapped.lines : code.split("\n");
   const nextSet = new Set(mapped ? (mapped.fromJs.get(nextLine) ?? []) : [nextLine]);
@@ -53,7 +55,8 @@ export function CodeTraceView({ code, nextLine, doneLine, isError, large = false
     <div
       ref={containerRef}
       className={cn(
-        "relative h-[22rem] overflow-auto rounded-lg border border-slate-700/60 bg-slate-950 py-3 font-code lg:h-[calc(100vh-var(--viz-top,10rem)-2.5rem)] lg:min-h-[22rem]",
+        "relative overflow-auto rounded-lg border border-slate-700/60 bg-slate-950 py-3 font-code",
+        fill ? "h-full" : "h-[22rem] lg:h-[calc(100vh-var(--viz-top,10rem)-2.5rem)] lg:min-h-[22rem]",
         large ? "text-[17px] leading-8" : "text-[15px] leading-7",
       )}
       aria-label="Code being visualized"
