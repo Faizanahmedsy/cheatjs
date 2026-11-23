@@ -55,7 +55,7 @@ export function Navbar() {
               <Image src={BILLU.mascot} alt="" width={30} height={30} className="h-8 w-8 rounded-full bg-[#fdf3dc] object-contain p-0.5" priority />
               <span className="flex flex-col leading-none">
                 <span className="font-headline text-[15px] font-bold text-slate-100 whitespace-nowrap">{SITE_NAME}</span>
-                <span className="hidden text-[10px] text-slate-500 sm:block">by Ustad Billu · formerly Cheat JS</span>
+                <span className="hidden whitespace-nowrap text-[10px] text-slate-500 xl:block">by Ustad Billu · formerly Cheat JS</span>
               </span>
             </Link>
 
@@ -112,8 +112,8 @@ export function Navbar() {
               className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-400 hover:text-slate-200"
             >
               <Search size={16} />
-              <span className="hidden lg:inline">Search</span>
-              <kbd className="hidden rounded border border-slate-600 px-1 text-[10px] lg:inline">Ctrl K</kbd>
+              <span className="hidden xl:inline">Search</span>
+              <kbd className="hidden whitespace-nowrap rounded border border-slate-600 px-1 text-[10px] 2xl:inline">Ctrl K</kbd>
             </button>
             <ModeToggle />
             {pathname === "/javascript" && (
