@@ -298,7 +298,7 @@ export function JsVisualizer() {
           </div>
           <Collapsible>
             <p className="text-sm text-slate-400">
-              Watch code run one line at a time, like a dry run on paper. {PROBLEMS.length} questions ready.{" "}
+              Watch code run one line at a time, like a dry run on paper. 40 Pre-DSA warm-ups, then {PROBLEMS.length} questions in Levels 1–3.{" "}
               <CollapsibleTrigger className="font-medium text-cyan-300 hover:text-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400">
                 How to read this screen?
               </CollapsibleTrigger>

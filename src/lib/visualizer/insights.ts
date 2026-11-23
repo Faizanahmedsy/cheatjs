@@ -203,7 +203,13 @@ export function expectedAnswer(example: string): string | null {
   return at === -1 ? null : example.slice(at + 1).trim();
 }
 
-const norm = (text: string) => text.replace(/\s+/g, "").replace(/'/g, '"').toLowerCase();
+/** Compare printed output loosely: ignore spaces, quotes and Map/Set wrappers. */
+const norm = (text: string) =>
+  text
+    .replace(/\b(Map|Set)\(\d+\)/g, "")
+    .replace(/=>/g, ":")
+    .replace(/["'\s]/g, "")
+    .toLowerCase();
 
 /** Does the printed output contain the expected answer? */
 export function answerMatches(stdout: string, expected: string): boolean {

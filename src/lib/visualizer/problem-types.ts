@@ -14,7 +14,43 @@ export const PROBLEM_GROUPS = [
   "Strings & Parsing",
 ] as const;
 
-export type ProblemGroup = (typeof PROBLEM_GROUPS)[number];
+/** Pre-DSA warm-up groups, one per loop pattern (from the DSA hub in Notion). */
+export const PRE_DSA_GROUPS = [
+  "Pre-DSA · Functions & maths",
+  "Pre-DSA · Conditions",
+  "Pre-DSA · Strings",
+  "Pre-DSA · Counter",
+  "Pre-DSA · Accumulator",
+  "Pre-DSA · Best so far",
+  "Pre-DSA · Flags & early exit",
+  "Pre-DSA · Nested loops",
+  "Pre-DSA · Frequency count",
+] as const;
+
+export type ProblemGroup = (typeof PROBLEM_GROUPS)[number] | (typeof PRE_DSA_GROUPS)[number];
+
+export type Level = "pre" | 1 | 2 | 3;
+
+export const LEVELS: { id: Level; label: string; short: string; blurb: string }[] = [
+  { id: "pre", label: "Pre-DSA", short: "Pre", blurb: "Loops and logic warm-ups: counter, accumulator, best so far, flags, pairs, frequency." },
+  { id: 1, label: "Level 1", short: "L1", blurb: "Easy classics. One idea each." },
+  { id: 2, label: "Level 2", short: "L2", blurb: "Medium array, string, stack and search patterns." },
+  { id: 3, label: "Level 3", short: "L3", blurb: "Medium lists, trees, graphs, intervals, DP and backtracking." },
+];
+
+const LEVEL_2_GROUPS = new Set<string>(["Arrays & Hashing", "Two Pointers", "Sliding Window", "Stack & Queue", "Binary Search", "Strings & Parsing"]);
+
+/** Pre-DSA → Easy (L1) → Medium basics (L2) → Medium structures (L3). */
+export function levelOf(problem: { group: string; difficulty: string }): Level {
+  if (problem.group.startsWith("Pre-DSA")) return "pre";
+  if (problem.difficulty === "Easy") return 1;
+  return LEVEL_2_GROUPS.has(problem.group) ? 2 : 3;
+}
+
+/** "P3" for Pre-DSA warm-ups, the plain number otherwise. */
+export function displayNumber(problem: { number: number }): string {
+  return problem.number > 1000 ? `P${problem.number - 1000}` : String(problem.number);
+}
 
 /**
  * A classic practice problem, ready to dry-run in the JS Visualizer.

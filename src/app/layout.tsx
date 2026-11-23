@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     "Ustad Billu ki Class (formerly Cheat JS): free visual lessons for DSA, Gen AI, AWS and JavaScript, from Ustad Billu.",
 };
 
-export const viewport: Viewport = { themeColor: "#151c18" };
+export const viewport: Viewport = { themeColor: "#0e0f0f" };
 
 export default function RootLayout({
   children,

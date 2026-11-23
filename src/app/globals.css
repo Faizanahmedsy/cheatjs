@@ -4,24 +4,24 @@
 
 @layer base {
   :root {
-    --background: 146 15% 9%;
-    --foreground: 39 52% 94%;
-    --card: 146 15% 11%;
-    --card-foreground: 39 52% 94%;
-    --popover: 146 15% 11%;
-    --popover-foreground: 39 52% 94%;
+    --background: 180 3% 6%;
+    --foreground: 40 30% 96%;
+    --card: 180 3% 8%;
+    --card-foreground: 40 30% 96%;
+    --popover: 180 3% 8%;
+    --popover-foreground: 40 30% 96%;
     --primary: 18 89% 60%;
     --primary-foreground: 210 20% 98%;
-    --secondary: 140 9% 19%;
+    --secondary: 60 2% 14%;
     --secondary-foreground: 210 20% 98%;
-    --muted: 140 9% 19%;
-    --muted-foreground: 39 12% 62%;
+    --muted: 60 2% 14%;
+    --muted-foreground: 40 6% 62%;
     --accent: 54 96% 76%;
     --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
-    --border: 140 9% 22%;
-    --input: 140 9% 22%;
+    --border: 60 2% 18%;
+    --input: 60 2% 18%;
     --ring: 18 89% 60%;
     --radius: 1rem;
     --chart-1: 220 70% 50%;
@@ -30,7 +30,7 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    --sidebar-background: 146 15% 9%;
+    --sidebar-background: 180 3% 6%;
     --sidebar-foreground: 210 20% 98%;
     --sidebar-primary: 173 90% 65%;
     --sidebar-primary-foreground: 210 20% 98%;
@@ -40,24 +40,24 @@
     --sidebar-ring: 173 90% 65%;
   }
   .dark {
-    --background: 146 15% 9%;
-    --foreground: 39 52% 94%;
-    --card: 146 15% 11%;
-    --card-foreground: 39 52% 94%;
-    --popover: 146 15% 11%;
-    --popover-foreground: 39 52% 94%;
+    --background: 180 3% 6%;
+    --foreground: 40 30% 96%;
+    --card: 180 3% 8%;
+    --card-foreground: 40 30% 96%;
+    --popover: 180 3% 8%;
+    --popover-foreground: 40 30% 96%;
     --primary: 18 89% 60%;
     --primary-foreground: 210 20% 98%;
-    --secondary: 140 9% 19%;
+    --secondary: 60 2% 14%;
     --secondary-foreground: 210 20% 98%;
-    --muted: 140 9% 19%;
-    --muted-foreground: 39 12% 62%;
+    --muted: 60 2% 14%;
+    --muted-foreground: 40 6% 62%;
     --accent: 54 96% 76%;
     --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
-    --border: 140 9% 22%;
-    --input: 140 9% 22%;
+    --border: 60 2% 18%;
+    --input: 60 2% 18%;
     --ring: 18 89% 60%;
     --radius: 1rem;
     --chart-1: 220 70% 50%;
@@ -66,7 +66,7 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    --sidebar-background: 146 15% 9%;
+    --sidebar-background: 180 3% 6%;
     --sidebar-foreground: 210 20% 98%;
     --sidebar-primary: 173 90% 65%;
     --sidebar-primary-foreground: 210 20% 98%;
@@ -149,42 +149,44 @@
 .ai-lab,
 .ai-lab-pop {
   --lab-mono: Inter, ui-sans-serif, system-ui, sans-serif; /* same font as the rest of the app (was a code font) */
-  --lab-bg: #070d1c;
-  --lab-scene: #0a1428;
-  --lab-panel: #0c1526;
-  --lab-raised: #111d33;
-  --lab-border: #1c2a44;
-  --lab-grid: rgba(96, 165, 250, 0.13);
-  --lab-text: #dbe4f3;
-  --lab-muted: #7d8aa5;
-  --lab-accent: #60a5fa;
-  --t-blue: #60a5fa;
-  --t-cyan: #22d3ee;
-  --t-violet: #a78bfa;
-  --t-amber: #fbbf24;
-  --t-green: #34d399;
-  --t-rose: #fb7185;
-  --t-slate: #94a3b8;
+  /* Ustad Billu palette: ink night, paper text, terra accent */
+  --lab-bg: #0e0f0f;
+  --lab-scene: #121313;
+  --lab-panel: #161717;
+  --lab-raised: #1f2020;
+  --lab-border: #2e2f2d;
+  --lab-grid: rgba(243, 189, 79, 0.08);
+  --lab-text: #f2ebdd;
+  --lab-muted: #a99d87;
+  --lab-accent: #f5793f;
+  --t-blue: #7aa2f7;
+  --t-cyan: #f5793f;
+  --t-violet: #c4a1ff;
+  --t-amber: #f3bd4f;
+  --t-green: #3fc983;
+  --t-rose: #f07a8a;
+  --t-slate: #a99d87;
   color: var(--lab-text);
 }
 .ai-lab[data-theme="light"],
 .ai-lab-pop[data-theme="light"] {
-  --lab-bg: #f5f7fb;
-  --lab-scene: #eef2f9;
+  /* Billu's Warm Paper */
+  --lab-bg: #fbfaf7;
+  --lab-scene: #f4f2ec;
   --lab-panel: #ffffff;
-  --lab-raised: #f1f4fa;
-  --lab-border: #d6deeb;
-  --lab-grid: rgba(37, 99, 235, 0.12);
-  --lab-text: #15213a;
-  --lab-muted: #5b6782;
-  --lab-accent: #2563eb;
-  --t-blue: #2563eb;
-  --t-cyan: #0e7490;
-  --t-violet: #7c3aed;
-  --t-amber: #b45309;
-  --t-green: #047857;
-  --t-rose: #e11d48;
-  --t-slate: #64748b;
+  --lab-raised: #f3f1eb;
+  --lab-border: #e2ddd2;
+  --lab-grid: rgba(27, 42, 34, 0.08);
+  --lab-text: #1b2a22;
+  --lab-muted: #6a6253;
+  --lab-accent: #c2532f;
+  --t-blue: #2f5fbf;
+  --t-cyan: #c2532f;
+  --t-violet: #6d3fc0;
+  --t-amber: #a06a10;
+  --t-green: #0f7a46;
+  --t-rose: #c0304a;
+  --t-slate: #6a6253;
 }
 @keyframes lab-dash {
   to {
@@ -297,22 +299,22 @@
 /* White mode: shadcn tokens (palette colours flip via the Tailwind plugin). */
 html[data-mode="light"] {
   color-scheme: light !important;
-  --background: 39 52% 94%;
-  --foreground: 146 22% 14%;
-  --card: 43 100% 99%;
-  --card-foreground: 146 22% 14%;
-  --popover: 43 100% 99%;
-  --popover-foreground: 146 22% 14%;
+  --background: 40 25% 98.5%;
+  --foreground: 60 3% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 60 3% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 60 3% 10%;
   --primary: 14 61% 47%;
   --primary-foreground: 43 100% 99%;
-  --secondary: 39 40% 88%;
+  --secondary: 40 15% 93%;
   --secondary-foreground: 146 22% 14%;
-  --muted: 39 40% 88%;
+  --muted: 40 15% 93%;
   --muted-foreground: 40 8% 38%;
   --accent: 40 87% 63%;
   --accent-foreground: 146 22% 14%;
-  --border: 39 30% 80%;
-  --input: 39 30% 80%;
+  --border: 40 12% 87%;
+  --input: 40 12% 87%;
   --ring: 14 61% 47%;
 }
 html[data-mode="light"] body {

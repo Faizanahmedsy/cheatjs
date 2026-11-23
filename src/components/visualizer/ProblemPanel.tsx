@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CheckCircle2, ChevronDown, Clock, Eye, HardDrive, Puzzle } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import type { Problem } from "@/lib/visualizer/problem-types";
+import { displayNumber, levelOf, LEVELS, type Problem } from "@/lib/visualizer/problem-types";
 import { problemsInGroup } from "@/lib/visualizer/catalog";
 import { PATTERN_INFO } from "@/lib/visualizer/patterns";
 import { RichText } from "./RichText";
@@ -71,8 +71,11 @@ export function ProblemPanel({
       <header className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="rounded-full bg-cyan-400/15 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-cyan-200">The question</span>
         <h2 className="font-headline text-xl font-bold text-slate-100">
-          <span className="text-slate-400">{problem.number}.</span> {problem.title}
+          <span className="text-slate-400">{displayNumber(problem)}.</span> {problem.title}
         </h2>
+        <span className="rounded-full border border-slate-600 px-2 py-0.5 text-xs font-semibold text-slate-200">
+          {LEVELS.find((l) => l.id === levelOf(problem))?.label}
+        </span>
         <DifficultyBadge difficulty={problem.difficulty} />
         <span className="text-xs text-slate-500">{problem.group}</span>
       </header>
@@ -91,7 +94,7 @@ export function ProblemPanel({
         <p className="mt-2 flex items-start gap-2 text-sm text-slate-300">
           <Puzzle className="mt-0.5 h-4 w-4 shrink-0 text-violet-300" aria-hidden="true" />
           <span>
-            <span className="font-semibold text-violet-200">Pattern: {problem.group}.</span> {pattern.idea}
+            <span className="font-semibold text-violet-200">Pattern: {problem.group.replace("Pre-DSA · ", "")}.</span> {pattern.idea}
           </span>
         </p>
       )}
@@ -152,7 +155,7 @@ export function ProblemPanel({
                 className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-200 hover:border-cyan-400/60 hover:text-cyan-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
               >
                 <span className={cn("h-1.5 w-1.5 rounded-full", DIFFICULTY_STYLE[p.difficulty].dot)} aria-hidden="true" />
-                {p.number}. {p.title}
+                {displayNumber(p)}. {p.title}
                 {done?.has(p.id) && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" aria-label="done" />}
               </button>
             ))}

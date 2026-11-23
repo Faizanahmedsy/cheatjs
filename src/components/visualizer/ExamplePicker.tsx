@@ -5,9 +5,9 @@ import { Check, CheckCircle2, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { findEntry, problemLabel, problemsInGroup, sameSelection, type Selection } from "@/lib/visualizer/catalog";
+import { findEntry, groupsForLevel, problemLabel, sameSelection, type Selection } from "@/lib/visualizer/catalog";
 import { EXAMPLE_GROUPS, EXAMPLES } from "@/lib/visualizer/examples";
-import { PROBLEM_GROUPS } from "@/lib/visualizer/problem-types";
+import { LEVELS } from "@/lib/visualizer/problem-types";
 import { DIFFICULTY_STYLE } from "./ProblemPanel";
 
 const GROUP_CLASS = "[&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wide [&_[cmdk-group-heading]]:text-slate-500";
@@ -45,15 +45,15 @@ export function ExamplePicker({ value, onChange, done }: { value: Selection; onC
           <CommandInput placeholder="Search by number or title…" className="text-slate-100 placeholder:text-slate-500" />
           <CommandList className="max-h-[min(26rem,60vh)]">
             <CommandEmpty>No problem or example matches.</CommandEmpty>
-            {PROBLEM_GROUPS.map((group) => (
-              <CommandGroup key={group} heading={group} className={GROUP_CLASS}>
-                {problemsInGroup(group).map((problem) => {
+            {LEVELS.flatMap((level) => groupsForLevel(level.id).map(({ group, problems }) => (
+              <CommandGroup key={group} heading={level.id === "pre" ? group : `${level.label} · ${group}`} className={GROUP_CLASS}>
+                {problems.map((problem) => {
                   const selection: Selection = { kind: "problem", id: problem.id };
                   return (
                     <CommandItem
                       key={problem.id}
                       value={`problem ${problemLabel(problem)} ${problem.id}`}
-                      keywords={[String(problem.number), problem.difficulty]}
+                      keywords={[String(problem.number), problem.difficulty, problem.group]}
                       onSelect={() => pick(selection)}
                       className={ITEM_CLASS}
                     >
@@ -70,7 +70,7 @@ export function ExamplePicker({ value, onChange, done }: { value: Selection; onC
                   );
                 })}
               </CommandGroup>
-            ))}
+            )))}
             <CommandSeparator className="bg-slate-800" />
             {EXAMPLE_GROUPS.map((group) => (
               <CommandGroup key={group} heading={`Example · ${group}`} className={GROUP_CLASS}>

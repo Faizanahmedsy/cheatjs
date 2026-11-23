@@ -49,17 +49,18 @@ console.log(binarySearch(sorted, 11));`,
     id: "reverse-two-pointers",
     label: "Two pointers: reverse an array",
     group: "Patterns",
-    code: `const arr = [1, 2, 3, 4, 5, 6];
-let left = 0;
-let right = arr.length - 1;
-
-while (left < right) {
-  [arr[left], arr[right]] = [arr[right], arr[left]];
-  left++;
-  right--;
+    code: `function reverseArray(arr) {
+  let left = 0;
+  let right = arr.length - 1;
+  while (left < right) {
+    [arr[left], arr[right]] = [arr[right], arr[left]];
+    left++;
+    right--;
+  }
+  return arr;
 }
 
-console.log(arr);`,
+console.log(reverseArray([1, 2, 3, 4, 5, 6]));`,
   },
   {
     id: "pair-sum",
@@ -228,15 +229,20 @@ console.log(isBalanced("{[()]}"));`,
     id: "queue",
     label: "Queue: first in, first out",
     group: "Data structures",
-    code: `const queue = [];
-queue.push("Ana");
-queue.push("Ben");
-queue.push("Cy");
+    code: `function serveQueue(people) {
+  const queue = [];
+  for (const person of people) {
+    queue.push(person);
+  }
+  const served = [];
+  while (queue.length > 0) {
+    const person = queue.shift();
+    served.push(person);
+  }
+  return served;
+}
 
-while (queue.length > 0) {
-  const person = queue.shift();
-  console.log("Serving", person);
-}`,
+console.log(serveQueue(["Ana", "Ben", "Cy"]));`,
   },
   {
     id: "reverse-linked-list",
@@ -249,64 +255,70 @@ while (queue.length > 0) {
   }
 }
 
-let head = new Node(1, new Node(2, new Node(3)));
-
-let prev = null;
-let curr = head;
-while (curr !== null) {
-  const next = curr.next;
-  curr.next = prev;
-  prev = curr;
-  curr = next;
+function reverseList(head) {
+  let prev = null;
+  let curr = head;
+  while (curr !== null) {
+    const next = curr.next;
+    curr.next = prev;
+    prev = curr;
+    curr = next;
+  }
+  return prev;
 }
-head = prev;
-console.log(head.value);`,
+
+const head = new Node(1, new Node(2, new Node(3)));
+console.log(reverseList(head).value);`,
   },
   {
     id: "matrix",
     label: "Matrix traversal (2D array)",
     group: "Data structures",
-    code: `const grid = [
-  [1, 2, 3],
-  [4, 5, 6],
-  [7, 8, 9],
-];
-
-let total = 0;
-for (let row = 0; row < grid.length; row++) {
-  for (let col = 0; col < grid[row].length; col++) {
-    total += grid[row][col];
+    code: `function gridSum(grid) {
+  let total = 0;
+  for (let row = 0; row < grid.length; row++) {
+    for (let col = 0; col < grid[row].length; col++) {
+      total += grid[row][col];
+    }
   }
+  return total;
 }
-console.log("Sum:", total);`,
+
+const grid = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+console.log(gridSum(grid));`,
   },
   {
     id: "sum-array",
     label: "Sum an array with a loop",
     group: "JavaScript basics",
-    code: `const prices = [12, 5, 8, 20];
-let sum = 0;
-
-for (let i = 0; i < prices.length; i++) {
-  sum = sum + prices[i];
+    code: `function sumArray(prices) {
+  let sum = 0;
+  for (let i = 0; i < prices.length; i++) {
+    sum = sum + prices[i];
+  }
+  return sum;
 }
 
-console.log("Total:", sum);`,
+console.log(sumArray([12, 5, 8, 20]));`,
   },
   {
     id: "references",
     label: "Objects, nested arrays & aliasing",
     group: "JavaScript basics",
-    code: `const user = { name: "Ada", tags: ["math", "code"] };
-const alias = user;          // same object, two names
-alias.name = "Ada Lovelace";
+    code: `function aliasingDemo() {
+  const user = { name: "Ada", tags: ["math", "code"] };
+  const alias = user;          // same object, two names
+  alias.name = "Ada Lovelace";
 
-const copy = { ...user };    // new object, but tags is shared!
-copy.tags.push("poetry");
+  const copy = { ...user };    // new object, but tags is shared!
+  copy.tags.push("poetry");
 
-const matrix = [[1, 2], [3, 4]];
-matrix[1][0] = 99;
-console.log(user.name, user.tags, matrix);`,
+  const matrix = [[1, 2], [3, 4]];
+  matrix[1][0] = 99;
+  return [user.name, user.tags, matrix];
+}
+
+console.log(aliasingDemo());`,
   },
   {
     id: "closure",

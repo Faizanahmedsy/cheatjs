@@ -2,6 +2,42 @@ import type { ProblemGroup } from "./problem-types";
 
 /** One-line idea and a tiny text picture for each problem pattern. */
 export const PATTERN_INFO: Record<ProblemGroup, { idea: string; picture: string }> = {
+  "Pre-DSA · Functions & maths": {
+    idea: "A function takes inputs, does one calculation and returns the answer.",
+    picture: "(4, 3) → width × height → 12",
+  },
+  "Pre-DSA · Conditions": {
+    idea: "Turn each rule into a yes / no check. Only the first branch that says yes runs.",
+    picture: "score 82: ≥ 90? no → ≥ 75? yes → \"B\"",
+  },
+  "Pre-DSA · Strings": {
+    idea: "A string is a row of characters with positions 0, 1, 2… Walk it like a list.",
+    picture: "\"code\"\n c o d e\n 0 1 2 3",
+  },
+  "Pre-DSA · Counter": {
+    idea: "Start count at 0 and add 1 each time an item matches the rule.",
+    picture: "[3, 8, 5, 6] → even? 0 → 1 → 1 → 2",
+  },
+  "Pre-DSA · Accumulator": {
+    idea: "Keep a running result (sum, product, new list) and update it with every item.",
+    picture: "total: 0 → +4 → +7 → +1 = 12",
+  },
+  "Pre-DSA · Best so far": {
+    idea: "Remember the best value seen so far and replace it only when something better shows up.",
+    picture: "[7, 3, 12, 5] → best 7 → 7 → 12 → 12",
+  },
+  "Pre-DSA · Flags & early exit": {
+    idea: "Stop as soon as you know the answer: return early, or flip a yes / no flag and break.",
+    picture: "[4, 8, 15] find 8 → 4 no, 8 yes → stop",
+  },
+  "Pre-DSA · Nested loops": {
+    idea: "Outer loop picks one item, inner loop compares it with every item after it (start at outer + 1).",
+    picture: "first=0: (0,1) (0,2) (0,3)\nfirst=1: (1,2) (1,3)",
+  },
+  "Pre-DSA · Frequency count": {
+    idea: "Use a map from item to count; add 1 to an item's count each time you see it.",
+    picture: "\"banana\" → { b:1, a:3, n:2 }",
+  },
   "Arrays & Hashing": {
     idea: "Remember what you have seen in a map or set, so later items can be checked in one step instead of a second loop.",
     picture: "[2, 7, 11]  →  seen = { 2:0, 7:1 }  →  need 2? yes ✓",

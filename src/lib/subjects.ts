@@ -43,7 +43,7 @@ export const SUBJECTS: Subject[] = [
     id: "dsa",
     label: "DSA",
     emoji: "🧩",
-    blurb: "Arrays to graphs. Watch 134 questions run line by line.",
+    blurb: "Pre-DSA warm-ups, then Levels 1–3. Watch 174 questions run line by line.",
     accent: "from-emerald-400/20 border-emerald-400/40 text-emerald-200",
     tabs: [
       { kind: "see", label: "Visualizer", href: "/visualizer" },

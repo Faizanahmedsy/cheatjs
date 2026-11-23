@@ -3,11 +3,17 @@ import type { ReactNode } from "react";
 const KEYWORDS = new Set([
   "const", "let", "var", "function", "return", "if", "else", "for", "while", "do", "break", "continue", "new", "of", "in",
   "class", "switch", "case", "default", "typeof", "throw", "try", "catch", "finally", "async", "await",
+  // Python
+  "def", "elif", "not", "and", "or", "is", "lambda", "pass", "import", "from", "as", "with", "yield", "global", "nonlocal",
+  // Java / C++
+  "public", "private", "protected", "static", "void", "int", "long", "double", "float", "boolean", "bool", "char", "String",
+  "string", "auto", "final", "struct", "include", "using", "namespace", "std", "vector", "unordered_map", "unordered_set",
+  "HashMap", "HashSet", "ArrayList", "List", "Map", "Set", "Integer", "Character", "Boolean", "Deque", "ArrayDeque",
 ]);
-const LITERALS = new Set(["true", "false", "null", "undefined", "this", "NaN", "Infinity"]);
+const LITERALS = new Set(["true", "false", "null", "undefined", "this", "NaN", "Infinity", "True", "False", "None", "self", "nullptr"]);
 
-/** comment | string | number | identifier */
-const TOKEN = /(\/\/.*$)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_$][\w$]*)/g;
+/** comment (// or #) | string | number | identifier */
+const TOKEN = /(\/\/.*$|#(?!include).*$)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_$][\w$]*)/g;
 
 /** Tiny one-line JavaScript colouring: enough to make code easy on the eye without a parser. */
 export function highlightLine(text: string): ReactNode[] {

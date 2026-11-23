@@ -4,8 +4,8 @@ import { useMemo, useState } from "react";
 import { CheckCircle2, LayoutGrid, Search } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { PROBLEMS } from "@/lib/visualizer/catalog";
-import { PROBLEM_GROUPS, type Problem } from "@/lib/visualizer/problem-types";
+import { ALL_PROBLEMS as PROBLEMS } from "@/lib/visualizer/catalog";
+import { displayNumber, levelOf, LEVELS, PRE_DSA_GROUPS, PROBLEM_GROUPS, type Level, type Problem } from "@/lib/visualizer/problem-types";
 import { DIFFICULTY_STYLE } from "./ProblemPanel";
 
 type Status = "all" | "todo" | "done";
@@ -34,17 +34,19 @@ export function ProblemBrowser({ currentId, done, onPick }: { currentId: string 
   const [difficulty, setDifficulty] = useState<Problem["difficulty"] | "All">("All");
   const [group, setGroup] = useState<string>("All");
   const [status, setStatus] = useState<Status>("all");
+  const [level, setLevel] = useState<Level | "all">("all");
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
     return PROBLEMS.filter(
       (p) =>
+        (level === "all" || levelOf(p) === level) &&
         (difficulty === "All" || p.difficulty === difficulty) &&
         (group === "All" || p.group === group) &&
         (status === "all" || (status === "done" ? done.has(p.id) : !done.has(p.id))) &&
         (!q || p.title.toLowerCase().includes(q) || String(p.number) === q || p.group.toLowerCase().includes(q)),
     );
-  }, [query, difficulty, group, status, done]);
+  }, [query, difficulty, group, status, done, level]);
 
   const doneCount = PROBLEMS.filter((p) => done.has(p.id)).length;
   const percent = Math.round((doneCount / PROBLEMS.length) * 100);
@@ -84,6 +86,34 @@ export function ProblemBrowser({ currentId, done, onPick }: { currentId: string 
             className="h-10 w-full bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-500"
           />
         </label>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4" role="group" aria-label="Level">
+          {LEVELS.map((l) => {
+            const inLevel = PROBLEMS.filter((p) => levelOf(p) === l.id);
+            const finished = inLevel.filter((p) => done.has(p.id)).length;
+            const on = level === l.id;
+            return (
+              <button
+                key={String(l.id)}
+                type="button"
+                aria-pressed={on}
+                onClick={() => {
+                  setLevel(on ? "all" : l.id);
+                  setGroup("All");
+                }}
+                className={cn(
+                  "rounded-xl border p-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400",
+                  on ? "border-cyan-400 bg-cyan-400/15" : "border-slate-700 bg-slate-950/40 hover:border-slate-500",
+                )}
+              >
+                <span className="block text-sm font-bold text-slate-100">{l.label}</span>
+                <span className="block text-[11px] leading-snug text-slate-400">{l.blurb}</span>
+                <span className="mt-1 block text-[11px] text-emerald-300">
+                  {finished}/{inLevel.length} done
+                </span>
+              </button>
+            );
+          })}
+        </div>
         <div className="flex flex-wrap gap-1.5" role="group" aria-label="Difficulty and status">
           {DIFFICULTIES.map((d) => (
             <Chip key={d} on={difficulty === d} onClick={() => setDifficulty(d)}>
@@ -98,7 +128,7 @@ export function ProblemBrowser({ currentId, done, onPick }: { currentId: string 
           ))}
         </div>
         <div className="flex gap-1.5 overflow-x-auto pb-1" role="group" aria-label="Pattern">
-          {["All", ...PROBLEM_GROUPS].map((g) => (
+          {["All", ...(level === "pre" ? PRE_DSA_GROUPS : level === "all" ? [...PRE_DSA_GROUPS, ...PROBLEM_GROUPS] : PROBLEM_GROUPS)].map((g) => (
             <Chip key={g} on={group === g} onClick={() => setGroup(g)}>
               {g === "All" ? "All patterns" : g}
             </Chip>
@@ -124,10 +154,10 @@ export function ProblemBrowser({ currentId, done, onPick }: { currentId: string 
                   <span className={cn("mt-1.5 h-2 w-2 shrink-0 rounded-full", DIFFICULTY_STYLE[p.difficulty].dot)} aria-hidden="true" />
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-semibold text-slate-100">
-                      <span className="text-slate-500">{p.number}.</span> {p.title}
+                      <span className="text-slate-500">{displayNumber(p)}.</span> {p.title}
                     </span>
                     <span className="text-xs text-slate-400">
-                      {p.group} · {p.difficulty}
+                      {LEVELS.find((l) => l.id === levelOf(p))?.short} · {p.group.replace("Pre-DSA · ", "")}
                     </span>
                   </span>
                   {isDone && <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" aria-label="done" />}

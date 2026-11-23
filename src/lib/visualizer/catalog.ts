@@ -4,7 +4,7 @@
  * example may share an id (both have "two-sum").
  */
 import { DEFAULT_EXAMPLE, EXAMPLES, type Example } from "./examples";
-import { PROBLEM_GROUPS, type Problem } from "./problem-types";
+import { displayNumber, levelOf, PRE_DSA_GROUPS, PROBLEM_GROUPS, type Level, type Problem, type ProblemGroup } from "./problem-types";
 import { HASHING_PROBLEMS } from "./problems-hashing";
 import { POINTER_PROBLEMS } from "./problems-pointers";
 import { STACK_SEARCH_PROBLEMS } from "./problems-stack-search";
@@ -12,6 +12,7 @@ import { LIST_STRING_PROBLEMS } from "./problems-lists-strings";
 import { TREE_GRAPH_PROBLEMS } from "./problems-trees-graphs";
 import { INTERVAL_DP_PROBLEMS } from "./problems-intervals-dp";
 import { BACKTRACKING_PROBLEMS } from "./problems-backtracking";
+import { PRE_DSA_PROBLEMS } from "./problems-pre-dsa";
 
 export type CatalogEntry =
   | { kind: "problem"; id: string; label: string; code: string; problem: Problem }
@@ -29,17 +30,31 @@ export const PROBLEMS: Problem[] = [
   ...BACKTRACKING_PROBLEMS,
 ].sort((a, b) => a.number - b.number);
 
-export function problemLabel(problem: Problem): string {
-  return `${problem.number}. ${problem.title}`;
+/** The 40 Pre-DSA warm-ups (shown first in the picker, not counted in the 134). */
+export const PRE_PROBLEMS: Problem[] = PRE_DSA_PROBLEMS;
+
+/** Everything the picker can open: Pre-DSA first, then the 134 problems. */
+export const ALL_PROBLEMS: Problem[] = [...PRE_DSA_PROBLEMS, ...PROBLEMS];
+
+/** Groups in picker order for one level, with the problems in each. */
+export function groupsForLevel(level: Level): { group: ProblemGroup; problems: Problem[] }[] {
+  const groups: readonly ProblemGroup[] = level === "pre" ? PRE_DSA_GROUPS : PROBLEM_GROUPS;
+  return groups
+    .map((group) => ({ group, problems: ALL_PROBLEMS.filter((p) => p.group === group && levelOf(p) === level) }))
+    .filter((entry) => entry.problems.length > 0);
 }
 
-export function problemsInGroup(group: (typeof PROBLEM_GROUPS)[number]): Problem[] {
-  return PROBLEMS.filter((problem) => problem.group === group);
+export function problemLabel(problem: Problem): string {
+  return `${displayNumber(problem)}. ${problem.title}`;
+}
+
+export function problemsInGroup(group: ProblemGroup): Problem[] {
+  return ALL_PROBLEMS.filter((problem) => problem.group === group);
 }
 
 export function findEntry(selection: Selection): CatalogEntry | null {
   if (selection.kind === "problem") {
-    const problem = PROBLEMS.find((item) => item.id === selection.id);
+    const problem = ALL_PROBLEMS.find((item) => item.id === selection.id);
     return problem ? { kind: "problem", id: problem.id, label: problemLabel(problem), code: problem.code, problem } : null;
   }
   if (selection.kind === "example") {
