@@ -7,27 +7,27 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const LABELS: Record<string, string> = {
-  "🧒": "border-pink-400/70 bg-pink-400/5",
-  "📖": "border-sky-400/70 bg-sky-400/5",
-  "📚": "border-violet-400/70 bg-violet-400/5",
-  "⚖": "border-amber-400/70 bg-amber-400/5",
-  "🎯": "border-emerald-400/70 bg-emerald-400/5",
-  "🪤": "border-red-400/70 bg-red-400/5",
-  "📝": "border-cyan-400/70 bg-cyan-400/5",
-  "🔁": "border-slate-400/70 bg-slate-400/5",
+  "🧒": "",
+  "📖": "",
+  "📚": "",
+  "⚖": "",
+  "🎯": "",
+  "🪤": "",
+  "📝": "",
+  "🔁": "",
 };
 
 const TONES: Record<string, string> = {
-  blue: "border-sky-400/70 bg-sky-400/5",
-  yellow: "border-yellow-400/70 bg-yellow-400/5",
-  purple: "border-violet-400/70 bg-violet-400/5",
-  gray: "border-slate-500/70 bg-slate-500/5",
-  green: "border-emerald-400/70 bg-emerald-400/5",
-  red: "border-red-400/70 bg-red-400/5",
-  orange: "border-orange-400/70 bg-orange-400/5",
-  pink: "border-pink-400/70 bg-pink-400/5",
-  brown: "border-amber-700/70 bg-amber-700/5",
-  default: "border-slate-500/70 bg-slate-500/5",
+  blue: "bg-sky-400/[0.07]",
+  yellow: "bg-yellow-400/[0.07]",
+  purple: "bg-violet-400/[0.07]",
+  gray: "bg-slate-500/[0.07]",
+  green: "bg-emerald-400/[0.07]",
+  red: "bg-red-400/[0.07]",
+  orange: "bg-orange-400/[0.07]",
+  pink: "bg-pink-400/[0.07]",
+  brown: "bg-amber-700/[0.07]",
+  default: "bg-slate-500/[0.07]",
 };
 
 function firstChild(children: ReactNode): ReactNode {
@@ -60,12 +60,12 @@ const components: Components = {
     if (typeof first === "string") {
       const cp = String.fromCodePoint(first.codePointAt(0) ?? 0);
       const tone = LABELS[cp];
-      if (tone) {
+      if (tone !== undefined) {
         return (
           <p
             {...props}
             className={cn(
-              "mt-6 mb-2 border-l-2 py-0.5 pl-4 text-[1.0625rem] leading-[1.75] text-slate-200 [&::first-line]:text-[0.8rem] [&::first-line]:font-semibold [&::first-line]:uppercase [&::first-line]:tracking-wider [&::first-line]:text-slate-400",
+              "mt-6 mb-2 text-[1.0625rem] leading-[1.75] text-slate-200 [&::first-line]:text-[0.8rem] [&::first-line]:font-semibold [&::first-line]:uppercase [&::first-line]:tracking-wider [&::first-line]:text-slate-400",
               tone
             )}
           >
@@ -82,7 +82,7 @@ const components: Components = {
         return (
           <p
             {...props}
-            className="my-3 rounded-md border-l-2 border-emerald-400/70 bg-emerald-400/5 px-4 py-2.5 text-[1.0625rem] leading-[1.75] text-slate-200"
+            className="my-3 rounded-xl bg-emerald-400/10 px-4 py-2.5 text-[1.0625rem] leading-[1.75] text-slate-200"
           >
             {children}
           </p>
@@ -134,7 +134,7 @@ const components: Components = {
   em: ({ node, ...props }) => <em {...props} className="text-slate-200" />,
   hr: () => <hr className="my-10 border-slate-700/60" />,
   blockquote: ({ node, ...props }) => (
-    <blockquote {...props} className="my-5 border-l-2 border-slate-500 pl-4 text-slate-300" />
+    <blockquote {...props} className="my-5 rounded-xl bg-slate-800/40 px-4 py-3 text-slate-300" />
   ),
   code: ({ node, className, children, ...props }) => {
     const isBlock = typeof className === "string" && className.includes("language-");
@@ -165,7 +165,7 @@ const components: Components = {
       const icon = String(p.dataIcon ?? "💡");
       const tone = TONES[String(p.dataTone ?? "default")] ?? TONES.default;
       return (
-        <div className={cn("my-6 flex gap-3 rounded-lg border-l-2 px-4 py-3", tone)}>
+        <div className={cn("my-6 flex gap-3 rounded-xl border border-slate-700/50 px-4 py-3", tone)}>
           <span className="text-xl leading-7" aria-hidden>
             {icon}
           </span>

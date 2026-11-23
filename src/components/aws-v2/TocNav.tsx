@@ -68,7 +68,7 @@ export function TocNav({ toc }: { toc: Item[] }) {
           <kbd className="rounded border border-slate-700 px-1">J</kbd> <kbd className="rounded border border-slate-700 px-1">K</kbd>
         </span>
       </p>
-      <ul ref={listRef} className="space-y-0.5 border-l border-slate-700/60 text-sm">
+      <ul ref={listRef} className="space-y-0.5 text-sm">
         {toc.map((t, index) => {
           const on = t.id === active;
           // Sub-sections only show under the main section being read, so the list stays short.
@@ -83,9 +83,9 @@ export function TocNav({ toc }: { toc: Item[] }) {
                   history.replaceState(null, "", `#${t.id}`);
                 }}
                 className={cn(
-                  "-ml-px block border-l-2 py-1 transition-colors",
-                  t.level === 3 ? "pl-6 text-[13px]" : "pl-3 text-[14px]",
-                  on ? "border-cyan-400 bg-cyan-400/10 font-medium text-slate-50" : "border-transparent text-slate-400 hover:border-slate-500 hover:text-slate-100",
+                  "block rounded-md py-1 pr-2 transition-colors",
+                  t.level === 3 ? "pl-5 text-[13px]" : "pl-2 text-[14px]",
+                  on ? "bg-slate-800 font-medium text-slate-50" : "text-slate-400 hover:text-slate-100",
                 )}
               >
                 {t.text}

@@ -55,16 +55,16 @@ export function V2Nav({ trackId = "aws" }: { trackId?: Track["id"] }) {
           {GROUPS.map((group) => (
             <div key={group} className="mb-5">
               <p className="mb-1.5 px-3 text-[13px] font-semibold text-slate-100">{group}</p>
-              <div className="ml-3 flex flex-col border-l border-slate-700/60">
+              <div className="flex flex-col gap-0.5">
               {track.pages.filter((p) => p.group === group).map((p) => (
                 <Link
                   key={p.slug}
                   href={hrefFor(p.slug, track)}
                   className={cn(
-                    "-ml-px flex items-baseline justify-between gap-3 border-l-2 py-1.5 pl-3 pr-2 text-[15px] transition-colors",
+                    "flex items-baseline justify-between gap-3 rounded-lg px-3 py-1.5 text-[15px] transition-colors",
                     isActive(p.slug)
-                      ? "border-cyan-400 bg-cyan-400/10 font-medium text-slate-50"
-                      : "border-transparent text-slate-300 hover:border-slate-500 hover:text-slate-50"
+                      ? "bg-slate-800 font-medium text-slate-50"
+                      : "text-slate-300 hover:bg-slate-800/50 hover:text-slate-50"
                   )}
                 >
                   <span className="min-w-0 leading-snug">{study.done[`${track.id}:${p.slug}`] ? <span className="text-emerald-400">✓ </span> : null}{p.title}</span>
