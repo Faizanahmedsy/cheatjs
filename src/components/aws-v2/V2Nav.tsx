@@ -42,7 +42,7 @@ export function V2Nav({ trackId = "aws" }: { trackId?: Track["id"] }) {
       </nav>
 
       {/* Desktop: sidebar */}
-      <aside data-reader-hide className="hidden w-72 flex-shrink-0 border-r border-slate-700/50 bg-slate-900/80 lg:block lg:h-full lg:overflow-y-auto">
+      <aside data-reader-hide className="hidden w-72 flex-shrink-0 border-r border-slate-700/50 bg-slate-900/80 lg:block lg:h-full lg:overflow-y-auto scroll-quiet">
         <nav aria-label={`${track.shortLabel} pages`} className="flex flex-col gap-1 p-4">
           <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wider text-cyan-400">
             {track.label}

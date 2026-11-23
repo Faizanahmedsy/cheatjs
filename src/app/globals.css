@@ -321,3 +321,45 @@ html[data-mode="light"] body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
 }
+
+/* Thin, theme-coloured scrollbars everywhere (default ones looked heavy). */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--c-slate-700) / 0.8) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-slate-700) / 0.8);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--c-slate-500) / 0.9);
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+/* Side panels (table of contents, sidebars): scrollbar only while hovering. */
+.scroll-quiet {
+  scrollbar-color: transparent transparent;
+}
+.scroll-quiet:hover {
+  scrollbar-color: rgb(var(--c-slate-700) / 0.8) transparent;
+}
+.scroll-quiet::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+.scroll-quiet:hover::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-slate-700) / 0.8);
+  background-clip: padding-box;
+}

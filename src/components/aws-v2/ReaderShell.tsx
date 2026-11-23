@@ -206,7 +206,7 @@ export function ReaderShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className="reader-root min-h-[calc(100dvh-3.5rem)] bg-slate-900 text-slate-50 lg:h-[calc(100dvh-3.5rem)] lg:overflow-hidden"
+      className="reader-root min-h-[calc(100dvh-6.375rem)] bg-slate-900 text-slate-50 lg:h-[calc(100dvh-6.375rem)] lg:overflow-hidden"
       data-theme={s.theme}
       data-focus={s.focus ? "1" : "0"}
       style={style}

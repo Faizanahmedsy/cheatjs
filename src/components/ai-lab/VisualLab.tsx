@@ -301,7 +301,7 @@ export function VisualLab() {
       <LabModeContext.Provider value={mode}>
         <TooltipPrimitive.Provider delayDuration={150}>
           <MotionConfig reducedMotion="user">
-            <div data-theme={theme} className="ai-lab flex min-h-[calc(100dvh-3.5rem)] flex-col bg-lab-bg font-labmono text-lab-text lg:h-[calc(100dvh-3.5rem)] lg:min-h-0">
+            <div data-theme={theme} className="ai-lab flex min-h-[calc(100dvh-6.375rem)] flex-col bg-lab-bg font-labmono text-lab-text lg:h-[calc(100dvh-6.375rem)] lg:min-h-0">
               {/* top bar */}
               <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-lab-border bg-lab-panel px-4 py-2">
                 <Link href="/ai-engineering" className="flex items-center gap-1 text-[11px] text-lab-muted hover:text-lab-text">

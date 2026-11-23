@@ -1,5 +1,7 @@
 "use client";
 
+import { withBase } from "@/lib/base-path";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
@@ -37,7 +39,7 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
 
   useEffect(() => {
     if (!open || index || failed) return;
-    fetch("/search-index.json")
+    fetch(withBase("/search-index.json"))
       .then((r) => r.json() as Promise<Entry[]>)
       .then((list) =>
         setIndex(list.map((e) => ({ ...e, _t: e.t.toLowerCase(), _l: `${e.t} ${e.s} ${e.x ?? ""}`.toLowerCase() })))

@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Article } from "@/components/aws-v2/Article";
@@ -17,7 +18,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const page = findPageBySlug(slug);
-  return { title: page ? `${page.title} · AWS · Ustad Billu ki Class` : "AWS SAA v2" };
+  if (!page) return { title: "AWS" };
+  return pageMeta({ title: `${page.title} · AWS`, description: page.blurb || page.subtitle, path: `/aws-saa-v2/${page.slug}`, keywords: [page.title, "AWS"] });
 }
 
 export default async function AWSV2Page({ params }: { params: Promise<{ slug: string }> }) {

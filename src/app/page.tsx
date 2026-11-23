@@ -3,6 +3,44 @@ import Link from "next/link";
 import { ArrowRight, BookOpen, Dumbbell, Eye, Youtube } from "lucide-react";
 import { BILLU, SITE_NAME, SUBJECTS, type TabKind } from "@/lib/subjects";
 import { cn } from "@/lib/utils";
+import type { Metadata } from "next";
+import { HOME_FAQ } from "@/lib/faq";
+import { JsonLd, absolute, pageMeta } from "@/lib/seo";
+
+export const metadata: Metadata = pageMeta({
+  title: SITE_NAME,
+  description:
+    "Free visual lessons from Ustad Billu: watch 174 DSA questions run line by line (Pre-DSA to Level 3), break AWS services in the AWS Lab, see how Gen AI works, and revise JavaScript cheatsheets.",
+  path: "/",
+  keywords: ["DSA visualizer", "learn DSA in Hinglish", "AWS SAA-C03", "Gen AI explained", "JavaScript cheatsheet"],
+});
+
+const FAQ_LD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: HOME_FAQ.map(({ q, a }) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+};
+
+const COURSES_LD = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "Ustad Billu ki Class subjects",
+  itemListElement: SUBJECTS.map((subject, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    item: {
+      "@type": "Course",
+      name: `${subject.label} · ${SITE_NAME}`,
+      description: subject.blurb,
+      url: absolute(subject.tabs[0].href),
+      isAccessibleForFree: true,
+      inLanguage: "en-IN",
+      provider: { "@type": "Organization", name: "Ustad Billu", sameAs: BILLU.youtube },
+      hasCourseInstance: { "@type": "CourseInstance", courseMode: "online", courseWorkload: "PT1H" },
+      offers: { "@type": "Offer", price: 0, priceCurrency: "INR", category: "Free" },
+    },
+  })),
+};
 
 const ICON: Record<TabKind, typeof BookOpen> = { read: BookOpen, see: Eye, practice: Dumbbell };
 const KIND: Record<TabKind, string> = { read: "Read", see: "See it", practice: "Practice" };
@@ -10,6 +48,7 @@ const KIND: Record<TabKind, string> = { read: "Read", see: "See it", practice: "
 export default function Home() {
   return (
     <main className="mx-auto max-w-6xl px-4 pb-8 pt-10 text-slate-50 md:pt-14">
+      <JsonLd data={[FAQ_LD, COURSES_LD]} />
       <section className="flex flex-col items-center gap-6 text-center md:flex-row md:text-left">
         <Image
           src={BILLU.mascot}
@@ -89,6 +128,25 @@ export default function Home() {
           <a href={BILLU.instagram} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-slate-700 px-4 py-2 font-semibold text-slate-200 hover:border-orange-300">
             Instagram
           </a>
+        </div>
+      </section>
+
+      <section aria-labelledby="faq-title" className="mt-14">
+        <h2 id="faq-title" className="font-headline text-2xl font-bold text-slate-100">
+          Questions people ask
+        </h2>
+        <div className="mt-4 divide-y divide-slate-800 rounded-2xl border border-slate-800">
+          {HOME_FAQ.map(({ q, a }) => (
+            <details key={q} className="group px-5 py-4">
+              <summary className="cursor-pointer list-none font-semibold text-slate-100 [&::-webkit-details-marker]:hidden">
+                <span className="mr-2 inline-block text-cyan-300 transition-transform group-open:rotate-90" aria-hidden="true">
+                  ▸
+                </span>
+                {q}
+              </summary>
+              <p className="mt-2 pl-5 text-slate-300">{a}</p>
+            </details>
+          ))}
         </div>
       </section>
     </main>

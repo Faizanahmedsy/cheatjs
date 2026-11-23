@@ -1,6 +1,18 @@
 import type {NextConfig} from 'next';
+import {BASE_PATH} from './src/lib/base-path';
 
 const nextConfig: NextConfig = {
+  // Served at ustadbillu.vercel.app/class (the ustadbillu project rewrites /class/* here).
+  basePath: BASE_PATH || undefined,
+  async redirects() {
+    if (!BASE_PATH) return [];
+    // Old cheatjs.vercel.app links (no /class) go to the same page on the new address.
+    const host = [{ type: 'host' as const, value: 'cheatjs.vercel.app' }];
+    return [
+      { source: '/', has: host, destination: `https://ustadbillu.vercel.app${BASE_PATH}`, basePath: false as const, permanent: false },
+      { source: `/:path((?!${BASE_PATH.slice(1)}(?:/|$)).*)`, has: host, destination: `https://ustadbillu.vercel.app${BASE_PATH}/:path`, basePath: false as const, permanent: false },
+    ];
+  },
   /* config options here */
   // The AWS v2 pages read their Notion snapshots from content/aws-v2 at runtime.
   outputFileTracingIncludes: {

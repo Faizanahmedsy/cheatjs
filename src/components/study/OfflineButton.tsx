@@ -1,5 +1,7 @@
 "use client";
 
+import { withBase } from "@/lib/base-path";
+
 import { useState } from "react";
 import { DownloadCloud } from "lucide-react";
 
@@ -14,10 +16,10 @@ export function OfflineButton({ urls }: { urls: string[] }) {
     const seen = new Set<string>();
     for (const u of urls) {
       try {
-        const res = await fetch(u, { headers: { Accept: "text/html" } });
+        const res = await fetch(withBase(u), { headers: { Accept: "text/html" } });
         const html = await res.text();
         // also warm the JS/CSS the page needs so it opens offline
-        const assets = Array.from(html.matchAll(/\/_next\/static\/[^"'\\\s)<>]+/g)).map((m) => m[0]);
+        const assets = Array.from(html.matchAll(/(?:\/class)?\/_next\/static\/[^"'\\\s)<>]+/g)).map((m) => m[0]);
         for (const a of assets) {
           if (seen.has(a)) continue;
           seen.add(a);

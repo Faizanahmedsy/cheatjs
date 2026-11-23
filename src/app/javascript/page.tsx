@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { CheatsheetTabs } from "@/components/CheatsheetTabs";
 
-export const metadata: Metadata = { title: "JavaScript cheatsheets · Ustad Billu ki Class" };
+import { pageMeta } from "@/lib/seo";
+export const metadata: Metadata = pageMeta({ title: "JavaScript cheatsheets", description: "Easy frontend cheatsheets for JavaScript, React, Next.js and DSA basics, with code examples and small visual demos.", path: "/javascript", keywords: ["JavaScript cheatsheet", "React cheatsheet", "Next.js cheatsheet", "frontend interview"] });
 
 export default function JavaScriptPage() {
   return (

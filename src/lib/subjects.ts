@@ -1,3 +1,5 @@
+import { BASE_PATH } from "./base-path";
+
 /**
  * The four "doors" of Ustad Billu ki Class and the pages behind each one.
  * Every subject has the same three kinds of page: Read (notes), See (a
@@ -11,7 +13,7 @@ export const BILLU = {
   youtube: "https://www.youtube.com/@ustadbillu.youtube",
   instagram: "https://www.instagram.com/ustad.billu__",
   dsaPlaylist: "https://www.youtube.com/playlist?list=PLclWkBD-dMwM",
-  mascot: "/billu.webp",
+  mascot: `${BASE_PATH}/billu.webp`,
 } as const;
 
 export const SITE_NAME = "Ustad Billu ki Class";

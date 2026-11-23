@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { JsVisualizer } from "@/components/visualizer/JsVisualizer";
 
-export const metadata: Metadata = {
-  title: "DSA Visualizer · Ustad Billu ki Class",
-  description: "Watch DSA questions run line by line: every variable, every loop pass and every yes / no check, in plain words.",
-};
+import { pageMeta } from "@/lib/seo";
+export const metadata: Metadata = pageMeta({ title: "DSA Visualizer: watch code run line by line", description: "Free DSA visualizer with 174 questions from Pre-DSA to Level 3. Watch arrays, pointers, maps and loops change step by step, with plain-English reasons, a dry-run table, quiz mode and JavaScript, Python, Java and C++ views.", path: "/visualizer", keywords: ["DSA visualizer", "LeetCode visualizer", "dry run", "Two Sum", "NeetCode 150", "pre DSA", "loop patterns"] });
 
 export default function VisualizerPage() {
   return (

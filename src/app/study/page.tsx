@@ -4,7 +4,8 @@ import { OfflineButton } from "@/components/study/OfflineButton";
 import { DASH_TRACKS } from "@/lib/study-tracks";
 import { AWS_TRACK, GENAI_TRACK, hrefFor } from "@/lib/aws-v2/pages";
 
-export const metadata: Metadata = { title: "My progress · Ustad Billu ki Class" };
+import { pageMeta } from "@/lib/seo";
+export const metadata: Metadata = { ...pageMeta({ title: "My progress", description: "Your progress, bookmarks and flashcards.", path: "/study" }), robots: { index: false, follow: true } };
 
 export default function StudyPage() {
   const urls = [AWS_TRACK, GENAI_TRACK].flatMap((t) => t.pages.map((p) => hrefFor(p.slug, t)));

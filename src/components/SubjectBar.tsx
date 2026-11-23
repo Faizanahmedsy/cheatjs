@@ -21,7 +21,7 @@ export function SubjectBar() {
 
   return (
     <div className="border-b border-slate-800 bg-slate-900/60 px-3 sm:px-4 lg:px-6 2xl:px-16">
-      <div className="container mx-auto flex min-h-11 flex-wrap items-center gap-x-4 gap-y-1 py-1.5">
+      <div className="container mx-auto flex min-h-11 flex-wrap items-center gap-x-4 gap-y-1 py-1.5 lg:h-11 lg:flex-nowrap lg:py-0">
         <span className="text-sm font-semibold text-slate-200">
           <span aria-hidden="true">{subject.emoji} </span>
           {subject.label}

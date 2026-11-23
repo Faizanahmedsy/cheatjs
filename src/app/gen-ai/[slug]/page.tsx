@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Article } from "@/components/aws-v2/Article";
@@ -17,7 +18,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const page = findPageBySlug(slug, GENAI_TRACK);
-  return { title: page ? `${page.title} · Gen AI · Ustad Billu ki Class` : "Gen AI" };
+  if (!page) return { title: "Gen AI" };
+  return pageMeta({ title: `${page.title} · Gen AI`, description: page.blurb || page.subtitle, path: `/gen-ai/${page.slug}`, keywords: [page.title, "Gen AI"] });
 }
 
 export default async function GenAIPage({ params }: { params: Promise<{ slug: string }> }) {

@@ -3,17 +3,29 @@ import { Toaster } from "@/components/ui/toaster";
 import { Navbar } from "@/components/Navbar";
 import { SubjectBar } from "@/components/SubjectBar";
 import { SiteFooter } from "@/components/SiteFooter";
+import { FooterGate } from "@/components/FooterGate";
 import { BilluPeek } from "@/components/BilluPeek";
 import { MODE_SCRIPT } from "@/components/ModeToggle";
+import { BASE_PATH } from "@/lib/base-path";
+import { JsonLd, ORGANIZATION_LD, SITE_ORIGIN, WEBSITE_LD, pageMeta } from "@/lib/seo";
 import { PwaRegister } from "@/components/PwaRegister";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Ustad Billu ki Class · Visual DSA, Gen AI, AWS and JS", template: "%s" },
-  manifest: "/manifest.webmanifest",
+  ...pageMeta({
+    title: "Ustad Billu ki Class",
+    description: "Free visual lessons from Ustad Billu: watch 174 DSA questions run line by line (Pre-DSA to Level 3), break AWS services in the AWS Lab, see how Gen AI works, and revise JavaScript cheatsheets.",
+    path: "/",
+    keywords: ["DSA visualizer", "learn DSA", "AWS SAA-C03", "Gen AI", "JavaScript cheatsheet"],
+  }),
+  // Each page sets its own canonical; the layout must not point every page at the home page.
+  alternates: undefined,
+  metadataBase: new URL(SITE_ORIGIN),
+  applicationName: "Ustad Billu ki Class",
+  authors: [{ name: "Faizan", url: "https://faizansaiyed.vercel.app" }],
+  creator: "Ustad Billu",
+  manifest: `${BASE_PATH}/manifest.webmanifest`,
   appleWebApp: { capable: true, title: "Billu ki Class", statusBarStyle: "black-translucent" },
-  description:
-    "Ustad Billu ki Class (formerly Cheat JS): free visual lessons for DSA, Gen AI, AWS and JavaScript, from Ustad Billu.",
 };
 
 export const viewport: Viewport = { themeColor: "#0e0f0f" };
@@ -63,8 +75,11 @@ export default function RootLayout({
           <Navbar />
           <SubjectBar />
           <div className="flex-grow">{children}</div>
-          <SiteFooter />
+          <FooterGate>
+            <SiteFooter />
+          </FooterGate>
         </div>
+        <JsonLd data={[ORGANIZATION_LD, WEBSITE_LD]} />
         <BilluPeek />
         <Toaster />
         <PwaRegister />

@@ -1,4 +1,4 @@
-/* Cheat JS service worker: lets saved pages open offline. */
+/* Ustad Billu ki Class service worker: lets saved pages open offline. */
 const PAGES = "cheatjs-pages-v1";
 const ASSETS = "cheatjs-assets-v1";
 
@@ -36,7 +36,7 @@ self.addEventListener("fetch", (event) => {
         } catch {
           const hit = (await cache.match(url.pathname + url.search)) || (await cache.match(url.pathname));
           if (hit) return hit;
-          const home = await cache.match("/study");
+          const home = await cache.match(new URL("study", self.registration.scope).pathname);
           if (home) return home;
           return new Response("<h1>Offline</h1><p>Open the Study page once while online and press “Save for offline”.</p>", {
             headers: { "Content-Type": "text/html; charset=utf-8" },

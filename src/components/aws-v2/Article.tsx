@@ -84,7 +84,7 @@ export async function Article({
             <summary className="cursor-pointer select-none px-4 py-3 text-sm font-semibold text-slate-200">
               On this page ({toc.length} sections)
             </summary>
-            <ul className="max-h-80 space-y-1 overflow-y-auto px-4 pb-4 text-sm">
+            <ul className="scroll-quiet max-h-80 space-y-1 overflow-y-auto px-4 pb-4 text-sm">
               {toc.map((t) => (
                 <li key={t.id} className={t.level === 3 ? "pl-4" : "mt-2 font-medium"}>
                   <a href={`#${t.id}`} className="text-slate-400 hover:text-cyan-300">{t.text}</a>
@@ -136,7 +136,7 @@ export async function Article({
 
       {/* Desktop table of contents */}
       {toc.length > 0 ? (
-        <aside data-reader-hide className="hidden xl:block xl:h-full xl:overflow-y-auto xl:pb-24 xl:pr-6 xl:pt-8">
+        <aside data-reader-hide className="scroll-quiet hidden xl:block xl:h-full xl:overflow-y-auto xl:pb-24 xl:pr-6 xl:pt-8">
           <div>
             <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-500">On this page</p>
             <ul className="space-y-1 border-l border-slate-700/60 text-sm">

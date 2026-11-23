@@ -149,7 +149,7 @@ export function AwsLab() {
   const nextLesson = LESSONS[LESSONS.findIndex((l) => l.id === lesson.id) + 1];
 
   return (
-    <div data-theme={theme} className="ai-lab flex min-h-[calc(100dvh-3.5rem)] flex-col bg-lab-bg font-body text-lab-text lg:h-[calc(100dvh-3.5rem)] lg:min-h-0">
+    <div data-theme={theme} className="ai-lab flex min-h-[calc(100dvh-6.375rem)] flex-col bg-lab-bg font-body text-lab-text lg:h-[calc(100dvh-6.375rem)] lg:min-h-0">
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-lab-border bg-lab-panel px-4 py-2">
         <Link href="/aws-saa-v2" className="flex items-center gap-1 text-[12px] text-lab-muted hover:text-lab-text"><ArrowLeft className="h-3.5 w-3.5" /> AWS SAA v2 notes</Link>
         <div className="flex min-w-0 items-center gap-2 text-[13px]">

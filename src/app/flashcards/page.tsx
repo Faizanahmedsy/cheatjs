@@ -5,8 +5,9 @@ import { notionToMarkdown } from "@/lib/aws-v2/convert";
 import { loadPage } from "@/lib/aws-v2/notion";
 import { AWS_TRACK, GENAI_TRACK } from "@/lib/aws-v2/pages";
 
+import { pageMeta } from "@/lib/seo";
 export const revalidate = 300;
-export const metadata: Metadata = { title: "Flashcards · Ustad Billu ki Class" };
+export const metadata: Metadata = { ...pageMeta({ title: "Flashcards", description: "Flashcards for AWS SAA-C03 and Gen AI notes, with spaced repetition saved in your browser.", path: "/flashcards" }) };
 
 export default async function FlashcardsPage() {
   const cards: Card[] = [];
