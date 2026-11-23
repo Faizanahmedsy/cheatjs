@@ -148,7 +148,7 @@
 /* AI Visual Lab — theme tokens scoped to the lab so the rest of the site is untouched. */
 .ai-lab,
 .ai-lab-pop {
-  --lab-mono: "Source Code Pro", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --lab-mono: Inter, ui-sans-serif, system-ui, sans-serif; /* same font as the rest of the app (was a code font) */
   --lab-bg: #070d1c;
   --lab-scene: #0a1428;
   --lab-panel: #0c1526;
