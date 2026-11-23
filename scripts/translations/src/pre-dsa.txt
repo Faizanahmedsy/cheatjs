@@ -1,0 +1,1504 @@
+## pre-rectangle-area
+@python
+def rectangle_area(width, height):
+    area = width * height
+    return area
+.
+_
+print(rectangle_area(4, 3))
+@java
+static int rectangleArea(int width, int height) {
+    int area = width * height;
+    return area;
+}
+_
+~M
+System.out.println(rectangleArea(4, 3));
+@cpp
+int rectangleArea(int width, int height) {
+    int area = width * height;
+    return area;
+}
+_
+~M
+cout << rectangleArea(4, 3) << endl;
+
+## pre-minutes-to-seconds
+@python
+def to_seconds(minutes):
+    seconds = minutes * 60
+    return seconds
+.
+_
+print(to_seconds(5))
+@java
+static int toSeconds(int minutes) {
+    int seconds = minutes * 60;
+    return seconds;
+}
+_
+~M
+System.out.println(toSeconds(5));
+@cpp
+int toSeconds(int minutes) {
+    int seconds = minutes * 60;
+    return seconds;
+}
+_
+~M
+cout << toSeconds(5) << endl;
+
+## pre-opposite-number
+@python
+def opposite(number):
+    result = number * -1
+    return result
+.
+_
+print(opposite(7))
+@java
+static int opposite(int number) {
+    int result = number * -1;
+    return result;
+}
+_
+~M
+System.out.println(opposite(7));
+@cpp
+int opposite(int number) {
+    int result = number * -1;
+    return result;
+}
+_
+~M
+cout << opposite(7) << endl;
+
+## pre-remainder
+@python
+def remainder(dividend, divisor):
+    left_over = dividend % divisor
+    return left_over
+.
+_
+print(remainder(17, 5))
+@java
+static int remainder(int dividend, int divisor) {
+    int leftOver = dividend % divisor;
+    return leftOver;
+}
+_
+~M
+System.out.println(remainder(17, 5));
+@cpp
+int remainder(int dividend, int divisor) {
+    int leftOver = dividend % divisor;
+    return leftOver;
+}
+_
+~M
+cout << remainder(17, 5) << endl;
+
+## pre-average-of-three
+@python
+def average_of_three(a, b, c):
+    total = a + b + c
+    average = total / 3
+    return average
+.
+_
+print(average_of_three(4, 8, 6))
+@java
+static double averageOfThree(int a, int b, int c) {
+    int total = a + b + c;
+    double average = total / 3.0;
+    return average;
+}
+_
+~M
+System.out.println(averageOfThree(4, 8, 6));
+@cpp
+double averageOfThree(int a, int b, int c) {
+    int total = a + b + c;
+    double average = total / 3.0;
+    return average;
+}
+_
+~M
+cout << averageOfThree(4, 8, 6) << endl;
+
+## pre-is-even
+@python
+def is_even(number):
+    if number % 2 == 0:
+        return True
+    .
+    return False
+.
+_
+print(is_even(6))
+@java
+static boolean isEven(int number) {
+    if (number % 2 == 0) {
+        return true;
+    }
+    return false;
+}
+_
+~M
+System.out.println(isEven(6));
+@cpp
+bool isEven(int number) {
+    if (number % 2 == 0) {
+        return true;
+    }
+    return false;
+}
+_
+~M
+cout << boolalpha << isEven(6) << endl;
+
+## pre-sign-of-number
+@python
+def sign_of(number):
+    if number > 0:
+        return "positive"
+    elif number < 0:
+        return "negative"
+    else:
+        return "zero"
+.
+.
+_
+print(sign_of(-4))
+@java
+static String signOf(int number) {
+    if (number > 0) {
+        return "positive";
+    } else if (number < 0) {
+        return "negative";
+    } else {
+        return "zero";
+    }
+}
+_
+~M
+System.out.println(signOf(-4));
+@cpp
+string signOf(int number) {
+    if (number > 0) {
+        return "positive";
+    } else if (number < 0) {
+        return "negative";
+    } else {
+        return "zero";
+    }
+}
+_
+~M
+cout << signOf(-4) << endl;
+
+## pre-larger-of-two
+@python
+def larger_of_two(a, b):
+    if a > b:
+        return a
+.
+    return b
+.
+_
+print(larger_of_two(12, 9))
+@java
+static int largerOfTwo(int a, int b) {
+    if (a > b) {
+        return a;
+    }
+    return b;
+}
+_
+~M
+System.out.println(largerOfTwo(12, 9));
+@cpp
+int largerOfTwo(int a, int b) {
+    if (a > b) {
+        return a;
+    }
+    return b;
+}
+_
+~M
+cout << largerOfTwo(12, 9) << endl;
+
+## pre-leap-year
+@python
+def is_leap_year(year):
+    if year % 400 == 0:
+        return True
+.
+    if year % 100 == 0:
+        return False
+.
+    return year % 4 == 0
+.
+_
+print(is_leap_year(2024))
+@java
+static boolean isLeapYear(int year) {
+    if (year % 400 == 0) {
+        return true;
+    }
+    if (year % 100 == 0) {
+        return false;
+    }
+    return year % 4 == 0;
+}
+_
+~M
+System.out.println(isLeapYear(2024));
+@cpp
+bool isLeapYear(int year) {
+    if (year % 400 == 0) {
+        return true;
+    }
+    if (year % 100 == 0) {
+        return false;
+    }
+    return year % 4 == 0;
+}
+_
+~M
+cout << boolalpha << isLeapYear(2024) << endl;
+
+## pre-grade-from-score
+@python
+def grade_of(score):
+    if score >= 90:
+        return "A"
+    elif score >= 75:
+        return "B"
+    elif score >= 50:
+        return "C"
+.
+    return "F"
+.
+_
+print(grade_of(82))
+@java
+static String gradeOf(int score) {
+    if (score >= 90) {
+        return "A";
+    } else if (score >= 75) {
+        return "B";
+    } else if (score >= 50) {
+        return "C";
+    }
+    return "F";
+}
+_
+~M
+System.out.println(gradeOf(82));
+@cpp
+string gradeOf(int score) {
+    if (score >= 90) {
+        return "A";
+    } else if (score >= 75) {
+        return "B";
+    } else if (score >= 50) {
+        return "C";
+    }
+    return "F";
+}
+_
+~M
+cout << gradeOf(82) << endl;
+
+## pre-first-and-last-char
+@python
+def first_and_last(word):
+    first = word[0]
+    last_index = len(word) - 1
+    last = word[last_index]
+    return first + last
+.
+_
+print(first_and_last("hello"))
+@java
+static String firstAndLast(String word) {
+    char first = word.charAt(0);
+    int lastIndex = word.length() - 1;
+    char last = word.charAt(lastIndex);
+    return "" + first + last;
+}
+_
+~M
+System.out.println(firstAndLast("hello"));
+@cpp
+string firstAndLast(string word) {
+    char first = word[0];
+    int lastIndex = word.size() - 1;
+    char last = word[lastIndex];
+    return string(1, first) + last;
+}
+_
+~M
+cout << firstAndLast("hello") << endl;
+
+## pre-reverse-string
+@python
+def reverse_string(word):
+    reversed_text = ""
+    for index in range(len(word) - 1, -1, -1):
+        reversed_text = reversed_text + word[index]
+.
+    return reversed_text
+.
+_
+print(reverse_string("code"))
+@java
+static String reverseString(String word) {
+    String reversed = "";
+    for (int index = word.length() - 1; index >= 0; index--) {
+        reversed = reversed + word.charAt(index);
+    }
+    return reversed;
+}
+_
+~M
+System.out.println(reverseString("code"));
+@cpp
+string reverseString(string word) {
+    string reversed = "";
+    for (int index = word.size() - 1; index >= 0; index--) {
+        reversed = reversed + word[index];
+    }
+    return reversed;
+}
+_
+~M
+cout << reverseString("code") << endl;
+
+## pre-remove-spaces
+@python
+def remove_spaces(text):
+    result = ""
+    for index in range(len(text)):
+        if text[index] != " ":
+            result = result + text[index]
+.
+.
+    return result
+.
+_
+print(remove_spaces("a b c"))
+@java
+static String removeSpaces(String text) {
+    String result = "";
+    for (int index = 0; index < text.length(); index++) {
+        if (text.charAt(index) != ' ') {
+            result = result + text.charAt(index);
+        }
+    }
+    return result;
+}
+_
+~M
+System.out.println(removeSpaces("a b c"));
+@cpp
+string removeSpaces(string text) {
+    string result = "";
+    for (int index = 0; index < text.size(); index++) {
+        if (text[index] != ' ') {
+            result = result + text[index];
+        }
+    }
+    return result;
+}
+_
+~M
+cout << removeSpaces("a b c") << endl;
+
+## pre-capitalize-first
+@python
+def capitalize(word):
+    first = word[0].upper()
+    rest = word[1:]
+    return first + rest
+.
+_
+print(capitalize("billu"))
+@java
+static String capitalize(String word) {
+    String first = word.substring(0, 1).toUpperCase();
+    String rest = word.substring(1);
+    return first + rest;
+}
+_
+~M
+System.out.println(capitalize("billu"));
+@cpp
+string capitalize(string word) {
+    string first = string(1, toupper(word[0]));
+    string rest = word.substr(1);
+    return first + rest;
+}
+_
+~M
+cout << capitalize("billu") << endl;
+
+## pre-count-evens
+@python
+def count_evens(numbers):
+    count = 0
+    for index in range(len(numbers)):
+        if numbers[index] % 2 == 0:
+            count += 1
+.
+.
+    return count
+.
+_
+print(count_evens([3, 8, 5, 6, 2]))
+@java
+static int countEvens(int[] numbers) {
+    int count = 0;
+    for (int index = 0; index < numbers.length; index++) {
+        if (numbers[index] % 2 == 0) {
+            count++;
+        }
+    }
+    return count;
+}
+_
+~M
+System.out.println(countEvens(new int[]{3, 8, 5, 6, 2}));
+@cpp
+int countEvens(vector<int> numbers) {
+    int count = 0;
+    for (int index = 0; index < numbers.size(); index++) {
+        if (numbers[index] % 2 == 0) {
+            count++;
+        }
+    }
+    return count;
+}
+_
+~M
+cout << countEvens({3, 8, 5, 6, 2}) << endl;
+
+## pre-count-vowels
+@python
+def count_vowels(word):
+    vowels = "aeiou"
+    count = 0
+    for index in range(len(word)):
+        if word[index] in vowels:
+            count += 1
+.
+.
+    return count
+.
+_
+print(count_vowels("education"))
+@java
+static int countVowels(String word) {
+    String vowels = "aeiou";
+    int count = 0;
+    for (int index = 0; index < word.length(); index++) {
+        if (vowels.indexOf(word.charAt(index)) >= 0) {
+            count++;
+        }
+    }
+    return count;
+}
+_
+~M
+System.out.println(countVowels("education"));
+@cpp
+int countVowels(string word) {
+    string vowels = "aeiou";
+    int count = 0;
+    for (int index = 0; index < word.size(); index++) {
+        if (vowels.find(word[index]) != string::npos) {
+            count++;
+        }
+    }
+    return count;
+}
+_
+~M
+cout << countVowels("education") << endl;
+
+## pre-count-above
+@python
+def count_above(numbers, limit):
+    count = 0
+    for index in range(len(numbers)):
+        if numbers[index] > limit:
+            count += 1
+.
+.
+    return count
+.
+_
+print(count_above([4, 11, 7, 15], 6))
+@java
+static int countAbove(int[] numbers, int limit) {
+    int count = 0;
+    for (int index = 0; index < numbers.length; index++) {
+        if (numbers[index] > limit) {
+            count++;
+        }
+    }
+    return count;
+}
+_
+~M
+System.out.println(countAbove(new int[]{4, 11, 7, 15}, 6));
+@cpp
+int countAbove(vector<int> numbers, int limit) {
+    int count = 0;
+    for (int index = 0; index < numbers.size(); index++) {
+        if (numbers[index] > limit) {
+            count++;
+        }
+    }
+    return count;
+}
+_
+~M
+cout << countAbove({4, 11, 7, 15}, 6) << endl;
+
+## pre-count-occurrences
+@python
+def count_occurrences(numbers, target):
+    count = 0
+    for index in range(len(numbers)):
+        if numbers[index] == target:
+            count += 1
+.
+.
+    return count
+.
+_
+print(count_occurrences([2, 5, 2, 9, 2], 2))
+@java
+static int countOccurrences(int[] numbers, int target) {
+    int count = 0;
+    for (int index = 0; index < numbers.length; index++) {
+        if (numbers[index] == target) {
+            count++;
+        }
+    }
+    return count;
+}
+_
+~M
+System.out.println(countOccurrences(new int[]{2, 5, 2, 9, 2}, 2));
+@cpp
+int countOccurrences(vector<int> numbers, int target) {
+    int count = 0;
+    for (int index = 0; index < numbers.size(); index++) {
+        if (numbers[index] == target) {
+            count++;
+        }
+    }
+    return count;
+}
+_
+~M
+cout << countOccurrences({2, 5, 2, 9, 2}, 2) << endl;
+
+## pre-count-sheep
+@python
+def count_sheep(present):
+    count = 0
+    for index in range(len(present)):
+        if present[index] == True:
+            count += 1
+.
+.
+    return count
+.
+_
+print(count_sheep([True, False, True, True]))
+@java
+static int countSheep(boolean[] present) {
+    int count = 0;
+    for (int index = 0; index < present.length; index++) {
+        if (present[index] == true) {
+            count++;
+        }
+    }
+    return count;
+}
+_
+~M
+System.out.println(countSheep(new boolean[]{true, false, true, true}));
+@cpp
+int countSheep(vector<bool> present) {
+    int count = 0;
+    for (int index = 0; index < present.size(); index++) {
+        if (present[index] == true) {
+            count++;
+        }
+    }
+    return count;
+}
+_
+~M
+cout << countSheep({true, false, true, true}) << endl;
+
+## pre-sum-of-list
+@python
+def sum_of(numbers):
+    total = 0
+    for index in range(len(numbers)):
+        total = total + numbers[index]
+.
+    return total
+.
+_
+print(sum_of([4, 7, 1, 8]))
+@java
+static int sumOf(int[] numbers) {
+    int total = 0;
+    for (int index = 0; index < numbers.length; index++) {
+        total = total + numbers[index];
+    }
+    return total;
+}
+_
+~M
+System.out.println(sumOf(new int[]{4, 7, 1, 8}));
+@cpp
+int sumOf(vector<int> numbers) {
+    int total = 0;
+    for (int index = 0; index < numbers.size(); index++) {
+        total = total + numbers[index];
+    }
+    return total;
+}
+_
+~M
+cout << sumOf({4, 7, 1, 8}) << endl;
+
+## pre-product-of-list
+@python
+def product_of(numbers):
+    product = 1
+    for index in range(len(numbers)):
+        product = product * numbers[index]
+.
+    return product
+.
+_
+print(product_of([2, 3, 4]))
+@java
+static int productOf(int[] numbers) {
+    int product = 1;
+    for (int index = 0; index < numbers.length; index++) {
+        product = product * numbers[index];
+    }
+    return product;
+}
+_
+~M
+System.out.println(productOf(new int[]{2, 3, 4}));
+@cpp
+int productOf(vector<int> numbers) {
+    int product = 1;
+    for (int index = 0; index < numbers.size(); index++) {
+        product = product * numbers[index];
+    }
+    return product;
+}
+_
+~M
+cout << productOf({2, 3, 4}) << endl;
+
+## pre-sum-1-to-n
+@python
+def sum_up_to(n):
+    total = 0
+    for value in range(1, n + 1):
+        total = total + value
+.
+    return total
+.
+_
+print(sum_up_to(5))
+@java
+static int sumUpTo(int n) {
+    int total = 0;
+    for (int value = 1; value <= n; value++) {
+        total = total + value;
+    }
+    return total;
+}
+_
+~M
+System.out.println(sumUpTo(5));
+@cpp
+int sumUpTo(int n) {
+    int total = 0;
+    for (int value = 1; value <= n; value++) {
+        total = total + value;
+    }
+    return total;
+}
+_
+~M
+cout << sumUpTo(5) << endl;
+
+## pre-average-of-list
+@python
+def average_of(numbers):
+    total = 0
+    for index in range(len(numbers)):
+        total = total + numbers[index]
+.
+    return total / len(numbers)
+.
+_
+print(average_of([10, 20, 30, 40]))
+@java
+static double averageOf(int[] numbers) {
+    int total = 0;
+    for (int index = 0; index < numbers.length; index++) {
+        total = total + numbers[index];
+    }
+    return (double) total / numbers.length;
+}
+_
+~M
+System.out.println(averageOf(new int[]{10, 20, 30, 40}));
+@cpp
+double averageOf(vector<int> numbers) {
+    int total = 0;
+    for (int index = 0; index < numbers.size(); index++) {
+        total = total + numbers[index];
+    }
+    return (double) total / numbers.size();
+}
+_
+~M
+cout << averageOf({10, 20, 30, 40}) << endl;
+
+## pre-build-doubled-list
+@python
+def double_all(numbers):
+    doubled = []
+    for index in range(len(numbers)):
+        doubled.append(numbers[index] * 2)
+.
+    return doubled
+.
+_
+print(double_all([1, 4, 6]))
+@java
+static List<Integer> doubleAll(int[] numbers) {
+    List<Integer> doubled = new ArrayList<>();
+    for (int index = 0; index < numbers.length; index++) {
+        doubled.add(numbers[index] * 2);
+    }
+    return doubled;
+}
+_
+~M
+System.out.println(doubleAll(new int[]{1, 4, 6}));
+@cpp
+vector<int> doubleAll(vector<int> numbers) {
+    vector<int> doubled;
+    for (int index = 0; index < numbers.size(); index++) {
+        doubled.push_back(numbers[index] * 2);
+    }
+    return doubled;
+}
+_
+~M
+for (int x : doubleAll({1, 4, 6})) cout << x << " ";
+
+## pre-largest-number
+@python
+def largest_of(numbers):
+    largest = numbers[0]
+    for index in range(1, len(numbers)):
+        if numbers[index] > largest:
+            largest = numbers[index]
+.
+.
+    return largest
+.
+_
+print(largest_of([7, 3, 12, 5]))
+@java
+static int largestOf(int[] numbers) {
+    int largest = numbers[0];
+    for (int index = 1; index < numbers.length; index++) {
+        if (numbers[index] > largest) {
+            largest = numbers[index];
+        }
+    }
+    return largest;
+}
+_
+~M
+System.out.println(largestOf(new int[]{7, 3, 12, 5}));
+@cpp
+int largestOf(vector<int> numbers) {
+    int largest = numbers[0];
+    for (int index = 1; index < numbers.size(); index++) {
+        if (numbers[index] > largest) {
+            largest = numbers[index];
+        }
+    }
+    return largest;
+}
+_
+~M
+cout << largestOf({7, 3, 12, 5}) << endl;
+
+## pre-smallest-number
+@python
+def smallest_of(numbers):
+    smallest = numbers[0]
+    for index in range(1, len(numbers)):
+        if numbers[index] < smallest:
+            smallest = numbers[index]
+.
+.
+    return smallest
+.
+_
+print(smallest_of([7, 3, 12, 5]))
+@java
+static int smallestOf(int[] numbers) {
+    int smallest = numbers[0];
+    for (int index = 1; index < numbers.length; index++) {
+        if (numbers[index] < smallest) {
+            smallest = numbers[index];
+        }
+    }
+    return smallest;
+}
+_
+~M
+System.out.println(smallestOf(new int[]{7, 3, 12, 5}));
+@cpp
+int smallestOf(vector<int> numbers) {
+    int smallest = numbers[0];
+    for (int index = 1; index < numbers.size(); index++) {
+        if (numbers[index] < smallest) {
+            smallest = numbers[index];
+        }
+    }
+    return smallest;
+}
+_
+~M
+cout << smallestOf({7, 3, 12, 5}) << endl;
+
+## pre-position-of-largest
+@python
+def index_of_largest(numbers):
+    best_index = 0
+    for index in range(1, len(numbers)):
+        if numbers[index] > numbers[best_index]:
+            best_index = index
+.
+.
+    return best_index
+.
+_
+print(index_of_largest([4, 9, 2, 9, 1]))
+@java
+static int indexOfLargest(int[] numbers) {
+    int bestIndex = 0;
+    for (int index = 1; index < numbers.length; index++) {
+        if (numbers[index] > numbers[bestIndex]) {
+            bestIndex = index;
+        }
+    }
+    return bestIndex;
+}
+_
+~M
+System.out.println(indexOfLargest(new int[]{4, 9, 2, 9, 1}));
+@cpp
+int indexOfLargest(vector<int> numbers) {
+    int bestIndex = 0;
+    for (int index = 1; index < numbers.size(); index++) {
+        if (numbers[index] > numbers[bestIndex]) {
+            bestIndex = index;
+        }
+    }
+    return bestIndex;
+}
+_
+~M
+cout << indexOfLargest({4, 9, 2, 9, 1}) << endl;
+
+## pre-longest-word
+@python
+def longest_word(words):
+    longest = words[0]
+    for index in range(1, len(words)):
+        if len(words[index]) > len(longest):
+            longest = words[index]
+.
+.
+    return longest
+.
+_
+print(longest_word(["cat", "zebra", "dog"]))
+@java
+static String longestWord(String[] words) {
+    String longest = words[0];
+    for (int index = 1; index < words.length; index++) {
+        if (words[index].length() > longest.length()) {
+            longest = words[index];
+        }
+    }
+    return longest;
+}
+_
+~M
+System.out.println(longestWord(new String[]{"cat", "zebra", "dog"}));
+@cpp
+string longestWord(vector<string> words) {
+    string longest = words[0];
+    for (int index = 1; index < words.size(); index++) {
+        if (words[index].size() > longest.size()) {
+            longest = words[index];
+        }
+    }
+    return longest;
+}
+_
+~M
+cout << longestWord({"cat", "zebra", "dog"}) << endl;
+
+## pre-second-largest
+@python
+def second_largest(numbers):
+    largest = float("-inf")
+    second = float("-inf")
+    for index in range(len(numbers)):
+        value = numbers[index]
+        if value > largest:
+            second = largest
+            largest = value
+        elif value > second and value < largest:
+            second = value
+.
+.
+    return second
+.
+_
+print(second_largest([5, 9, 3, 9, 7]))
+@java
+static int secondLargest(int[] numbers) {
+    int largest = Integer.MIN_VALUE;
+    int second = Integer.MIN_VALUE;
+    for (int index = 0; index < numbers.length; index++) {
+        int value = numbers[index];
+        if (value > largest) {
+            second = largest;
+            largest = value;
+        } else if (value > second && value < largest) {
+            second = value;
+        }
+    }
+    return second;
+}
+_
+~M
+System.out.println(secondLargest(new int[]{5, 9, 3, 9, 7}));
+@cpp
+int secondLargest(vector<int> numbers) {
+    int largest = INT_MIN;
+    int second = INT_MIN;
+    for (int index = 0; index < numbers.size(); index++) {
+        int value = numbers[index];
+        if (value > largest) {
+            second = largest;
+            largest = value;
+        } else if (value > second && value < largest) {
+            second = value;
+        }
+    }
+    return second;
+}
+_
+~M
+cout << secondLargest({5, 9, 3, 9, 7}) << endl;
+
+## pre-contains-value
+@python
+def contains(numbers, target):
+    for index in range(len(numbers)):
+        if numbers[index] == target:
+            return True
+.
+.
+    return False
+.
+_
+print(contains([4, 8, 15], 8))
+@java
+static boolean contains(int[] numbers, int target) {
+    for (int index = 0; index < numbers.length; index++) {
+        if (numbers[index] == target) {
+            return true;
+        }
+    }
+    return false;
+}
+_
+~M
+System.out.println(contains(new int[]{4, 8, 15}, 8));
+@cpp
+bool contains(vector<int> numbers, int target) {
+    for (int index = 0; index < numbers.size(); index++) {
+        if (numbers[index] == target) {
+            return true;
+        }
+    }
+    return false;
+}
+_
+~M
+cout << boolalpha << contains({4, 8, 15}, 8) << endl;
+
+## pre-is-sorted
+@python
+def is_sorted(numbers):
+    for index in range(len(numbers) - 1):
+        if numbers[index] > numbers[index + 1]:
+            return False
+.
+.
+    return True
+.
+_
+print(is_sorted([1, 3, 3, 7]))
+@java
+static boolean isSorted(int[] numbers) {
+    for (int index = 0; index < numbers.length - 1; index++) {
+        if (numbers[index] > numbers[index + 1]) {
+            return false;
+        }
+    }
+    return true;
+}
+_
+~M
+System.out.println(isSorted(new int[]{1, 3, 3, 7}));
+@cpp
+bool isSorted(vector<int> numbers) {
+    for (int index = 0; index < numbers.size() - 1; index++) {
+        if (numbers[index] > numbers[index + 1]) {
+            return false;
+        }
+    }
+    return true;
+}
+_
+~M
+cout << boolalpha << isSorted({1, 3, 3, 7}) << endl;
+
+## pre-all-positive
+@python
+def all_positive(numbers):
+    all_pos = True
+    for index in range(len(numbers)):
+        if numbers[index] <= 0:
+            all_pos = False
+            break
+.
+.
+    return all_pos
+.
+_
+print(all_positive([3, 6, -1, 8]))
+@java
+static boolean allPositive(int[] numbers) {
+    boolean allPos = true;
+    for (int index = 0; index < numbers.length; index++) {
+        if (numbers[index] <= 0) {
+            allPos = false;
+            break;
+        }
+    }
+    return allPos;
+}
+_
+~M
+System.out.println(allPositive(new int[]{3, 6, -1, 8}));
+@cpp
+bool allPositive(vector<int> numbers) {
+    bool allPos = true;
+    for (int index = 0; index < numbers.size(); index++) {
+        if (numbers[index] <= 0) {
+            allPos = false;
+            break;
+        }
+    }
+    return allPos;
+}
+_
+~M
+cout << boolalpha << allPositive({3, 6, -1, 8}) << endl;
+
+## pre-first-negative
+@python
+def first_negative(numbers):
+    for index in range(len(numbers)):
+        if numbers[index] < 0:
+            return index
+.
+.
+    return -1
+.
+_
+print(first_negative([4, 2, -5, 7, -1]))
+@java
+static int firstNegative(int[] numbers) {
+    for (int index = 0; index < numbers.length; index++) {
+        if (numbers[index] < 0) {
+            return index;
+        }
+    }
+    return -1;
+}
+_
+~M
+System.out.println(firstNegative(new int[]{4, 2, -5, 7, -1}));
+@cpp
+int firstNegative(vector<int> numbers) {
+    for (int index = 0; index < numbers.size(); index++) {
+        if (numbers[index] < 0) {
+            return index;
+        }
+    }
+    return -1;
+}
+_
+~M
+cout << firstNegative({4, 2, -5, 7, -1}) << endl;
+
+## pre-has-duplicate-pairs
+@python
+def has_duplicate(numbers):
+    for first in range(len(numbers)):
+        for second in range(first + 1, len(numbers)):
+            if numbers[first] == numbers[second]:
+                return True
+.
+.
+.
+    return False
+.
+_
+print(has_duplicate([3, 1, 4, 1]))
+@java
+static boolean hasDuplicate(int[] numbers) {
+    for (int first = 0; first < numbers.length; first++) {
+        for (int second = first + 1; second < numbers.length; second++) {
+            if (numbers[first] == numbers[second]) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+_
+~M
+System.out.println(hasDuplicate(new int[]{3, 1, 4, 1}));
+@cpp
+bool hasDuplicate(vector<int> numbers) {
+    for (int first = 0; first < numbers.size(); first++) {
+        for (int second = first + 1; second < numbers.size(); second++) {
+            if (numbers[first] == numbers[second]) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+_
+~M
+cout << boolalpha << hasDuplicate({3, 1, 4, 1}) << endl;
+
+## pre-pair-with-sum
+@python
+def pair_with_sum(numbers, target):
+    for first in range(len(numbers)):
+        for second in range(first + 1, len(numbers)):
+            if numbers[first] + numbers[second] == target:
+                return [first, second]
+.
+.
+.
+    return []
+.
+_
+print(pair_with_sum([5, 2, 8, 3], 11))
+@java
+static int[] pairWithSum(int[] numbers, int target) {
+    for (int first = 0; first < numbers.length; first++) {
+        for (int second = first + 1; second < numbers.length; second++) {
+            if (numbers[first] + numbers[second] == target) {
+                return new int[]{first, second};
+            }
+        }
+    }
+    return new int[]{};
+}
+_
+~M
+System.out.println(Arrays.toString(pairWithSum(new int[]{5, 2, 8, 3}, 11)));
+@cpp
+vector<int> pairWithSum(vector<int> numbers, int target) {
+    for (int first = 0; first < numbers.size(); first++) {
+        for (int second = first + 1; second < numbers.size(); second++) {
+            if (numbers[first] + numbers[second] == target) {
+                return {first, second};
+            }
+        }
+    }
+    return {};
+}
+_
+~M
+for (int x : pairWithSum({5, 2, 8, 3}, 11)) cout << x << " ";
+
+## pre-multiplication-table
+@python
+def times_table(size):
+    table = []
+    for row_index in range(size):
+        row = []
+        for col_index in range(size):
+            row.append((row_index + 1) * (col_index + 1))
+.
+        table.append(row)
+.
+    return table
+.
+_
+print(times_table(3))
+@java
+static List<List<Integer>> timesTable(int size) {
+    List<List<Integer>> table = new ArrayList<>();
+    for (int rowIndex = 0; rowIndex < size; rowIndex++) {
+        List<Integer> row = new ArrayList<>();
+        for (int colIndex = 0; colIndex < size; colIndex++) {
+            row.add((rowIndex + 1) * (colIndex + 1));
+        }
+        table.add(row);
+    }
+    return table;
+}
+_
+~M
+System.out.println(timesTable(3));
+@cpp
+vector<vector<int>> timesTable(int size) {
+    vector<vector<int>> table;
+    for (int rowIndex = 0; rowIndex < size; rowIndex++) {
+        vector<int> row;
+        for (int colIndex = 0; colIndex < size; colIndex++) {
+            row.push_back((rowIndex + 1) * (colIndex + 1));
+        }
+        table.push_back(row);
+    }
+    return table;
+}
+_
+~M
+for (auto& r : timesTable(3)) { for (int x : r) cout << x << " "; cout << endl; }
+
+## pre-count-pairs-sum
+@python
+def count_pairs(numbers, target):
+    count = 0
+    for first in range(len(numbers)):
+        for second in range(first + 1, len(numbers)):
+            if numbers[first] + numbers[second] == target:
+                count += 1
+.
+.
+.
+    return count
+.
+_
+print(count_pairs([1, 5, 3, 3, 7], 6))
+@java
+static int countPairs(int[] numbers, int target) {
+    int count = 0;
+    for (int first = 0; first < numbers.length; first++) {
+        for (int second = first + 1; second < numbers.length; second++) {
+            if (numbers[first] + numbers[second] == target) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+_
+~M
+System.out.println(countPairs(new int[]{1, 5, 3, 3, 7}, 6));
+@cpp
+int countPairs(vector<int> numbers, int target) {
+    int count = 0;
+    for (int first = 0; first < numbers.size(); first++) {
+        for (int second = first + 1; second < numbers.size(); second++) {
+            if (numbers[first] + numbers[second] == target) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+_
+~M
+cout << countPairs({1, 5, 3, 3, 7}, 6) << endl;
+
+## pre-letter-counts
+@python
+def letter_counts(word):
+    counts = {}
+    for index in range(len(word)):
+        letter = word[index]
+        counts[letter] = counts.get(letter, 0) + 1
+.
+    return counts
+.
+_
+print(letter_counts("banana"))
+@java
+static Map<Character, Integer> letterCounts(String word) {
+    Map<Character, Integer> counts = new LinkedHashMap<>();
+    for (int index = 0; index < word.length(); index++) {
+        char letter = word.charAt(index);
+        counts.put(letter, counts.getOrDefault(letter, 0) + 1);
+    }
+    return counts;
+}
+_
+~M
+System.out.println(letterCounts("banana"));
+@cpp
+map<char, int> letterCounts(string word) {
+    map<char, int> counts;
+    for (int index = 0; index < word.size(); index++) {
+        char letter = word[index];
+        counts[letter] = counts[letter] + 1;
+    }
+    return counts;
+}
+_
+~M
+for (auto& [letter, n] : letterCounts("banana")) cout << letter << ":" << n << " ";
+
+## pre-most-common
+@python
+def most_common(numbers):
+    counts = {}
+    for value in numbers:
+        counts[value] = counts.get(value, 0) + 1
+.
+    best = numbers[0]
+    for value, count in counts.items():
+        if count > counts[best]:
+            best = value
+.
+.
+    return best
+.
+_
+print(most_common([4, 1, 4, 2, 4, 1]))
+@java
+static int mostCommon(int[] numbers) {
+    Map<Integer, Integer> counts = new LinkedHashMap<>();
+    for (int value : numbers) {
+        counts.put(value, counts.getOrDefault(value, 0) + 1);
+    }
+    int best = numbers[0];
+    for (Map.Entry<Integer, Integer> entry : counts.entrySet()) {
+~        int value = entry.getKey(), count = entry.getValue();
+        if (count > counts.get(best)) {
+            best = value;
+        }
+    }
+    return best;
+}
+_
+~M
+System.out.println(mostCommon(new int[]{4, 1, 4, 2, 4, 1}));
+@cpp
+int mostCommon(vector<int> numbers) {
+    map<int, int> counts;
+    for (int value : numbers) {
+        counts[value] = counts[value] + 1;
+    }
+    int best = numbers[0];
+    for (auto& [value, count] : counts) {
+        if (count > counts[best]) {
+            best = value;
+        }
+    }
+    return best;
+}
+_
+~M
+cout << mostCommon({4, 1, 4, 2, 4, 1}) << endl;
+
+## pre-first-unique-char
+@python
+def first_unique(word):
+    counts = {}
+    for letter in word:
+        counts[letter] = counts.get(letter, 0) + 1
+.
+    for letter in word:
+        if counts[letter] == 1:
+            return letter
+.
+.
+    return ""
+.
+_
+print(first_unique("swiss"))
+@java
+static String firstUnique(String word) {
+    Map<Character, Integer> counts = new HashMap<>();
+    for (char letter : word.toCharArray()) {
+        counts.put(letter, counts.getOrDefault(letter, 0) + 1);
+    }
+    for (char letter : word.toCharArray()) {
+        if (counts.get(letter) == 1) {
+            return String.valueOf(letter);
+        }
+    }
+    return "";
+}
+_
+~M
+System.out.println(firstUnique("swiss"));
+@cpp
+string firstUnique(string word) {
+    map<char, int> counts;
+    for (char letter : word) {
+        counts[letter] = counts[letter] + 1;
+    }
+    for (char letter : word) {
+        if (counts[letter] == 1) {
+            return string(1, letter);
+        }
+    }
+    return "";
+}
+_
+~M
+cout << firstUnique("swiss") << endl;
