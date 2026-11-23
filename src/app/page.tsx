@@ -17,7 +17,7 @@ export default function Home() {
           width={180}
           height={180}
           priority
-          className="h-36 w-36 shrink-0 rounded-[2rem] bg-amber-50 object-contain p-3 shadow-xl shadow-orange-900/20 md:h-44 md:w-44"
+          className="h-36 w-36 shrink-0 rounded-[2rem] bg-[#fdf3dc] object-contain p-3 shadow-xl shadow-orange-900/20 md:h-44 md:w-44"
         />
         <div>
           <p className="text-sm font-semibold uppercase tracking-widest text-orange-300">Ustad Billu presents</p>
@@ -77,7 +77,7 @@ export default function Home() {
       </ul>
 
       <section className="mt-12 flex flex-col items-center gap-4 rounded-3xl border border-orange-300/30 bg-gradient-to-r from-orange-500/10 to-rose-500/10 p-6 text-center sm:flex-row sm:text-left">
-        <Image src={BILLU.mascot} alt="" width={64} height={64} className="h-16 w-16 rounded-2xl bg-amber-50 object-contain p-1" />
+        <Image src={BILLU.mascot} alt="" width={64} height={64} className="h-16 w-16 rounded-2xl bg-[#fdf3dc] object-contain p-1" />
         <div className="flex-1">
           <p className="font-headline text-lg font-bold text-slate-100">Learn faster with Billu&apos;s videos</p>
           <p className="text-slate-300">Short Hinglish reels and the LeetCode Ki Soch playlist. Funny first, easy to understand second.</p>

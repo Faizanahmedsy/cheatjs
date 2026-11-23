@@ -54,7 +54,7 @@ export function SubjectBar() {
           rel="noopener noreferrer"
           className="ml-auto hidden items-center gap-2 rounded-full py-0.5 pl-0.5 pr-3 text-xs text-slate-400 transition-colors hover:bg-slate-800 hover:text-orange-200 sm:inline-flex"
         >
-          <Image src={BILLU.mascot} alt="" width={22} height={22} className="h-6 w-6 rounded-full bg-amber-50/90 object-contain p-0.5" />
+          <Image src={BILLU.mascot} alt="" width={22} height={22} className="h-6 w-6 rounded-full bg-[#fdf3dc] object-contain p-0.5" />
           <span>
             {subject.label} in Hinglish: <span className="text-orange-300">{subject.video.label}</span>
           </span>

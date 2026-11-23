@@ -52,7 +52,7 @@ export function Navbar() {
         <div className="container mx-auto flex h-14 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2">
-              <Image src={BILLU.mascot} alt="" width={30} height={30} className="h-8 w-8 rounded-full bg-amber-50/90 object-contain p-0.5" priority />
+              <Image src={BILLU.mascot} alt="" width={30} height={30} className="h-8 w-8 rounded-full bg-[#fdf3dc] object-contain p-0.5" priority />
               <span className="flex flex-col leading-none">
                 <span className="font-headline text-[15px] font-bold text-slate-100 whitespace-nowrap">{SITE_NAME}</span>
                 <span className="hidden text-[10px] text-slate-500 sm:block">by Ustad Billu · formerly Cheat JS</span>
