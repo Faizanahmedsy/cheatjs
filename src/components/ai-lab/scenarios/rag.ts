@@ -155,6 +155,7 @@ const scenario: Scenario = {
       id: "problem",
       title: "The model hasn't read your PDF",
       simple: "An AI model only knows what it read in training. It has never seen your company's handbook.",
+      easy: "An AI model only knows what it read during training. It has **never seen your company’s handbook**. Ask a normal chatbot how many leave days new employees get, and it can only guess from the internet. It will sound sure, but the number may be wrong. A confident, made-up answer is called a **hallucination**. RAG fixes this with one simple idea: **look up the answer in your own documents first, then answer**.",
       explain:
         "Ask a plain chatbot how much leave new employees get and it can only guess from the internet. It sounds sure, but the number may be wrong. A confident made-up answer is called a {{hallucination}}. {{rag|RAG}} (retrieval-augmented generation) fixes this by looking the answer up first.",
       analogy: "A brilliant new colleague on day one: smart, but hasn't read the handbook yet.",
@@ -179,6 +180,7 @@ const scenario: Scenario = {
       id: "load",
       title: "Load the PDF, keep the page numbers",
       simple: "First the app reads the text out of the PDF, page by page, and remembers which page each part came from.",
+      easy: `Step one: the app **reads the text out of the PDF**, page by page. Our file is **${PDF}**, with ${PAGES.length} pages of policy text. For every piece of text it remembers the file name and the page number. Those page numbers are what the answer will point to at the end.`,
       explain: `A loader (a small program that reads files) pulls the text out of **${PDF}**, ${PAGES.length} pages with policy text. It keeps the file name and page number with every piece. Those page numbers are what the answer will point to at the end.`,
       analogy: "The librarian catalogues a new book: the title, the chapters, and which page each topic is on.",
       detail:
@@ -227,6 +229,7 @@ pages = [
       id: "chunk",
       title: "Cut it into small cards",
       simple: "The text is cut into small pieces, one idea each, like index cards. Each card notes its page.",
+      easy: `A whole handbook is too big to search well. So the text is cut into small pieces, like **index cards**, with one idea on each. Here the handbook becomes **${CHUNKS.length} cards**, one policy paragraph each. A small card can be matched precisely, and still makes sense on its own.`,
       explain: `Each piece is a {{chunk}} (a short slice of a document). Here the handbook becomes **${CHUNKS.length} cards**, one policy paragraph each. Small cards can be matched precisely; each still makes sense on its own.`,
       analogy: "Cutting a cookbook into recipe cards, so you can hand someone exactly the one recipe they asked for.",
       detail: `Every chunk carries **metadata**: source file, page, section. That is what lets the final answer say “${PDF}, page 4”, and lets you filter later (e.g. only HR documents, only this year).\n\nChunk size is a trade-off: too small and a chunk loses its context ("it" refers to what?), too large and it mixes topics and wastes prompt tokens. Common starting points are a few hundred tokens with a small overlap, split on headings or paragraphs. Total here ≈ ${sum(CHUNKS.map((c) => c.tokens))} tokens.`,
@@ -265,6 +268,7 @@ pages = [
       id: "embed",
       title: "Turn each card into numbers and shelve it",
       simple: "Each card gets a list of numbers that captures its meaning, then goes on a searchable shelf.",
+      easy: "Each card’s text is turned into a **list of numbers that captures its meaning**. Cards with similar meaning get similar numbers, so all the leave cards end up close together. The numbers, the text and the page are saved together on a searchable **shelf** (called a vector store).",
       explain:
         "An {{embedding}} model turns each card's text into a {{vector}} (a list of numbers). Cards with similar meaning get similar numbers, so all the leave cards end up close together. Vector, text and page are stored together in a {{vector-db|vector store}}.",
       analogy: "Shelving library cards by topic, so cards about the same thing sit side by side.",
@@ -303,6 +307,7 @@ store.upsert([
       id: "ask",
       title: "The question becomes numbers too",
       simple: "When someone asks, the question is turned into numbers the same way, so it can be compared with the cards.",
+      easy: `Now an employee asks: **“${QUESTION}”** The app turns the question into numbers in **exactly the same way** as the cards. The numbers point strongly at “leave”, so the question will land near the leave cards.`,
       explain: `An employee asks: **“${QUESTION}”** The app sends it through the **same** embedding model used for the cards. Its numbers point strongly at “leave”, so it will land near the leave cards.`,
       analogy: "The librarian listens to your question and works out which shelf it belongs to.",
       detail:
@@ -334,6 +339,7 @@ store.upsert([
       id: "retrieve",
       title: `The librarian pulls the best ${K}`,
       simple: `The cards whose numbers are closest to the question are pulled off the shelf: the top ${K}.`,
+      easy: `The librarian now looks for the cards **closest** to the question. Closeness is a score from 0 (unrelated) to 1.00 (same meaning). The best card, “${RANKED[0].section}”, scores **${f(RANKED[0].score, 3)}**. Notice that “${RANKED[1].section}” comes second: it is related, but it does not answer the question.`,
       explain: `Closeness is measured with {{cosine-similarity|cosine similarity}} (1.00 = same direction, 0 = unrelated). The best card, “${RANKED[0].section}”, scores **${f(RANKED[0].score, 3)}**. Note that “${RANKED[1].section}” comes second: it is related, but it doesn't answer the question.`,
       analogy: "The librarian pulls the three cards that look most like your question. Looking alike isn't the same as answering it.",
       detail: `The vector store compares the question vector with every chunk vector and returns the best ${K}. A minimum score (here ${THRESHOLD}) keeps clearly unrelated chunks out.\n\nRetrieval finds what is **similar**; it is the model's job, guided by the prompt, to use only what is **relevant**. And the generator can only be as good as retrieval: if the right chunk isn't in the top-k, no prompt fixes it. At scale the store uses an approximate index (e.g. HNSW) instead of checking every vector.`,
@@ -371,6 +377,7 @@ store.upsert([
       id: "augment",
       title: "Put the cards next to the question",
       simple: "The pulled cards, numbered 1, 2, 3, are placed in the prompt together with the question and a few rules.",
+      easy: `This is the “augmented” in RAG. The app builds a message for the AI with three parts: the **rules** (answer only from the cards, point to them, and say so if the answer is missing), the **numbered cards** with their pages, and the **question**. That is about **${PROMPT_TOTAL} small pieces of text** in all.`,
       explain: `This is the “augmented” in RAG. The prompt (the text sent to the model) has **rules** (answer only from the cards, cite them, admit if the answer is missing), the **numbered cards** with their pages, then the **question**. About **${PROMPT_TOTAL} tokens** in all.`,
       analogy: "The librarian lays the three pages open on the desk, with sticky notes numbered 1 to 3.",
       detail: `Prompt ≈ ${PROMPT_TOTAL} tokens (system ≈${PROMPT_TOKENS.system}, context ≈${PROMPT_TOKENS.context}, question ≈${PROMPT_TOKENS.question}) + ${ANSWER_BUDGET} reserved for the answer, out of an example ${WINDOW.toLocaleString("en-US")}-token window. Every extra chunk costs money and latency on **every** question, and long noisy context can lower answer quality.\n\nPut the rules in the system message, the evidence in the user message, and number the chunks so citations can be checked in code.`,
@@ -442,6 +449,7 @@ messages = [
       id: "generate",
       title: "Answer, with sticky-note citations",
       simple: "The model writes the answer from the cards and marks each fact with the card it came from.",
+      easy: `The AI writes the answer using **only the cards**. Each [number] points back to a card and its page, so anyone can check it. The “${UNUSED.map((c) => c.section).join(", ")}” card was in the message but not used, because it does not answer the question. Tying every claim to its source is how we keep the AI honest.`,
       explain: `Each [number] links back to a card and its page, so anyone can check it. The “${UNUSED.map((c) => c.section).join(", ")}” card was in the prompt but not used, because it doesn't answer the question. Tying every claim to its source is called {{grounding}}.`,
       analogy: "A good essay with footnotes: every claim points to the page it came from.",
       detail:
@@ -477,6 +485,7 @@ messages = [
       id: "not-found",
       title: "When the answer isn't there",
       simple: "If no card is close enough to the question, the honest answer is “I couldn't find that”.",
+      easy: `Someone asks **“${OOS}”** The handbook does not say. The best card scores only **${f(OOS_RANKED[0].score, 2)}**, below the cut-off of ${THRESHOLD}, so no card is passed on. The AI answers “I couldn’t find that in the handbook” instead of guessing. An honest “I don’t know” is better than a confident wrong answer.`,
       explain: `Someone asks **“${OOS}”** The handbook doesn't say. The best card scores only **${f(OOS_RANKED[0].score, 2)}**, below the ${THRESHOLD} cut-off, so no card goes to the model and it answers “I couldn't find that in the handbook” instead of guessing.`,
       analogy: "A good librarian says “we don't have a book on that” rather than inventing one.",
       detail:

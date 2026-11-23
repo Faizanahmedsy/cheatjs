@@ -142,6 +142,7 @@ const scenario: Scenario = {
       id: "roles",
       title: "Every message has a role",
       simple: "A chat is a list of messages, and each one is labelled with who said it.",
+      easy: "A chat with an AI is just a **list of messages**, and every message has a label saying who said it. **System** is the hidden rulebook from the people who built the app. **User** is what you typed. **Assistant** is what the AI replied. Later we will meet a fourth label, **tool**, for answers that the app looks up for the AI.",
       explain:
         "The **system** message holds the app maker's rules (the {{system-prompt|system prompt}}). **User** is what you typed, **assistant** is what the model replied. Later we will meet a fourth role, **tool**, for answers your own code looks up.",
       analogy: "A film script: stage directions (system), lines for each character (user, assistant), and props handed in from off-stage (tool).",
@@ -197,7 +198,8 @@ const scenario: Scenario = {
     {
       id: "forgets",
       title: "The model remembers nothing",
-      simple: "Each call to the model starts fresh. Send only the new question and it has no idea what came before.",
+      simple: "Each time the app calls the AI, it starts fresh. It has no idea what was said before.",
+      easy: "Here is the surprising part: the AI **remembers nothing** between messages. Every time the app calls it, it is like talking to someone with no memory. If the app sends only “Remind me which city we’re talking about?”, the AI has no idea. It has never heard of Paris. It can only guess or ask.",
       explain:
         "The model API is {{stateless}} (it keeps nothing between calls). If the app sends only “Remind me which city we're talking about?”, the model has never heard of Paris. It can only guess or ask.",
       analogy: "Phoning a help desk where a different person picks up every time and nobody takes notes.",
@@ -222,7 +224,8 @@ const scenario: Scenario = {
     {
       id: "history",
       title: "So the app resends the whole chat",
-      simple: "Before every reply the app sends the model the entire conversation again, so each call gets bigger.",
+      simple: "So before every reply, the app sends the whole chat again. Each call gets bigger.",
+      easy: `So how does a chat feel like a real conversation? Simple: before every reply, the app **sends the whole chat again**: every old message plus your new one. By call ${TURNS.length} it sends ${INPUT_PER_CALL[LAST]} small pieces of text, even though you only typed ${tok(TURNS[LAST][0].text)} of them. You pay for all of that history on every single turn.`,
       explain: `The backend loads the chat from its database and sends **every earlier message** plus the new one. Call ${TURNS.length} sends ${INPUT_PER_CALL[LAST]} {{token|tokens}} (small chunks of text), though you only typed ${tok(TURNS[LAST][0].text)}. You pay for that history on every turn.`,
       detail: `Each call's input = system + every earlier message + the new user message, so input grows each turn and the **total** over a conversation grows roughly with the square of the number of turns. Here: ${INPUT_PER_CALL.join(" + ")} = **${TOTAL_INPUT}** input tokens over ${TURNS.length} calls, while the user typed only ${sum(TURNS.map(([u]) => tok(u.text)))}. Long chats get slower and pricier for this reason.`,
       stage: {
@@ -278,6 +281,7 @@ const scenario: Scenario = {
       id: "stream",
       title: "Words arrive as they are written",
       simple: "Instead of waiting for the whole answer, the reply is sent piece by piece and appears as it is written.",
+      easy: `Waiting for the whole answer feels slow. So the answer is sent **piece by piece**, like a live radio broadcast. The server keeps one line open and pushes each new piece as soon as it is ready. The first words show up after ${TTFT_MS} ms instead of waiting for the whole answer.`,
       explain: `This is **streaming**. The server keeps one connection open and pushes each new piece as a small message, using {{sse|Server-Sent Events}} (lines that start with \`data:\`). The first words show up after ${TTFT_MS} ms instead of after the whole answer.`,
       analogy: "A radio broadcast instead of mailing a recording: you hear the first words while the rest is still being spoken.",
       detail: `The total time barely changes; the *perceived* wait drops to the {{ttft|time to first token}} (${TTFT_MS} ms here, finished at ${STREAM_DONE_MS} ms). Each SSE event is a \`data: …\` line ended by a blank line. The browser's built-in \`EventSource\` only does GET, so chat UIs usually \`fetch\` with POST and read the body as a stream. Watch out for proxies that buffer responses (for nginx, \`X-Accel-Buffering: no\`), cancel the upstream call when the user disconnects, and save the partial message.`,
@@ -329,7 +333,8 @@ for (;;) { const { value, done } = await reader.read(); if (done) break; render(
     {
       id: "window",
       title: "Too long? Keep only the latest turns",
-      simple: "When the chat gets long, the app can send only the last few turns and drop the oldest ones.",
+      simple: "When the chat gets too long, the app sends only the last few turns and drops the oldest ones.",
+      easy: `The AI can only read a limited amount of text at once, and every piece of text costs money. So a long chat has to be shortened. The easiest way is a **sliding window**: keep the rulebook and only the last ${WINDOW} turns. That sends ${WINDOW_INPUT} pieces instead of ${INPUT_PER_CALL[LAST]}. It is cheap and simple, but the old turns are simply forgotten.`,
       explain: `The chat must fit the {{context-window|context window}} (the most text a model can read at once), and every token costs money. A **sliding window** keeps the rules plus the last ${WINDOW} turns: ${WINDOW_INPUT} tokens instead of ${INPUT_PER_CALL[LAST]}. Cheap and simple, but the dropped turns are simply gone.`,
       detail: `Here the oldest turn — the one that mentioned France — falls out. ${
         KEPT_HAS_CITY_ONLY_INDIRECTLY ? "The city still appears in a kept answer, so the model copes this time, but older facts can vanish entirely." : "The city no longer appears anywhere in the prompt."
@@ -370,6 +375,7 @@ for (;;) { const { value, done } = await reader.read(); if (done) break; render(
       id: "summary",
       title: "Or squeeze old turns into a summary",
       simple: "Before dropping old turns, the app asks a model to write a short note about them, and keeps the note.",
+      easy: `A smarter way: before dropping old turns, ask the AI to write a **short note** about them, like “planning a trip to Paris”, and keep that note. The note costs only ${tok(SUMMARY)} pieces, so the AI still knows the city. The risk: a summary can lose small details, or even get something wrong.`,
       explain: `The note (“planning a trip to Paris”) keeps the gist for ${tok(SUMMARY)} tokens. Rules + note + recent turns come to ${SUMMARY_INPUT} tokens: ${SUMMARY_INPUT > WINDOW_INPUT ? `more than the window alone (${WINDOW_INPUT}) in a chat this short, but the city is not lost` : `less than the full ${INPUT_PER_CALL[LAST]}`}. The risk: summaries lose details and can get things wrong.`,
       analogy: "Minutes of a meeting instead of the full recording.",
       detail: `Common pattern: when history passes a token budget, summarise the oldest chunk (${OLD_TURNS_TOKENS} tokens here), store the summary on the thread, and keep a few recent turns verbatim. Run the summariser with a small, cheap model and a strict prompt (“keep names, numbers, decisions”). In this tiny chat the summary is not much shorter than what it replaces; the saving grows with long conversations.`,
@@ -417,6 +423,7 @@ for (;;) { const { value, done } = await reader.read(); if (done) break; render(
       id: "vector",
       title: "Remember facts for later",
       simple: "Important facts are saved, and only the ones that match the new question are added to the prompt.",
+      easy: `For a very long relationship, even a summary is not enough. So the app **saves important facts** separately, like notes about a friend. Each fact is turned into a list of numbers that captures its meaning. When you ask “${QUERY.text}”, the app finds the saved fact whose meaning is **closest**: “${MEMORIES[BEST].text}” (match score ${f(SIMS[BEST], 2)} out of 1). Only that one fact is added to the prompt.`,
       explain: `Each saved fact is turned into an {{embedding}} (a list of numbers that captures its meaning). For “${QUERY.text}”, the app finds the closest fact by {{cosine-similarity|cosine similarity}}: “${MEMORIES[BEST].text}” scores ${f(SIMS[BEST], 2)}. Only that fact goes into the prompt.`,
       analogy: "A notebook about each friend: before replying you flip to the page that matters, not read the whole book.",
       detail: `This scales to thousands of facts without bloating every request — the same retrieval idea as {{rag|RAG}}, applied to the user's own history. Decide when to write memories (e.g. a small model extracts durable facts after each turn), resolve conflicts (newer fact wins), and let users see and delete them.\n\nTrade-offs: windows are simple but forget; summaries compress but blur; vector memory scales but can retrieve the wrong thing.`,
@@ -455,7 +462,8 @@ for (;;) { const { value, done } = await reader.read(); if (done) break; render(
     {
       id: "tools",
       title: "Asking your code for help (tools)",
-      simple: "The model can't look things up, so it asks your app to run a function, then answers with the result.",
+      simple: "The AI cannot look things up itself, so it asks your app to run a task and then uses the result.",
+      easy: `The AI writes well, but it cannot check today’s weather by itself. So we give it a **menu of tasks** it may ask for. Asked about rain, it replies with a request: run “${TOOL_CALL.name}” for ${TOOL_CALL.arguments.city}. The app runs the task, hands the result back, and the AI writes the final answer using it.`,
       explain: `With {{tool-calling|tool calling}} you describe functions the model may use. Asked about rain, it replies with a request: run \`${TOOL_CALL.name}\` for ${TOOL_CALL.arguments.city}. Your code runs it, sends the result back as a **tool** message, and the model writes the answer.`,
       analogy: "A manager who can't use the database: they write a precise request slip, you run the query, and they use the printout to answer the client.",
       detail:

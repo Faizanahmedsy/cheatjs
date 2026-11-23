@@ -365,6 +365,12 @@ export type Step = {
    * Explain any jargon in brackets the first time it appears.
    */
   explain: string;
+  /**
+   * Simple mode: the same step told in everyday words for someone who has never heard of the topic.
+   * No jargon, no formulas, short sentences. Falls back to `explain` when missing.
+   * Interview mode keeps showing `explain`.
+   */
+  easy?: string;
   /** Interview mode only: the deeper, more technical explanation. */
   detail?: string;
   /** The big centre visual. Steps without one show the flow scene. */

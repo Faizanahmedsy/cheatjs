@@ -196,7 +196,7 @@ function StepDetails({ s, i, onPrev, onNext, onStart, onQuiz }: { s: Scenario; i
           <p className="font-body text-[16px] font-medium leading-snug text-lab-text">{step.simple}</p>
         </div>
       )}
-      <RichText text={step.explain} className={cn(prose, "mt-3")} />
+      <RichText text={mode === "simple" ? (step.easy ?? step.explain) : step.explain} className={cn(prose, "mt-3")} />
       {step.analogy && (
         <Callout icon={Lightbulb} tone="amber" title="Think of it like">
           <RichText text={step.analogy} />

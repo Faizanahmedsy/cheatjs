@@ -160,7 +160,8 @@ const scenario: Scenario = {
     {
       id: "tokens",
       title: "Your words become tokens",
-      simple: "First the text is cut into small pieces called tokens: whole words or parts of words.",
+      simple: "First your text is cut into small pieces called tokens, and each piece gets a number.",
+      easy: `The model never sees letters. First, your text “${PROMPT}” is **cut into ${PROMPT_TOKENS.length} small pieces**, called tokens, and each piece gets a number. Look at the little **␣** mark: it means a space. “␣capital” is one piece, and the space is part of it.`,
       explain: `The model never sees letters. A {{tokenizer}} (a fixed rulebook) cuts “${PROMPT}” into **${PROMPT_TOKENS.length} {{token|tokens}}** and gives each one a number. Notice the spaces: “␣capital” is one token, space included.`,
       analogy: "Cutting a sentence into fridge-magnet words before you can move them around.",
       detail:
@@ -175,7 +176,8 @@ const scenario: Scenario = {
     {
       id: "prefill",
       title: "Read the whole prompt at once",
-      simple: "The model reads every prompt token together in one pass, before it writes anything.",
+      simple: "Before writing anything, the model reads your whole question in one go.",
+      easy: `Before it writes a single word, the model **reads your whole question at once**. All ${PROMPT_TOKENS.length} pieces go through together, and the model keeps notes about each one. This reading takes time: in our example you wait about **${TTFT_MS} ms** before the first word appears. A longer question means a longer wait.`,
       explain: `This first pass is the {{prefill}}. All ${PROMPT_TOKENS.length} tokens go through the model side by side, and it saves notes about each one for later. The wait before the first word appears is the {{ttft|time to first token}}: about **${TTFT_MS} ms** in our example. Longer prompts make it longer.`,
       analogy: "Reading the whole question before you start answering.",
       detail:
@@ -197,6 +199,7 @@ const scenario: Scenario = {
       id: "next",
       title: "Score every possible next word",
       simple: "The model gives every possible next word a chance, then picks one. Here “Paris” wins easily.",
+      easy: `Now the model must write the first word. It gives **every word it knows a chance**, like a score out of 100%. “Paris” gets **${pctS(P_T1[0])}** and “a” gets ${pctS(P_T1[1])}. The simplest rule is to always pick the word with the highest chance, so it writes “Paris”.`,
       explain: `For each word in its vocabulary the model outputs a raw score (a {{logits|logit}}). {{softmax|Softmax}} turns the scores into chances that add up to 100%. “Paris” gets **${pctS(P_T1[0])}**, “a” gets ${pctS(P_T1[1])}. With the simplest rule, always take the top one, it writes “Paris”.`,
       analogy: "A quiz contestant with several answers in mind, each with a different gut feeling of how sure they are.",
       detail: `The real vocabulary has tens of thousands of tokens; five are shown. Always picking the top token is **greedy decoding** (temperature 0). It is predictable but can get repetitive, so chat apps usually sample instead: draw at random, weighted by the probabilities.`,
@@ -219,7 +222,8 @@ const scenario: Scenario = {
     {
       id: "sampling",
       title: "Turn the dial: temperature, top-k, top-p",
-      simple: "A few settings decide how adventurous the pick is: always the safe word, or sometimes a surprise.",
+      simple: "A few dials decide how adventurous the pick is: always the safest word, or sometimes a surprise.",
+      easy: `Picking the top word every time gives safe but boring answers. So there are dials. The **temperature** dial controls how adventurous the model is. Set low (0.5), “Paris” becomes even more likely: **${pctS(P_T05[0])}**. Set high (1.5), it drops to **${pctS(P_T15[0])}**, so other words get a chance. Another setting, “top-p”, throws away the very unlikely words and keeps only the likely ones: here it keeps **${TOPP_KEPT}** words.`,
       explain: `{{temperature|Temperature}} (a creativity dial) reshapes the chances: at 0.5 “Paris” rises to **${pctS(P_T05[0])}**, at 1.5 it falls to **${pctS(P_T15[0])}**. {{top-p|Top-p}} (keep only the likeliest words until their chances add up to ${TOP_P * 100}%) cuts the long tail: here it keeps **${TOPP_KEPT}** words.`,
       analogy: "Temperature is how adventurous a diner is: at 0 they always order the house special; at 1.5 they might try anything on the menu.",
       detail:
@@ -273,7 +277,8 @@ def sample(logits, T=1.0, top_k=None, top_p=None):
     {
       id: "decode",
       title: "Write one token, then the next",
-      simple: "The picked word is added to the text and the model runs again to pick the next word.",
+      simple: "The chosen word is added to the text, and the model runs again to pick the next one.",
+      easy: `Now the model repeats one move: pick a word, add it to the text, then pick the next word, again and again. This is how it writes “${ANSWER.join("").trim()}”. When it picks a special “stop” marker, it ends. Each new piece takes about **${TPOT_MS} ms**, so a 500-piece reply would take about ${((500 * TPOT_MS) / 1000).toFixed(1)} seconds.`,
       explain: `This loop is the {{decode}} phase. It writes “${ANSWER.join("").trim()}”, then picks a special stop token (<eos>, end of sequence) and stops. Each new token takes about **${TPOT_MS} ms** here, so a 500-token reply takes about ${((500 * TPOT_MS) / 1000).toFixed(1)} s.`,
       analogy: "Typing on a phone with predictive text, always tapping the suggested next word.",
       detail: `The picked token is appended to the input and the model runs again, but only for that **one new token**, because earlier tokens' keys and values are already cached. It repeats until \`<eos>\`, a stop string or the max-tokens limit. Total latency ≈ TTFT + output tokens × time per output token, so **output length is often the biggest term**.`,
@@ -318,7 +323,8 @@ while len(out) < max_tokens:
     {
       id: "kv",
       title: "Keep notes: the KV cache",
-      simple: "The model keeps notes on every word it has read, so it never re-reads the whole text.",
+      simple: "The model keeps notes about every word it has read, so it never has to re-read the whole text.",
+      easy: `Without a trick, the model would re-read the whole text again for every new word. That is a lot of repeated work. So it keeps **notes** about every piece it already read (this notebook is called the cache). Each new piece only adds one line. Without the notes, writing ${OUT} pieces after a ${PROMPT_LEN}-piece question would need **${(WORK_NO_CACHE / WORK_CACHE).toFixed(0)} times** more work. The price is memory: the notebook grows with every piece.`,
       explain: `Those notes are the {{kv-cache|KV cache}} (each token's saved “key” and “value” numbers). Each new word only adds one line to the notebook. Without it, writing ${OUT} tokens after a ${PROMPT_LEN}-token prompt would mean **${(WORK_NO_CACHE / WORK_CACHE).toFixed(0)}×** more work. The price is memory: the notebook grows with every token.`,
       analogy: "Keeping your rough notes while writing an essay instead of re-reading every source for every sentence.",
       detail: `Without a cache, every new token would re-run attention for the *entire* text so far. The cache keeps each token's key and value vectors, so each decode step computes only the new token's. It grows with every token, for every layer, for every request in the batch: **${KV_TOKEN_MIB.toFixed(2)} MiB per token** in the example 7B-class config, ${KV_CTX_GIB.toFixed(2)} GiB at ${CTX} tokens. On long chats it can rival the weights. Grouped-query attention (fewer KV heads) shrinks it a lot.`,
@@ -366,7 +372,8 @@ while len(out) < max_tokens:
     {
       id: "run",
       title: "Where the model runs",
-      simple: "You can rent a model from a provider, use a host for open models, or run it on your own machines.",
+      simple: "You can rent a model from a company, use a host for free models, or run it on your own computers.",
+      easy: "Where does the model actually live? There are three ways. **Rent it**: a company runs the model and you pay for each piece of text you send. This is the quickest start. **Use a host**: a service runs free, open models on its computers for you. **Run it yourself**: you buy or rent powerful computers (called GPUs) and run everything. Your data stays with you, but all the work is yours.",
       explain:
         "A **cloud API** (a provider runs the model; you pay per token) is the quickest start. A **hosting platform** serves open models on its GPUs. **Self-hosting** on your own GPUs keeps the data in-house, but you run everything yourself.",
       analogy: "Eating out, ordering a meal kit, or cooking from your own garden: less effort on the left, more control on the right.",
@@ -444,7 +451,8 @@ while len(out) < max_tokens:
     {
       id: "vram",
       title: "Will it fit on the GPU?",
-      simple: "Every number inside the model takes memory, and it all has to fit on the graphics card.",
+      simple: "Every number inside the model takes up memory, and all of it has to fit on the graphics card.",
+      easy: `A model is made of billions of numbers, and all of them must fit in the memory of a **graphics card (GPU)**. A model with 7 billion numbers, stored at 2 bytes each, needs **${weightsGB(2).toFixed(0)} GB** just to sit there, plus extra room for its notes. The fix is to store each number in a smaller, rougher form (“compressing” it). That shrinks the model to ${weightsGB(1).toFixed(0)} GB, or even ${weightsGB(0.5).toFixed(1)} GB. It becomes slightly less exact, but it fits.`,
       explain: `A model's {{parameter|parameters}} must sit in {{vram|GPU memory}}. A 7-billion-parameter model at 2 bytes each needs **${weightsGB(2).toFixed(0)} GB** for weights alone, plus the KV cache. {{quantization|Quantization}} (storing each number in fewer bits) shrinks it to ${weightsGB(1).toFixed(0)} GB at 8-bit or ${weightsGB(0.5).toFixed(1)} GB at 4-bit.`,
       analogy: "Packing a suitcase: the same clothes fold smaller if you vacuum-pack them, but they come out a little creased.",
       detail: `Memory for weights ≈ **parameters × bytes per parameter**. Add the KV cache (≈ ${KV_CTX_GB.toFixed(1)} GB for one 4k-token request in the example config), activations and framework overhead. Quantization usually costs a little quality, more at 4-bit and on maths or code, so measure it on your own tasks.`,
@@ -480,7 +488,8 @@ while len(out) < max_tokens:
     {
       id: "optimise",
       title: "Making it faster and cheaper",
-      simple: "Four common tricks: smaller numbers, serving many users together, a quick helper guesser, and reusing work.",
+      simple: "Four common tricks: compress the model, serve many people together, let a small helper guess ahead, and reuse work.",
+      easy: `Companies use four tricks to make models cheaper and faster. **Compress** the model so there is less to read. **Serve many people together**, like one bus instead of a taxi for each person. **Guess ahead**: a small, fast helper writes a few words and the big model quickly checks them. If the helper is right 80% of the time, the big model gets about **${f(specTokens(0.8, 4), 1)}** words for the price of one step. And **reuse work** that was already done.`,
       explain: `{{quantization|Quantization}} means less memory to read per token. {{continuous-batching|Continuous batching}} (serving many users in one pass) raises throughput. {{speculative-decoding|Speculative decoding}} lets a small model guess ahead: about **${f(specTokens(0.8, 4), 1)}** tokens per big-model pass when it is right 80% of the time. Caching reuses work already done.`,
       analogy: "A junior drafts the next few lines, and the senior just approves them in one read.",
       detail:
@@ -520,6 +529,7 @@ while len(out) < max_tokens:
       id: "choose",
       title: "Cost, speed and choosing a model",
       simple: "Bigger models are usually smarter but slower and pricier, so use the smallest one that does the job.",
+      easy: `You pay for the text going **in** and the text coming **out**. One request with ${IN_TOK.toLocaleString("en-US")} pieces in and ${OUT_TOK} out costs about **${money(TIERS[0].cost)}** on a small model and **${money(TIERS[2].cost)}** on the biggest kind (example prices, real ones change). A smart habit: start with a small model, test it on real questions, and send only the hard ones to a bigger model.`,
       explain: `You pay for **input tokens + output tokens**. One request with ${IN_TOK.toLocaleString("en-US")} in and ${OUT_TOK} out costs about **${money(TIERS[0].cost)}** on a small model and **${money(TIERS[2].cost)}** on a frontier one (example prices; real ones change). The usual habit: start small, test on real questions, and send only the hard ones to a bigger model.`,
       analogy: "Hiring: you don't send every small errand to your most senior (and most expensive) person.",
       detail:
