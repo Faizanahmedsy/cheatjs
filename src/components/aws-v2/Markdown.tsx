@@ -18,16 +18,16 @@ const LABELS: Record<string, string> = {
 };
 
 const TONES: Record<string, string> = {
-  blue: "border-sky-400/40 bg-sky-400/10",
-  yellow: "border-yellow-400/40 bg-yellow-400/10",
-  purple: "border-violet-400/40 bg-violet-400/10",
-  gray: "border-slate-500/40 bg-slate-500/10",
-  green: "border-emerald-400/40 bg-emerald-400/10",
-  red: "border-red-400/40 bg-red-400/10",
-  orange: "border-orange-400/40 bg-orange-400/10",
-  pink: "border-pink-400/40 bg-pink-400/10",
-  brown: "border-amber-700/40 bg-amber-700/10",
-  default: "border-slate-500/40 bg-slate-500/10",
+  blue: "border-sky-400/70 bg-sky-400/5",
+  yellow: "border-yellow-400/70 bg-yellow-400/5",
+  purple: "border-violet-400/70 bg-violet-400/5",
+  gray: "border-slate-500/70 bg-slate-500/5",
+  green: "border-emerald-400/70 bg-emerald-400/5",
+  red: "border-red-400/70 bg-red-400/5",
+  orange: "border-orange-400/70 bg-orange-400/5",
+  pink: "border-pink-400/70 bg-pink-400/5",
+  brown: "border-amber-700/70 bg-amber-700/5",
+  default: "border-slate-500/70 bg-slate-500/5",
 };
 
 function firstChild(children: ReactNode): ReactNode {
@@ -36,22 +36,22 @@ function firstChild(children: ReactNode): ReactNode {
 
 const components: Components = {
   h1: ({ node, ...props }) => (
-    <h1 {...props} className="mt-10 mb-4 scroll-mt-20 font-headline text-3xl font-bold text-slate-100" />
+    <h1 {...props} className="mt-10 mb-4 scroll-mt-20 font-body text-[2rem] font-semibold leading-tight tracking-tight text-slate-50" />
   ),
   h2: ({ node, ...props }) => (
     <h2
       {...props}
-      className="mt-12 mb-4 scroll-mt-20 border-b border-slate-700/60 pb-2 font-headline text-2xl font-bold text-cyan-300 md:text-3xl"
+      className="mt-14 mb-4 scroll-mt-20 font-body text-[1.65rem] font-semibold leading-tight tracking-tight text-slate-50"
     />
   ),
   h3: ({ node, ...props }) => (
     <h3
       {...props}
-      className="mt-10 mb-3 scroll-mt-20 font-headline text-xl font-bold text-slate-100 md:text-2xl"
+      className="mt-10 mb-3 scroll-mt-20 font-body text-[1.3rem] font-semibold leading-snug tracking-tight text-slate-100"
     />
   ),
   h4: ({ node, ...props }) => (
-    <h4 {...props} className="mt-6 mb-2 scroll-mt-20 text-lg font-semibold text-slate-200" />
+    <h4 {...props} className="mt-6 mb-2 scroll-mt-20 font-body text-[1.1rem] font-semibold text-slate-100" />
   ),
   p: ({ node, children, ...props }) => {
     const first = firstChild(children);
@@ -65,7 +65,7 @@ const components: Components = {
           <p
             {...props}
             className={cn(
-              "mt-6 mb-2 rounded-r-lg border-l-4 px-4 py-2 text-sm leading-relaxed text-slate-200 md:text-base [&::first-line]:font-bold [&::first-line]:tracking-wide [&::first-line]:text-slate-50",
+              "mt-6 mb-2 border-l-2 py-0.5 pl-4 text-[1.0625rem] leading-[1.75] text-slate-200 [&::first-line]:text-[0.8rem] [&::first-line]:font-semibold [&::first-line]:uppercase [&::first-line]:tracking-wider [&::first-line]:text-slate-400",
               tone
             )}
           >
@@ -82,7 +82,7 @@ const components: Components = {
         return (
           <p
             {...props}
-            className="my-3 rounded-lg border border-emerald-400/40 bg-emerald-400/10 px-4 py-3 text-sm leading-relaxed text-emerald-100 md:text-base"
+            className="my-3 rounded-md border-l-2 border-emerald-400/70 bg-emerald-400/5 px-4 py-2.5 text-[1.0625rem] leading-[1.75] text-slate-200"
           >
             {children}
           </p>
@@ -90,7 +90,7 @@ const components: Components = {
       }
     }
 
-    return <p {...props} className="my-3 text-sm leading-relaxed text-slate-300 md:text-base">{children}</p>;
+    return <p {...props} className="my-4 text-[1.0625rem] leading-[1.75] text-slate-200">{children}</p>;
   },
   ul: ({ node, className, ...props }) => {
     const isTasks = typeof className === "string" && className.includes("contains-task-list");
@@ -98,14 +98,14 @@ const components: Components = {
       <ul
         {...props}
         className={cn(
-          "my-3 space-y-1.5 text-sm text-slate-300 md:text-base",
-          isTasks ? "list-none pl-0" : "list-disc pl-6 marker:text-cyan-400/70"
+          "my-4 space-y-1.5 text-[1.0625rem] leading-[1.75] text-slate-200",
+          isTasks ? "list-none pl-0" : "list-disc pl-6 marker:text-slate-500"
         )}
       />
     );
   },
   ol: ({ node, ...props }) => (
-    <ol {...props} className="my-3 list-decimal space-y-1.5 pl-6 text-sm text-slate-300 marker:text-cyan-400/70 md:text-base" />
+    <ol {...props} className="my-4 list-decimal space-y-1.5 pl-6 text-[1.0625rem] leading-[1.75] text-slate-200 marker:text-slate-500" />
   ),
   li: ({ node, className, ...props }) => (
     <li
@@ -121,11 +121,11 @@ const components: Components = {
     ) : null,
   a: ({ node, href = "", children, ...props }) =>
     href.startsWith("/") ? (
-      <Link href={href} className="font-medium text-cyan-300 underline-offset-2 hover:underline">
+      <Link href={href} className="text-sky-300 underline decoration-sky-300/40 underline-offset-[3px] hover:decoration-sky-300">
         {children}
       </Link>
     ) : (
-      <a {...props} href={href} target="_blank" rel="noopener noreferrer" className="font-medium text-cyan-300 underline-offset-2 hover:underline">
+      <a {...props} href={href} target="_blank" rel="noopener noreferrer" className="text-sky-300 underline decoration-sky-300/40 underline-offset-[3px] hover:decoration-sky-300">
         {children}
       </a>
     ),
@@ -134,14 +134,14 @@ const components: Components = {
   em: ({ node, ...props }) => <em {...props} className="text-slate-200" />,
   hr: () => <hr className="my-10 border-slate-700/60" />,
   blockquote: ({ node, ...props }) => (
-    <blockquote {...props} className="my-4 border-l-4 border-cyan-400/50 bg-slate-800/40 px-4 py-2 text-slate-300" />
+    <blockquote {...props} className="my-5 border-l-2 border-slate-500 pl-4 text-slate-300" />
   ),
   code: ({ node, className, children, ...props }) => {
     const isBlock = typeof className === "string" && className.includes("language-");
     return isBlock ? (
       <code {...props} className={cn(className, "font-code text-sm")}>{children}</code>
     ) : (
-      <code {...props} className="rounded bg-slate-800 px-1.5 py-0.5 font-code text-[0.85em] text-cyan-200">
+      <code {...props} className="rounded-md border border-slate-700/60 bg-slate-800/70 px-1.5 py-px font-code text-[0.88em] text-slate-100">
         {children}
       </code>
     );
@@ -151,10 +151,10 @@ const components: Components = {
   ),
   table: ({ node, ...props }) => (
     <div className="my-5 overflow-x-auto rounded-lg border border-slate-700/60">
-      <table {...props} className="w-full min-w-[32rem] border-collapse text-left text-sm" />
+      <table {...props} className="w-full min-w-[32rem] border-collapse text-left text-[0.95rem]" />
     </div>
   ),
-  thead: ({ node, ...props }) => <thead {...props} className="bg-slate-800/80 text-slate-200" />,
+  thead: ({ node, ...props }) => <thead {...props} className="bg-slate-800/50 text-slate-100" />,
   th: ({ node, ...props }) => <th {...props} className="border-b border-slate-700/60 px-3 py-2 font-semibold" />,
   td: ({ node, ...props }) => (
     <td {...props} className="border-b border-slate-800 px-3 py-2 align-top text-slate-300" />
@@ -165,11 +165,11 @@ const components: Components = {
       const icon = String(p.dataIcon ?? "💡");
       const tone = TONES[String(p.dataTone ?? "default")] ?? TONES.default;
       return (
-        <div className={cn("my-5 flex gap-3 rounded-xl border px-4 py-3", tone)}>
+        <div className={cn("my-6 flex gap-3 rounded-lg border-l-2 px-4 py-3", tone)}>
           <span className="text-xl leading-7" aria-hidden>
             {icon}
           </span>
-          <div className="min-w-0 flex-1 [&>p]:my-1 [&>p]:text-slate-200">{children}</div>
+          <div className="min-w-0 flex-1 text-[1.0625rem] leading-[1.75] [&>p]:my-1 [&>p]:text-slate-200">{children}</div>
         </div>
       );
     }

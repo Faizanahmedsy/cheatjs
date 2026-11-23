@@ -53,17 +53,26 @@ export function TocNav({ toc }: { toc: Item[] }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [toc, active]);
 
+  const parentOf = (index: number) => {
+    for (let i = index; i >= 0; i--) if (toc[i].level === 2) return toc[i].id;
+    return null;
+  };
+  const activeIndex = toc.findIndex((t) => t.id === active);
+  const activeParent = activeIndex >= 0 ? parentOf(activeIndex) : null;
+
   return (
     <>
-      <p className="mb-3 flex items-center justify-between text-xs font-medium uppercase tracking-wider text-slate-500">
-        On this page
-        <span className="normal-case tracking-normal text-slate-600" title="Press J for next section, K for previous">
+      <p className="mb-3 flex items-center justify-between text-[15px] font-semibold text-slate-100">
+        In this article
+        <span className="text-[11px] font-normal text-slate-500" title="Press J for next section, K for previous">
           <kbd className="rounded border border-slate-700 px-1">J</kbd> <kbd className="rounded border border-slate-700 px-1">K</kbd>
         </span>
       </p>
       <ul ref={listRef} className="space-y-0.5 border-l border-slate-700/60 text-sm">
-        {toc.map((t) => {
+        {toc.map((t, index) => {
           const on = t.id === active;
+          // Sub-sections only show under the main section being read, so the list stays short.
+          if (t.level === 3 && parentOf(index) !== activeParent) return null;
           return (
             <li key={t.id} data-toc={t.id}>
               <a
@@ -75,8 +84,8 @@ export function TocNav({ toc }: { toc: Item[] }) {
                 }}
                 className={cn(
                   "-ml-px block border-l-2 py-1 transition-colors",
-                  t.level === 3 ? "pl-6 text-[13px]" : "pl-3 font-medium",
-                  on ? "border-cyan-400 bg-cyan-400/10 text-cyan-200" : "border-transparent text-slate-400 hover:border-slate-500 hover:text-slate-200",
+                  t.level === 3 ? "pl-6 text-[13px]" : "pl-3 text-[14px]",
+                  on ? "border-cyan-400 bg-cyan-400/10 font-medium text-slate-50" : "border-transparent text-slate-400 hover:border-slate-500 hover:text-slate-100",
                 )}
               >
                 {t.text}

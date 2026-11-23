@@ -42,37 +42,36 @@ export function V2Nav({ trackId = "aws" }: { trackId?: Track["id"] }) {
       </nav>
 
       {/* Desktop: sidebar */}
-      <aside data-reader-hide className="hidden w-72 flex-shrink-0 border-r border-slate-700/50 bg-slate-900/80 lg:block lg:h-full lg:overflow-y-auto scroll-quiet">
-        <nav aria-label={`${track.shortLabel} pages`} className="flex flex-col gap-1 p-4">
-          <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wider text-cyan-400">
+      <aside data-reader-hide className="hidden w-72 flex-shrink-0 border-r border-slate-700/50 bg-transparent lg:block lg:h-full lg:overflow-y-auto scroll-quiet">
+        <nav aria-label={`${track.shortLabel} pages`} className="flex flex-col gap-0 px-5 py-6">
+          <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
             {track.label}
           </p>
           {track.id === "aws" && (
-            <Link href="/aws-lab" className="mb-3 flex items-center gap-2 rounded-md border border-cyan-400/40 bg-cyan-400/10 px-3 py-2 text-sm font-semibold text-cyan-300 transition-colors hover:bg-cyan-400/20">
-              <span aria-hidden>🧪</span> AWS Lab: watch services work
+            <Link href="/aws-lab" className="mb-4 px-3 text-sm text-sky-300 underline decoration-sky-300/40 underline-offset-[3px] hover:decoration-sky-300">
+              Try the AWS Lab →
             </Link>
           )}
           {GROUPS.map((group) => (
-            <div key={group} className="mb-4">
-              <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wider text-slate-500">{group}</p>
+            <div key={group} className="mb-5">
+              <p className="mb-1.5 px-3 text-[13px] font-semibold text-slate-100">{group}</p>
+              <div className="ml-3 flex flex-col border-l border-slate-700/60">
               {track.pages.filter((p) => p.group === group).map((p) => (
                 <Link
                   key={p.slug}
                   href={hrefFor(p.slug, track)}
                   className={cn(
-                    "flex items-start gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    "-ml-px flex items-baseline justify-between gap-3 border-l-2 py-1.5 pl-3 pr-2 text-[15px] transition-colors",
                     isActive(p.slug)
-                      ? "bg-slate-800 text-cyan-300"
-                      : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
+                      ? "border-cyan-400 bg-cyan-400/10 font-medium text-slate-50"
+                      : "border-transparent text-slate-300 hover:border-slate-500 hover:text-slate-50"
                   )}
                 >
-                  <span aria-hidden className="mt-0.5">{p.icon}</span>
-                  <span className="min-w-0">
-                    <span className="block leading-snug">{study.done[`${track.id}:${p.slug}`] ? <span className="text-emerald-400">✓ </span> : null}{p.title}</span>
-                    {p.weight ? <span className="text-xs text-slate-500">{track.id === "aws" ? `${p.weight} of exam` : p.weight}</span> : null}
-                  </span>
+                  <span className="min-w-0 leading-snug">{study.done[`${track.id}:${p.slug}`] ? <span className="text-emerald-400">✓ </span> : null}{p.title}</span>
+                  {p.weight ? <span className="shrink-0 text-xs text-slate-500">{track.id === "aws" ? p.weight : p.weight.replace(" topics", "")}</span> : null}
                 </Link>
               ))}
+              </div>
             </div>
           ))}
           <Link

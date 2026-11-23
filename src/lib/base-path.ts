@@ -5,7 +5,7 @@
  * (Next basePath, redirects from cheatjs.vercel.app, canonical URLs, icons,
  * manifest, service worker) follows this one value.
  */
-export const BASE_PATH: string = "";
+export const BASE_PATH: string = "/class";
 
 export const PUBLIC_ORIGIN = BASE_PATH ? "https://ustadbillu.vercel.app" : "https://cheatjs.vercel.app";
 

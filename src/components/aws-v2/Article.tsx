@@ -10,6 +10,8 @@ import { PageActions } from "@/components/study/PageActions";
 import { hrefFor, neighboursOf } from "@/lib/aws-v2/pages";
 import { FastScroller } from "./FastScroller";
 import { TocNav } from "./TocNav";
+import { AskLlm } from "./AskLlm";
+import { absolute } from "@/lib/seo";
 
 function formatDate(iso: string): string {
   try {
@@ -48,22 +50,15 @@ export async function Article({
       <div data-reader-scroll className="no-native-scrollbar min-w-0 px-4 pb-24 pt-8 sm:px-8 lg:h-full lg:overflow-y-auto xl:pr-12">
       <article className="reader-article mx-auto w-full min-w-0 max-w-3xl">
         <header className="mb-8">
-          <p className="text-sm text-slate-500">{page.subtitle}</p>
-          <h1 className="mt-1 font-headline text-3xl font-bold text-slate-100 md:text-4xl">
-            <span className="mr-3" aria-hidden>{page.icon}</span>
-            {page.title}
-          </h1>
-          <p className="mt-3 max-w-2xl text-slate-400">{page.blurb}</p>
+          <p className="text-sm font-medium text-slate-500">{page.subtitle}</p>
+          <h1 className="mt-1 font-body text-[2.25rem] font-semibold leading-tight tracking-tight text-slate-50 md:text-[2.6rem]">{page.title}</h1>
+          <p className="mt-3 max-w-2xl text-[1.0625rem] leading-relaxed text-slate-300">{page.blurb}</p>
           <div className="mt-4 flex flex-wrap items-center gap-3 text-xs">
             <span
-              className={cn(
-                "rounded-full border px-2.5 py-1 font-medium",
-                live
-                  ? "border-emerald-400/50 bg-emerald-400/10 text-emerald-300"
-                  : "border-slate-600 bg-slate-800 text-slate-300"
-              )}
+              className={cn("inline-flex items-center gap-1.5", live ? "text-emerald-300" : "text-slate-400")}
             >
-              {live ? "Live from Notion" : "Notion snapshot"} · edited {formatDate(loaded.editedAt)}
+              <span className={cn("h-1.5 w-1.5 rounded-full", live ? "bg-emerald-400" : "bg-slate-500")} aria-hidden />
+              {live ? "Live" : "Snapshot"} · updated {formatDate(loaded.editedAt)}
             </span>
             <span className="text-slate-500">~{Math.max(1, Math.round(markdown.split(/\s+/).length / 200))} min read</span>
             <a
@@ -75,7 +70,10 @@ export async function Article({
               Open in Notion <ExternalLink className="h-3 w-3" />
             </a>
           </div>
-          <PageActions id={`${track.id}:${page.slug}`} title={page.title} href={hrefFor(page.slug, track)} track={track.id} />
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <AskLlm title={page.title} mdUrl={absolute(`/md/${track.id}/${page.slug}`)} pageUrl={absolute(hrefFor(page.slug, track))} />
+            <PageActions id={`${track.id}:${page.slug}`} title={page.title} href={hrefFor(page.slug, track)} track={track.id} />
+          </div>
           {loaded.note ? <p className="mt-3 text-xs text-amber-300">{loaded.note}</p> : null}
         </header>
 
@@ -110,8 +108,7 @@ export async function Article({
                 <span className="flex items-center gap-1 text-xs font-medium uppercase tracking-wider text-slate-500">
                   <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Previous
                 </span>
-                <span className="font-headline text-base font-semibold text-slate-200 group-hover:text-cyan-300">
-                  <span aria-hidden className="mr-2">{prev.icon}</span>
+                <span className="font-body text-base font-semibold text-slate-100 group-hover:text-cyan-300">
                   {prev.title}
                 </span>
               </Link>
@@ -126,8 +123,7 @@ export async function Article({
                 <span className="flex items-center gap-1 text-xs font-medium uppercase tracking-wider text-cyan-300">
                   Next <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                 </span>
-                <span className="font-headline text-base font-semibold text-slate-100 group-hover:text-cyan-200">
-                  <span aria-hidden className="mr-2">{next.icon}</span>
+                <span className="font-body text-base font-semibold text-slate-50 group-hover:text-cyan-200">
                   {next.title}
                 </span>
               </Link>

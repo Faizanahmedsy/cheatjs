@@ -65,7 +65,7 @@ export function PageActions({
 
   const btn = "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors";
   return (
-    <div className="mt-4 flex flex-wrap gap-2" data-reader-hide>
+    <div className="flex flex-wrap gap-2" data-reader-hide>
       <button
         type="button"
         onClick={() => toggleDone(id)}
