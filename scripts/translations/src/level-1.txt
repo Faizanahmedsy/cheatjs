@@ -2125,3 +2125,542 @@ _
 ListNode* list1 = new ListNode(1, new ListNode(3, new ListNode(5)));
 ListNode* list2 = new ListNode(2, new ListNode(3, new ListNode(4)));
 for (int x : toArray(mergeTwoLists(list1, list2))) cout << x << " ";
+
+## linked-list-cycle
+@python
+%LIST
+_
+def has_cycle(list_head):
+    slow_pointer = list_head
+    fast_pointer = list_head
+    while fast_pointer and fast_pointer.next:
+        slow_pointer = slow_pointer.next
+        fast_pointer = fast_pointer.next.next
+        if slow_pointer is fast_pointer: return True
+.
+    return False
+.
+_
+.
+second = ListNode(2)
+tail_node = ListNode(4)
+second.next = ListNode(0, tail_node)
+list_head = ListNode(3, second)
+tail_node.next = second
+_
+print(has_cycle(list_head))
+@java
+%LIST
+_
+static boolean hasCycle(ListNode listHead) {
+    ListNode slowPointer = listHead;
+    ListNode fastPointer = listHead;
+    while (fastPointer != null && fastPointer.next != null) {
+        slowPointer = slowPointer.next;
+        fastPointer = fastPointer.next.next;
+        if (slowPointer == fastPointer) return true;
+    }
+    return false;
+}
+_
+~M
+.
+ListNode second = new ListNode(2);
+ListNode tailNode = new ListNode(4);
+second.next = new ListNode(0, tailNode);
+ListNode listHead = new ListNode(3, second);
+tailNode.next = second;
+_
+System.out.println(hasCycle(listHead));
+@cpp
+%LIST
+_
+bool hasCycle(ListNode* listHead) {
+    ListNode* slowPointer = listHead;
+    ListNode* fastPointer = listHead;
+    while (fastPointer && fastPointer->next) {
+        slowPointer = slowPointer->next;
+        fastPointer = fastPointer->next->next;
+        if (slowPointer == fastPointer) return true;
+    }
+    return false;
+}
+_
+~M
+.
+ListNode* second = new ListNode(2);
+ListNode* tailNode = new ListNode(4);
+second->next = new ListNode(0, tailNode);
+ListNode* listHead = new ListNode(3, second);
+tailNode->next = second;
+_
+cout << boolalpha << hasCycle(listHead) << endl;
+
+## middle-of-the-linked-list
+@python
+%LIST
+_
+def middle_node(list_head):
+    slow_pointer = list_head
+    fast_pointer = list_head
+    while fast_pointer and fast_pointer.next:
+        slow_pointer = slow_pointer.next
+        fast_pointer = fast_pointer.next.next
+.
+    return slow_pointer
+.
+_
+.
+%FROMARRAY
+_
+%TOARRAY
+_
+list_head = from_array([1, 2, 3, 4, 5, 6])
+print(to_array(middle_node(list_head)))
+@java
+%LIST
+_
+static ListNode middleNode(ListNode listHead) {
+    ListNode slowPointer = listHead;
+    ListNode fastPointer = listHead;
+    while (fastPointer != null && fastPointer.next != null) {
+        slowPointer = slowPointer.next;
+        fastPointer = fastPointer.next.next;
+    }
+    return slowPointer;
+}
+_
+.
+%FROMARRAY
+_
+%TOARRAY
+_
+~M
+ListNode listHead = fromArray(new int[]{1, 2, 3, 4, 5, 6});
+System.out.println(toArray(middleNode(listHead)));
+@cpp
+%LIST
+_
+ListNode* middleNode(ListNode* listHead) {
+    ListNode* slowPointer = listHead;
+    ListNode* fastPointer = listHead;
+    while (fastPointer && fastPointer->next) {
+        slowPointer = slowPointer->next;
+        fastPointer = fastPointer->next->next;
+    }
+    return slowPointer;
+}
+_
+.
+%FROMARRAY
+_
+%TOARRAY
+_
+~M
+ListNode* listHead = fromArray({1, 2, 3, 4, 5, 6});
+for (int x : toArray(middleNode(listHead))) cout << x << " ";
+
+## palindrome-linked-list
+@python
+%LIST
+_
+def is_palindrome(list_head):
+_
+    slow_pointer = list_head
+    fast_pointer = list_head
+    while fast_pointer and fast_pointer.next:
+        slow_pointer = slow_pointer.next
+        fast_pointer = fast_pointer.next.next
+.
+_
+    previous_node = None
+    current_node = slow_pointer
+    while current_node:
+        next_node = current_node.next
+        current_node.next = previous_node
+        previous_node = current_node
+        current_node = next_node
+.
+_
+    front_node = list_head
+    back_node = previous_node
+    while back_node:
+        if front_node.val != back_node.val: return False
+        front_node = front_node.next
+        back_node = back_node.next
+.
+    return True
+.
+_
+list_head = ListNode(1, ListNode(2, ListNode(2, ListNode(1))))
+print(is_palindrome(list_head))
+@java
+%LIST
+_
+static boolean isPalindrome(ListNode listHead) {
+_
+    ListNode slowPointer = listHead;
+    ListNode fastPointer = listHead;
+    while (fastPointer != null && fastPointer.next != null) {
+        slowPointer = slowPointer.next;
+        fastPointer = fastPointer.next.next;
+    }
+_
+    ListNode previousNode = null;
+    ListNode currentNode = slowPointer;
+    while (currentNode != null) {
+        ListNode nextNode = currentNode.next;
+        currentNode.next = previousNode;
+        previousNode = currentNode;
+        currentNode = nextNode;
+    }
+_
+    ListNode frontNode = listHead;
+    ListNode backNode = previousNode;
+    while (backNode != null) {
+        if (frontNode.val != backNode.val) return false;
+        frontNode = frontNode.next;
+        backNode = backNode.next;
+    }
+    return true;
+}
+_
+~M
+ListNode listHead = new ListNode(1, new ListNode(2, new ListNode(2, new ListNode(1))));
+System.out.println(isPalindrome(listHead));
+@cpp
+%LIST
+_
+bool isPalindrome(ListNode* listHead) {
+_
+    ListNode* slowPointer = listHead;
+    ListNode* fastPointer = listHead;
+    while (fastPointer && fastPointer->next) {
+        slowPointer = slowPointer->next;
+        fastPointer = fastPointer->next->next;
+    }
+_
+    ListNode* previousNode = nullptr;
+    ListNode* currentNode = slowPointer;
+    while (currentNode) {
+        ListNode* nextNode = currentNode->next;
+        currentNode->next = previousNode;
+        previousNode = currentNode;
+        currentNode = nextNode;
+    }
+_
+    ListNode* frontNode = listHead;
+    ListNode* backNode = previousNode;
+    while (backNode) {
+        if (frontNode->val != backNode->val) return false;
+        frontNode = frontNode->next;
+        backNode = backNode->next;
+    }
+    return true;
+}
+_
+~M
+ListNode* listHead = new ListNode(1, new ListNode(2, new ListNode(2, new ListNode(1))));
+cout << boolalpha << isPalindrome(listHead) << endl;
+
+## intersection-of-two-linked-lists
+@python
+%LIST
+_
+def get_intersection_node(head_a, head_b):
+    walker_from_a = head_a
+    walker_from_b = head_b
+    while walker_from_a is not walker_from_b:
+        walker_from_a = walker_from_a.next if walker_from_a else head_b
+        walker_from_b = walker_from_b.next if walker_from_b else head_a
+.
+    return walker_from_a
+.
+_
+.
+shared = ListNode(8, ListNode(4, ListNode(5)))
+head_a = ListNode(4, ListNode(1, shared))
+head_b = ListNode(5, ListNode(6, ListNode(1, shared)))
+_
+current_node = get_intersection_node(head_a, head_b)
+print(current_node.val if current_node else None)
+@java
+%LIST
+_
+static ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+    ListNode walkerFromA = headA;
+    ListNode walkerFromB = headB;
+    while (walkerFromA != walkerFromB) {
+        walkerFromA = walkerFromA != null ? walkerFromA.next : headB;
+        walkerFromB = walkerFromB != null ? walkerFromB.next : headA;
+    }
+    return walkerFromA;
+}
+_
+~M
+.
+ListNode shared = new ListNode(8, new ListNode(4, new ListNode(5)));
+ListNode headA = new ListNode(4, new ListNode(1, shared));
+ListNode headB = new ListNode(5, new ListNode(6, new ListNode(1, shared)));
+_
+ListNode currentNode = getIntersectionNode(headA, headB);
+System.out.println(currentNode != null ? currentNode.val : null);
+@cpp
+%LIST
+_
+ListNode* getIntersectionNode(ListNode* headA, ListNode* headB) {
+    ListNode* walkerFromA = headA;
+    ListNode* walkerFromB = headB;
+    while (walkerFromA != walkerFromB) {
+        walkerFromA = walkerFromA ? walkerFromA->next : headB;
+        walkerFromB = walkerFromB ? walkerFromB->next : headA;
+    }
+    return walkerFromA;
+}
+_
+~M
+.
+ListNode* shared = new ListNode(8, new ListNode(4, new ListNode(5)));
+ListNode* headA = new ListNode(4, new ListNode(1, shared));
+ListNode* headB = new ListNode(5, new ListNode(6, new ListNode(1, shared)));
+_
+ListNode* currentNode = getIntersectionNode(headA, headB);
+if (currentNode) cout << currentNode->val << endl; else cout << "null" << endl;
+
+## remove-duplicates-from-sorted-list
+@python
+%LIST
+_
+def delete_duplicates(list_head):
+    current_node = list_head
+    while current_node and current_node.next:
+        if current_node.val == current_node.next.val:
+            current_node.next = current_node.next.next
+        else:
+            current_node = current_node.next
+.
+.
+    return list_head
+.
+_
+%FROMARRAY
+_
+%TOARRAY
+_
+list_head = from_array([1, 1, 2, 3, 3])
+print(to_array(delete_duplicates(list_head)))
+@java
+%LIST
+_
+static ListNode deleteDuplicates(ListNode listHead) {
+    ListNode currentNode = listHead;
+    while (currentNode != null && currentNode.next != null) {
+        if (currentNode.val == currentNode.next.val) {
+            currentNode.next = currentNode.next.next;
+        } else {
+            currentNode = currentNode.next;
+        }
+    }
+    return listHead;
+}
+_
+%FROMARRAY
+_
+%TOARRAY
+_
+~M
+ListNode listHead = fromArray(new int[]{1, 1, 2, 3, 3});
+System.out.println(toArray(deleteDuplicates(listHead)));
+@cpp
+%LIST
+_
+ListNode* deleteDuplicates(ListNode* listHead) {
+    ListNode* currentNode = listHead;
+    while (currentNode && currentNode->next) {
+        if (currentNode->val == currentNode->next->val) {
+            currentNode->next = currentNode->next->next;
+        } else {
+            currentNode = currentNode->next;
+        }
+    }
+    return listHead;
+}
+_
+%FROMARRAY
+_
+%TOARRAY
+_
+~M
+ListNode* listHead = fromArray({1, 1, 2, 3, 3});
+for (int x : toArray(deleteDuplicates(listHead))) cout << x << " ";
+
+## maximum-depth-of-binary-tree
+@python
+%TREE
+_
+def max_depth(current_node):
+    if current_node is None: return 0
+    left = max_depth(current_node.left)
+    right = max_depth(current_node.right)
+    return 1 + max(left, right)
+.
+_
+.
+.
+.
+.
+.
+tree_root = TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7)))
+print(max_depth(tree_root))
+@java
+%TREE
+_
+static int maxDepth(TreeNode currentNode) {
+    if (currentNode == null) return 0;
+    int left = maxDepth(currentNode.left);
+    int right = maxDepth(currentNode.right);
+    return 1 + Math.max(left, right);
+}
+_
+~M
+.
+.
+.
+.
+.
+TreeNode treeRoot = new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15), new TreeNode(7)));
+System.out.println(maxDepth(treeRoot));
+@cpp
+%TREE
+_
+int maxDepth(TreeNode* currentNode) {
+    if (currentNode == nullptr) return 0;
+    int left = maxDepth(currentNode->left);
+    int right = maxDepth(currentNode->right);
+    return 1 + max(left, right);
+}
+_
+~M
+.
+.
+.
+.
+.
+TreeNode* treeRoot = new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15), new TreeNode(7)));
+cout << maxDepth(treeRoot) << endl;
+
+## same-tree
+@python
+%TREE
+_
+def is_same_tree(first_tree, second_tree):
+    if first_tree is None and second_tree is None: return True
+    if first_tree is None or second_tree is None: return False
+    if first_tree.val != second_tree.val: return False
+_
+    return is_same_tree(first_tree.left, second_tree.left) and is_same_tree(first_tree.right, second_tree.right)
+.
+_
+first_tree = TreeNode(1, TreeNode(2), TreeNode(3))
+second_tree = TreeNode(1, TreeNode(2), TreeNode(3))
+print(is_same_tree(first_tree, second_tree))
+@java
+%TREE
+_
+static boolean isSameTree(TreeNode firstTree, TreeNode secondTree) {
+    if (firstTree == null && secondTree == null) return true;
+    if (firstTree == null || secondTree == null) return false;
+    if (firstTree.val != secondTree.val) return false;
+_
+    return isSameTree(firstTree.left, secondTree.left) && isSameTree(firstTree.right, secondTree.right);
+}
+_
+~M
+TreeNode firstTree = new TreeNode(1, new TreeNode(2), new TreeNode(3));
+TreeNode secondTree = new TreeNode(1, new TreeNode(2), new TreeNode(3));
+System.out.println(isSameTree(firstTree, secondTree));
+@cpp
+%TREE
+_
+bool isSameTree(TreeNode* firstTree, TreeNode* secondTree) {
+    if (firstTree == nullptr && secondTree == nullptr) return true;
+    if (firstTree == nullptr || secondTree == nullptr) return false;
+    if (firstTree->val != secondTree->val) return false;
+_
+    return isSameTree(firstTree->left, secondTree->left) && isSameTree(firstTree->right, secondTree->right);
+}
+_
+~M
+TreeNode* firstTree = new TreeNode(1, new TreeNode(2), new TreeNode(3));
+TreeNode* secondTree = new TreeNode(1, new TreeNode(2), new TreeNode(3));
+cout << boolalpha << isSameTree(firstTree, secondTree) << endl;
+
+## invert-binary-tree
+@python
+%TREE
+_
+def invert_tree(current_node):
+    if current_node is None: return None
+    left_child_backup = current_node.left
+    current_node.left = current_node.right
+    current_node.right = left_child_backup
+    invert_tree(current_node.left)
+    invert_tree(current_node.right)
+    return current_node
+.
+_
+.
+%TOLEVELS
+_
+tree_root = TreeNode(
+    4,
+    TreeNode(2, TreeNode(1), TreeNode(3)),
+    TreeNode(7, TreeNode(6), TreeNode(9))
+)
+print(to_levels(invert_tree(tree_root)))
+@java
+%TREE
+_
+static TreeNode invertTree(TreeNode currentNode) {
+    if (currentNode == null) return null;
+    TreeNode leftChildBackup = currentNode.left;
+    currentNode.left = currentNode.right;
+    currentNode.right = leftChildBackup;
+    invertTree(currentNode.left);
+    invertTree(currentNode.right);
+    return currentNode;
+}
+_
+.
+%TOLEVELS
+_
+~M
+TreeNode treeRoot = new TreeNode(
+    4,
+    new TreeNode(2, new TreeNode(1), new TreeNode(3)),
+    new TreeNode(7, new TreeNode(6), new TreeNode(9))
+);
+System.out.println(toLevels(invertTree(treeRoot)));
+@cpp
+%TREE
+_
+TreeNode* invertTree(TreeNode* currentNode) {
+    if (currentNode == nullptr) return nullptr;
+    TreeNode* leftChildBackup = currentNode->left;
+    currentNode->left = currentNode->right;
+    currentNode->right = leftChildBackup;
+    invertTree(currentNode->left);
+    invertTree(currentNode->right);
+    return currentNode;
+}
+_
+.
+%TOLEVELS
+_
+~M
+TreeNode* treeRoot = new TreeNode(
+    4,
+    new TreeNode(2, new TreeNode(1), new TreeNode(3)),
+    new TreeNode(7, new TreeNode(6), new TreeNode(9))
+);
+for (int x : toLevels(invertTree(treeRoot))) cout << x << " ";

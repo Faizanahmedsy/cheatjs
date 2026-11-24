@@ -2363,4 +2363,810 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|}
 `,
   },
+  "linked-list-cycle": {
+    python: `
+1|class ListNode:
+2|    def __init__(self, value, next_node=None):
+3|        self.val = value
+4|        self.next = next_node
+7|
+8|def has_cycle(list_head):
+9|    slow_pointer = list_head
+10|    fast_pointer = list_head
+11|    while fast_pointer and fast_pointer.next:
+12|        slow_pointer = slow_pointer.next
+13|        fast_pointer = fast_pointer.next.next
+14|        if slow_pointer is fast_pointer: return True
+16|    return False
+18|
+20|second = ListNode(2)
+21|tail_node = ListNode(4)
+22|second.next = ListNode(0, tail_node)
+23|list_head = ListNode(3, second)
+24|tail_node.next = second
+25|
+26|print(has_cycle(list_head))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class ListNode {
+-|    int val; ListNode next;
+-|    ListNode(int value) { this(value, null); }
+2|        ListNode(int value, ListNode nextNode) {
+3|            this.val = value;
+4|            this.next = nextNode;
+5|        }
+6|    }
+7|
+8|    static boolean hasCycle(ListNode listHead) {
+9|        ListNode slowPointer = listHead;
+10|        ListNode fastPointer = listHead;
+11|        while (fastPointer != null && fastPointer.next != null) {
+12|            slowPointer = slowPointer.next;
+13|            fastPointer = fastPointer.next.next;
+14|            if (slowPointer == fastPointer) return true;
+15|        }
+16|        return false;
+17|    }
+18|
+-|    public static void main(String[] args) {
+20|        ListNode second = new ListNode(2);
+21|        ListNode tailNode = new ListNode(4);
+22|        second.next = new ListNode(0, tailNode);
+23|        ListNode listHead = new ListNode(3, second);
+24|        tailNode.next = second;
+25|
+26|        System.out.println(hasCycle(listHead));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct ListNode {
+-|int val; ListNode* next;
+2|    ListNode(int value, ListNode* nextNode = nullptr) {
+3|        this->val = value;
+4|        this->next = nextNode;
+5|    }
+6|};
+7|
+8|bool hasCycle(ListNode* listHead) {
+9|    ListNode* slowPointer = listHead;
+10|    ListNode* fastPointer = listHead;
+11|    while (fastPointer && fastPointer->next) {
+12|        slowPointer = slowPointer->next;
+13|        fastPointer = fastPointer->next->next;
+14|        if (slowPointer == fastPointer) return true;
+15|    }
+16|    return false;
+17|}
+18|
+-|int main() {
+20|    ListNode* second = new ListNode(2);
+21|    ListNode* tailNode = new ListNode(4);
+22|    second->next = new ListNode(0, tailNode);
+23|    ListNode* listHead = new ListNode(3, second);
+24|    tailNode->next = second;
+25|
+26|    cout << boolalpha << hasCycle(listHead) << endl;
+-|}
+`,
+  },
+  "middle-of-the-linked-list": {
+    python: `
+1|class ListNode:
+2|    def __init__(self, value, next_node=None):
+3|        self.val = value
+4|        self.next = next_node
+7|
+8|def middle_node(list_head):
+9|    slow_pointer = list_head
+10|    fast_pointer = list_head
+11|    while fast_pointer and fast_pointer.next:
+12|        slow_pointer = slow_pointer.next
+13|        fast_pointer = fast_pointer.next.next
+15|    return slow_pointer
+17|
+19|def from_array(values):
+20|    list_head = None
+21|    for value_index in range(len(values) - 1, -1, -1): list_head = ListNode(values[value_index], list_head)
+22|    return list_head
+24|
+25|def to_array(list_head):
+26|    result = []
+27|    current_node = list_head
+-|    while current_node: result.append(current_node.val); current_node = current_node.next
+28|    return result
+30|
+31|list_head = from_array([1, 2, 3, 4, 5, 6])
+32|print(to_array(middle_node(list_head)))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class ListNode {
+-|    int val; ListNode next;
+-|    ListNode(int value) { this(value, null); }
+2|        ListNode(int value, ListNode nextNode) {
+3|            this.val = value;
+4|            this.next = nextNode;
+5|        }
+6|    }
+7|
+8|    static ListNode middleNode(ListNode listHead) {
+9|        ListNode slowPointer = listHead;
+10|        ListNode fastPointer = listHead;
+11|        while (fastPointer != null && fastPointer.next != null) {
+12|            slowPointer = slowPointer.next;
+13|            fastPointer = fastPointer.next.next;
+14|        }
+15|        return slowPointer;
+16|    }
+17|
+19|    static ListNode fromArray(int[] values) {
+20|        ListNode listHead = null;
+21|        for (int valueIndex = values.length - 1; valueIndex >= 0; valueIndex--) listHead = new ListNode(values[valueIndex], listHead);
+22|        return listHead;
+23|    }
+24|
+25|    static List<Integer> toArray(ListNode listHead) {
+26|        List<Integer> result = new ArrayList<>();
+27|        for (ListNode currentNode = listHead; currentNode != null; currentNode = currentNode.next) result.add(currentNode.val);
+28|        return result;
+29|    }
+30|
+-|    public static void main(String[] args) {
+31|        ListNode listHead = fromArray(new int[]{1, 2, 3, 4, 5, 6});
+32|        System.out.println(toArray(middleNode(listHead)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct ListNode {
+-|int val; ListNode* next;
+2|    ListNode(int value, ListNode* nextNode = nullptr) {
+3|        this->val = value;
+4|        this->next = nextNode;
+5|    }
+6|};
+7|
+8|ListNode* middleNode(ListNode* listHead) {
+9|    ListNode* slowPointer = listHead;
+10|    ListNode* fastPointer = listHead;
+11|    while (fastPointer && fastPointer->next) {
+12|        slowPointer = slowPointer->next;
+13|        fastPointer = fastPointer->next->next;
+14|    }
+15|    return slowPointer;
+16|}
+17|
+19|ListNode* fromArray(vector<int> values) {
+20|    ListNode* listHead = nullptr;
+21|    for (int valueIndex = values.size() - 1; valueIndex >= 0; valueIndex--) listHead = new ListNode(values[valueIndex], listHead);
+22|    return listHead;
+23|}
+24|
+25|vector<int> toArray(ListNode* listHead) {
+26|    vector<int> result;
+27|    for (ListNode* currentNode = listHead; currentNode; currentNode = currentNode->next) result.push_back(currentNode->val);
+28|    return result;
+29|}
+30|
+-|int main() {
+31|    ListNode* listHead = fromArray({1, 2, 3, 4, 5, 6});
+32|    for (int x : toArray(middleNode(listHead))) cout << x << " ";
+-|}
+`,
+  },
+  "palindrome-linked-list": {
+    python: `
+1|class ListNode:
+2|    def __init__(self, value, next_node=None):
+3|        self.val = value
+4|        self.next = next_node
+7|
+8|def is_palindrome(list_head):
+9|
+10|    slow_pointer = list_head
+11|    fast_pointer = list_head
+12|    while fast_pointer and fast_pointer.next:
+13|        slow_pointer = slow_pointer.next
+14|        fast_pointer = fast_pointer.next.next
+16|
+17|    previous_node = None
+18|    current_node = slow_pointer
+19|    while current_node:
+20|        next_node = current_node.next
+21|        current_node.next = previous_node
+22|        previous_node = current_node
+23|        current_node = next_node
+25|
+26|    front_node = list_head
+27|    back_node = previous_node
+28|    while back_node:
+29|        if front_node.val != back_node.val: return False
+30|        front_node = front_node.next
+31|        back_node = back_node.next
+33|    return True
+35|
+36|list_head = ListNode(1, ListNode(2, ListNode(2, ListNode(1))))
+37|print(is_palindrome(list_head))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class ListNode {
+-|    int val; ListNode next;
+-|    ListNode(int value) { this(value, null); }
+2|        ListNode(int value, ListNode nextNode) {
+3|            this.val = value;
+4|            this.next = nextNode;
+5|        }
+6|    }
+7|
+8|    static boolean isPalindrome(ListNode listHead) {
+9|
+10|        ListNode slowPointer = listHead;
+11|        ListNode fastPointer = listHead;
+12|        while (fastPointer != null && fastPointer.next != null) {
+13|            slowPointer = slowPointer.next;
+14|            fastPointer = fastPointer.next.next;
+15|        }
+16|
+17|        ListNode previousNode = null;
+18|        ListNode currentNode = slowPointer;
+19|        while (currentNode != null) {
+20|            ListNode nextNode = currentNode.next;
+21|            currentNode.next = previousNode;
+22|            previousNode = currentNode;
+23|            currentNode = nextNode;
+24|        }
+25|
+26|        ListNode frontNode = listHead;
+27|        ListNode backNode = previousNode;
+28|        while (backNode != null) {
+29|            if (frontNode.val != backNode.val) return false;
+30|            frontNode = frontNode.next;
+31|            backNode = backNode.next;
+32|        }
+33|        return true;
+34|    }
+35|
+-|    public static void main(String[] args) {
+36|        ListNode listHead = new ListNode(1, new ListNode(2, new ListNode(2, new ListNode(1))));
+37|        System.out.println(isPalindrome(listHead));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct ListNode {
+-|int val; ListNode* next;
+2|    ListNode(int value, ListNode* nextNode = nullptr) {
+3|        this->val = value;
+4|        this->next = nextNode;
+5|    }
+6|};
+7|
+8|bool isPalindrome(ListNode* listHead) {
+9|
+10|    ListNode* slowPointer = listHead;
+11|    ListNode* fastPointer = listHead;
+12|    while (fastPointer && fastPointer->next) {
+13|        slowPointer = slowPointer->next;
+14|        fastPointer = fastPointer->next->next;
+15|    }
+16|
+17|    ListNode* previousNode = nullptr;
+18|    ListNode* currentNode = slowPointer;
+19|    while (currentNode) {
+20|        ListNode* nextNode = currentNode->next;
+21|        currentNode->next = previousNode;
+22|        previousNode = currentNode;
+23|        currentNode = nextNode;
+24|    }
+25|
+26|    ListNode* frontNode = listHead;
+27|    ListNode* backNode = previousNode;
+28|    while (backNode) {
+29|        if (frontNode->val != backNode->val) return false;
+30|        frontNode = frontNode->next;
+31|        backNode = backNode->next;
+32|    }
+33|    return true;
+34|}
+35|
+-|int main() {
+36|    ListNode* listHead = new ListNode(1, new ListNode(2, new ListNode(2, new ListNode(1))));
+37|    cout << boolalpha << isPalindrome(listHead) << endl;
+-|}
+`,
+  },
+  "intersection-of-two-linked-lists": {
+    python: `
+1|class ListNode:
+2|    def __init__(self, value, next_node=None):
+3|        self.val = value
+4|        self.next = next_node
+7|
+8|def get_intersection_node(head_a, head_b):
+9|    walker_from_a = head_a
+10|    walker_from_b = head_b
+11|    while walker_from_a is not walker_from_b:
+12|        walker_from_a = walker_from_a.next if walker_from_a else head_b
+13|        walker_from_b = walker_from_b.next if walker_from_b else head_a
+15|    return walker_from_a
+17|
+19|shared = ListNode(8, ListNode(4, ListNode(5)))
+20|head_a = ListNode(4, ListNode(1, shared))
+21|head_b = ListNode(5, ListNode(6, ListNode(1, shared)))
+22|
+23|current_node = get_intersection_node(head_a, head_b)
+24|print(current_node.val if current_node else None)
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class ListNode {
+-|    int val; ListNode next;
+-|    ListNode(int value) { this(value, null); }
+2|        ListNode(int value, ListNode nextNode) {
+3|            this.val = value;
+4|            this.next = nextNode;
+5|        }
+6|    }
+7|
+8|    static ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+9|        ListNode walkerFromA = headA;
+10|        ListNode walkerFromB = headB;
+11|        while (walkerFromA != walkerFromB) {
+12|            walkerFromA = walkerFromA != null ? walkerFromA.next : headB;
+13|            walkerFromB = walkerFromB != null ? walkerFromB.next : headA;
+14|        }
+15|        return walkerFromA;
+16|    }
+17|
+-|    public static void main(String[] args) {
+19|        ListNode shared = new ListNode(8, new ListNode(4, new ListNode(5)));
+20|        ListNode headA = new ListNode(4, new ListNode(1, shared));
+21|        ListNode headB = new ListNode(5, new ListNode(6, new ListNode(1, shared)));
+22|
+23|        ListNode currentNode = getIntersectionNode(headA, headB);
+24|        System.out.println(currentNode != null ? currentNode.val : null);
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct ListNode {
+-|int val; ListNode* next;
+2|    ListNode(int value, ListNode* nextNode = nullptr) {
+3|        this->val = value;
+4|        this->next = nextNode;
+5|    }
+6|};
+7|
+8|ListNode* getIntersectionNode(ListNode* headA, ListNode* headB) {
+9|    ListNode* walkerFromA = headA;
+10|    ListNode* walkerFromB = headB;
+11|    while (walkerFromA != walkerFromB) {
+12|        walkerFromA = walkerFromA ? walkerFromA->next : headB;
+13|        walkerFromB = walkerFromB ? walkerFromB->next : headA;
+14|    }
+15|    return walkerFromA;
+16|}
+17|
+-|int main() {
+19|    ListNode* shared = new ListNode(8, new ListNode(4, new ListNode(5)));
+20|    ListNode* headA = new ListNode(4, new ListNode(1, shared));
+21|    ListNode* headB = new ListNode(5, new ListNode(6, new ListNode(1, shared)));
+22|
+23|    ListNode* currentNode = getIntersectionNode(headA, headB);
+24|    if (currentNode) cout << currentNode->val << endl; else cout << "null" << endl;
+-|}
+`,
+  },
+  "remove-duplicates-from-sorted-list": {
+    python: `
+1|class ListNode:
+2|    def __init__(self, value, next_node=None):
+3|        self.val = value
+4|        self.next = next_node
+7|
+8|def delete_duplicates(list_head):
+9|    current_node = list_head
+10|    while current_node and current_node.next:
+11|        if current_node.val == current_node.next.val:
+12|            current_node.next = current_node.next.next
+13|        else:
+14|            current_node = current_node.next
+17|    return list_head
+19|
+20|def from_array(values):
+21|    list_head = None
+22|    for value_index in range(len(values) - 1, -1, -1): list_head = ListNode(values[value_index], list_head)
+23|    return list_head
+25|
+26|def to_array(list_head):
+27|    result = []
+28|    current_node = list_head
+-|    while current_node: result.append(current_node.val); current_node = current_node.next
+29|    return result
+31|
+32|list_head = from_array([1, 1, 2, 3, 3])
+33|print(to_array(delete_duplicates(list_head)))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class ListNode {
+-|    int val; ListNode next;
+-|    ListNode(int value) { this(value, null); }
+2|        ListNode(int value, ListNode nextNode) {
+3|            this.val = value;
+4|            this.next = nextNode;
+5|        }
+6|    }
+7|
+8|    static ListNode deleteDuplicates(ListNode listHead) {
+9|        ListNode currentNode = listHead;
+10|        while (currentNode != null && currentNode.next != null) {
+11|            if (currentNode.val == currentNode.next.val) {
+12|                currentNode.next = currentNode.next.next;
+13|            } else {
+14|                currentNode = currentNode.next;
+15|            }
+16|        }
+17|        return listHead;
+18|    }
+19|
+20|    static ListNode fromArray(int[] values) {
+21|        ListNode listHead = null;
+22|        for (int valueIndex = values.length - 1; valueIndex >= 0; valueIndex--) listHead = new ListNode(values[valueIndex], listHead);
+23|        return listHead;
+24|    }
+25|
+26|    static List<Integer> toArray(ListNode listHead) {
+27|        List<Integer> result = new ArrayList<>();
+28|        for (ListNode currentNode = listHead; currentNode != null; currentNode = currentNode.next) result.add(currentNode.val);
+29|        return result;
+30|    }
+31|
+-|    public static void main(String[] args) {
+32|        ListNode listHead = fromArray(new int[]{1, 1, 2, 3, 3});
+33|        System.out.println(toArray(deleteDuplicates(listHead)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct ListNode {
+-|int val; ListNode* next;
+2|    ListNode(int value, ListNode* nextNode = nullptr) {
+3|        this->val = value;
+4|        this->next = nextNode;
+5|    }
+6|};
+7|
+8|ListNode* deleteDuplicates(ListNode* listHead) {
+9|    ListNode* currentNode = listHead;
+10|    while (currentNode && currentNode->next) {
+11|        if (currentNode->val == currentNode->next->val) {
+12|            currentNode->next = currentNode->next->next;
+13|        } else {
+14|            currentNode = currentNode->next;
+15|        }
+16|    }
+17|    return listHead;
+18|}
+19|
+20|ListNode* fromArray(vector<int> values) {
+21|    ListNode* listHead = nullptr;
+22|    for (int valueIndex = values.size() - 1; valueIndex >= 0; valueIndex--) listHead = new ListNode(values[valueIndex], listHead);
+23|    return listHead;
+24|}
+25|
+26|vector<int> toArray(ListNode* listHead) {
+27|    vector<int> result;
+28|    for (ListNode* currentNode = listHead; currentNode; currentNode = currentNode->next) result.push_back(currentNode->val);
+29|    return result;
+30|}
+31|
+-|int main() {
+32|    ListNode* listHead = fromArray({1, 1, 2, 3, 3});
+33|    for (int x : toArray(deleteDuplicates(listHead))) cout << x << " ";
+-|}
+`,
+  },
+  "maximum-depth-of-binary-tree": {
+    python: `
+1|class TreeNode:
+2|    def __init__(self, value, left=None, right=None):
+3|        self.val = value
+4|        self.left = left
+5|        self.right = right
+8|
+9|def max_depth(current_node):
+10|    if current_node is None: return 0
+11|    left = max_depth(current_node.left)
+12|    right = max_depth(current_node.right)
+13|    return 1 + max(left, right)
+15|
+21|tree_root = TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7)))
+22|print(max_depth(tree_root))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class TreeNode {
+-|    int val; TreeNode left, right;
+-|    TreeNode(int value) { this(value, null, null); }
+2|        TreeNode(int value, TreeNode left, TreeNode right) {
+3|            this.val = value;
+4|            this.left = left;
+5|            this.right = right;
+6|        }
+7|    }
+8|
+9|    static int maxDepth(TreeNode currentNode) {
+10|        if (currentNode == null) return 0;
+11|        int left = maxDepth(currentNode.left);
+12|        int right = maxDepth(currentNode.right);
+13|        return 1 + Math.max(left, right);
+14|    }
+15|
+-|    public static void main(String[] args) {
+21|        TreeNode treeRoot = new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15), new TreeNode(7)));
+22|        System.out.println(maxDepth(treeRoot));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct TreeNode {
+-|int val; TreeNode *left, *right;
+2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
+3|        this->val = value;
+4|        this->left = left;
+5|        this->right = right;
+6|    }
+7|};
+8|
+9|int maxDepth(TreeNode* currentNode) {
+10|    if (currentNode == nullptr) return 0;
+11|    int left = maxDepth(currentNode->left);
+12|    int right = maxDepth(currentNode->right);
+13|    return 1 + max(left, right);
+14|}
+15|
+-|int main() {
+21|    TreeNode* treeRoot = new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15), new TreeNode(7)));
+22|    cout << maxDepth(treeRoot) << endl;
+-|}
+`,
+  },
+  "same-tree": {
+    python: `
+1|class TreeNode:
+2|    def __init__(self, value, left=None, right=None):
+3|        self.val = value
+4|        self.left = left
+5|        self.right = right
+8|
+9|def is_same_tree(first_tree, second_tree):
+10|    if first_tree is None and second_tree is None: return True
+11|    if first_tree is None or second_tree is None: return False
+12|    if first_tree.val != second_tree.val: return False
+13|
+14|    return is_same_tree(first_tree.left, second_tree.left) and is_same_tree(first_tree.right, second_tree.right)
+16|
+17|first_tree = TreeNode(1, TreeNode(2), TreeNode(3))
+18|second_tree = TreeNode(1, TreeNode(2), TreeNode(3))
+19|print(is_same_tree(first_tree, second_tree))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class TreeNode {
+-|    int val; TreeNode left, right;
+-|    TreeNode(int value) { this(value, null, null); }
+2|        TreeNode(int value, TreeNode left, TreeNode right) {
+3|            this.val = value;
+4|            this.left = left;
+5|            this.right = right;
+6|        }
+7|    }
+8|
+9|    static boolean isSameTree(TreeNode firstTree, TreeNode secondTree) {
+10|        if (firstTree == null && secondTree == null) return true;
+11|        if (firstTree == null || secondTree == null) return false;
+12|        if (firstTree.val != secondTree.val) return false;
+13|
+14|        return isSameTree(firstTree.left, secondTree.left) && isSameTree(firstTree.right, secondTree.right);
+15|    }
+16|
+-|    public static void main(String[] args) {
+17|        TreeNode firstTree = new TreeNode(1, new TreeNode(2), new TreeNode(3));
+18|        TreeNode secondTree = new TreeNode(1, new TreeNode(2), new TreeNode(3));
+19|        System.out.println(isSameTree(firstTree, secondTree));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct TreeNode {
+-|int val; TreeNode *left, *right;
+2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
+3|        this->val = value;
+4|        this->left = left;
+5|        this->right = right;
+6|    }
+7|};
+8|
+9|bool isSameTree(TreeNode* firstTree, TreeNode* secondTree) {
+10|    if (firstTree == nullptr && secondTree == nullptr) return true;
+11|    if (firstTree == nullptr || secondTree == nullptr) return false;
+12|    if (firstTree->val != secondTree->val) return false;
+13|
+14|    return isSameTree(firstTree->left, secondTree->left) && isSameTree(firstTree->right, secondTree->right);
+15|}
+16|
+-|int main() {
+17|    TreeNode* firstTree = new TreeNode(1, new TreeNode(2), new TreeNode(3));
+18|    TreeNode* secondTree = new TreeNode(1, new TreeNode(2), new TreeNode(3));
+19|    cout << boolalpha << isSameTree(firstTree, secondTree) << endl;
+-|}
+`,
+  },
+  "invert-binary-tree": {
+    python: `
+1|class TreeNode:
+2|    def __init__(self, value, left=None, right=None):
+3|        self.val = value
+4|        self.left = left
+5|        self.right = right
+8|
+9|def invert_tree(current_node):
+10|    if current_node is None: return None
+11|    left_child_backup = current_node.left
+12|    current_node.left = current_node.right
+13|    current_node.right = left_child_backup
+14|    invert_tree(current_node.left)
+15|    invert_tree(current_node.right)
+16|    return current_node
+18|
+20|def to_levels(tree_root):
+21|    result = []
+22|    queue = [tree_root]
+23|    queue_front_index = 0
+24|    while queue_front_index < len(queue):
+25|        current_node = queue[queue_front_index]; queue_front_index += 1
+26|        result.append(current_node.val)
+27|        if current_node.left: queue.append(current_node.left)
+28|        if current_node.right: queue.append(current_node.right)
+30|    return result
+32|
+33|tree_root = TreeNode(
+34|    4,
+35|    TreeNode(2, TreeNode(1), TreeNode(3)),
+36|    TreeNode(7, TreeNode(6), TreeNode(9))
+37|)
+38|print(to_levels(invert_tree(tree_root)))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class TreeNode {
+-|    int val; TreeNode left, right;
+-|    TreeNode(int value) { this(value, null, null); }
+2|        TreeNode(int value, TreeNode left, TreeNode right) {
+3|            this.val = value;
+4|            this.left = left;
+5|            this.right = right;
+6|        }
+7|    }
+8|
+9|    static TreeNode invertTree(TreeNode currentNode) {
+10|        if (currentNode == null) return null;
+11|        TreeNode leftChildBackup = currentNode.left;
+12|        currentNode.left = currentNode.right;
+13|        currentNode.right = leftChildBackup;
+14|        invertTree(currentNode.left);
+15|        invertTree(currentNode.right);
+16|        return currentNode;
+17|    }
+18|
+20|    static List<Integer> toLevels(TreeNode treeRoot) {
+21|        List<Integer> result = new ArrayList<>();
+22|        List<TreeNode> queue = new ArrayList<>(List.of(treeRoot));
+23|        int queueFrontIndex = 0;
+24|        while (queueFrontIndex < queue.size()) {
+25|            TreeNode currentNode = queue.get(queueFrontIndex++);
+26|            result.add(currentNode.val);
+27|            if (currentNode.left != null) queue.add(currentNode.left);
+28|            if (currentNode.right != null) queue.add(currentNode.right);
+29|        }
+30|        return result;
+31|    }
+32|
+-|    public static void main(String[] args) {
+33|        TreeNode treeRoot = new TreeNode(
+34|            4,
+35|            new TreeNode(2, new TreeNode(1), new TreeNode(3)),
+36|            new TreeNode(7, new TreeNode(6), new TreeNode(9))
+37|        );
+38|        System.out.println(toLevels(invertTree(treeRoot)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct TreeNode {
+-|int val; TreeNode *left, *right;
+2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
+3|        this->val = value;
+4|        this->left = left;
+5|        this->right = right;
+6|    }
+7|};
+8|
+9|TreeNode* invertTree(TreeNode* currentNode) {
+10|    if (currentNode == nullptr) return nullptr;
+11|    TreeNode* leftChildBackup = currentNode->left;
+12|    currentNode->left = currentNode->right;
+13|    currentNode->right = leftChildBackup;
+14|    invertTree(currentNode->left);
+15|    invertTree(currentNode->right);
+16|    return currentNode;
+17|}
+18|
+20|vector<int> toLevels(TreeNode* treeRoot) {
+21|    vector<int> result;
+22|    vector<TreeNode*> queue = {treeRoot};
+23|    int queueFrontIndex = 0;
+24|    while (queueFrontIndex < queue.size()) {
+25|        TreeNode* currentNode = queue[queueFrontIndex++];
+26|        result.push_back(currentNode->val);
+27|        if (currentNode->left) queue.push_back(currentNode->left);
+28|        if (currentNode->right) queue.push_back(currentNode->right);
+29|    }
+30|    return result;
+31|}
+32|
+-|int main() {
+33|    TreeNode* treeRoot = new TreeNode(
+34|        4,
+35|        new TreeNode(2, new TreeNode(1), new TreeNode(3)),
+36|        new TreeNode(7, new TreeNode(6), new TreeNode(9))
+37|    );
+38|    for (int x : toLevels(invertTree(treeRoot))) cout << x << " ";
+-|}
+`,
+  },
 };

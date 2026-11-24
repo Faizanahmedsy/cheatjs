@@ -19,6 +19,8 @@ Run:  node node_modules/.pnpm/tsx@*/node_modules/tsx/dist/cli.mjs scripts/transl
       python3 scripts/translations/build.py
 """
 import json, re, sys, pathlib
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+from macros import M as MACROS
 
 root = pathlib.Path(__file__).resolve().parents[2]
 js = json.load(open("/tmp/js-code.json"))
@@ -34,7 +36,12 @@ def render(key, lang, body, nlines):
         if lang == "java": return " " * (8 if in_main else 4)
         if lang == "cpp": return " " * (4 if in_main else 0)
         return ""
+    expanded = []
     for raw in body:
+        m = re.match(r"^(\s*)%([A-Z]+)\s*$", raw)
+        if m: expanded += MACROS[m.group(2)][lang]
+        else: expanded.append(raw)
+    for raw in expanded:
         s = raw.rstrip()
         if s == "~M":
             if lang == "java": out.append("-|    public static void main(String[] args) {")
