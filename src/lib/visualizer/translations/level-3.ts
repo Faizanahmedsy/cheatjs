@@ -1849,4 +1849,766 @@ export const LEVEL_3_TRANSLATIONS: Record<string, TranslationSet> = {
 -|}
 `,
   },
+  "merge-intervals": {
+    python: `
+1|def merge(intervals):
+2|    intervals.sort(key=lambda interval: interval[0])
+3|    merged = [intervals[0]]
+4|
+5|    for interval_index in range(1, len(intervals)):
+6|        current_interval = intervals[interval_index]
+7|        last = merged[-1]
+8|        if current_interval[0] <= last[1]:
+9|
+10|            last[1] = max(last[1], current_interval[1])
+11|        else:
+12|            merged.append(current_interval)
+15|    return merged
+17|
+18|intervals = [[1, 3], [8, 10], [2, 6], [15, 18]]
+19|print(merge(intervals))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static List<int[]> merge(int[][] intervals) {
+2|        Arrays.sort(intervals, (firstInterval, secondInterval) -> firstInterval[0] - secondInterval[0]);
+3|        List<int[]> merged = new ArrayList<>(List.of(intervals[0]));
+4|
+5|        for (int intervalIndex = 1; intervalIndex < intervals.length; intervalIndex++) {
+6|            int[] currentInterval = intervals[intervalIndex];
+7|            int[] last = merged.get(merged.size() - 1);
+8|            if (currentInterval[0] <= last[1]) {
+9|
+10|                last[1] = Math.max(last[1], currentInterval[1]);
+11|            } else {
+12|                merged.add(currentInterval);
+13|            }
+14|        }
+15|        return merged;
+16|    }
+17|
+-|    public static void main(String[] args) {
+18|        int[][] intervals = {{1, 3}, {8, 10}, {2, 6}, {15, 18}};
+19|        System.out.println(Arrays.deepToString(merge(intervals).toArray()));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<vector<int>> merge(vector<vector<int>>& intervals) {
+2|    sort(intervals.begin(), intervals.end(), [](auto& firstInterval, auto& secondInterval) { return firstInterval[0] < secondInterval[0]; });
+3|    vector<vector<int>> merged = {intervals[0]};
+4|
+5|    for (int intervalIndex = 1; intervalIndex < intervals.size(); intervalIndex++) {
+6|        vector<int> currentInterval = intervals[intervalIndex];
+7|        vector<int>& last = merged.back();
+8|        if (currentInterval[0] <= last[1]) {
+9|
+10|            last[1] = max(last[1], currentInterval[1]);
+11|        } else {
+12|            merged.push_back(currentInterval);
+13|        }
+14|    }
+15|    return merged;
+16|}
+17|
+-|int main() {
+18|    vector<vector<int>> intervals = {{1, 3}, {8, 10}, {2, 6}, {15, 18}};
+19|    for (auto& iv : merge(intervals)) cout << iv[0] << "-" << iv[1] << " ";
+-|}
+`,
+  },
+  "insert-interval": {
+    python: `
+1|def insert(intervals, new_interval):
+2|    result = []
+3|    interval_index = 0
+4|
+5|
+6|    while interval_index < len(intervals) and intervals[interval_index][1] < new_interval[0]:
+7|        result.append(intervals[interval_index])
+8|        interval_index += 1
+10|
+11|    while interval_index < len(intervals) and intervals[interval_index][0] <= new_interval[1]:
+12|        new_interval[0] = min(new_interval[0], intervals[interval_index][0])
+13|        new_interval[1] = max(new_interval[1], intervals[interval_index][1])
+14|        interval_index += 1
+16|    result.append(new_interval)
+17|
+18|    while interval_index < len(intervals):
+19|        result.append(intervals[interval_index])
+20|        interval_index += 1
+22|    return result
+24|
+25|intervals = [[1, 2], [3, 5], [6, 7], [8, 10], [12, 16]]
+26|print(insert(intervals, [4, 8]))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static List<int[]> insert(int[][] intervals, int[] newInterval) {
+2|        List<int[]> result = new ArrayList<>();
+3|        int intervalIndex = 0;
+4|
+5|
+6|        while (intervalIndex < intervals.length && intervals[intervalIndex][1] < newInterval[0]) {
+7|            result.add(intervals[intervalIndex]);
+8|            intervalIndex++;
+9|        }
+10|
+11|        while (intervalIndex < intervals.length && intervals[intervalIndex][0] <= newInterval[1]) {
+12|            newInterval[0] = Math.min(newInterval[0], intervals[intervalIndex][0]);
+13|            newInterval[1] = Math.max(newInterval[1], intervals[intervalIndex][1]);
+14|            intervalIndex++;
+15|        }
+16|        result.add(newInterval);
+17|
+18|        while (intervalIndex < intervals.length) {
+19|            result.add(intervals[intervalIndex]);
+20|            intervalIndex++;
+21|        }
+22|        return result;
+23|    }
+24|
+-|    public static void main(String[] args) {
+25|        int[][] intervals = {{1, 2}, {3, 5}, {6, 7}, {8, 10}, {12, 16}};
+26|        System.out.println(Arrays.deepToString(insert(intervals, new int[]{4, 8}).toArray()));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int> newInterval) {
+2|    vector<vector<int>> result;
+3|    int intervalIndex = 0;
+4|
+5|
+6|    while (intervalIndex < intervals.size() && intervals[intervalIndex][1] < newInterval[0]) {
+7|        result.push_back(intervals[intervalIndex]);
+8|        intervalIndex++;
+9|    }
+10|
+11|    while (intervalIndex < intervals.size() && intervals[intervalIndex][0] <= newInterval[1]) {
+12|        newInterval[0] = min(newInterval[0], intervals[intervalIndex][0]);
+13|        newInterval[1] = max(newInterval[1], intervals[intervalIndex][1]);
+14|        intervalIndex++;
+15|    }
+16|    result.push_back(newInterval);
+17|
+18|    while (intervalIndex < intervals.size()) {
+19|        result.push_back(intervals[intervalIndex]);
+20|        intervalIndex++;
+21|    }
+22|    return result;
+23|}
+24|
+-|int main() {
+25|    vector<vector<int>> intervals = {{1, 2}, {3, 5}, {6, 7}, {8, 10}, {12, 16}};
+26|    for (auto& iv : insert(intervals, {4, 8})) cout << iv[0] << "-" << iv[1] << " ";
+-|}
+`,
+  },
+  "non-overlapping-intervals": {
+    python: `
+1|def erase_overlap_intervals(intervals):
+2|    intervals.sort(key=lambda interval: interval[1])
+3|    end = intervals[0][1]
+4|    removed = 0
+5|
+6|    for interval_index in range(1, len(intervals)):
+7|        if intervals[interval_index][0] < end:
+8|            removed += 1
+9|        else:
+10|            end = intervals[interval_index][1]
+13|    return removed
+15|
+16|intervals = [[1, 2], [2, 3], [3, 4], [1, 3]]
+17|print(erase_overlap_intervals(intervals))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int eraseOverlapIntervals(int[][] intervals) {
+2|        Arrays.sort(intervals, (firstInterval, secondInterval) -> firstInterval[1] - secondInterval[1]);
+3|        int end = intervals[0][1];
+4|        int removed = 0;
+5|
+6|        for (int intervalIndex = 1; intervalIndex < intervals.length; intervalIndex++) {
+7|            if (intervals[intervalIndex][0] < end) {
+8|                removed++;
+9|            } else {
+10|                end = intervals[intervalIndex][1];
+11|            }
+12|        }
+13|        return removed;
+14|    }
+15|
+-|    public static void main(String[] args) {
+16|        int[][] intervals = {{1, 2}, {2, 3}, {3, 4}, {1, 3}};
+17|        System.out.println(eraseOverlapIntervals(intervals));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+2|    sort(intervals.begin(), intervals.end(), [](auto& firstInterval, auto& secondInterval) { return firstInterval[1] < secondInterval[1]; });
+3|    int end = intervals[0][1];
+4|    int removed = 0;
+5|
+6|    for (int intervalIndex = 1; intervalIndex < intervals.size(); intervalIndex++) {
+7|        if (intervals[intervalIndex][0] < end) {
+8|            removed++;
+9|        } else {
+10|            end = intervals[intervalIndex][1];
+11|        }
+12|    }
+13|    return removed;
+14|}
+15|
+-|int main() {
+16|    vector<vector<int>> intervals = {{1, 2}, {2, 3}, {3, 4}, {1, 3}};
+17|    cout << eraseOverlapIntervals(intervals) << endl;
+-|}
+`,
+  },
+  "meeting-rooms-ii": {
+    python: `
+1|def min_meeting_rooms(intervals):
+2|    starts = []
+3|    ends = []
+4|    for meeting_start, meeting_end in intervals:
+5|        starts.append(meeting_start)
+6|        ends.append(meeting_end)
+8|    starts.sort()
+9|    ends.sort()
+10|
+11|    rooms = 0
+12|    max_rooms = 0
+13|    end_index = 0
+14|    for start_index in range(len(starts)):
+15|        if starts[start_index] >= ends[end_index]:
+16|            rooms -= 1
+17|            end_index += 1
+19|        rooms += 1
+20|        max_rooms = max(max_rooms, rooms)
+22|    return max_rooms
+24|
+25|intervals = [[0, 30], [5, 10], [15, 20], [10, 15]]
+26|print(min_meeting_rooms(intervals))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int minMeetingRooms(int[][] intervals) {
+2|        List<Integer> starts = new ArrayList<>();
+3|        List<Integer> ends = new ArrayList<>();
+4|        for (int[] meeting : intervals) {
+5|            starts.add(meeting[0]);
+6|            ends.add(meeting[1]);
+7|        }
+8|        Collections.sort(starts);
+9|        Collections.sort(ends);
+10|
+11|        int rooms = 0;
+12|        int maxRooms = 0;
+13|        int endIndex = 0;
+14|        for (int startIndex = 0; startIndex < starts.size(); startIndex++) {
+15|            if (starts.get(startIndex) >= ends.get(endIndex)) {
+16|                rooms--;
+17|                endIndex++;
+18|            }
+19|            rooms++;
+20|            maxRooms = Math.max(maxRooms, rooms);
+21|        }
+22|        return maxRooms;
+23|    }
+24|
+-|    public static void main(String[] args) {
+25|        int[][] intervals = {{0, 30}, {5, 10}, {15, 20}, {10, 15}};
+26|        System.out.println(minMeetingRooms(intervals));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int minMeetingRooms(vector<vector<int>>& intervals) {
+2|    vector<int> starts;
+3|    vector<int> ends;
+4|    for (auto& meeting : intervals) {
+5|        starts.push_back(meeting[0]);
+6|        ends.push_back(meeting[1]);
+7|    }
+8|    sort(starts.begin(), starts.end());
+9|    sort(ends.begin(), ends.end());
+10|
+11|    int rooms = 0;
+12|    int maxRooms = 0;
+13|    int endIndex = 0;
+14|    for (int startIndex = 0; startIndex < starts.size(); startIndex++) {
+15|        if (starts[startIndex] >= ends[endIndex]) {
+16|            rooms--;
+17|            endIndex++;
+18|        }
+19|        rooms++;
+20|        maxRooms = max(maxRooms, rooms);
+21|    }
+22|    return maxRooms;
+23|}
+24|
+-|int main() {
+25|    vector<vector<int>> intervals = {{0, 30}, {5, 10}, {15, 20}, {10, 15}};
+26|    cout << minMeetingRooms(intervals) << endl;
+-|}
+`,
+  },
+  "sort-colors": {
+    python: `
+1|def sort_colors(numbers):
+2|    low_index = 0
+3|    middle_index = 0
+4|    high_index = len(numbers) - 1
+5|
+6|    while middle_index <= high_index:
+7|        if numbers[middle_index] == 0:
+8|            numbers[low_index], numbers[middle_index] = numbers[middle_index], numbers[low_index]
+9|            low_index += 1
+10|            middle_index += 1
+11|        elif numbers[middle_index] == 2:
+12|            numbers[middle_index], numbers[high_index] = numbers[high_index], numbers[middle_index]
+13|            high_index -= 1
+14|        else:
+15|            middle_index += 1
+18|    return numbers
+20|
+21|numbers = [2, 0, 2, 1, 1, 0]
+22|print(sort_colors(numbers))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int[] sortColors(int[] numbers) {
+2|        int lowIndex = 0;
+3|        int middleIndex = 0;
+4|        int highIndex = numbers.length - 1;
+5|
+6|        while (middleIndex <= highIndex) {
+7|            if (numbers[middleIndex] == 0) {
+8|                int temp = numbers[lowIndex]; numbers[lowIndex] = numbers[middleIndex]; numbers[middleIndex] = temp;
+9|                lowIndex++;
+10|                middleIndex++;
+11|            } else if (numbers[middleIndex] == 2) {
+12|                int temp = numbers[middleIndex]; numbers[middleIndex] = numbers[highIndex]; numbers[highIndex] = temp;
+13|                highIndex--;
+14|            } else {
+15|                middleIndex++;
+16|            }
+17|        }
+18|        return numbers;
+19|    }
+20|
+-|    public static void main(String[] args) {
+21|        int[] numbers = {2, 0, 2, 1, 1, 0};
+22|        System.out.println(Arrays.toString(sortColors(numbers)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<int> sortColors(vector<int>& numbers) {
+2|    int lowIndex = 0;
+3|    int middleIndex = 0;
+4|    int highIndex = numbers.size() - 1;
+5|
+6|    while (middleIndex <= highIndex) {
+7|        if (numbers[middleIndex] == 0) {
+8|            swap(numbers[lowIndex], numbers[middleIndex]);
+9|            lowIndex++;
+10|            middleIndex++;
+11|        } else if (numbers[middleIndex] == 2) {
+12|            swap(numbers[middleIndex], numbers[highIndex]);
+13|            highIndex--;
+14|        } else {
+15|            middleIndex++;
+16|        }
+17|    }
+18|    return numbers;
+19|}
+20|
+-|int main() {
+21|    vector<int> numbers = {2, 0, 2, 1, 1, 0};
+22|    for (int x : sortColors(numbers)) cout << x << " ";
+-|}
+`,
+  },
+  "sort-list": {
+    python: `
+1|class ListNode:
+2|    def __init__(self, value, next_node=None):
+3|        self.val = value
+4|        self.next = next_node
+7|
+9|def merge_lists(first_list, second_list):
+10|    dummy = ListNode(0)
+11|    tail_node = dummy
+12|    while first_list and second_list:
+13|        if first_list.val <= second_list.val:
+14|            tail_node.next = first_list
+15|            first_list = first_list.next
+16|        else:
+17|            tail_node.next = second_list
+18|            second_list = second_list.next
+20|        tail_node = tail_node.next
+22|    tail_node.next = first_list or second_list
+23|    return dummy.next
+25|
+26|def sort_list(list_head):
+27|    if not list_head or not list_head.next: return list_head
+28|
+29|
+30|    slow_pointer = list_head
+31|    fast_pointer = list_head.next
+32|    while fast_pointer and fast_pointer.next:
+33|        slow_pointer = slow_pointer.next
+34|        fast_pointer = fast_pointer.next.next
+36|    right = slow_pointer.next
+37|    slow_pointer.next = None
+38|
+39|    return merge_lists(sort_list(list_head), sort_list(right))
+41|
+42|def to_array(list_head):
+43|    result = []
+44|    current_node = list_head
+-|    while current_node: result.append(current_node.val); current_node = current_node.next
+45|    return result
+47|
+48|list_head = ListNode(4, ListNode(2, ListNode(1, ListNode(3))))
+49|print(to_array(sort_list(list_head)))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class ListNode {
+-|        int val; ListNode next;
+-|        ListNode(int value) { this(value, null); }
+2|        ListNode(int value, ListNode nextNode) {
+3|            this.val = value;
+4|            this.next = nextNode;
+5|        }
+6|    }
+7|
+9|    static ListNode mergeLists(ListNode firstList, ListNode secondList) {
+10|        ListNode dummy = new ListNode(0);
+11|        ListNode tailNode = dummy;
+12|        while (firstList != null && secondList != null) {
+13|            if (firstList.val <= secondList.val) {
+14|                tailNode.next = firstList;
+15|                firstList = firstList.next;
+16|            } else {
+17|                tailNode.next = secondList;
+18|                secondList = secondList.next;
+19|            }
+20|            tailNode = tailNode.next;
+21|        }
+22|        tailNode.next = firstList != null ? firstList : secondList;
+23|        return dummy.next;
+24|    }
+25|
+26|    static ListNode sortList(ListNode listHead) {
+27|        if (listHead == null || listHead.next == null) return listHead;
+28|
+29|
+30|        ListNode slowPointer = listHead;
+31|        ListNode fastPointer = listHead.next;
+32|        while (fastPointer != null && fastPointer.next != null) {
+33|            slowPointer = slowPointer.next;
+34|            fastPointer = fastPointer.next.next;
+35|        }
+36|        ListNode right = slowPointer.next;
+37|        slowPointer.next = null;
+38|
+39|        return mergeLists(sortList(listHead), sortList(right));
+40|    }
+41|
+42|    static List<Integer> toArray(ListNode listHead) {
+43|        List<Integer> result = new ArrayList<>();
+44|        for (ListNode currentNode = listHead; currentNode != null; currentNode = currentNode.next) result.add(currentNode.val);
+45|        return result;
+46|    }
+47|
+-|    public static void main(String[] args) {
+48|        ListNode listHead = new ListNode(4, new ListNode(2, new ListNode(1, new ListNode(3))));
+49|        System.out.println(toArray(sortList(listHead)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct ListNode {
+-|    int val; ListNode* next;
+2|    ListNode(int value, ListNode* nextNode = nullptr) {
+3|        this->val = value;
+4|        this->next = nextNode;
+5|    }
+6|};
+7|
+9|ListNode* mergeLists(ListNode* firstList, ListNode* secondList) {
+10|    ListNode* dummy = new ListNode(0);
+11|    ListNode* tailNode = dummy;
+12|    while (firstList && secondList) {
+13|        if (firstList->val <= secondList->val) {
+14|            tailNode->next = firstList;
+15|            firstList = firstList->next;
+16|        } else {
+17|            tailNode->next = secondList;
+18|            secondList = secondList->next;
+19|        }
+20|        tailNode = tailNode->next;
+21|    }
+22|    tailNode->next = firstList ? firstList : secondList;
+23|    return dummy->next;
+24|}
+25|
+26|ListNode* sortList(ListNode* listHead) {
+27|    if (!listHead || !listHead->next) return listHead;
+28|
+29|
+30|    ListNode* slowPointer = listHead;
+31|    ListNode* fastPointer = listHead->next;
+32|    while (fastPointer && fastPointer->next) {
+33|        slowPointer = slowPointer->next;
+34|        fastPointer = fastPointer->next->next;
+35|    }
+36|    ListNode* right = slowPointer->next;
+37|    slowPointer->next = nullptr;
+38|
+39|    return mergeLists(sortList(listHead), sortList(right));
+40|}
+41|
+42|vector<int> toArray(ListNode* listHead) {
+43|    vector<int> result;
+44|    for (ListNode* currentNode = listHead; currentNode; currentNode = currentNode->next) result.push_back(currentNode->val);
+45|    return result;
+46|}
+47|
+-|int main() {
+48|    ListNode* listHead = new ListNode(4, new ListNode(2, new ListNode(1, new ListNode(3))));
+49|    for (int x : toArray(sortList(listHead))) cout << x << " ";
+-|}
+`,
+  },
+  "sort-an-array": {
+    python: `
+2|def merge_halves(left, right):
+3|    result = []
+4|    left_half_index = 0
+5|    right_half_index = 0
+6|    while left_half_index < len(left) and right_half_index < len(right):
+7|        if left[left_half_index] <= right[right_half_index]:
+8|            result.append(left[left_half_index])
+9|            left_half_index += 1
+10|        else:
+11|            result.append(right[right_half_index])
+12|            right_half_index += 1
+15|
+16|    result.extend(left[left_half_index:])
+17|    result.extend(right[right_half_index:])
+18|    return result
+20|
+21|def sort_array(numbers):
+22|    if len(numbers) <= 1: return numbers
+23|    middle_index = len(numbers) // 2
+24|    left = sort_array(numbers[0:middle_index])
+25|    right = sort_array(numbers[middle_index:])
+26|    return merge_halves(left, right)
+28|
+29|numbers = [5, 2, 3, 1, 4]
+30|print(sort_array(numbers))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+2|    static List<Integer> mergeHalves(List<Integer> left, List<Integer> right) {
+3|        List<Integer> result = new ArrayList<>();
+4|        int leftHalfIndex = 0;
+5|        int rightHalfIndex = 0;
+6|        while (leftHalfIndex < left.size() && rightHalfIndex < right.size()) {
+7|            if (left.get(leftHalfIndex) <= right.get(rightHalfIndex)) {
+8|                result.add(left.get(leftHalfIndex));
+9|                leftHalfIndex++;
+10|            } else {
+11|                result.add(right.get(rightHalfIndex));
+12|                rightHalfIndex++;
+13|            }
+14|        }
+15|
+16|        while (leftHalfIndex < left.size()) result.add(left.get(leftHalfIndex++));
+17|        while (rightHalfIndex < right.size()) result.add(right.get(rightHalfIndex++));
+18|        return result;
+19|    }
+20|
+21|    static List<Integer> sortArray(List<Integer> numbers) {
+22|        if (numbers.size() <= 1) return numbers;
+23|        int middleIndex = numbers.size() / 2;
+24|        List<Integer> left = sortArray(numbers.subList(0, middleIndex));
+25|        List<Integer> right = sortArray(numbers.subList(middleIndex, numbers.size()));
+26|        return mergeHalves(left, right);
+27|    }
+28|
+-|    public static void main(String[] args) {
+29|        List<Integer> numbers = List.of(5, 2, 3, 1, 4);
+30|        System.out.println(sortArray(numbers));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+2|vector<int> mergeHalves(vector<int> left, vector<int> right) {
+3|    vector<int> result;
+4|    int leftHalfIndex = 0;
+5|    int rightHalfIndex = 0;
+6|    while (leftHalfIndex < left.size() && rightHalfIndex < right.size()) {
+7|        if (left[leftHalfIndex] <= right[rightHalfIndex]) {
+8|            result.push_back(left[leftHalfIndex]);
+9|            leftHalfIndex++;
+10|        } else {
+11|            result.push_back(right[rightHalfIndex]);
+12|            rightHalfIndex++;
+13|        }
+14|    }
+15|
+16|    while (leftHalfIndex < left.size()) result.push_back(left[leftHalfIndex++]);
+17|    while (rightHalfIndex < right.size()) result.push_back(right[rightHalfIndex++]);
+18|    return result;
+19|}
+20|
+21|vector<int> sortArray(vector<int> numbers) {
+22|    if (numbers.size() <= 1) return numbers;
+23|    int middleIndex = numbers.size() / 2;
+24|    vector<int> left = sortArray(vector<int>(numbers.begin(), numbers.begin() + middleIndex));
+25|    vector<int> right = sortArray(vector<int>(numbers.begin() + middleIndex, numbers.end()));
+26|    return mergeHalves(left, right);
+27|}
+28|
+-|int main() {
+29|    vector<int> numbers = {5, 2, 3, 1, 4};
+30|    for (int x : sortArray(numbers)) cout << x << " ";
+-|}
+`,
+  },
+  "kth-largest-element": {
+    python: `
+1|def find_kth_largest(numbers, target_rank):
+2|    target = len(numbers) - target_rank
+3|    low_index = 0
+4|    high_index = len(numbers) - 1
+5|
+6|    while low_index <= high_index:
+7|
+8|        pivot = numbers[high_index]
+9|        store_index = low_index
+10|        for index in range(low_index, high_index):
+11|            if numbers[index] < pivot:
+12|                numbers[store_index], numbers[index] = numbers[index], numbers[store_index]
+13|                store_index += 1
+16|        numbers[store_index], numbers[high_index] = numbers[high_index], numbers[store_index]
+17|
+18|        if store_index == target: return numbers[store_index]
+19|        if store_index < target: low_index = store_index + 1
+20|        else: high_index = store_index - 1
+22|    return -1
+24|
+25|numbers = [3, 2, 1, 5, 6, 4]
+26|print(find_kth_largest(numbers, 2))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int findKthLargest(int[] numbers, int targetRank) {
+2|        int target = numbers.length - targetRank;
+3|        int lowIndex = 0;
+4|        int highIndex = numbers.length - 1;
+5|
+6|        while (lowIndex <= highIndex) {
+7|
+8|            int pivot = numbers[highIndex];
+9|            int storeIndex = lowIndex;
+10|            for (int index = lowIndex; index < highIndex; index++) {
+11|                if (numbers[index] < pivot) {
+12|                    int temp = numbers[storeIndex]; numbers[storeIndex] = numbers[index]; numbers[index] = temp;
+13|                    storeIndex++;
+14|                }
+15|            }
+16|            int temp = numbers[storeIndex]; numbers[storeIndex] = numbers[highIndex]; numbers[highIndex] = temp;
+17|
+18|            if (storeIndex == target) return numbers[storeIndex];
+19|            if (storeIndex < target) lowIndex = storeIndex + 1;
+20|            else highIndex = storeIndex - 1;
+21|        }
+22|        return -1;
+23|    }
+24|
+-|    public static void main(String[] args) {
+25|        int[] numbers = {3, 2, 1, 5, 6, 4};
+26|        System.out.println(findKthLargest(numbers, 2));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int findKthLargest(vector<int>& numbers, int targetRank) {
+2|    int target = numbers.size() - targetRank;
+3|    int lowIndex = 0;
+4|    int highIndex = numbers.size() - 1;
+5|
+6|    while (lowIndex <= highIndex) {
+7|
+8|        int pivot = numbers[highIndex];
+9|        int storeIndex = lowIndex;
+10|        for (int index = lowIndex; index < highIndex; index++) {
+11|            if (numbers[index] < pivot) {
+12|                swap(numbers[storeIndex], numbers[index]);
+13|                storeIndex++;
+14|            }
+15|        }
+16|        swap(numbers[storeIndex], numbers[highIndex]);
+17|
+18|        if (storeIndex == target) return numbers[storeIndex];
+19|        if (storeIndex < target) lowIndex = storeIndex + 1;
+20|        else highIndex = storeIndex - 1;
+21|    }
+22|    return -1;
+23|}
+24|
+-|int main() {
+25|    vector<int> numbers = {3, 2, 1, 5, 6, 4};
+26|    cout << findKthLargest(numbers, 2) << endl;
+-|}
+`,
+  },
 };
