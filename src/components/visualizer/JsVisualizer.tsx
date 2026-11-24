@@ -288,7 +288,7 @@ export function JsVisualizer() {
         <header className="mb-4 space-y-3">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
             <h1 className="w-full font-headline text-2xl font-bold text-slate-100 sm:w-auto md:text-3xl">DSA Visualizer</h1>
-            <div className="grid w-full min-w-0 grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-1 sm:flex-row sm:items-center lg:max-w-2xl [&>*]:min-w-0 [&>button]:justify-center">
+            <div className="grid w-full min-w-0 grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-row sm:flex-wrap sm:items-center [&>*]:min-w-0 sm:[&>*]:min-w-max [&>button]:justify-center">
               <div className="col-span-2 sm:contents">
                 <ExamplePicker value={selection} onChange={choose} done={done} />
               </div>
@@ -317,7 +317,7 @@ export function JsVisualizer() {
                 </button>
               )}
             </div>
-            <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:ml-auto">
+            <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:ml-auto [&>*]:sm:min-w-max">
             <label className="flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-cyan-400/50 bg-cyan-400/10 px-3 py-1.5 text-sm font-semibold text-slate-100">
               <span className="flex items-center gap-2">
                 <Maximize2 className="h-4 w-4 text-cyan-300" aria-hidden="true" />
