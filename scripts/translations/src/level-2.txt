@@ -630,3 +630,628 @@ _
 ~M
 vector<int> height = {1, 8, 6, 2, 5, 4, 8, 3, 7};
 cout << maxArea(height) << endl;
+
+## longest-substring-without-repeating
+@python
+def length_of_longest_substring(text):
+    window = set()
+    left_index = 0
+    best = 0
+_
+    for right_index in range(len(text)):
+_
+        while text[right_index] in window:
+            window.remove(text[left_index])
+            left_index += 1
+.
+        window.add(text[right_index])
+        best = max(best, right_index - left_index + 1)
+.
+    return best
+.
+_
+print(length_of_longest_substring("abcabcbb"))
+@java
+static int lengthOfLongestSubstring(String text) {
+    Set<Character> window = new HashSet<>();
+    int leftIndex = 0;
+    int best = 0;
+_
+    for (int rightIndex = 0; rightIndex < text.length(); rightIndex++) {
+_
+        while (window.contains(text.charAt(rightIndex))) {
+            window.remove(text.charAt(leftIndex));
+            leftIndex++;
+        }
+        window.add(text.charAt(rightIndex));
+        best = Math.max(best, rightIndex - leftIndex + 1);
+    }
+    return best;
+}
+_
+~M
+System.out.println(lengthOfLongestSubstring("abcabcbb"));
+@cpp
+int lengthOfLongestSubstring(string text) {
+    unordered_set<char> window;
+    int leftIndex = 0;
+    int best = 0;
+_
+    for (int rightIndex = 0; rightIndex < text.size(); rightIndex++) {
+_
+        while (window.count(text[rightIndex])) {
+            window.erase(text[leftIndex]);
+            leftIndex++;
+        }
+        window.insert(text[rightIndex]);
+        best = max(best, rightIndex - leftIndex + 1);
+    }
+    return best;
+}
+_
+~M
+cout << lengthOfLongestSubstring("abcabcbb") << endl;
+
+## minimum-size-subarray-sum
+@python
+def min_sub_array_len(target, numbers):
+    left_index = 0
+    window_sum = 0
+    best = float("inf")
+_
+    for right_index in range(len(numbers)):
+        window_sum += numbers[right_index]
+_
+        while window_sum >= target:
+            best = min(best, right_index - left_index + 1)
+            window_sum -= numbers[left_index]
+            left_index += 1
+.
+.
+    return 0 if best == float("inf") else best
+.
+_
+numbers = [2, 3, 1, 2, 4, 3]
+print(min_sub_array_len(7, numbers))
+@java
+static int minSubArrayLen(int target, int[] numbers) {
+    int leftIndex = 0;
+    int windowSum = 0;
+    int best = Integer.MAX_VALUE;
+_
+    for (int rightIndex = 0; rightIndex < numbers.length; rightIndex++) {
+        windowSum += numbers[rightIndex];
+_
+        while (windowSum >= target) {
+            best = Math.min(best, rightIndex - leftIndex + 1);
+            windowSum -= numbers[leftIndex];
+            leftIndex++;
+        }
+    }
+    return best == Integer.MAX_VALUE ? 0 : best;
+}
+_
+~M
+int[] numbers = {2, 3, 1, 2, 4, 3};
+System.out.println(minSubArrayLen(7, numbers));
+@cpp
+int minSubArrayLen(int target, vector<int>& numbers) {
+    int leftIndex = 0;
+    int windowSum = 0;
+    int best = INT_MAX;
+_
+    for (int rightIndex = 0; rightIndex < numbers.size(); rightIndex++) {
+        windowSum += numbers[rightIndex];
+_
+        while (windowSum >= target) {
+            best = min(best, rightIndex - leftIndex + 1);
+            windowSum -= numbers[leftIndex];
+            leftIndex++;
+        }
+    }
+    return best == INT_MAX ? 0 : best;
+}
+_
+~M
+vector<int> numbers = {2, 3, 1, 2, 4, 3};
+cout << minSubArrayLen(7, numbers) << endl;
+
+## permutation-in-string
+@python
+def check_inclusion(pattern, text):
+    need = {}
+    for character in pattern:
+        need[character] = need.get(character, 0) + 1
+.
+    missing = len(pattern)
+    left_index = 0
+_
+    for right_index in range(len(text)):
+        character = text[right_index]
+        if need.get(character, 0) > 0: missing -= 1
+        need[character] = need.get(character, 0) - 1
+_
+_
+        if right_index - left_index + 1 > len(pattern):
+            result = text[left_index]
+            need[result] = need[result] + 1
+            if need[result] > 0: missing += 1
+            left_index += 1
+.
+        if missing == 0: return True
+.
+    return False
+.
+_
+print(check_inclusion("ab", "eidbaooo"))
+@java
+static boolean checkInclusion(String pattern, String text) {
+    Map<Character, Integer> need = new HashMap<>();
+    for (char character : pattern.toCharArray()) {
+        need.put(character, need.getOrDefault(character, 0) + 1);
+    }
+    int missing = pattern.length();
+    int leftIndex = 0;
+_
+    for (int rightIndex = 0; rightIndex < text.length(); rightIndex++) {
+        char character = text.charAt(rightIndex);
+        if (need.getOrDefault(character, 0) > 0) missing--;
+        need.put(character, need.getOrDefault(character, 0) - 1);
+_
+_
+        if (rightIndex - leftIndex + 1 > pattern.length()) {
+            char result = text.charAt(leftIndex);
+            need.put(result, need.get(result) + 1);
+            if (need.get(result) > 0) missing++;
+            leftIndex++;
+        }
+        if (missing == 0) return true;
+    }
+    return false;
+}
+_
+~M
+System.out.println(checkInclusion("ab", "eidbaooo"));
+@cpp
+bool checkInclusion(string pattern, string text) {
+    unordered_map<char, int> need;
+    for (char character : pattern) {
+        need[character] = need[character] + 1;
+    }
+    int missing = pattern.size();
+    int leftIndex = 0;
+_
+    for (int rightIndex = 0; rightIndex < text.size(); rightIndex++) {
+        char character = text[rightIndex];
+        if (need[character] > 0) missing--;
+        need[character] = need[character] - 1;
+_
+_
+        if (rightIndex - leftIndex + 1 > pattern.size()) {
+            char result = text[leftIndex];
+            need[result] = need[result] + 1;
+            if (need[result] > 0) missing++;
+            leftIndex++;
+        }
+        if (missing == 0) return true;
+    }
+    return false;
+}
+_
+~M
+cout << boolalpha << checkInclusion("ab", "eidbaooo") << endl;
+
+## longest-repeating-character-replacement
+@python
+def character_replacement(text, max_replacements):
+    count = {}
+    left_index = 0
+    max_count = 0
+    best = 0
+_
+    for right_index in range(len(text)):
+        character = text[right_index]
+        count[character] = count.get(character, 0) + 1
+        max_count = max(max_count, count[character])
+_
+_
+        if right_index - left_index + 1 - max_count > max_replacements:
+            count[text[left_index]] = count[text[left_index]] - 1
+            left_index += 1
+.
+        best = max(best, right_index - left_index + 1)
+.
+    return best
+.
+_
+print(character_replacement("AABABBA", 1))
+@java
+static int characterReplacement(String text, int maxReplacements) {
+    Map<Character, Integer> count = new HashMap<>();
+    int leftIndex = 0;
+    int maxCount = 0;
+    int best = 0;
+_
+    for (int rightIndex = 0; rightIndex < text.length(); rightIndex++) {
+        char character = text.charAt(rightIndex);
+        count.put(character, count.getOrDefault(character, 0) + 1);
+        maxCount = Math.max(maxCount, count.get(character));
+_
+_
+        if (rightIndex - leftIndex + 1 - maxCount > maxReplacements) {
+            count.put(text.charAt(leftIndex), count.get(text.charAt(leftIndex)) - 1);
+            leftIndex++;
+        }
+        best = Math.max(best, rightIndex - leftIndex + 1);
+    }
+    return best;
+}
+_
+~M
+System.out.println(characterReplacement("AABABBA", 1));
+@cpp
+int characterReplacement(string text, int maxReplacements) {
+    unordered_map<char, int> count;
+    int leftIndex = 0;
+    int maxCount = 0;
+    int best = 0;
+_
+    for (int rightIndex = 0; rightIndex < text.size(); rightIndex++) {
+        char character = text[rightIndex];
+        count[character] = count[character] + 1;
+        maxCount = max(maxCount, count[character]);
+_
+_
+        if (rightIndex - leftIndex + 1 - maxCount > maxReplacements) {
+            count[text[leftIndex]] = count[text[leftIndex]] - 1;
+            leftIndex++;
+        }
+        best = max(best, rightIndex - leftIndex + 1);
+    }
+    return best;
+}
+_
+~M
+cout << characterReplacement("AABABBA", 1) << endl;
+
+## find-all-anagrams
+@python
+def find_anagrams(text, pattern):
+    need = {}
+    for character in pattern:
+        need[character] = need.get(character, 0) + 1
+.
+    missing = len(pattern)
+    left_index = 0
+    result = []
+_
+    for right_index in range(len(text)):
+        character = text[right_index]
+        if need.get(character, 0) > 0: missing -= 1
+        need[character] = need.get(character, 0) - 1
+_
+_
+        if right_index - left_index + 1 > len(pattern):
+            start_positions = text[left_index]
+            need[start_positions] = need[start_positions] + 1
+            if need[start_positions] > 0: missing += 1
+            left_index += 1
+.
+        if missing == 0: result.append(left_index)
+.
+    return result
+.
+_
+print(find_anagrams("cbaebabacd", "abc"))
+@java
+static List<Integer> findAnagrams(String text, String pattern) {
+    Map<Character, Integer> need = new HashMap<>();
+    for (char character : pattern.toCharArray()) {
+        need.put(character, need.getOrDefault(character, 0) + 1);
+    }
+    int missing = pattern.length();
+    int leftIndex = 0;
+    List<Integer> result = new ArrayList<>();
+_
+    for (int rightIndex = 0; rightIndex < text.length(); rightIndex++) {
+        char character = text.charAt(rightIndex);
+        if (need.getOrDefault(character, 0) > 0) missing--;
+        need.put(character, need.getOrDefault(character, 0) - 1);
+_
+_
+        if (rightIndex - leftIndex + 1 > pattern.length()) {
+            char startPositions = text.charAt(leftIndex);
+            need.put(startPositions, need.get(startPositions) + 1);
+            if (need.get(startPositions) > 0) missing++;
+            leftIndex++;
+        }
+        if (missing == 0) result.add(leftIndex);
+    }
+    return result;
+}
+_
+~M
+System.out.println(findAnagrams("cbaebabacd", "abc"));
+@cpp
+vector<int> findAnagrams(string text, string pattern) {
+    unordered_map<char, int> need;
+    for (char character : pattern) {
+        need[character] = need[character] + 1;
+    }
+    int missing = pattern.size();
+    int leftIndex = 0;
+    vector<int> result;
+_
+    for (int rightIndex = 0; rightIndex < text.size(); rightIndex++) {
+        char character = text[rightIndex];
+        if (need[character] > 0) missing--;
+        need[character] = need[character] - 1;
+_
+_
+        if (rightIndex - leftIndex + 1 > pattern.size()) {
+            char startPositions = text[leftIndex];
+            need[startPositions] = need[startPositions] + 1;
+            if (need[startPositions] > 0) missing++;
+            leftIndex++;
+        }
+        if (missing == 0) result.push_back(leftIndex);
+    }
+    return result;
+}
+_
+~M
+for (int x : findAnagrams("cbaebabacd", "abc")) cout << x << " ";
+
+## max-consecutive-ones-iii
+@python
+def longest_ones(numbers, max_flips):
+    left_index = 0
+    zeros = 0
+    best = 0
+_
+    for right_index in range(len(numbers)):
+        if numbers[right_index] == 0: zeros += 1
+_
+_
+        while zeros > max_flips:
+            if numbers[left_index] == 0: zeros -= 1
+            left_index += 1
+.
+        best = max(best, right_index - left_index + 1)
+.
+    return best
+.
+_
+numbers = [1, 0, 1, 1, 0, 0, 1, 1]
+print(longest_ones(numbers, 1))
+@java
+static int longestOnes(int[] numbers, int maxFlips) {
+    int leftIndex = 0;
+    int zeros = 0;
+    int best = 0;
+_
+    for (int rightIndex = 0; rightIndex < numbers.length; rightIndex++) {
+        if (numbers[rightIndex] == 0) zeros++;
+_
+_
+        while (zeros > maxFlips) {
+            if (numbers[leftIndex] == 0) zeros--;
+            leftIndex++;
+        }
+        best = Math.max(best, rightIndex - leftIndex + 1);
+    }
+    return best;
+}
+_
+~M
+int[] numbers = {1, 0, 1, 1, 0, 0, 1, 1};
+System.out.println(longestOnes(numbers, 1));
+@cpp
+int longestOnes(vector<int>& numbers, int maxFlips) {
+    int leftIndex = 0;
+    int zeros = 0;
+    int best = 0;
+_
+    for (int rightIndex = 0; rightIndex < numbers.size(); rightIndex++) {
+        if (numbers[rightIndex] == 0) zeros++;
+_
+_
+        while (zeros > maxFlips) {
+            if (numbers[leftIndex] == 0) zeros--;
+            leftIndex++;
+        }
+        best = max(best, rightIndex - leftIndex + 1);
+    }
+    return best;
+}
+_
+~M
+vector<int> numbers = {1, 0, 1, 1, 0, 0, 1, 1};
+cout << longestOnes(numbers, 1) << endl;
+
+## max-vowels-in-substring
+@python
+def max_vowels(text, window_size):
+    vowels = {"a", "e", "i", "o", "u"}
+    left_index = 0
+    count = 0
+    best = 0
+_
+    for right_index in range(len(text)):
+        if text[right_index] in vowels: count += 1
+_
+_
+        if right_index - left_index + 1 > window_size:
+            if text[left_index] in vowels: count -= 1
+            left_index += 1
+.
+        if right_index - left_index + 1 == window_size:
+            best = max(best, count)
+.
+.
+    return best
+.
+_
+print(max_vowels("abciiidef", 3))
+@java
+static int maxVowels(String text, int windowSize) {
+    Set<Character> vowels = Set.of('a', 'e', 'i', 'o', 'u');
+    int leftIndex = 0;
+    int count = 0;
+    int best = 0;
+_
+    for (int rightIndex = 0; rightIndex < text.length(); rightIndex++) {
+        if (vowels.contains(text.charAt(rightIndex))) count++;
+_
+_
+        if (rightIndex - leftIndex + 1 > windowSize) {
+            if (vowels.contains(text.charAt(leftIndex))) count--;
+            leftIndex++;
+        }
+        if (rightIndex - leftIndex + 1 == windowSize) {
+            best = Math.max(best, count);
+        }
+    }
+    return best;
+}
+_
+~M
+System.out.println(maxVowels("abciiidef", 3));
+@cpp
+int maxVowels(string text, int windowSize) {
+    unordered_set<char> vowels = {'a', 'e', 'i', 'o', 'u'};
+    int leftIndex = 0;
+    int count = 0;
+    int best = 0;
+_
+    for (int rightIndex = 0; rightIndex < text.size(); rightIndex++) {
+        if (vowels.count(text[rightIndex])) count++;
+_
+_
+        if (rightIndex - leftIndex + 1 > windowSize) {
+            if (vowels.count(text[leftIndex])) count--;
+            leftIndex++;
+        }
+        if (rightIndex - leftIndex + 1 == windowSize) {
+            best = max(best, count);
+        }
+    }
+    return best;
+}
+_
+~M
+cout << maxVowels("abciiidef", 3) << endl;
+
+## min-stack
+@python
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.mins = []
+.
+    def push(self, value):
+        self.stack.append(value)
+        last = self.mins[-1] if self.mins else value
+        self.mins.append(min(value, last))
+.
+    def pop(self):
+        self.stack.pop()
+        self.mins.pop()
+.
+    def top(self):
+        return self.stack[-1]
+.
+    def get_min(self):
+        return self.mins[-1]
+.
+.
+_
+min_stack = MinStack()
+results = []
+min_stack.push(5)
+min_stack.push(3)
+min_stack.push(7)
+results.append(min_stack.get_min())
+min_stack.pop()
+min_stack.push(2)
+results.append(min_stack.get_min())
+min_stack.pop()
+results.append(min_stack.top())
+results.append(min_stack.get_min())
+print(results)
+@java
+static class MinStack {
+~    List<Integer> stack = new ArrayList<>(), mins = new ArrayList<>();
+    MinStack() {
+        this.stack = new ArrayList<>();
+        this.mins = new ArrayList<>();
+    }
+    void push(int value) {
+        this.stack.add(value);
+        int last = !this.mins.isEmpty() ? this.mins.get(this.mins.size() - 1) : value;
+        this.mins.add(Math.min(value, last));
+    }
+    void pop() {
+        this.stack.remove(this.stack.size() - 1);
+        this.mins.remove(this.mins.size() - 1);
+    }
+    int top() {
+        return this.stack.get(this.stack.size() - 1);
+    }
+    int getMin() {
+        return this.mins.get(this.mins.size() - 1);
+    }
+}
+_
+~M
+MinStack minStack = new MinStack();
+List<Integer> results = new ArrayList<>();
+minStack.push(5);
+minStack.push(3);
+minStack.push(7);
+results.add(minStack.getMin());
+minStack.pop();
+minStack.push(2);
+results.add(minStack.getMin());
+minStack.pop();
+results.add(minStack.top());
+results.add(minStack.getMin());
+System.out.println(results);
+@cpp
+struct MinStack {
+~    vector<int> stack, mins;
+    MinStack() {
+        stack = {};
+        mins = {};
+    }
+    void push(int value) {
+        stack.push_back(value);
+        int last = !mins.empty() ? mins.back() : value;
+        mins.push_back(min(value, last));
+    }
+    void pop() {
+        stack.pop_back();
+        mins.pop_back();
+    }
+    int top() {
+        return stack.back();
+    }
+    int getMin() {
+        return mins.back();
+    }
+};
+_
+~M
+MinStack minStack;
+vector<int> results;
+minStack.push(5);
+minStack.push(3);
+minStack.push(7);
+results.push_back(minStack.getMin());
+minStack.pop();
+minStack.push(2);
+results.push_back(minStack.getMin());
+minStack.pop();
+results.push_back(minStack.top());
+results.push_back(minStack.getMin());
+for (int x : results) cout << x << " ";
