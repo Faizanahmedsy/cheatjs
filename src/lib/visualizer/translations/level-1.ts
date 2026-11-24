@@ -520,4 +520,525 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|}
 `,
   },
+  "isomorphic-strings": {
+    python: `
+1|def is_isomorphic(first_text, second_text):
+2|    if len(first_text) != len(second_text): return False
+3|    s_to_t = {}
+4|    t_to_s = {}
+5|    for char_index in range(len(first_text)):
+6|        first_char = first_text[char_index]
+7|        second_char = second_text[char_index]
+8|        if first_char in s_to_t and s_to_t[first_char] != second_char: return False
+9|        if second_char in t_to_s and t_to_s[second_char] != first_char: return False
+10|        s_to_t[first_char] = second_char
+11|        t_to_s[second_char] = first_char
+13|    return True
+15|
+16|print(is_isomorphic("paper", "title"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static boolean isIsomorphic(String firstText, String secondText) {
+2|        if (firstText.length() != secondText.length()) return false;
+3|        Map<Character, Character> sToT = new HashMap<>();
+4|        Map<Character, Character> tToS = new HashMap<>();
+5|        for (int charIndex = 0; charIndex < firstText.length(); charIndex++) {
+6|            char firstChar = firstText.charAt(charIndex);
+7|            char secondChar = secondText.charAt(charIndex);
+8|            if (sToT.containsKey(firstChar) && sToT.get(firstChar) != secondChar) return false;
+9|            if (tToS.containsKey(secondChar) && tToS.get(secondChar) != firstChar) return false;
+10|            sToT.put(firstChar, secondChar);
+11|            tToS.put(secondChar, firstChar);
+12|        }
+13|        return true;
+14|    }
+15|
+-|    public static void main(String[] args) {
+16|        System.out.println(isIsomorphic("paper", "title"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|bool isIsomorphic(string firstText, string secondText) {
+2|    if (firstText.size() != secondText.size()) return false;
+3|    unordered_map<char, char> sToT;
+4|    unordered_map<char, char> tToS;
+5|    for (int charIndex = 0; charIndex < firstText.size(); charIndex++) {
+6|        char firstChar = firstText[charIndex];
+7|        char secondChar = secondText[charIndex];
+8|        if (sToT.count(firstChar) && sToT[firstChar] != secondChar) return false;
+9|        if (tToS.count(secondChar) && tToS[secondChar] != firstChar) return false;
+10|        sToT[firstChar] = secondChar;
+11|        tToS[secondChar] = firstChar;
+12|    }
+13|    return true;
+14|}
+15|
+-|int main() {
+16|    cout << boolalpha << isIsomorphic("paper", "title") << endl;
+-|}
+`,
+  },
+  "word-pattern": {
+    python: `
+1|def word_pattern(pattern, sentence):
+2|    words = sentence.split(" ")
+3|    if len(words) != len(pattern): return False
+4|    letter_to_word = {}
+5|    word_to_letter = {}
+6|    for pattern_index in range(len(pattern)):
+7|        letter = pattern[pattern_index]
+8|        word = words[pattern_index]
+9|        if letter in letter_to_word and letter_to_word[letter] != word: return False
+10|        if word in word_to_letter and word_to_letter[word] != letter: return False
+11|        letter_to_word[letter] = word
+12|        word_to_letter[word] = letter
+14|    return True
+16|
+17|print(word_pattern("abba", "dog cat cat dog"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static boolean wordPattern(String pattern, String sentence) {
+2|        String[] words = sentence.split(" ");
+3|        if (words.length != pattern.length()) return false;
+4|        Map<Character, String> letterToWord = new HashMap<>();
+5|        Map<String, Character> wordToLetter = new HashMap<>();
+6|        for (int patternIndex = 0; patternIndex < pattern.length(); patternIndex++) {
+7|            char letter = pattern.charAt(patternIndex);
+8|            String word = words[patternIndex];
+9|            if (letterToWord.containsKey(letter) && !letterToWord.get(letter).equals(word)) return false;
+10|            if (wordToLetter.containsKey(word) && wordToLetter.get(word) != letter) return false;
+11|            letterToWord.put(letter, word);
+12|            wordToLetter.put(word, letter);
+13|        }
+14|        return true;
+15|    }
+16|
+-|    public static void main(String[] args) {
+17|        System.out.println(wordPattern("abba", "dog cat cat dog"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|bool wordPattern(string pattern, string sentence) {
+2|    vector<string> words; stringstream ss(sentence); string w; while (ss >> w) words.push_back(w);
+3|    if (words.size() != pattern.size()) return false;
+4|    unordered_map<char, string> letterToWord;
+5|    unordered_map<string, char> wordToLetter;
+6|    for (int patternIndex = 0; patternIndex < pattern.size(); patternIndex++) {
+7|        char letter = pattern[patternIndex];
+8|        string word = words[patternIndex];
+9|        if (letterToWord.count(letter) && letterToWord[letter] != word) return false;
+10|        if (wordToLetter.count(word) && wordToLetter[word] != letter) return false;
+11|        letterToWord[letter] = word;
+12|        wordToLetter[word] = letter;
+13|    }
+14|    return true;
+15|}
+16|
+-|int main() {
+17|    cout << boolalpha << wordPattern("abba", "dog cat cat dog") << endl;
+-|}
+`,
+  },
+  "valid-palindrome": {
+    python: `
+2|def is_alpha_num(character):
+3|    return ("a" <= character <= "z") or ("0" <= character <= "9")
+5|
+6|def is_palindrome(text):
+7|    text = text.lower()
+8|    left_index = 0
+9|    right_index = len(text) - 1
+10|
+11|    while left_index < right_index:
+13|        if not is_alpha_num(text[left_index]):
+14|            left_index += 1
+15|            continue
+17|        if not is_alpha_num(text[right_index]):
+18|            right_index -= 1
+19|            continue
+22|        if text[left_index] != text[right_index]:
+23|            return False
+26|        left_index += 1
+27|        right_index -= 1
+29|    return True
+31|
+32|print(is_palindrome("Taco cat!"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+2|    static boolean isAlphaNum(char character) {
+3|        return (character >= 'a' && character <= 'z') || (character >= '0' && character <= '9');
+4|    }
+5|
+6|    static boolean isPalindrome(String text) {
+7|        text = text.toLowerCase();
+8|        int leftIndex = 0;
+9|        int rightIndex = text.length() - 1;
+10|
+11|        while (leftIndex < rightIndex) {
+13|            if (!isAlphaNum(text.charAt(leftIndex))) {
+14|                leftIndex++;
+15|                continue;
+16|            }
+17|            if (!isAlphaNum(text.charAt(rightIndex))) {
+18|                rightIndex--;
+19|                continue;
+20|            }
+22|            if (text.charAt(leftIndex) != text.charAt(rightIndex)) {
+23|                return false;
+24|            }
+26|            leftIndex++;
+27|            rightIndex--;
+28|        }
+29|        return true;
+30|    }
+31|
+-|    public static void main(String[] args) {
+32|        System.out.println(isPalindrome("Taco cat!"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+2|bool isAlphaNum(char character) {
+3|    return (character >= 'a' && character <= 'z') || (character >= '0' && character <= '9');
+4|}
+5|
+6|bool isPalindrome(string text) {
+7|    for (char& c : text) c = tolower(c);
+8|    int leftIndex = 0;
+9|    int rightIndex = text.size() - 1;
+10|
+11|    while (leftIndex < rightIndex) {
+13|        if (!isAlphaNum(text[leftIndex])) {
+14|            leftIndex++;
+15|            continue;
+16|        }
+17|        if (!isAlphaNum(text[rightIndex])) {
+18|            rightIndex--;
+19|            continue;
+20|        }
+22|        if (text[leftIndex] != text[rightIndex]) {
+23|            return false;
+24|        }
+26|        leftIndex++;
+27|        rightIndex--;
+28|    }
+29|    return true;
+30|}
+31|
+-|int main() {
+32|    cout << boolalpha << isPalindrome("Taco cat!") << endl;
+-|}
+`,
+  },
+  "move-zeroes": {
+    python: `
+1|def move_zeroes(numbers):
+2|    write_index = 0
+3|
+4|    for read_index in range(len(numbers)):
+5|        if numbers[read_index] != 0:
+7|            numbers[write_index], numbers[read_index] = numbers[read_index], numbers[write_index]
+8|            write_index += 1
+11|    return numbers
+13|
+14|numbers = [0, 1, 0, 3, 12]
+15|print(move_zeroes(numbers))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int[] moveZeroes(int[] numbers) {
+2|        int writeIndex = 0;
+3|
+4|        for (int readIndex = 0; readIndex < numbers.length; readIndex++) {
+5|            if (numbers[readIndex] != 0) {
+7|                int temp = numbers[writeIndex]; numbers[writeIndex] = numbers[readIndex]; numbers[readIndex] = temp;
+8|                writeIndex++;
+9|            }
+10|        }
+11|        return numbers;
+12|    }
+13|
+-|    public static void main(String[] args) {
+14|        int[] numbers = {0, 1, 0, 3, 12};
+15|        System.out.println(Arrays.toString(moveZeroes(numbers)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<int> moveZeroes(vector<int>& numbers) {
+2|    int writeIndex = 0;
+3|
+4|    for (int readIndex = 0; readIndex < numbers.size(); readIndex++) {
+5|        if (numbers[readIndex] != 0) {
+7|            swap(numbers[writeIndex], numbers[readIndex]);
+8|            writeIndex++;
+9|        }
+10|    }
+11|    return numbers;
+12|}
+13|
+-|int main() {
+14|    vector<int> numbers = {0, 1, 0, 3, 12};
+15|    for (int x : moveZeroes(numbers)) cout << x << " ";
+-|}
+`,
+  },
+  "remove-duplicates-sorted-array": {
+    python: `
+1|def remove_duplicates(numbers):
+2|    write_index = 0
+3|
+4|    for read_index in range(1, len(numbers)):
+5|        if numbers[read_index] != numbers[write_index]:
+6|            write_index += 1
+7|            numbers[write_index] = numbers[read_index]
+10|    return write_index + 1
+12|
+13|numbers = [0, 0, 1, 1, 1, 2, 2, 3]
+14|unique_count = remove_duplicates(numbers)
+15|print(unique_count, numbers[0:unique_count])
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int removeDuplicates(int[] numbers) {
+2|        int writeIndex = 0;
+3|
+4|        for (int readIndex = 1; readIndex < numbers.length; readIndex++) {
+5|            if (numbers[readIndex] != numbers[writeIndex]) {
+6|                writeIndex++;
+7|                numbers[writeIndex] = numbers[readIndex];
+8|            }
+9|        }
+10|        return writeIndex + 1;
+11|    }
+12|
+-|    public static void main(String[] args) {
+13|        int[] numbers = {0, 0, 1, 1, 1, 2, 2, 3};
+14|        int uniqueCount = removeDuplicates(numbers);
+15|        System.out.println(uniqueCount + " " + Arrays.toString(Arrays.copyOfRange(numbers, 0, uniqueCount)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int removeDuplicates(vector<int>& numbers) {
+2|    int writeIndex = 0;
+3|
+4|    for (int readIndex = 1; readIndex < numbers.size(); readIndex++) {
+5|        if (numbers[readIndex] != numbers[writeIndex]) {
+6|            writeIndex++;
+7|            numbers[writeIndex] = numbers[readIndex];
+8|        }
+9|    }
+10|    return writeIndex + 1;
+11|}
+12|
+-|int main() {
+13|    vector<int> numbers = {0, 0, 1, 1, 1, 2, 2, 3};
+14|    int uniqueCount = removeDuplicates(numbers);
+15|    cout << uniqueCount << ": "; for (int i = 0; i < uniqueCount; i++) cout << numbers[i] << " ";
+-|}
+`,
+  },
+  "remove-element": {
+    python: `
+1|def remove_element(numbers, value_to_remove):
+2|    write_index = 0
+3|
+4|    for read_index in range(len(numbers)):
+5|        if numbers[read_index] != value_to_remove:
+6|            numbers[write_index] = numbers[read_index]
+7|            write_index += 1
+10|    return write_index
+12|
+13|numbers = [3, 2, 2, 3, 4]
+14|kept_count = remove_element(numbers, 3)
+15|print(kept_count, numbers[0:kept_count])
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int removeElement(int[] numbers, int valueToRemove) {
+2|        int writeIndex = 0;
+3|
+4|        for (int readIndex = 0; readIndex < numbers.length; readIndex++) {
+5|            if (numbers[readIndex] != valueToRemove) {
+6|                numbers[writeIndex] = numbers[readIndex];
+7|                writeIndex++;
+8|            }
+9|        }
+10|        return writeIndex;
+11|    }
+12|
+-|    public static void main(String[] args) {
+13|        int[] numbers = {3, 2, 2, 3, 4};
+14|        int keptCount = removeElement(numbers, 3);
+15|        System.out.println(keptCount + " " + Arrays.toString(Arrays.copyOfRange(numbers, 0, keptCount)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int removeElement(vector<int>& numbers, int valueToRemove) {
+2|    int writeIndex = 0;
+3|
+4|    for (int readIndex = 0; readIndex < numbers.size(); readIndex++) {
+5|        if (numbers[readIndex] != valueToRemove) {
+6|            numbers[writeIndex] = numbers[readIndex];
+7|            writeIndex++;
+8|        }
+9|    }
+10|    return writeIndex;
+11|}
+12|
+-|int main() {
+13|    vector<int> numbers = {3, 2, 2, 3, 4};
+14|    int keptCount = removeElement(numbers, 3);
+15|    cout << keptCount << ": "; for (int i = 0; i < keptCount; i++) cout << numbers[i] << " ";
+-|}
+`,
+  },
+  "reverse-string": {
+    python: `
+1|def reverse_string(text):
+2|    left_index = 0
+3|    right_index = len(text) - 1
+4|
+5|    while left_index < right_index:
+7|        text[left_index], text[right_index] = text[right_index], text[left_index]
+8|        left_index += 1
+9|        right_index -= 1
+11|    return text
+13|
+14|text = ["h", "e", "l", "l", "o"]
+15|print(reverse_string(text))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static char[] reverseString(char[] text) {
+2|        int leftIndex = 0;
+3|        int rightIndex = text.length - 1;
+4|
+5|        while (leftIndex < rightIndex) {
+7|            char temp = text[leftIndex]; text[leftIndex] = text[rightIndex]; text[rightIndex] = temp;
+8|            leftIndex++;
+9|            rightIndex--;
+10|        }
+11|        return text;
+12|    }
+13|
+-|    public static void main(String[] args) {
+14|        char[] text = {'h', 'e', 'l', 'l', 'o'};
+15|        System.out.println(Arrays.toString(reverseString(text)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<char> reverseString(vector<char>& text) {
+2|    int leftIndex = 0;
+3|    int rightIndex = text.size() - 1;
+4|
+5|    while (leftIndex < rightIndex) {
+7|        swap(text[leftIndex], text[rightIndex]);
+8|        leftIndex++;
+9|        rightIndex--;
+10|    }
+11|    return text;
+12|}
+13|
+-|int main() {
+14|    vector<char> text = {'h', 'e', 'l', 'l', 'o'};
+15|    for (char c : reverseString(text)) cout << c << " ";
+-|}
+`,
+  },
+  "is-subsequence": {
+    python: `
+1|def is_subsequence(subsequence, full_text):
+2|    subsequence_index = 0
+3|
+4|    for full_text_index in range(len(full_text)):
+5|        if subsequence_index < len(subsequence) and subsequence[subsequence_index] == full_text[full_text_index]:
+6|            subsequence_index += 1
+9|    return subsequence_index == len(subsequence)
+11|
+12|print(is_subsequence("ace", "abcde"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static boolean isSubsequence(String subsequence, String fullText) {
+2|        int subsequenceIndex = 0;
+3|
+4|        for (int fullTextIndex = 0; fullTextIndex < fullText.length(); fullTextIndex++) {
+5|            if (subsequenceIndex < subsequence.length() && subsequence.charAt(subsequenceIndex) == fullText.charAt(fullTextIndex)) {
+6|                subsequenceIndex++;
+7|            }
+8|        }
+9|        return subsequenceIndex == subsequence.length();
+10|    }
+11|
+-|    public static void main(String[] args) {
+12|        System.out.println(isSubsequence("ace", "abcde"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|bool isSubsequence(string subsequence, string fullText) {
+2|    int subsequenceIndex = 0;
+3|
+4|    for (int fullTextIndex = 0; fullTextIndex < fullText.size(); fullTextIndex++) {
+5|        if (subsequenceIndex < subsequence.size() && subsequence[subsequenceIndex] == fullText[fullTextIndex]) {
+6|            subsequenceIndex++;
+7|        }
+8|    }
+9|    return subsequenceIndex == subsequence.size();
+10|}
+11|
+-|int main() {
+12|    cout << boolalpha << isSubsequence("ace", "abcde") << endl;
+-|}
+`,
+  },
 };

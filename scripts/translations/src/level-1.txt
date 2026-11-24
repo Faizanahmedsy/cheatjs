@@ -458,3 +458,470 @@ bool isHappy(int currentNumber) {
 _
 ~M
 cout << boolalpha << isHappy(19) << endl;
+
+## isomorphic-strings
+@python
+def is_isomorphic(first_text, second_text):
+    if len(first_text) != len(second_text): return False
+    s_to_t = {}
+    t_to_s = {}
+    for char_index in range(len(first_text)):
+        first_char = first_text[char_index]
+        second_char = second_text[char_index]
+        if first_char in s_to_t and s_to_t[first_char] != second_char: return False
+        if second_char in t_to_s and t_to_s[second_char] != first_char: return False
+        s_to_t[first_char] = second_char
+        t_to_s[second_char] = first_char
+.
+    return True
+.
+_
+print(is_isomorphic("paper", "title"))
+@java
+static boolean isIsomorphic(String firstText, String secondText) {
+    if (firstText.length() != secondText.length()) return false;
+    Map<Character, Character> sToT = new HashMap<>();
+    Map<Character, Character> tToS = new HashMap<>();
+    for (int charIndex = 0; charIndex < firstText.length(); charIndex++) {
+        char firstChar = firstText.charAt(charIndex);
+        char secondChar = secondText.charAt(charIndex);
+        if (sToT.containsKey(firstChar) && sToT.get(firstChar) != secondChar) return false;
+        if (tToS.containsKey(secondChar) && tToS.get(secondChar) != firstChar) return false;
+        sToT.put(firstChar, secondChar);
+        tToS.put(secondChar, firstChar);
+    }
+    return true;
+}
+_
+~M
+System.out.println(isIsomorphic("paper", "title"));
+@cpp
+bool isIsomorphic(string firstText, string secondText) {
+    if (firstText.size() != secondText.size()) return false;
+    unordered_map<char, char> sToT;
+    unordered_map<char, char> tToS;
+    for (int charIndex = 0; charIndex < firstText.size(); charIndex++) {
+        char firstChar = firstText[charIndex];
+        char secondChar = secondText[charIndex];
+        if (sToT.count(firstChar) && sToT[firstChar] != secondChar) return false;
+        if (tToS.count(secondChar) && tToS[secondChar] != firstChar) return false;
+        sToT[firstChar] = secondChar;
+        tToS[secondChar] = firstChar;
+    }
+    return true;
+}
+_
+~M
+cout << boolalpha << isIsomorphic("paper", "title") << endl;
+
+## word-pattern
+@python
+def word_pattern(pattern, sentence):
+    words = sentence.split(" ")
+    if len(words) != len(pattern): return False
+    letter_to_word = {}
+    word_to_letter = {}
+    for pattern_index in range(len(pattern)):
+        letter = pattern[pattern_index]
+        word = words[pattern_index]
+        if letter in letter_to_word and letter_to_word[letter] != word: return False
+        if word in word_to_letter and word_to_letter[word] != letter: return False
+        letter_to_word[letter] = word
+        word_to_letter[word] = letter
+.
+    return True
+.
+_
+print(word_pattern("abba", "dog cat cat dog"))
+@java
+static boolean wordPattern(String pattern, String sentence) {
+    String[] words = sentence.split(" ");
+    if (words.length != pattern.length()) return false;
+    Map<Character, String> letterToWord = new HashMap<>();
+    Map<String, Character> wordToLetter = new HashMap<>();
+    for (int patternIndex = 0; patternIndex < pattern.length(); patternIndex++) {
+        char letter = pattern.charAt(patternIndex);
+        String word = words[patternIndex];
+        if (letterToWord.containsKey(letter) && !letterToWord.get(letter).equals(word)) return false;
+        if (wordToLetter.containsKey(word) && wordToLetter.get(word) != letter) return false;
+        letterToWord.put(letter, word);
+        wordToLetter.put(word, letter);
+    }
+    return true;
+}
+_
+~M
+System.out.println(wordPattern("abba", "dog cat cat dog"));
+@cpp
+bool wordPattern(string pattern, string sentence) {
+    vector<string> words; stringstream ss(sentence); string w; while (ss >> w) words.push_back(w);
+    if (words.size() != pattern.size()) return false;
+    unordered_map<char, string> letterToWord;
+    unordered_map<string, char> wordToLetter;
+    for (int patternIndex = 0; patternIndex < pattern.size(); patternIndex++) {
+        char letter = pattern[patternIndex];
+        string word = words[patternIndex];
+        if (letterToWord.count(letter) && letterToWord[letter] != word) return false;
+        if (wordToLetter.count(word) && wordToLetter[word] != letter) return false;
+        letterToWord[letter] = word;
+        wordToLetter[word] = letter;
+    }
+    return true;
+}
+_
+~M
+cout << boolalpha << wordPattern("abba", "dog cat cat dog") << endl;
+
+## valid-palindrome
+@python
+.
+def is_alpha_num(character):
+    return ("a" <= character <= "z") or ("0" <= character <= "9")
+.
+_
+def is_palindrome(text):
+    text = text.lower()
+    left_index = 0
+    right_index = len(text) - 1
+_
+    while left_index < right_index:
+.
+        if not is_alpha_num(text[left_index]):
+            left_index += 1
+            continue
+.
+        if not is_alpha_num(text[right_index]):
+            right_index -= 1
+            continue
+.
+.
+        if text[left_index] != text[right_index]:
+            return False
+.
+.
+        left_index += 1
+        right_index -= 1
+.
+    return True
+.
+_
+print(is_palindrome("Taco cat!"))
+@java
+.
+static boolean isAlphaNum(char character) {
+    return (character >= 'a' && character <= 'z') || (character >= '0' && character <= '9');
+}
+_
+static boolean isPalindrome(String text) {
+    text = text.toLowerCase();
+    int leftIndex = 0;
+    int rightIndex = text.length() - 1;
+_
+    while (leftIndex < rightIndex) {
+.
+        if (!isAlphaNum(text.charAt(leftIndex))) {
+            leftIndex++;
+            continue;
+        }
+        if (!isAlphaNum(text.charAt(rightIndex))) {
+            rightIndex--;
+            continue;
+        }
+.
+        if (text.charAt(leftIndex) != text.charAt(rightIndex)) {
+            return false;
+        }
+.
+        leftIndex++;
+        rightIndex--;
+    }
+    return true;
+}
+_
+~M
+System.out.println(isPalindrome("Taco cat!"));
+@cpp
+.
+bool isAlphaNum(char character) {
+    return (character >= 'a' && character <= 'z') || (character >= '0' && character <= '9');
+}
+_
+bool isPalindrome(string text) {
+    for (char& c : text) c = tolower(c);
+    int leftIndex = 0;
+    int rightIndex = text.size() - 1;
+_
+    while (leftIndex < rightIndex) {
+.
+        if (!isAlphaNum(text[leftIndex])) {
+            leftIndex++;
+            continue;
+        }
+        if (!isAlphaNum(text[rightIndex])) {
+            rightIndex--;
+            continue;
+        }
+.
+        if (text[leftIndex] != text[rightIndex]) {
+            return false;
+        }
+.
+        leftIndex++;
+        rightIndex--;
+    }
+    return true;
+}
+_
+~M
+cout << boolalpha << isPalindrome("Taco cat!") << endl;
+
+## move-zeroes
+@python
+def move_zeroes(numbers):
+    write_index = 0
+_
+    for read_index in range(len(numbers)):
+        if numbers[read_index] != 0:
+.
+            numbers[write_index], numbers[read_index] = numbers[read_index], numbers[write_index]
+            write_index += 1
+.
+.
+    return numbers
+.
+_
+numbers = [0, 1, 0, 3, 12]
+print(move_zeroes(numbers))
+@java
+static int[] moveZeroes(int[] numbers) {
+    int writeIndex = 0;
+_
+    for (int readIndex = 0; readIndex < numbers.length; readIndex++) {
+        if (numbers[readIndex] != 0) {
+.
+            int temp = numbers[writeIndex]; numbers[writeIndex] = numbers[readIndex]; numbers[readIndex] = temp;
+            writeIndex++;
+        }
+    }
+    return numbers;
+}
+_
+~M
+int[] numbers = {0, 1, 0, 3, 12};
+System.out.println(Arrays.toString(moveZeroes(numbers)));
+@cpp
+vector<int> moveZeroes(vector<int>& numbers) {
+    int writeIndex = 0;
+_
+    for (int readIndex = 0; readIndex < numbers.size(); readIndex++) {
+        if (numbers[readIndex] != 0) {
+.
+            swap(numbers[writeIndex], numbers[readIndex]);
+            writeIndex++;
+        }
+    }
+    return numbers;
+}
+_
+~M
+vector<int> numbers = {0, 1, 0, 3, 12};
+for (int x : moveZeroes(numbers)) cout << x << " ";
+
+## remove-duplicates-sorted-array
+@python
+def remove_duplicates(numbers):
+    write_index = 0
+_
+    for read_index in range(1, len(numbers)):
+        if numbers[read_index] != numbers[write_index]:
+            write_index += 1
+            numbers[write_index] = numbers[read_index]
+.
+.
+    return write_index + 1
+.
+_
+numbers = [0, 0, 1, 1, 1, 2, 2, 3]
+unique_count = remove_duplicates(numbers)
+print(unique_count, numbers[0:unique_count])
+@java
+static int removeDuplicates(int[] numbers) {
+    int writeIndex = 0;
+_
+    for (int readIndex = 1; readIndex < numbers.length; readIndex++) {
+        if (numbers[readIndex] != numbers[writeIndex]) {
+            writeIndex++;
+            numbers[writeIndex] = numbers[readIndex];
+        }
+    }
+    return writeIndex + 1;
+}
+_
+~M
+int[] numbers = {0, 0, 1, 1, 1, 2, 2, 3};
+int uniqueCount = removeDuplicates(numbers);
+System.out.println(uniqueCount + " " + Arrays.toString(Arrays.copyOfRange(numbers, 0, uniqueCount)));
+@cpp
+int removeDuplicates(vector<int>& numbers) {
+    int writeIndex = 0;
+_
+    for (int readIndex = 1; readIndex < numbers.size(); readIndex++) {
+        if (numbers[readIndex] != numbers[writeIndex]) {
+            writeIndex++;
+            numbers[writeIndex] = numbers[readIndex];
+        }
+    }
+    return writeIndex + 1;
+}
+_
+~M
+vector<int> numbers = {0, 0, 1, 1, 1, 2, 2, 3};
+int uniqueCount = removeDuplicates(numbers);
+cout << uniqueCount << ": "; for (int i = 0; i < uniqueCount; i++) cout << numbers[i] << " ";
+
+## remove-element
+@python
+def remove_element(numbers, value_to_remove):
+    write_index = 0
+_
+    for read_index in range(len(numbers)):
+        if numbers[read_index] != value_to_remove:
+            numbers[write_index] = numbers[read_index]
+            write_index += 1
+.
+.
+    return write_index
+.
+_
+numbers = [3, 2, 2, 3, 4]
+kept_count = remove_element(numbers, 3)
+print(kept_count, numbers[0:kept_count])
+@java
+static int removeElement(int[] numbers, int valueToRemove) {
+    int writeIndex = 0;
+_
+    for (int readIndex = 0; readIndex < numbers.length; readIndex++) {
+        if (numbers[readIndex] != valueToRemove) {
+            numbers[writeIndex] = numbers[readIndex];
+            writeIndex++;
+        }
+    }
+    return writeIndex;
+}
+_
+~M
+int[] numbers = {3, 2, 2, 3, 4};
+int keptCount = removeElement(numbers, 3);
+System.out.println(keptCount + " " + Arrays.toString(Arrays.copyOfRange(numbers, 0, keptCount)));
+@cpp
+int removeElement(vector<int>& numbers, int valueToRemove) {
+    int writeIndex = 0;
+_
+    for (int readIndex = 0; readIndex < numbers.size(); readIndex++) {
+        if (numbers[readIndex] != valueToRemove) {
+            numbers[writeIndex] = numbers[readIndex];
+            writeIndex++;
+        }
+    }
+    return writeIndex;
+}
+_
+~M
+vector<int> numbers = {3, 2, 2, 3, 4};
+int keptCount = removeElement(numbers, 3);
+cout << keptCount << ": "; for (int i = 0; i < keptCount; i++) cout << numbers[i] << " ";
+
+## reverse-string
+@python
+def reverse_string(text):
+    left_index = 0
+    right_index = len(text) - 1
+_
+    while left_index < right_index:
+.
+        text[left_index], text[right_index] = text[right_index], text[left_index]
+        left_index += 1
+        right_index -= 1
+.
+    return text
+.
+_
+text = ["h", "e", "l", "l", "o"]
+print(reverse_string(text))
+@java
+static char[] reverseString(char[] text) {
+    int leftIndex = 0;
+    int rightIndex = text.length - 1;
+_
+    while (leftIndex < rightIndex) {
+.
+        char temp = text[leftIndex]; text[leftIndex] = text[rightIndex]; text[rightIndex] = temp;
+        leftIndex++;
+        rightIndex--;
+    }
+    return text;
+}
+_
+~M
+char[] text = {'h', 'e', 'l', 'l', 'o'};
+System.out.println(Arrays.toString(reverseString(text)));
+@cpp
+vector<char> reverseString(vector<char>& text) {
+    int leftIndex = 0;
+    int rightIndex = text.size() - 1;
+_
+    while (leftIndex < rightIndex) {
+.
+        swap(text[leftIndex], text[rightIndex]);
+        leftIndex++;
+        rightIndex--;
+    }
+    return text;
+}
+_
+~M
+vector<char> text = {'h', 'e', 'l', 'l', 'o'};
+for (char c : reverseString(text)) cout << c << " ";
+
+## is-subsequence
+@python
+def is_subsequence(subsequence, full_text):
+    subsequence_index = 0
+_
+    for full_text_index in range(len(full_text)):
+        if subsequence_index < len(subsequence) and subsequence[subsequence_index] == full_text[full_text_index]:
+            subsequence_index += 1
+.
+.
+    return subsequence_index == len(subsequence)
+.
+_
+print(is_subsequence("ace", "abcde"))
+@java
+static boolean isSubsequence(String subsequence, String fullText) {
+    int subsequenceIndex = 0;
+_
+    for (int fullTextIndex = 0; fullTextIndex < fullText.length(); fullTextIndex++) {
+        if (subsequenceIndex < subsequence.length() && subsequence.charAt(subsequenceIndex) == fullText.charAt(fullTextIndex)) {
+            subsequenceIndex++;
+        }
+    }
+    return subsequenceIndex == subsequence.length();
+}
+_
+~M
+System.out.println(isSubsequence("ace", "abcde"));
+@cpp
+bool isSubsequence(string subsequence, string fullText) {
+    int subsequenceIndex = 0;
+_
+    for (int fullTextIndex = 0; fullTextIndex < fullText.size(); fullTextIndex++) {
+        if (subsequenceIndex < subsequence.size() && subsequence[subsequenceIndex] == fullText[fullTextIndex]) {
+            subsequenceIndex++;
+        }
+    }
+    return subsequenceIndex == subsequence.size();
+}
+_
+~M
+cout << boolalpha << isSubsequence("ace", "abcde") << endl;
