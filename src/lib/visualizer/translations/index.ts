@@ -13,6 +13,7 @@
  */
 import { PRE_DSA_TRANSLATIONS } from "./pre-dsa";
 import { EXAMPLE_TRANSLATIONS } from "./examples";
+import { LEVEL_1_TRANSLATIONS } from "./level-1";
 
 export type CodeLang = "js" | "python" | "java" | "cpp";
 
@@ -26,7 +27,7 @@ export const LANGS: { id: CodeLang; label: string }[] = [
 export type TranslationSet = Partial<Record<Exclude<CodeLang, "js">, string>>;
 
 /** Keyed by problem id, or "example:<id>" for the short examples. */
-const ALL: Record<string, TranslationSet> = { ...PRE_DSA_TRANSLATIONS, ...EXAMPLE_TRANSLATIONS };
+const ALL: Record<string, TranslationSet> = { ...PRE_DSA_TRANSLATIONS, ...EXAMPLE_TRANSLATIONS, ...LEVEL_1_TRANSLATIONS };
 
 export interface MappedCode {
   /** Display text of every line. */

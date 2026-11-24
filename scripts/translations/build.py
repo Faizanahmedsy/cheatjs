@@ -46,7 +46,7 @@ def render(key, lang, body, nlines):
         n += 1
         t = jsl[n - 1].strip() if n <= len(jsl) else ""
         kind = "." if s.strip() == "." else "_" if s.strip() == "_" else "code"
-        if kind == "." and not t.startswith("}"): raise SystemExit(f"{key} [{lang}] entry {n}: '.' but JS line is {t!r}")
+        if kind == "." and not (t.startswith("}") or t.startswith("//")): raise SystemExit(f"{key} [{lang}] entry {n}: '.' but JS line is {t!r}")
         if kind == "_" and t != "": raise SystemExit(f"{key} [{lang}] entry {n}: '_' but JS line is {t!r}")
         if kind == "code" and t == "": raise SystemExit(f"{key} [{lang}] entry {n}: code but JS line is blank")
         if s.strip() == ".": continue

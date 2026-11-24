@@ -1,0 +1,460 @@
+## two-sum
+@python
+def two_sum(numbers, target):
+    number_to_index = {}
+    for number_index in range(len(numbers)):
+        need = target - numbers[number_index]
+        if need in number_to_index:
+            return [number_to_index[need], number_index]
+.
+        number_to_index[numbers[number_index]] = number_index
+.
+    return []
+.
+_
+numbers = [2, 7, 11, 15]
+print(two_sum(numbers, 9))
+@java
+static int[] twoSum(int[] numbers, int target) {
+    Map<Integer, Integer> numberToIndex = new HashMap<>();
+    for (int numberIndex = 0; numberIndex < numbers.length; numberIndex++) {
+        int need = target - numbers[numberIndex];
+        if (numberToIndex.containsKey(need)) {
+            return new int[]{numberToIndex.get(need), numberIndex};
+        }
+        numberToIndex.put(numbers[numberIndex], numberIndex);
+    }
+    return new int[]{};
+}
+_
+~M
+int[] numbers = {2, 7, 11, 15};
+System.out.println(Arrays.toString(twoSum(numbers, 9)));
+@cpp
+vector<int> twoSum(vector<int>& numbers, int target) {
+    unordered_map<int, int> numberToIndex;
+    for (int numberIndex = 0; numberIndex < numbers.size(); numberIndex++) {
+        int need = target - numbers[numberIndex];
+        if (numberToIndex.count(need)) {
+            return {numberToIndex[need], numberIndex};
+        }
+        numberToIndex[numbers[numberIndex]] = numberIndex;
+    }
+    return {};
+}
+_
+~M
+vector<int> numbers = {2, 7, 11, 15};
+for (int x : twoSum(numbers, 9)) cout << x << " ";
+
+## contains-duplicate
+@python
+def contains_duplicate(numbers):
+    seen = set()
+    for number_index in range(len(numbers)):
+        if numbers[number_index] in seen:
+            return True
+.
+        seen.add(numbers[number_index])
+.
+    return False
+.
+_
+numbers = [1, 2, 3, 1]
+print(contains_duplicate(numbers))
+@java
+static boolean containsDuplicate(int[] numbers) {
+    Set<Integer> seen = new HashSet<>();
+    for (int numberIndex = 0; numberIndex < numbers.length; numberIndex++) {
+        if (seen.contains(numbers[numberIndex])) {
+            return true;
+        }
+        seen.add(numbers[numberIndex]);
+    }
+    return false;
+}
+_
+~M
+int[] numbers = {1, 2, 3, 1};
+System.out.println(containsDuplicate(numbers));
+@cpp
+bool containsDuplicate(vector<int>& numbers) {
+    unordered_set<int> seen;
+    for (int numberIndex = 0; numberIndex < numbers.size(); numberIndex++) {
+        if (seen.count(numbers[numberIndex])) {
+            return true;
+        }
+        seen.insert(numbers[numberIndex]);
+    }
+    return false;
+}
+_
+~M
+vector<int> numbers = {1, 2, 3, 1};
+cout << boolalpha << containsDuplicate(numbers) << endl;
+
+## valid-anagram
+@python
+def is_anagram(first_word, second_word):
+    if len(first_word) != len(second_word):
+        return False
+.
+    count = {}
+    for first_word_index in range(len(first_word)):
+        count[first_word[first_word_index]] = count.get(first_word[first_word_index], 0) + 1
+.
+    for second_word_index in range(len(second_word)):
+        remaining = count.get(second_word[second_word_index], 0)
+        if remaining == 0:
+            return False
+.
+        count[second_word[second_word_index]] = remaining - 1
+.
+    return True
+.
+_
+print(is_anagram("anagram", "nagaram"))
+@java
+static boolean isAnagram(String firstWord, String secondWord) {
+    if (firstWord.length() != secondWord.length()) {
+        return false;
+    }
+    Map<Character, Integer> count = new HashMap<>();
+    for (int firstWordIndex = 0; firstWordIndex < firstWord.length(); firstWordIndex++) {
+        count.put(firstWord.charAt(firstWordIndex), count.getOrDefault(firstWord.charAt(firstWordIndex), 0) + 1);
+    }
+    for (int secondWordIndex = 0; secondWordIndex < secondWord.length(); secondWordIndex++) {
+        int remaining = count.getOrDefault(secondWord.charAt(secondWordIndex), 0);
+        if (remaining == 0) {
+            return false;
+        }
+        count.put(secondWord.charAt(secondWordIndex), remaining - 1);
+    }
+    return true;
+}
+_
+~M
+System.out.println(isAnagram("anagram", "nagaram"));
+@cpp
+bool isAnagram(string firstWord, string secondWord) {
+    if (firstWord.size() != secondWord.size()) {
+        return false;
+    }
+    unordered_map<char, int> count;
+    for (int firstWordIndex = 0; firstWordIndex < firstWord.size(); firstWordIndex++) {
+        count[firstWord[firstWordIndex]] = count[firstWord[firstWordIndex]] + 1;
+    }
+    for (int secondWordIndex = 0; secondWordIndex < secondWord.size(); secondWordIndex++) {
+        int remaining = count[secondWord[secondWordIndex]];
+        if (remaining == 0) {
+            return false;
+        }
+        count[secondWord[secondWordIndex]] = remaining - 1;
+    }
+    return true;
+}
+_
+~M
+cout << boolalpha << isAnagram("anagram", "nagaram") << endl;
+
+## majority-element
+@python
+def majority_element(numbers):
+    candidate = None
+    count = 0
+    for number_index in range(len(numbers)):
+        if count == 0:
+            candidate = numbers[number_index]
+.
+        if numbers[number_index] == candidate:
+            count += 1
+        else:
+            count -= 1
+.
+.
+    return candidate
+.
+_
+numbers = [2, 2, 1, 1, 1, 2, 2]
+print(majority_element(numbers))
+@java
+static int majorityElement(int[] numbers) {
+    int candidate = 0;
+    int count = 0;
+    for (int numberIndex = 0; numberIndex < numbers.length; numberIndex++) {
+        if (count == 0) {
+            candidate = numbers[numberIndex];
+        }
+        if (numbers[numberIndex] == candidate) {
+            count++;
+        } else {
+            count--;
+        }
+    }
+    return candidate;
+}
+_
+~M
+int[] numbers = {2, 2, 1, 1, 1, 2, 2};
+System.out.println(majorityElement(numbers));
+@cpp
+int majorityElement(vector<int>& numbers) {
+    int candidate = 0;
+    int count = 0;
+    for (int numberIndex = 0; numberIndex < numbers.size(); numberIndex++) {
+        if (count == 0) {
+            candidate = numbers[numberIndex];
+        }
+        if (numbers[numberIndex] == candidate) {
+            count++;
+        } else {
+            count--;
+        }
+    }
+    return candidate;
+}
+_
+~M
+vector<int> numbers = {2, 2, 1, 1, 1, 2, 2};
+cout << majorityElement(numbers) << endl;
+
+## find-all-numbers-disappeared-in-an-array
+@python
+def find_disappeared_numbers(numbers):
+.
+    for number_index in range(len(numbers)):
+        marked_index = abs(numbers[number_index]) - 1
+        if numbers[marked_index] > 0:
+            numbers[marked_index] = -numbers[marked_index]
+.
+.
+.
+    missing = []
+    for number_index in range(len(numbers)):
+        if numbers[number_index] > 0:
+            missing.append(number_index + 1)
+.
+.
+    return missing
+.
+_
+numbers = [4, 3, 2, 7, 8, 2, 3, 1]
+print(find_disappeared_numbers(numbers))
+@java
+static List<Integer> findDisappearedNumbers(int[] numbers) {
+.
+    for (int numberIndex = 0; numberIndex < numbers.length; numberIndex++) {
+        int markedIndex = Math.abs(numbers[numberIndex]) - 1;
+        if (numbers[markedIndex] > 0) {
+            numbers[markedIndex] = -numbers[markedIndex];
+        }
+    }
+.
+    List<Integer> missing = new ArrayList<>();
+    for (int numberIndex = 0; numberIndex < numbers.length; numberIndex++) {
+        if (numbers[numberIndex] > 0) {
+            missing.add(numberIndex + 1);
+        }
+    }
+    return missing;
+}
+_
+~M
+int[] numbers = {4, 3, 2, 7, 8, 2, 3, 1};
+System.out.println(findDisappearedNumbers(numbers));
+@cpp
+vector<int> findDisappearedNumbers(vector<int>& numbers) {
+.
+    for (int numberIndex = 0; numberIndex < numbers.size(); numberIndex++) {
+        int markedIndex = abs(numbers[numberIndex]) - 1;
+        if (numbers[markedIndex] > 0) {
+            numbers[markedIndex] = -numbers[markedIndex];
+        }
+    }
+.
+    vector<int> missing;
+    for (int numberIndex = 0; numberIndex < numbers.size(); numberIndex++) {
+        if (numbers[numberIndex] > 0) {
+            missing.push_back(numberIndex + 1);
+        }
+    }
+    return missing;
+}
+_
+~M
+vector<int> numbers = {4, 3, 2, 7, 8, 2, 3, 1};
+for (int x : findDisappearedNumbers(numbers)) cout << x << " ";
+
+## intersection-of-two-arrays
+@python
+def intersection(nums1, nums2):
+    seen = set(nums1)
+    result = []
+    for number_index in range(len(nums2)):
+        if nums2[number_index] in seen:
+            result.append(nums2[number_index])
+            seen.remove(nums2[number_index])
+.
+.
+    return result
+.
+_
+nums1 = [4, 9, 5]
+nums2 = [9, 4, 9, 8, 4]
+print(intersection(nums1, nums2))
+@java
+static List<Integer> intersection(int[] nums1, int[] nums2) {
+    Set<Integer> seen = new HashSet<>(); for (int x : nums1) seen.add(x);
+    List<Integer> result = new ArrayList<>();
+    for (int numberIndex = 0; numberIndex < nums2.length; numberIndex++) {
+        if (seen.contains(nums2[numberIndex])) {
+            result.add(nums2[numberIndex]);
+            seen.remove(nums2[numberIndex]);
+        }
+    }
+    return result;
+}
+_
+~M
+int[] nums1 = {4, 9, 5};
+int[] nums2 = {9, 4, 9, 8, 4};
+System.out.println(intersection(nums1, nums2));
+@cpp
+vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
+    unordered_set<int> seen(nums1.begin(), nums1.end());
+    vector<int> result;
+    for (int numberIndex = 0; numberIndex < nums2.size(); numberIndex++) {
+        if (seen.count(nums2[numberIndex])) {
+            result.push_back(nums2[numberIndex]);
+            seen.erase(nums2[numberIndex]);
+        }
+    }
+    return result;
+}
+_
+~M
+vector<int> nums1 = {4, 9, 5};
+vector<int> nums2 = {9, 4, 9, 8, 4};
+for (int x : intersection(nums1, nums2)) cout << x << " ";
+
+## intersection-of-two-arrays-ii
+@python
+def intersect(nums1, nums2):
+    count = {}
+    for number_index in range(len(nums1)):
+        count[nums1[number_index]] = count.get(nums1[number_index], 0) + 1
+.
+    result = []
+    for number_index in range(len(nums2)):
+        remaining = count.get(nums2[number_index], 0)
+        if remaining > 0:
+            result.append(nums2[number_index])
+            count[nums2[number_index]] = remaining - 1
+.
+.
+    return result
+.
+_
+nums1 = [1, 2, 2, 1]
+nums2 = [2, 2]
+print(intersect(nums1, nums2))
+@java
+static List<Integer> intersect(int[] nums1, int[] nums2) {
+    Map<Integer, Integer> count = new HashMap<>();
+    for (int numberIndex = 0; numberIndex < nums1.length; numberIndex++) {
+        count.put(nums1[numberIndex], count.getOrDefault(nums1[numberIndex], 0) + 1);
+    }
+    List<Integer> result = new ArrayList<>();
+    for (int numberIndex = 0; numberIndex < nums2.length; numberIndex++) {
+        int remaining = count.getOrDefault(nums2[numberIndex], 0);
+        if (remaining > 0) {
+            result.add(nums2[numberIndex]);
+            count.put(nums2[numberIndex], remaining - 1);
+        }
+    }
+    return result;
+}
+_
+~M
+int[] nums1 = {1, 2, 2, 1};
+int[] nums2 = {2, 2};
+System.out.println(intersect(nums1, nums2));
+@cpp
+vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
+    unordered_map<int, int> count;
+    for (int numberIndex = 0; numberIndex < nums1.size(); numberIndex++) {
+        count[nums1[numberIndex]] = count[nums1[numberIndex]] + 1;
+    }
+    vector<int> result;
+    for (int numberIndex = 0; numberIndex < nums2.size(); numberIndex++) {
+        int remaining = count[nums2[numberIndex]];
+        if (remaining > 0) {
+            result.push_back(nums2[numberIndex]);
+            count[nums2[numberIndex]] = remaining - 1;
+        }
+    }
+    return result;
+}
+_
+~M
+vector<int> nums1 = {1, 2, 2, 1};
+vector<int> nums2 = {2, 2};
+for (int x : intersect(nums1, nums2)) cout << x << " ";
+
+## happy-number
+@python
+def is_happy(current_number):
+    seen = set()
+    while current_number != 1 and current_number not in seen:
+        seen.add(current_number)
+.
+        digit_square_sum = 0
+        while current_number > 0:
+            digit = current_number % 10
+            digit_square_sum += digit * digit
+            current_number = current_number // 10
+.
+        current_number = digit_square_sum
+.
+    return current_number == 1
+.
+_
+print(is_happy(19))
+@java
+static boolean isHappy(int currentNumber) {
+    Set<Integer> seen = new HashSet<>();
+    while (currentNumber != 1 && !seen.contains(currentNumber)) {
+        seen.add(currentNumber);
+.
+        int digitSquareSum = 0;
+        while (currentNumber > 0) {
+            int digit = currentNumber % 10;
+            digitSquareSum += digit * digit;
+            currentNumber = currentNumber / 10;
+        }
+        currentNumber = digitSquareSum;
+    }
+    return currentNumber == 1;
+}
+_
+~M
+System.out.println(isHappy(19));
+@cpp
+bool isHappy(int currentNumber) {
+    unordered_set<int> seen;
+    while (currentNumber != 1 && !seen.count(currentNumber)) {
+        seen.insert(currentNumber);
+.
+        int digitSquareSum = 0;
+        while (currentNumber > 0) {
+            int digit = currentNumber % 10;
+            digitSquareSum += digit * digit;
+            currentNumber = currentNumber / 10;
+        }
+        currentNumber = digitSquareSum;
+    }
+    return currentNumber == 1;
+}
+_
+~M
+cout << boolalpha << isHappy(19) << endl;
