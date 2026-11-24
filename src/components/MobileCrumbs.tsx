@@ -67,7 +67,7 @@ export function MobileCrumbs() {
   const leafLabel = current && current.label !== crumbs[crumbs.length - 1]?.label ? current : null;
 
   return (
-    <nav aria-label="Breadcrumb" className="border-b border-slate-800 bg-slate-950/40 px-3 lg:hidden">
+    <nav data-chrome aria-label="Breadcrumb" className="border-b border-slate-800 bg-slate-950/40 px-3 lg:hidden">
       <ol ref={list} className="scroll-quiet flex h-9 items-center gap-1 overflow-x-auto whitespace-nowrap text-[13px]">
         <li className="shrink-0">
           <Link href="/" aria-label="Billu Class home" className="grid h-7 w-7 place-items-center rounded-md text-slate-400 hover:bg-slate-800 hover:text-slate-100">

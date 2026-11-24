@@ -1,5 +1,6 @@
 "use client";
 
+import { setReadingFocus, useReadingFocus } from "@/lib/reading-focus";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUp, Minus, Plus, RotateCcw, Settings2, Volume2, X, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -99,6 +100,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 
 export function ReaderShell({ children }: { children: React.ReactNode }) {
   const [s, setS] = useState<Settings>(DEFAULTS);
+  const readingFocus = useReadingFocus();
   const [open, setOpen] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showTop, setShowTop] = useState(false);
@@ -220,7 +222,7 @@ export function ReaderShell({ children }: { children: React.ReactNode }) {
       <div className="container mx-auto lg:flex lg:h-full">{children}</div>
 
       {/* Floating buttons */}
-      <div className="fixed bottom-[calc(1rem+var(--mbar))] right-4 z-40 flex flex-col items-end gap-2">
+      <div data-chrome className="fixed bottom-[calc(1rem+var(--mbar))] right-4 z-40 flex flex-col items-end gap-2">
         {showTop ? (
           <button
             type="button"
@@ -308,8 +310,8 @@ export function ReaderShell({ children }: { children: React.ReactNode }) {
           <Row label="Reading aids">
             <div className="flex flex-col gap-2 text-sm">
               <label className="flex items-center justify-between gap-3">
-                Focus mode (hide menus)
-                <input type="checkbox" checked={s.focus} onChange={(e) => update("focus", e.target.checked)} className="h-4 w-4 accent-cyan-400" />
+                Focus mode (hide everything but the note)
+                <input type="checkbox" checked={readingFocus} onChange={(e) => setReadingFocus(e.target.checked)} className="h-4 w-4 accent-cyan-400" />
               </label>
               <label className="flex items-center justify-between gap-3">
                 Reading progress bar

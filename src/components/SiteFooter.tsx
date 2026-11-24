@@ -5,7 +5,7 @@ import { ARCHIVED, BILLU, SITE_NAME, SUBJECTS } from "@/lib/subjects";
 /** Every page ends with this: the subjects, the Ustad Billu links and the old pages. */
 export function SiteFooter() {
   return (
-    <footer className="mt-16 border-t border-slate-800 bg-slate-950/60 px-4 py-10 text-sm text-slate-400">
+    <footer data-chrome className="mt-16 border-t border-slate-800 bg-slate-950/60 px-4 py-10 text-sm text-slate-400">
       <div className="container mx-auto grid max-w-6xl gap-8 md:grid-cols-[2fr_1fr_1fr_1fr]">
         <div className="flex items-start gap-3">
           <Image src={BILLU.mascot} alt="Ustad Billu, a white cat with gold glasses and a red cap" width={56} height={56} className="h-14 w-14 shrink-0 rounded-2xl bg-[#fdf3dc] object-contain p-1" />

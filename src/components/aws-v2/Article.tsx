@@ -1,5 +1,6 @@
 import GithubSlugger from "github-slugger";
 import { CrumbLeaf } from "@/components/MobileCrumbs";
+import { ReadingFocusButton } from "@/components/ReadingFocusButton";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { Markdown } from "./Markdown";
@@ -52,10 +53,10 @@ export async function Article({
       <article className="reader-article mx-auto w-full min-w-0 max-w-3xl">
         <CrumbLeaf label={page.title} />
         <header className="mb-8">
-          <p className="text-sm font-medium text-slate-500">{page.subtitle}</p>
+          <p data-chrome className="text-sm font-medium text-slate-500">{page.subtitle}</p>
           <h1 className="mt-1 font-body text-[2.25rem] font-semibold leading-tight tracking-tight text-slate-50 md:text-[2.6rem]">{page.title}</h1>
           <p className="mt-3 max-w-2xl text-[1.0625rem] leading-relaxed text-slate-300">{page.blurb}</p>
-          <div className="mt-4 flex flex-wrap items-center gap-3 text-xs">
+          <div data-chrome className="mt-4 flex flex-wrap items-center gap-3 text-xs">
             <span
               className={cn("inline-flex items-center gap-1.5", live ? "text-emerald-300" : "text-slate-400")}
             >
@@ -72,8 +73,9 @@ export async function Article({
               Open in Notion <ExternalLink className="h-3 w-3" />
             </a>
           </div>
-          <div className="mt-4 flex flex-wrap items-center gap-2">
+          <div data-chrome className="mt-4 flex flex-wrap items-center gap-2">
             <AskLlm title={page.title} mdUrl={absolute(`/md/${track.id}/${page.slug}`)} pageUrl={absolute(hrefFor(page.slug, track))} />
+            <ReadingFocusButton />
             <PageActions id={`${track.id}:${page.slug}`} title={page.title} href={hrefFor(page.slug, track)} track={track.id} />
           </div>
           {loaded.note ? <p className="mt-3 text-xs text-amber-300">{loaded.note}</p> : null}

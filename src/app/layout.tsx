@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Navbar } from "@/components/Navbar";
 import { SubjectBar } from "@/components/SubjectBar";
 import { MobileCrumbs } from "@/components/MobileCrumbs";
+import { ReadingFocusExit } from "@/components/ReadingFocusExit";
 import { SiteFooter } from "@/components/SiteFooter";
 import { FooterGate } from "@/components/FooterGate";
 import { BilluPeek } from "@/components/BilluPeek";
@@ -85,6 +86,7 @@ export default function RootLayout({
         <JsonLd data={[ORGANIZATION_LD, WEBSITE_LD]} />
         <BilluPeek />
         <KeyboardShortcuts />
+        <ReadingFocusExit />
         <Toaster />
         <PwaRegister />
       </body>

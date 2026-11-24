@@ -401,3 +401,33 @@ html[data-mode="light"] body {
   body { padding-bottom: var(--mbar); }
   .mobile-bar { bottom: max(0.75rem, env(safe-area-inset-bottom)); }
 }
+
+/* Reading focus: only the note. Everything marked data-chrome (bars, menus, footer) goes away. */
+html[data-reading-focus="1"] [data-chrome],
+html[data-reading-focus="1"] [data-reader-hide] {
+  display: none !important;
+}
+html[data-reading-focus="1"] {
+  --mbar: 0px;
+}
+html[data-reading-focus="1"] body {
+  padding-bottom: 0;
+}
+html[data-reading-focus="1"] .reader-root {
+  min-height: 100dvh;
+}
+@media (min-width: 1024px) {
+  html[data-reading-focus="1"] .reader-root,
+  html[data-reading-focus="1"] .chrome-h {
+    height: 100dvh !important;
+  }
+}
+html[data-reading-focus="1"] .chrome-h {
+  height: 100dvh !important;
+}
+/* Leave room for the small "Exit focus" pill at the top. */
+html[data-reading-focus="1"] body { padding-top: 2.75rem; }
+html[data-reading-focus="1"] .chrome-h { height: calc(100dvh - 2.75rem) !important; }
+@media (min-width: 1024px) {
+  html[data-reading-focus="1"] .reader-root { height: calc(100dvh - 2.75rem) !important; }
+}

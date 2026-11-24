@@ -57,12 +57,13 @@ export default function DSALayoutClient({
   );
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem-var(--mbar))]">
+    <div className="chrome-h flex h-[calc(100vh-3.5rem-var(--mbar))]">
       {currentLabel && <CrumbLeaf label={currentLabel} onOpen={openTopics} />}
       {/* Mobile Sidebar Toggle */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button
+            data-chrome
             variant="outline"
             size="icon"
             className="lg:hidden fixed bottom-[calc(1rem+var(--mbar))] right-4 z-40 h-12 w-12 rounded-full shadow-lg bg-slate-800 border-slate-700 hover:bg-slate-700"
@@ -80,7 +81,7 @@ export default function DSALayoutClient({
       </Sheet>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block w-64 flex-shrink-0 border-r border-slate-700/50 bg-slate-900/80">
+      <aside data-chrome className="hidden lg:block w-64 flex-shrink-0 border-r border-slate-700/50 bg-slate-900/80">
         <SidebarContent />
       </aside>
 

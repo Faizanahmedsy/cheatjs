@@ -41,7 +41,7 @@ export function BilluPeek() {
   const href = subject?.video.href ?? BILLU.youtube;
 
   return (
-    <div className="billu-peek fixed bottom-0 left-4 z-40 hidden items-end gap-2 md:flex" role="complementary" aria-label="Ustad Billu">
+    <div data-chrome className="billu-peek fixed bottom-0 left-4 z-40 hidden items-end gap-2 md:flex" role="complementary" aria-label="Ustad Billu">
       <Image src={BILLU.mascot} alt="Ustad Billu peeking" width={84} height={84} className="h-20 w-20 translate-y-3 object-contain drop-shadow-lg" />
       <div className="relative mb-6 max-w-[15rem] rounded-2xl rounded-bl-sm border border-orange-300/40 bg-slate-900/95 px-3 py-2 text-sm text-slate-200 shadow-xl">
         <button type="button" onClick={() => setShow(false)} aria-label="Close" className="absolute -right-2 -top-2 rounded-full bg-slate-800 p-1 text-slate-400 hover:text-slate-100">

@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Archive, ArrowUpRight, BarChart3, ChevronUp, Download, Instagram, Layers, Menu, Moon, Search, Share2, Sun, X, Youtube } from "lucide-react";
+import { Archive, ArrowUpRight, BarChart3, ChevronUp, Download, Layers, Maximize2, Menu, Moon, Search, Share2, Sun, X, Youtube } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ARCHIVED, BILLU, SUBJECTS, type Subject } from "@/lib/subjects";
+import { setReadingFocus } from "@/lib/reading-focus";
 
 interface MobileBarProps {
   current: Subject | null;
@@ -73,11 +74,12 @@ export function MobileBar({ current, onSearch, onPdf }: MobileBarProps) {
             setSubjects(false);
             setMore(false);
           }}
+          data-chrome
           className="fixed inset-0 z-[49] bg-black/40 backdrop-blur-[1px] md:hidden"
         />
       )}
 
-      <div className="mobile-bar fixed inset-x-3 bottom-3 z-50 md:hidden">
+      <div data-chrome className="mobile-bar fixed inset-x-3 bottom-3 z-50 md:hidden">
         {/* Subjects pop-up */}
         {subjects && (
           <nav aria-label="Subjects" className="fx-in absolute inset-x-0 bottom-full mb-2 flex justify-around rounded-full border border-slate-700 bg-slate-900 p-1.5 shadow-xl shadow-black/40">
@@ -120,7 +122,7 @@ export function MobileBar({ current, onSearch, onPdf }: MobileBarProps) {
               {[
                 { label: light ? "Dark mode" : "White mode", icon: light ? Moon : Sun, onClick: flipTheme, on: light },
                 { label: "YouTube", icon: Youtube, href: BILLU.youtube },
-                { label: "Instagram", icon: Instagram, href: BILLU.instagram },
+                { label: "Focus", icon: Maximize2, onClick: () => { setMore(false); setReadingFocus(true); } },
                 { label: "Share", icon: Share2, onClick: share },
               ].map((t) => {
                 const inner = (

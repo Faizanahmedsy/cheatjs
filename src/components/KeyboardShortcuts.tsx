@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { X } from "lucide-react";
+import { isReadingFocus, setReadingFocus } from "@/lib/reading-focus";
 
 type Item = { keys: string[][]; label: string };
 type Group = { title: string; items: Item[] };
@@ -16,6 +17,7 @@ const GROUPS: Group[] = [
       { keys: [["Hold Ctrl"]], label: "Peek at shortcuts" },
       { keys: [["Ctrl", "K"]], label: "Search" },
       { keys: [["T"]], label: "Switch white / dark mode" },
+      { keys: [["F"]], label: "Focus: hide everything but the note" },
       { keys: [["Esc"]], label: "Close panel" },
     ],
   },
@@ -140,6 +142,11 @@ export function KeyboardShortcuts() {
         return;
       }
       if (k === "t") return void (click("theme") && e.preventDefault());
+      if (k === "f" && !pathname.startsWith("/visualizer")) {
+        e.preventDefault();
+        setReadingFocus(!isReadingFocus());
+        return;
+      }
       if (e.key === "]") return void (click("next") && e.preventDefault());
       if (e.key === "[") return void (click("prev") && e.preventDefault());
       if (k === "m") return void (click("done") && e.preventDefault());
@@ -173,7 +180,7 @@ export function KeyboardShortcuts() {
       window.removeEventListener("keyup", onUp);
       window.removeEventListener("blur", onBlur);
     };
-  }, [router]);
+  }, [router, pathname]);
 
   if (!open && !peek) return null;
 
