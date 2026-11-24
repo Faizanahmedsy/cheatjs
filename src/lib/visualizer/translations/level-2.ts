@@ -1391,4 +1391,632 @@ export const LEVEL_2_TRANSLATIONS: Record<string, TranslationSet> = {
 -|}
 `,
   },
+  "evaluate-reverse-polish-notation": {
+    python: `
+1|def eval_rpn(tokens):
+2|    stack = []
+3|
+4|    for token_index in range(len(tokens)):
+5|        token = tokens[token_index]
+6|        if token == "+" or token == "-" or token == "*" or token == "/":
+7|            right_operand = stack.pop()
+8|            left_operand = stack.pop()
+9|            calculation = 0
+10|            if token == "+": calculation = left_operand + right_operand
+11|            elif token == "-": calculation = left_operand - right_operand
+12|            elif token == "*": calculation = left_operand * right_operand
+13|            else: calculation = int(left_operand / right_operand)
+14|            stack.append(calculation)
+15|        else:
+16|            stack.append(int(token))
+19|    return stack[0]
+21|
+22|print(eval_rpn(["4", "13", "5", "/", "+"]))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int evalRPN(String[] tokens) {
+2|        Deque<Integer> stack = new ArrayDeque<>();
+3|
+4|        for (int tokenIndex = 0; tokenIndex < tokens.length; tokenIndex++) {
+5|            String token = tokens[tokenIndex];
+6|            if (token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/")) {
+7|                int rightOperand = stack.pop();
+8|                int leftOperand = stack.pop();
+9|                int calculation;
+10|                if (token.equals("+")) calculation = leftOperand + rightOperand;
+11|                else if (token.equals("-")) calculation = leftOperand - rightOperand;
+12|                else if (token.equals("*")) calculation = leftOperand * rightOperand;
+13|                else calculation = leftOperand / rightOperand;
+14|                stack.push(calculation);
+15|            } else {
+16|                stack.push(Integer.parseInt(token));
+17|            }
+18|        }
+19|        return stack.peek();
+20|    }
+21|
+-|    public static void main(String[] args) {
+22|        System.out.println(evalRPN(new String[]{"4", "13", "5", "/", "+"}));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int evalRPN(vector<string> tokens) {
+2|    vector<int> stack;
+3|
+4|    for (int tokenIndex = 0; tokenIndex < tokens.size(); tokenIndex++) {
+5|        string token = tokens[tokenIndex];
+6|        if (token == "+" || token == "-" || token == "*" || token == "/") {
+7|            int rightOperand = stack.back(); stack.pop_back();
+8|            int leftOperand = stack.back(); stack.pop_back();
+9|            int calculation;
+10|            if (token == "+") calculation = leftOperand + rightOperand;
+11|            else if (token == "-") calculation = leftOperand - rightOperand;
+12|            else if (token == "*") calculation = leftOperand * rightOperand;
+13|            else calculation = leftOperand / rightOperand;
+14|            stack.push_back(calculation);
+15|        } else {
+16|            stack.push_back(stoi(token));
+17|        }
+18|    }
+19|    return stack[0];
+20|}
+21|
+-|int main() {
+22|    cout << evalRPN({"4", "13", "5", "/", "+"}) << endl;
+-|}
+`,
+  },
+  "daily-temperatures": {
+    python: `
+1|def daily_temperatures(temps):
+2|    answer = [0] * len(temps)
+3|    stack = []
+4|
+5|    for day_index in range(len(temps)):
+6|
+7|        while stack and temps[day_index] > temps[stack[-1]]:
+8|            day = stack.pop()
+9|            answer[day] = day_index - day
+11|        stack.append(day_index)
+13|    return answer
+15|
+16|temps = [73, 74, 75, 71, 69, 72, 76, 73]
+17|print(daily_temperatures(temps))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int[] dailyTemperatures(int[] temps) {
+2|        int[] answer = new int[temps.length];
+3|        Deque<Integer> stack = new ArrayDeque<>();
+4|
+5|        for (int dayIndex = 0; dayIndex < temps.length; dayIndex++) {
+6|
+7|            while (!stack.isEmpty() && temps[dayIndex] > temps[stack.peek()]) {
+8|                int day = stack.pop();
+9|                answer[day] = dayIndex - day;
+10|            }
+11|            stack.push(dayIndex);
+12|        }
+13|        return answer;
+14|    }
+15|
+-|    public static void main(String[] args) {
+16|        int[] temps = {73, 74, 75, 71, 69, 72, 76, 73};
+17|        System.out.println(Arrays.toString(dailyTemperatures(temps)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<int> dailyTemperatures(vector<int>& temps) {
+2|    vector<int> answer(temps.size(), 0);
+3|    vector<int> stack;
+4|
+5|    for (int dayIndex = 0; dayIndex < temps.size(); dayIndex++) {
+6|
+7|        while (!stack.empty() && temps[dayIndex] > temps[stack.back()]) {
+8|            int day = stack.back(); stack.pop_back();
+9|            answer[day] = dayIndex - day;
+10|        }
+11|        stack.push_back(dayIndex);
+12|    }
+13|    return answer;
+14|}
+15|
+-|int main() {
+16|    vector<int> temps = {73, 74, 75, 71, 69, 72, 76, 73};
+17|    for (int x : dailyTemperatures(temps)) cout << x << " ";
+-|}
+`,
+  },
+  "removing-stars-from-a-string": {
+    python: `
+1|def remove_stars(text):
+2|    stack = []
+3|
+4|    for char_index in range(len(text)):
+5|        if text[char_index] == "*":
+6|            stack.pop()
+7|        else:
+8|            stack.append(text[char_index])
+11|    return "".join(stack)
+13|
+14|print(repr(remove_stars("leet**cod*e")))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static String removeStars(String text) {
+2|        StringBuilder stack = new StringBuilder();
+3|
+4|        for (int charIndex = 0; charIndex < text.length(); charIndex++) {
+5|            if (text.charAt(charIndex) == '*') {
+6|                stack.deleteCharAt(stack.length() - 1);
+7|            } else {
+8|                stack.append(text.charAt(charIndex));
+9|            }
+10|        }
+11|        return stack.toString();
+12|    }
+13|
+-|    public static void main(String[] args) {
+14|        System.out.println(removeStars("leet**cod*e"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|string removeStars(string text) {
+2|    string stack = "";
+3|
+4|    for (int charIndex = 0; charIndex < text.size(); charIndex++) {
+5|        if (text[charIndex] == '*') {
+6|            stack.pop_back();
+7|        } else {
+8|            stack.push_back(text[charIndex]);
+9|        }
+10|    }
+11|    return stack;
+12|}
+13|
+-|int main() {
+14|    cout << removeStars("leet**cod*e") << endl;
+-|}
+`,
+  },
+  "asteroid-collision": {
+    python: `
+1|def asteroid_collision(asteroids):
+2|    stack = []
+3|
+4|    for asteroid_index in range(len(asteroids)):
+5|        asteroid = asteroids[asteroid_index]
+6|        alive = True
+7|
+8|        while alive and asteroid < 0 and stack and stack[-1] > 0:
+9|            top_asteroid = stack[-1]
+10|            if top_asteroid < -asteroid:
+11|                stack.pop()
+12|            elif top_asteroid == -asteroid:
+13|                stack.pop()
+14|                alive = False
+15|            else:
+16|                alive = False
+19|        if alive: stack.append(asteroid)
+21|    return stack
+23|
+24|print(asteroid_collision([5, 10, -5, -12, 3]))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static List<Integer> asteroidCollision(int[] asteroids) {
+2|        List<Integer> stack = new ArrayList<>();
+3|
+4|        for (int asteroidIndex = 0; asteroidIndex < asteroids.length; asteroidIndex++) {
+5|            int asteroid = asteroids[asteroidIndex];
+6|            boolean alive = true;
+7|
+8|            while (alive && asteroid < 0 && !stack.isEmpty() && stack.get(stack.size() - 1) > 0) {
+9|                int topAsteroid = stack.get(stack.size() - 1);
+10|                if (topAsteroid < -asteroid) {
+11|                    stack.remove(stack.size() - 1);
+12|                } else if (topAsteroid == -asteroid) {
+13|                    stack.remove(stack.size() - 1);
+14|                    alive = false;
+15|                } else {
+16|                    alive = false;
+17|                }
+18|            }
+19|            if (alive) stack.add(asteroid);
+20|        }
+21|        return stack;
+22|    }
+23|
+-|    public static void main(String[] args) {
+24|        System.out.println(asteroidCollision(new int[]{5, 10, -5, -12, 3}));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<int> asteroidCollision(vector<int> asteroids) {
+2|    vector<int> stack;
+3|
+4|    for (int asteroidIndex = 0; asteroidIndex < asteroids.size(); asteroidIndex++) {
+5|        int asteroid = asteroids[asteroidIndex];
+6|        bool alive = true;
+7|
+8|        while (alive && asteroid < 0 && !stack.empty() && stack.back() > 0) {
+9|            int topAsteroid = stack.back();
+10|            if (topAsteroid < -asteroid) {
+11|                stack.pop_back();
+12|            } else if (topAsteroid == -asteroid) {
+13|                stack.pop_back();
+14|                alive = false;
+15|            } else {
+16|                alive = false;
+17|            }
+18|        }
+19|        if (alive) stack.push_back(asteroid);
+20|    }
+21|    return stack;
+22|}
+23|
+-|int main() {
+24|    for (int x : asteroidCollision({5, 10, -5, -12, 3})) cout << x << " ";
+-|}
+`,
+  },
+  "find-first-and-last-position": {
+    python: `
+2|def find_bound(numbers, target, go_left):
+3|    low_index = 0
+4|    high_index = len(numbers) - 1
+5|    found = -1
+6|
+7|    while low_index <= high_index:
+8|        middle_index = (low_index + high_index) // 2
+9|        if numbers[middle_index] == target:
+10|            found = middle_index
+11|            if go_left: high_index = middle_index - 1
+12|            else: low_index = middle_index + 1
+13|        elif numbers[middle_index] < target:
+14|            low_index = middle_index + 1
+15|        else:
+16|            high_index = middle_index - 1
+19|    return found
+21|
+22|def search_range(numbers, target):
+23|    return [find_bound(numbers, target, True), find_bound(numbers, target, False)]
+25|
+26|numbers = [5, 7, 7, 8, 8, 8, 10]
+27|print(search_range(numbers, 8))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+2|    static int findBound(int[] numbers, int target, boolean goLeft) {
+3|        int lowIndex = 0;
+4|        int highIndex = numbers.length - 1;
+5|        int found = -1;
+6|
+7|        while (lowIndex <= highIndex) {
+8|            int middleIndex = (lowIndex + highIndex) / 2;
+9|            if (numbers[middleIndex] == target) {
+10|                found = middleIndex;
+11|                if (goLeft) highIndex = middleIndex - 1;
+12|                else lowIndex = middleIndex + 1;
+13|            } else if (numbers[middleIndex] < target) {
+14|                lowIndex = middleIndex + 1;
+15|            } else {
+16|                highIndex = middleIndex - 1;
+17|            }
+18|        }
+19|        return found;
+20|    }
+21|
+22|    static int[] searchRange(int[] numbers, int target) {
+23|        return new int[]{findBound(numbers, target, true), findBound(numbers, target, false)};
+24|    }
+25|
+-|    public static void main(String[] args) {
+26|        int[] numbers = {5, 7, 7, 8, 8, 8, 10};
+27|        System.out.println(Arrays.toString(searchRange(numbers, 8)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+2|int findBound(vector<int>& numbers, int target, bool goLeft) {
+3|    int lowIndex = 0;
+4|    int highIndex = numbers.size() - 1;
+5|    int found = -1;
+6|
+7|    while (lowIndex <= highIndex) {
+8|        int middleIndex = (lowIndex + highIndex) / 2;
+9|        if (numbers[middleIndex] == target) {
+10|            found = middleIndex;
+11|            if (goLeft) highIndex = middleIndex - 1;
+12|            else lowIndex = middleIndex + 1;
+13|        } else if (numbers[middleIndex] < target) {
+14|            lowIndex = middleIndex + 1;
+15|        } else {
+16|            highIndex = middleIndex - 1;
+17|        }
+18|    }
+19|    return found;
+20|}
+21|
+22|vector<int> searchRange(vector<int>& numbers, int target) {
+23|    return {findBound(numbers, target, true), findBound(numbers, target, false)};
+24|}
+25|
+-|int main() {
+26|    vector<int> numbers = {5, 7, 7, 8, 8, 8, 10};
+27|    for (int x : searchRange(numbers, 8)) cout << x << " ";
+-|}
+`,
+  },
+  "search-in-rotated-sorted-array": {
+    python: `
+1|def search(numbers, target):
+2|    low_index = 0
+3|    high_index = len(numbers) - 1
+4|
+5|    while low_index <= high_index:
+6|        middle_index = (low_index + high_index) // 2
+7|        if numbers[middle_index] == target: return middle_index
+8|
+9|        if numbers[low_index] <= numbers[middle_index]:
+10|
+11|            if numbers[low_index] <= target < numbers[middle_index]: high_index = middle_index - 1
+12|            else: low_index = middle_index + 1
+13|        else:
+14|
+15|            if numbers[middle_index] < target <= numbers[high_index]: low_index = middle_index + 1
+16|            else: high_index = middle_index - 1
+19|    return -1
+21|
+22|numbers = [4, 5, 6, 7, 0, 1, 2]
+23|print(search(numbers, 0))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int search(int[] numbers, int target) {
+2|        int lowIndex = 0;
+3|        int highIndex = numbers.length - 1;
+4|
+5|        while (lowIndex <= highIndex) {
+6|            int middleIndex = (lowIndex + highIndex) / 2;
+7|            if (numbers[middleIndex] == target) return middleIndex;
+8|
+9|            if (numbers[lowIndex] <= numbers[middleIndex]) {
+10|
+11|                if (numbers[lowIndex] <= target && target < numbers[middleIndex]) highIndex = middleIndex - 1;
+12|                else lowIndex = middleIndex + 1;
+13|            } else {
+14|
+15|                if (numbers[middleIndex] < target && target <= numbers[highIndex]) lowIndex = middleIndex + 1;
+16|                else highIndex = middleIndex - 1;
+17|            }
+18|        }
+19|        return -1;
+20|    }
+21|
+-|    public static void main(String[] args) {
+22|        int[] numbers = {4, 5, 6, 7, 0, 1, 2};
+23|        System.out.println(search(numbers, 0));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int search(vector<int>& numbers, int target) {
+2|    int lowIndex = 0;
+3|    int highIndex = numbers.size() - 1;
+4|
+5|    while (lowIndex <= highIndex) {
+6|        int middleIndex = (lowIndex + highIndex) / 2;
+7|        if (numbers[middleIndex] == target) return middleIndex;
+8|
+9|        if (numbers[lowIndex] <= numbers[middleIndex]) {
+10|
+11|            if (numbers[lowIndex] <= target && target < numbers[middleIndex]) highIndex = middleIndex - 1;
+12|            else lowIndex = middleIndex + 1;
+13|        } else {
+14|
+15|            if (numbers[middleIndex] < target && target <= numbers[highIndex]) lowIndex = middleIndex + 1;
+16|            else highIndex = middleIndex - 1;
+17|        }
+18|    }
+19|    return -1;
+20|}
+21|
+-|int main() {
+22|    vector<int> numbers = {4, 5, 6, 7, 0, 1, 2};
+23|    cout << search(numbers, 0) << endl;
+-|}
+`,
+  },
+  "find-minimum-in-rotated-sorted-array": {
+    python: `
+1|def find_min(numbers):
+2|    low_index = 0
+3|    high_index = len(numbers) - 1
+4|
+5|    while low_index < high_index:
+6|        middle_index = (low_index + high_index) // 2
+7|        if numbers[middle_index] > numbers[high_index]:
+8|            low_index = middle_index + 1
+9|        else:
+10|            high_index = middle_index
+13|    return numbers[low_index]
+15|
+16|numbers = [4, 5, 6, 7, 0, 1, 2]
+17|print(find_min(numbers))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int findMin(int[] numbers) {
+2|        int lowIndex = 0;
+3|        int highIndex = numbers.length - 1;
+4|
+5|        while (lowIndex < highIndex) {
+6|            int middleIndex = (lowIndex + highIndex) / 2;
+7|            if (numbers[middleIndex] > numbers[highIndex]) {
+8|                lowIndex = middleIndex + 1;
+9|            } else {
+10|                highIndex = middleIndex;
+11|            }
+12|        }
+13|        return numbers[lowIndex];
+14|    }
+15|
+-|    public static void main(String[] args) {
+16|        int[] numbers = {4, 5, 6, 7, 0, 1, 2};
+17|        System.out.println(findMin(numbers));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int findMin(vector<int>& numbers) {
+2|    int lowIndex = 0;
+3|    int highIndex = numbers.size() - 1;
+4|
+5|    while (lowIndex < highIndex) {
+6|        int middleIndex = (lowIndex + highIndex) / 2;
+7|        if (numbers[middleIndex] > numbers[highIndex]) {
+8|            lowIndex = middleIndex + 1;
+9|        } else {
+10|            highIndex = middleIndex;
+11|        }
+12|    }
+13|    return numbers[lowIndex];
+14|}
+15|
+-|int main() {
+16|    vector<int> numbers = {4, 5, 6, 7, 0, 1, 2};
+17|    cout << findMin(numbers) << endl;
+-|}
+`,
+  },
+  "search-a-2d-matrix": {
+    python: `
+1|def search_matrix(matrix, target):
+2|    row_count = len(matrix)
+3|    column_count = len(matrix[0])
+4|    low_index = 0
+5|    high_index = row_count * column_count - 1
+6|
+7|    while low_index <= high_index:
+8|        middle_index = (low_index + high_index) // 2
+9|        current_row = middle_index // column_count
+10|        current_column = middle_index % column_count
+11|        value = matrix[current_row][current_column]
+12|        if value == target: return True
+13|        if value < target: low_index = middle_index + 1
+14|        else: high_index = middle_index - 1
+16|    return False
+18|
+19|matrix = [
+20|    [1, 3, 5, 7],
+21|    [10, 11, 16, 20],
+22|    [23, 30, 34, 60],
+23|]
+24|print(search_matrix(matrix, 3))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static boolean searchMatrix(int[][] matrix, int target) {
+2|        int rowCount = matrix.length;
+3|        int columnCount = matrix[0].length;
+4|        int lowIndex = 0;
+5|        int highIndex = rowCount * columnCount - 1;
+6|
+7|        while (lowIndex <= highIndex) {
+8|            int middleIndex = (lowIndex + highIndex) / 2;
+9|            int currentRow = middleIndex / columnCount;
+10|            int currentColumn = middleIndex % columnCount;
+11|            int value = matrix[currentRow][currentColumn];
+12|            if (value == target) return true;
+13|            if (value < target) lowIndex = middleIndex + 1;
+14|            else highIndex = middleIndex - 1;
+15|        }
+16|        return false;
+17|    }
+18|
+-|    public static void main(String[] args) {
+19|        int[][] matrix = {
+20|            {1, 3, 5, 7},
+21|            {10, 11, 16, 20},
+22|            {23, 30, 34, 60},
+23|        };
+24|        System.out.println(searchMatrix(matrix, 3));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|bool searchMatrix(vector<vector<int>>& matrix, int target) {
+2|    int rowCount = matrix.size();
+3|    int columnCount = matrix[0].size();
+4|    int lowIndex = 0;
+5|    int highIndex = rowCount * columnCount - 1;
+6|
+7|    while (lowIndex <= highIndex) {
+8|        int middleIndex = (lowIndex + highIndex) / 2;
+9|        int currentRow = middleIndex / columnCount;
+10|        int currentColumn = middleIndex % columnCount;
+11|        int value = matrix[currentRow][currentColumn];
+12|        if (value == target) return true;
+13|        if (value < target) lowIndex = middleIndex + 1;
+14|        else highIndex = middleIndex - 1;
+15|    }
+16|    return false;
+17|}
+18|
+-|int main() {
+19|    vector<vector<int>> matrix = {
+20|        {1, 3, 5, 7},
+21|        {10, 11, 16, 20},
+22|        {23, 30, 34, 60},
+23|    };
+24|    cout << boolalpha << searchMatrix(matrix, 3) << endl;
+-|}
+`,
+  },
 };
