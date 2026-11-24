@@ -1402,8 +1402,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 10|        } else if (st.empty() || st.top() != pairs[character]) {
 11|            return false;
 12|        } else {
--|st.pop();
--|}
+-|            st.pop();
+-|        }
 13|    }
 14|    return st.empty();
 15|}
@@ -1529,7 +1529,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class MyQueue {
--|    Deque<Integer> inbox, outbox;
+-|        Deque<Integer> inbox, outbox;
 2|        MyQueue() {
 3|            this.inbox = new ArrayDeque<>();
 4|            this.outbox = new ArrayDeque<>();
@@ -1576,7 +1576,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct MyQueue {
--|vector<int> inbox, outbox;
+-|    vector<int> inbox, outbox;
 2|    MyQueue() {
 3|        inbox = {};
 4|        outbox = {};
@@ -1653,7 +1653,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class MyStack {
--|    Queue<Integer> queue;
+-|        Queue<Integer> queue;
 2|        MyStack() {
 3|            this.queue = new LinkedList<>();
 4|        }
@@ -1694,7 +1694,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct MyStack {
--|queue<int> q;
+-|    queue<int> q;
 2|    MyStack() {
 3|        q = queue<int>();
 4|    }
@@ -2175,7 +2175,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class ListNode {
--|    int val; ListNode next;
+-|        int val; ListNode next;
 2|        ListNode(int value, ListNode nextNode) {
 3|            this.val = value;
 4|            this.next = nextNode;
@@ -2211,7 +2211,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct ListNode {
--|int val; ListNode* next;
+-|    int val; ListNode* next;
 2|    ListNode(int value, ListNode* nextNode = nullptr) {
 3|        this->val = value;
 4|        this->next = nextNode;
@@ -2280,7 +2280,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class ListNode {
--|    int val; ListNode next;
+-|        int val; ListNode next;
 2|        ListNode(int value, ListNode nextNode) {
 3|            this.val = value;
 4|            this.next = nextNode;
@@ -2324,7 +2324,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct ListNode {
--|int val; ListNode* next;
+-|    int val; ListNode* next;
 2|    ListNode(int value, ListNode* nextNode = nullptr) {
 3|        this->val = value;
 4|        this->next = nextNode;
@@ -2392,8 +2392,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class ListNode {
--|    int val; ListNode next;
--|    ListNode(int value) { this(value, null); }
+-|        int val; ListNode next;
+-|        ListNode(int value) { this(value, null); }
 2|        ListNode(int value, ListNode nextNode) {
 3|            this.val = value;
 4|            this.next = nextNode;
@@ -2427,7 +2427,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct ListNode {
--|int val; ListNode* next;
+-|    int val; ListNode* next;
 2|    ListNode(int value, ListNode* nextNode = nullptr) {
 3|        this->val = value;
 4|        this->next = nextNode;
@@ -2490,8 +2490,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class ListNode {
--|    int val; ListNode next;
--|    ListNode(int value) { this(value, null); }
+-|        int val; ListNode next;
+-|        ListNode(int value) { this(value, null); }
 2|        ListNode(int value, ListNode nextNode) {
 3|            this.val = value;
 4|            this.next = nextNode;
@@ -2531,7 +2531,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct ListNode {
--|int val; ListNode* next;
+-|    int val; ListNode* next;
 2|    ListNode(int value, ListNode* nextNode = nullptr) {
 3|        this->val = value;
 4|        this->next = nextNode;
@@ -2605,8 +2605,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class ListNode {
--|    int val; ListNode next;
--|    ListNode(int value) { this(value, null); }
+-|        int val; ListNode next;
+-|        ListNode(int value) { this(value, null); }
 2|        ListNode(int value, ListNode nextNode) {
 3|            this.val = value;
 4|            this.next = nextNode;
@@ -2652,7 +2652,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct ListNode {
--|int val; ListNode* next;
+-|    int val; ListNode* next;
 2|    ListNode(int value, ListNode* nextNode = nullptr) {
 3|        this->val = value;
 4|        this->next = nextNode;
@@ -2720,8 +2720,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class ListNode {
--|    int val; ListNode next;
--|    ListNode(int value) { this(value, null); }
+-|        int val; ListNode next;
+-|        ListNode(int value) { this(value, null); }
 2|        ListNode(int value, ListNode nextNode) {
 3|            this.val = value;
 4|            this.next = nextNode;
@@ -2753,7 +2753,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct ListNode {
--|int val; ListNode* next;
+-|    int val; ListNode* next;
 2|    ListNode(int value, ListNode* nextNode = nullptr) {
 3|        this->val = value;
 4|        this->next = nextNode;
@@ -2815,8 +2815,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class ListNode {
--|    int val; ListNode next;
--|    ListNode(int value) { this(value, null); }
+-|        int val; ListNode next;
+-|        ListNode(int value) { this(value, null); }
 2|        ListNode(int value, ListNode nextNode) {
 3|            this.val = value;
 4|            this.next = nextNode;
@@ -2858,7 +2858,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct ListNode {
--|int val; ListNode* next;
+-|    int val; ListNode* next;
 2|    ListNode(int value, ListNode* nextNode = nullptr) {
 3|        this->val = value;
 4|        this->next = nextNode;
@@ -2917,8 +2917,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class TreeNode {
--|    int val; TreeNode left, right;
--|    TreeNode(int value) { this(value, null, null); }
+-|        int val; TreeNode left, right;
+-|        TreeNode(int value) { this(value, null, null); }
 2|        TreeNode(int value, TreeNode left, TreeNode right) {
 3|            this.val = value;
 4|            this.left = left;
@@ -2944,7 +2944,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct TreeNode {
--|int val; TreeNode *left, *right;
+-|    int val; TreeNode *left, *right;
 2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
 3|        this->val = value;
 4|        this->left = left;
@@ -2989,8 +2989,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class TreeNode {
--|    int val; TreeNode left, right;
--|    TreeNode(int value) { this(value, null, null); }
+-|        int val; TreeNode left, right;
+-|        TreeNode(int value) { this(value, null, null); }
 2|        TreeNode(int value, TreeNode left, TreeNode right) {
 3|            this.val = value;
 4|            this.left = left;
@@ -3018,7 +3018,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct TreeNode {
--|int val; TreeNode *left, *right;
+-|    int val; TreeNode *left, *right;
 2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
 3|        this->val = value;
 4|        this->left = left;
@@ -3081,8 +3081,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class TreeNode {
--|    int val; TreeNode left, right;
--|    TreeNode(int value) { this(value, null, null); }
+-|        int val; TreeNode left, right;
+-|        TreeNode(int value) { this(value, null, null); }
 2|        TreeNode(int value, TreeNode left, TreeNode right) {
 3|            this.val = value;
 4|            this.left = left;
@@ -3128,7 +3128,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct TreeNode {
--|int val; TreeNode *left, *right;
+-|    int val; TreeNode *left, *right;
 2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
 3|        this->val = value;
 4|        this->left = left;
@@ -3199,8 +3199,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class TreeNode {
--|    int val; TreeNode left, right;
--|    TreeNode(int value) { this(value, null, null); }
+-|        int val; TreeNode left, right;
+-|        TreeNode(int value) { this(value, null, null); }
 2|        TreeNode(int value, TreeNode left, TreeNode right) {
 3|            this.val = value;
 4|            this.left = left;
@@ -3235,7 +3235,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct TreeNode {
--|int val; TreeNode *left, *right;
+-|    int val; TreeNode *left, *right;
 2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
 3|        this->val = value;
 4|        this->left = left;
@@ -3293,8 +3293,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class TreeNode {
--|    int val; TreeNode left, right;
--|    TreeNode(int value) { this(value, null, null); }
+-|        int val; TreeNode left, right;
+-|        TreeNode(int value) { this(value, null, null); }
 2|        TreeNode(int value, TreeNode left, TreeNode right) {
 3|            this.val = value;
 4|            this.left = left;
@@ -3327,7 +3327,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct TreeNode {
--|int val; TreeNode *left, *right;
+-|    int val; TreeNode *left, *right;
 2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
 3|        this->val = value;
 4|        this->left = left;
@@ -3381,8 +3381,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class TreeNode {
--|    int val; TreeNode left, right;
--|    TreeNode(int value) { this(value, null, null); }
+-|        int val; TreeNode left, right;
+-|        TreeNode(int value) { this(value, null, null); }
 2|        TreeNode(int value, TreeNode left, TreeNode right) {
 3|            this.val = value;
 4|            this.left = left;
@@ -3413,7 +3413,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct TreeNode {
--|int val; TreeNode *left, *right;
+-|    int val; TreeNode *left, *right;
 2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
 3|        this->val = value;
 4|        this->left = left;
@@ -3469,8 +3469,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class TreeNode {
--|    int val; TreeNode left, right;
--|    TreeNode(int value) { this(value, null, null); }
+-|        int val; TreeNode left, right;
+-|        TreeNode(int value) { this(value, null, null); }
 2|        TreeNode(int value, TreeNode left, TreeNode right) {
 3|            this.val = value;
 4|            this.left = left;
@@ -3506,7 +3506,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct TreeNode {
--|int val; TreeNode *left, *right;
+-|    int val; TreeNode *left, *right;
 2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
 3|        this->val = value;
 4|        this->left = left;
@@ -3563,8 +3563,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class TreeNode {
--|    int val; TreeNode left, right;
--|    TreeNode(int value) { this(value, null, null); }
+-|        int val; TreeNode left, right;
+-|        TreeNode(int value) { this(value, null, null); }
 2|        TreeNode(int value, TreeNode left, TreeNode right) {
 3|            this.val = value;
 4|            this.left = left;
@@ -3595,7 +3595,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct TreeNode {
--|int val; TreeNode *left, *right;
+-|    int val; TreeNode *left, *right;
 2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
 3|        this->val = value;
 4|        this->left = left;
@@ -3649,8 +3649,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class TreeNode {
--|    int val; TreeNode left, right;
--|    TreeNode(int value) { this(value, null, null); }
+-|        int val; TreeNode left, right;
+-|        TreeNode(int value) { this(value, null, null); }
 2|        TreeNode(int value, TreeNode left, TreeNode right) {
 3|            this.val = value;
 4|            this.left = left;
@@ -3682,7 +3682,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct TreeNode {
--|int val; TreeNode *left, *right;
+-|    int val; TreeNode *left, *right;
 2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
 3|        this->val = value;
 4|        this->left = left;
@@ -3737,8 +3737,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class TreeNode {
--|    int val; TreeNode left, right;
--|    TreeNode(int value) { this(value, null, null); }
+-|        int val; TreeNode left, right;
+-|        TreeNode(int value) { this(value, null, null); }
 2|        TreeNode(int value, TreeNode left, TreeNode right) {
 3|            this.val = value;
 4|            this.left = left;
@@ -3771,7 +3771,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct TreeNode {
--|int val; TreeNode *left, *right;
+-|    int val; TreeNode *left, *right;
 2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
 3|        this->val = value;
 4|        this->left = left;
@@ -3836,8 +3836,8 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|
 -|public class Main {
 1|    static class TreeNode {
--|    int val; TreeNode left, right;
--|    TreeNode(int value) { this(value, null, null); }
+-|        int val; TreeNode left, right;
+-|        TreeNode(int value) { this(value, null, null); }
 2|        TreeNode(int value, TreeNode left, TreeNode right) {
 3|            this.val = value;
 4|            this.left = left;
@@ -3881,7 +3881,7 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|using namespace std;
 -|
 1|struct TreeNode {
--|int val; TreeNode *left, *right;
+-|    int val; TreeNode *left, *right;
 2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
 3|        this->val = value;
 4|        this->left = left;

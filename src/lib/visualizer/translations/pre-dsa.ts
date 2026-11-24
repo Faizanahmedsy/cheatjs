@@ -1794,7 +1794,7 @@ export const PRE_DSA_TRANSLATIONS: Record<string, TranslationSet> = {
 5|        }
 6|        int best = numbers[0];
 7|        for (Map.Entry<Integer, Integer> entry : counts.entrySet()) {
--|    int value = entry.getKey(), count = entry.getValue();
+-|            int value = entry.getKey(), count = entry.getValue();
 8|            if (count > counts.get(best)) {
 9|                best = value;
 10|            }
