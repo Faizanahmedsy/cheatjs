@@ -14,7 +14,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   ...pageMeta({
-    title: "Ustad Billu ki Class",
+    title: "Billu Class",
     description: "Free visual lessons from Ustad Billu: watch 174 DSA questions run line by line (Pre-DSA to Level 3), break AWS services in the AWS Lab, see how Gen AI works, and revise JavaScript cheatsheets.",
     path: "/",
     keywords: ["DSA visualizer", "learn DSA", "AWS SAA-C03", "Gen AI", "JavaScript cheatsheet"],
@@ -22,11 +22,11 @@ export const metadata: Metadata = {
   // Each page sets its own canonical; the layout must not point every page at the home page.
   alternates: undefined,
   metadataBase: new URL(SITE_ORIGIN),
-  applicationName: "Ustad Billu ki Class",
+  applicationName: "Billu Class",
   authors: [{ name: "Faizan", url: "https://faizansaiyed.vercel.app" }],
   creator: "Ustad Billu",
   manifest: `${BASE_PATH}/manifest.webmanifest`,
-  appleWebApp: { capable: true, title: "Billu ki Class", statusBarStyle: "black-translucent" },
+  appleWebApp: { capable: true, title: "Billu Class", statusBarStyle: "black-translucent" },
 };
 
 export const viewport: Viewport = { themeColor: "#0e0f0f" };

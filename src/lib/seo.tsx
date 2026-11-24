@@ -11,7 +11,7 @@ export function absolute(path = "/"): string {
 }
 
 /** Title, description, canonical, Open Graph and Twitter for one page. */
-const OG_IMAGE = { url: `${SITE_URL}/opengraph-image`, width: 1200, height: 630, alt: "Ustad Billu ki Class" };
+const OG_IMAGE = { url: `${SITE_URL}/opengraph-image`, width: 1200, height: 630, alt: "Billu Class" };
 
 export function pageMeta({ title, description, path, keywords = [] }: { title: string; description: string; path: string; keywords?: string[] }): Metadata {
   const url = absolute(path);
@@ -19,7 +19,7 @@ export function pageMeta({ title, description, path, keywords = [] }: { title: s
   return {
     title: fullTitle,
     description,
-    keywords: [...keywords, "Ustad Billu", "Ustad Billu ki Class", "Hinglish", "learn coding", "interview preparation"],
+    keywords: [...keywords, "Ustad Billu", "Billu Class", "Ustad Billu ki Class", "Hinglish", "learn coding", "interview preparation"],
     alternates: { canonical: url },
     openGraph: { type: "website", url, title: fullTitle, description, siteName: SITE_NAME, locale: "en_IN", images: [OG_IMAGE] },
     twitter: { card: "summary_large_image", title: fullTitle, description, images: [OG_IMAGE.url] },
@@ -43,7 +43,7 @@ export const WEBSITE_LD = {
   "@type": "WebSite",
   "@id": `${SITE_URL}/#website`,
   name: SITE_NAME,
-  alternateName: ["Cheat JS", "CheatJS", "Billu ki Class"],
+  alternateName: ["Ustad Billu ki Class", "Billu ki Class", "Cheat JS", "CheatJS"],
   url: SITE_URL,
   inLanguage: "en-IN",
   publisher: { "@id": "https://ustadbillu.vercel.app/#organization" },

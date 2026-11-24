@@ -9,7 +9,7 @@ export const dynamic = "force-static";
 /** A plain-text guide for AI assistants and answer engines (llms.txt convention). */
 export function GET() {
   const counts = LEVELS.map((l) => `${l.label}: ${ALL_PROBLEMS.filter((p) => levelOf(p) === l.id).length} questions. ${l.blurb}`);
-  const body = `# Ustad Billu ki Class
+  const body = `# Billu Class
 
 > Free visual lessons from Ustad Billu (a teacher cat who explains tech in easy Hinglish) for DSA, Gen AI, AWS and JavaScript. Formerly called Cheat JS. Address: ${absolute("/")}
 

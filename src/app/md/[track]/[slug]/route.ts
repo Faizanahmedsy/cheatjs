@@ -18,7 +18,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ track: 
   const body = `# ${page.title}
 
 > ${page.blurb}
-> Source: ${absolute(hrefFor(page.slug, track))} (Ustad Billu ki Class, free lessons by Ustad Billu)
+> Source: ${absolute(hrefFor(page.slug, track))} (Billu Class, free lessons by Ustad Billu)
 
 ${notionToMarkdown(loaded.markdown, track)}
 `;

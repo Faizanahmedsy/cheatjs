@@ -24,7 +24,7 @@ const FAQ_LD = {
 const COURSES_LD = {
   "@context": "https://schema.org",
   "@type": "ItemList",
-  name: "Ustad Billu ki Class subjects",
+  name: "Billu Class subjects",
   itemListElement: SUBJECTS.map((subject, index) => ({
     "@type": "ListItem",
     position: index + 1,

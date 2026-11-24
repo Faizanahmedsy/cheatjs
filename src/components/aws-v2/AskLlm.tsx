@@ -11,7 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
  */
 export function AskLlm({ title, mdUrl, pageUrl }: { title: string; mdUrl: string; pageUrl: string }) {
   const [copied, setCopied] = useState(false);
-  const prompt = `Read ${mdUrl} . It is the "${title}" lesson from Ustad Billu ki Class (${pageUrl}). Teach it to me in simple words with small examples, then quiz me with 3 questions one at a time and correct my answers.`;
+  const prompt = `Read ${mdUrl} . It is the "${title}" lesson from Billu Class (${pageUrl}). Teach it to me in simple words with small examples, then quiz me with 3 questions one at a time and correct my answers.`;
   const q = encodeURIComponent(prompt);
 
   const copy = async () => {

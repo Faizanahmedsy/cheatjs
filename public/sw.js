@@ -1,4 +1,4 @@
-/* Ustad Billu ki Class service worker: lets saved pages open offline. */
+/* Billu Class service worker: lets saved pages open offline. */
 const PAGES = "cheatjs-pages-v1";
 const ASSETS = "cheatjs-assets-v1";
 

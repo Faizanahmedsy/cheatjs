@@ -166,7 +166,7 @@ export function PDFDownloadModal({ isOpen, onClose }: PDFDownloadModalProps) {
           await generateCheatsheetPDF(
             selectedTopics.size === allTopics.length 
               ? firstGroup.categoryName 
-              : 'Ustad Billu ki Class',
+              : 'Billu Class',
             customSubCategory,
             customTitle || undefined,
             customSubtitle || undefined

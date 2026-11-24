@@ -1,7 +1,7 @@
 import { BASE_PATH } from "./base-path";
 
 /**
- * The four "doors" of Ustad Billu ki Class and the pages behind each one.
+ * The four "doors" of Billu Class and the pages behind each one.
  * Every subject has the same three kinds of page: Read (notes), See (a
  * visual lab) and Practice. The navbar, the subject tabs and the home page
  * all read from here, so a new page only needs adding once.
@@ -16,7 +16,7 @@ export const BILLU = {
   mascot: `${BASE_PATH}/billu.webp`,
 } as const;
 
-export const SITE_NAME = "Ustad Billu ki Class";
+export const SITE_NAME = "Billu Class";
 
 export type TabKind = "read" | "see" | "practice";
 

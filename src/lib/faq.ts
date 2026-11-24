@@ -1,8 +1,8 @@
 /** Shown on the home page and sent as FAQPage structured data (for answer engines). */
 export const HOME_FAQ: { q: string; a: string }[] = [
   {
-    q: "What is Ustad Billu ki Class?",
-    a: "Ustad Billu ki Class (formerly Cheat JS) is a free website from Ustad Billu with visual lessons for DSA, Gen AI, AWS and JavaScript. You watch code run line by line instead of only reading about it.",
+    q: "What is Billu Class?",
+    a: "Billu Class (formerly Cheat JS) is a free website from Ustad Billu with visual lessons for DSA, Gen AI, AWS and JavaScript. You watch code run line by line instead of only reading about it.",
   },
   {
     q: "How do I start learning DSA from zero?",
