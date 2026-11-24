@@ -3166,4 +3166,1099 @@ export const LEVEL_3_TRANSLATIONS: Record<string, TranslationSet> = {
 -|}
 `,
   },
+  "longest-palindromic-substring": {
+    python: `
+1|def longest_palindrome(text):
+2|    text_length = len(text)
+3|
+4|    is_palindrome_table = []
+5|    for start_index in range(text_length): is_palindrome_table.append([False] * text_length)
+6|    start = 0
+7|    max_len = 1
+8|
+9|    for substring_length in range(1, text_length + 1):
+10|        for start_index in range(text_length - substring_length + 1):
+11|            end_index = start_index + substring_length - 1
+12|
+13|            if text[start_index] == text[end_index] and (substring_length <= 2 or is_palindrome_table[start_index + 1][end_index - 1]):
+14|                is_palindrome_table[start_index][end_index] = True
+15|                if substring_length > max_len:
+16|                    start = start_index
+17|                    max_len = substring_length
+22|    return text[start:start + max_len]
+24|
+25|print(repr(longest_palindrome("cbbd")))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static String longestPalindrome(String text) {
+2|        int textLength = text.length();
+3|
+4|        boolean[][] isPalindromeTable = new boolean[textLength][];
+5|        for (int startIndex = 0; startIndex < textLength; startIndex++) isPalindromeTable[startIndex] = new boolean[textLength];
+6|        int start = 0;
+7|        int maxLen = 1;
+8|
+9|        for (int substringLength = 1; substringLength <= textLength; substringLength++) {
+10|            for (int startIndex = 0; startIndex + substringLength - 1 < textLength; startIndex++) {
+11|                int endIndex = startIndex + substringLength - 1;
+12|
+13|                if (text.charAt(startIndex) == text.charAt(endIndex) && (substringLength <= 2 || isPalindromeTable[startIndex + 1][endIndex - 1])) {
+14|                    isPalindromeTable[startIndex][endIndex] = true;
+15|                    if (substringLength > maxLen) {
+16|                        start = startIndex;
+17|                        maxLen = substringLength;
+18|                    }
+19|                }
+20|            }
+21|        }
+22|        return text.substring(start, start + maxLen);
+23|    }
+24|
+-|    public static void main(String[] args) {
+25|        System.out.println(longestPalindrome("cbbd"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|string longestPalindrome(string text) {
+2|    int textLength = text.size();
+3|
+4|    vector<vector<bool>> isPalindromeTable;
+5|    for (int startIndex = 0; startIndex < textLength; startIndex++) isPalindromeTable.push_back(vector<bool>(textLength, false));
+6|    int start = 0;
+7|    int maxLen = 1;
+8|
+9|    for (int substringLength = 1; substringLength <= textLength; substringLength++) {
+10|        for (int startIndex = 0; startIndex + substringLength - 1 < textLength; startIndex++) {
+11|            int endIndex = startIndex + substringLength - 1;
+12|
+13|            if (text[startIndex] == text[endIndex] && (substringLength <= 2 || isPalindromeTable[startIndex + 1][endIndex - 1])) {
+14|                isPalindromeTable[startIndex][endIndex] = true;
+15|                if (substringLength > maxLen) {
+16|                    start = startIndex;
+17|                    maxLen = substringLength;
+18|                }
+19|            }
+20|        }
+21|    }
+22|    return text.substr(start, maxLen);
+23|}
+24|
+-|int main() {
+25|    cout << longestPalindrome("cbbd") << endl;
+-|}
+`,
+  },
+  "decode-ways": {
+    python: `
+1|def num_decodings(text):
+2|    digit_count = len(text)
+3|    ways_to_decode = [0] * (digit_count + 1)
+4|    ways_to_decode[0] = 1
+5|    ways_to_decode[1] = 0 if text[0] == "0" else 1
+6|
+7|    for prefix_length in range(2, digit_count + 1):
+8|        last_digit = int(text[prefix_length - 1])
+9|        last_two_digits = int(text[prefix_length - 2:prefix_length])
+10|        if last_digit >= 1: ways_to_decode[prefix_length] += ways_to_decode[prefix_length - 1]
+11|        if 10 <= last_two_digits <= 26: ways_to_decode[prefix_length] += ways_to_decode[prefix_length - 2]
+13|    return ways_to_decode[digit_count]
+15|
+16|print(num_decodings("1226"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int numDecodings(String text) {
+2|        int digitCount = text.length();
+3|        int[] waysToDecode = new int[digitCount + 1];
+4|        waysToDecode[0] = 1;
+5|        waysToDecode[1] = text.charAt(0) == '0' ? 0 : 1;
+6|
+7|        for (int prefixLength = 2; prefixLength <= digitCount; prefixLength++) {
+8|            int lastDigit = text.charAt(prefixLength - 1) - '0';
+9|            int lastTwoDigits = Integer.parseInt(text.substring(prefixLength - 2, prefixLength));
+10|            if (lastDigit >= 1) waysToDecode[prefixLength] += waysToDecode[prefixLength - 1];
+11|            if (lastTwoDigits >= 10 && lastTwoDigits <= 26) waysToDecode[prefixLength] += waysToDecode[prefixLength - 2];
+12|        }
+13|        return waysToDecode[digitCount];
+14|    }
+15|
+-|    public static void main(String[] args) {
+16|        System.out.println(numDecodings("1226"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int numDecodings(string text) {
+2|    int digitCount = text.size();
+3|    vector<int> waysToDecode(digitCount + 1, 0);
+4|    waysToDecode[0] = 1;
+5|    waysToDecode[1] = text[0] == '0' ? 0 : 1;
+6|
+7|    for (int prefixLength = 2; prefixLength <= digitCount; prefixLength++) {
+8|        int lastDigit = text[prefixLength - 1] - '0';
+9|        int lastTwoDigits = stoi(text.substr(prefixLength - 2, 2));
+10|        if (lastDigit >= 1) waysToDecode[prefixLength] += waysToDecode[prefixLength - 1];
+11|        if (lastTwoDigits >= 10 && lastTwoDigits <= 26) waysToDecode[prefixLength] += waysToDecode[prefixLength - 2];
+12|    }
+13|    return waysToDecode[digitCount];
+14|}
+15|
+-|int main() {
+16|    cout << numDecodings("1226") << endl;
+-|}
+`,
+  },
+  "house-robber-ii": {
+    python: `
+2|def rob_line(numbers, first_house, last_house):
+3|    best_loot = []
+4|    for house_index in range(first_house, last_house + 1):
+5|        position = house_index - first_house
+6|        skip = best_loot[position - 1] if position >= 1 else 0
+7|        take = (best_loot[position - 2] if position >= 2 else 0) + numbers[house_index]
+8|        best_loot.append(max(skip, take))
+10|    return best_loot[-1]
+12|
+13|def rob(numbers):
+14|    if len(numbers) == 1: return numbers[0]
+15|    house_count = len(numbers)
+16|    without_last = rob_line(numbers, 0, house_count - 2)
+17|    without_first = rob_line(numbers, 1, house_count - 1)
+18|    return max(without_last, without_first)
+20|
+21|numbers = [2, 7, 9, 3, 1]
+22|print(rob(numbers))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+2|    static int robLine(int[] numbers, int firstHouse, int lastHouse) {
+3|        List<Integer> bestLoot = new ArrayList<>();
+4|        for (int houseIndex = firstHouse; houseIndex <= lastHouse; houseIndex++) {
+5|            int position = houseIndex - firstHouse;
+6|            int skip = position >= 1 ? bestLoot.get(position - 1) : 0;
+7|            int take = (position >= 2 ? bestLoot.get(position - 2) : 0) + numbers[houseIndex];
+8|            bestLoot.add(Math.max(skip, take));
+9|        }
+10|        return bestLoot.get(bestLoot.size() - 1);
+11|    }
+12|
+13|    static int rob(int[] numbers) {
+14|        if (numbers.length == 1) return numbers[0];
+15|        int houseCount = numbers.length;
+16|        int withoutLast = robLine(numbers, 0, houseCount - 2);
+17|        int withoutFirst = robLine(numbers, 1, houseCount - 1);
+18|        return Math.max(withoutLast, withoutFirst);
+19|    }
+20|
+-|    public static void main(String[] args) {
+21|        int[] numbers = {2, 7, 9, 3, 1};
+22|        System.out.println(rob(numbers));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+2|int robLine(vector<int>& numbers, int firstHouse, int lastHouse) {
+3|    vector<int> bestLoot;
+4|    for (int houseIndex = firstHouse; houseIndex <= lastHouse; houseIndex++) {
+5|        int position = houseIndex - firstHouse;
+6|        int skip = position >= 1 ? bestLoot[position - 1] : 0;
+7|        int take = (position >= 2 ? bestLoot[position - 2] : 0) + numbers[houseIndex];
+8|        bestLoot.push_back(max(skip, take));
+9|    }
+10|    return bestLoot.back();
+11|}
+12|
+13|int rob(vector<int>& numbers) {
+14|    if (numbers.size() == 1) return numbers[0];
+15|    int houseCount = numbers.size();
+16|    int withoutLast = robLine(numbers, 0, houseCount - 2);
+17|    int withoutFirst = robLine(numbers, 1, houseCount - 1);
+18|    return max(withoutLast, withoutFirst);
+19|}
+20|
+-|int main() {
+21|    vector<int> numbers = {2, 7, 9, 3, 1};
+22|    cout << rob(numbers) << endl;
+-|}
+`,
+  },
+  "subsets": {
+    python: `
+1|def subsets(numbers):
+2|    result = []
+3|    current_path = []
+4|
+5|    def backtrack(start):
+6|        result.append(list(current_path))
+7|
+8|        for number_index in range(start, len(numbers)):
+9|            current_path.append(numbers[number_index])
+10|            backtrack(number_index + 1)
+11|            current_path.pop()
+14|
+15|    backtrack(0)
+16|    return result
+18|
+19|print(subsets([1, 2, 3]))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static List<List<Integer>> subsets(int[] numbers) {
+2|        List<List<Integer>> result = new ArrayList<>();
+3|        List<Integer> currentPath = new ArrayList<>();
+4|
+5|        class Walker { void backtrack(int start) {
+6|            result.add(new ArrayList<>(currentPath));
+7|
+8|            for (int numberIndex = start; numberIndex < numbers.length; numberIndex++) {
+9|                currentPath.add(numbers[numberIndex]);
+10|                backtrack(numberIndex + 1);
+11|                currentPath.remove(currentPath.size() - 1);
+12|            }
+13|        } }
+14|
+15|        new Walker().backtrack(0);
+16|        return result;
+17|    }
+18|
+-|    public static void main(String[] args) {
+19|        System.out.println(subsets(new int[]{1, 2, 3}));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<vector<int>> subsets(vector<int> numbers) {
+2|    vector<vector<int>> result;
+3|    vector<int> currentPath;
+4|
+5|    function<void(int)> backtrack = [&](int start) {
+6|        result.push_back(currentPath);
+7|
+8|        for (int numberIndex = start; numberIndex < numbers.size(); numberIndex++) {
+9|            currentPath.push_back(numbers[numberIndex]);
+10|            backtrack(numberIndex + 1);
+11|            currentPath.pop_back();
+12|        }
+13|    };
+14|
+15|    backtrack(0);
+16|    return result;
+17|}
+18|
+-|int main() {
+19|    for (auto& s : subsets({1, 2, 3})) { cout << "["; for (int x : s) cout << x << " "; cout << "] "; }
+-|}
+`,
+  },
+  "permutations": {
+    python: `
+1|def permute(numbers):
+2|    result = []
+3|    current_path = []
+4|    used = set()
+5|
+6|    def backtrack():
+7|
+8|        if len(current_path) == len(numbers):
+9|            result.append(list(current_path))
+10|            return
+12|
+13|        for number in numbers:
+14|            if number in used: continue
+15|            current_path.append(number)
+16|            used.add(number)
+17|            backtrack()
+18|            current_path.pop()
+19|            used.remove(number)
+22|
+23|    backtrack()
+24|    return result
+26|
+27|print(permute([1, 2, 3]))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static List<List<Integer>> permute(int[] numbers) {
+2|        List<List<Integer>> result = new ArrayList<>();
+3|        List<Integer> currentPath = new ArrayList<>();
+4|        Set<Integer> used = new HashSet<>();
+5|
+6|        class Walker { void backtrack() {
+7|
+8|            if (currentPath.size() == numbers.length) {
+9|                result.add(new ArrayList<>(currentPath));
+10|                return;
+11|            }
+12|
+13|            for (int number : numbers) {
+14|                if (used.contains(number)) continue;
+15|                currentPath.add(number);
+16|                used.add(number);
+17|                backtrack();
+18|                currentPath.remove(currentPath.size() - 1);
+19|                used.remove(number);
+20|            }
+21|        } }
+22|
+23|        new Walker().backtrack();
+24|        return result;
+25|    }
+26|
+-|    public static void main(String[] args) {
+27|        System.out.println(permute(new int[]{1, 2, 3}));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<vector<int>> permute(vector<int> numbers) {
+2|    vector<vector<int>> result;
+3|    vector<int> currentPath;
+4|    set<int> used;
+5|
+6|    function<void()> backtrack = [&]() {
+7|
+8|        if (currentPath.size() == numbers.size()) {
+9|            result.push_back(currentPath);
+10|            return;
+11|        }
+12|
+13|        for (int number : numbers) {
+14|            if (used.count(number)) continue;
+15|            currentPath.push_back(number);
+16|            used.insert(number);
+17|            backtrack();
+18|            currentPath.pop_back();
+19|            used.erase(number);
+20|        }
+21|    };
+22|
+23|    backtrack();
+24|    return result;
+25|}
+26|
+-|int main() {
+27|    for (auto& p : permute({1, 2, 3})) { cout << "["; for (int x : p) cout << x << " "; cout << "] "; }
+-|}
+`,
+  },
+  "combinations": {
+    python: `
+1|def combine(max_number, group_size):
+2|    result = []
+3|    current_path = []
+4|
+5|    def backtrack(start):
+6|
+7|        if len(current_path) == group_size:
+8|            result.append(list(current_path))
+9|            return
+11|
+12|        for number in range(start, max_number + 1):
+13|            current_path.append(number)
+14|            backtrack(number + 1)
+15|            current_path.pop()
+18|
+19|    backtrack(1)
+20|    return result
+22|
+23|print(combine(4, 2))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static List<List<Integer>> combine(int maxNumber, int groupSize) {
+2|        List<List<Integer>> result = new ArrayList<>();
+3|        List<Integer> currentPath = new ArrayList<>();
+4|
+5|        class Walker { void backtrack(int start) {
+6|
+7|            if (currentPath.size() == groupSize) {
+8|                result.add(new ArrayList<>(currentPath));
+9|                return;
+10|            }
+11|
+12|            for (int number = start; number <= maxNumber; number++) {
+13|                currentPath.add(number);
+14|                backtrack(number + 1);
+15|                currentPath.remove(currentPath.size() - 1);
+16|            }
+17|        } }
+18|
+19|        new Walker().backtrack(1);
+20|        return result;
+21|    }
+22|
+-|    public static void main(String[] args) {
+23|        System.out.println(combine(4, 2));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<vector<int>> combine(int maxNumber, int groupSize) {
+2|    vector<vector<int>> result;
+3|    vector<int> currentPath;
+4|
+5|    function<void(int)> backtrack = [&](int start) {
+6|
+7|        if (currentPath.size() == groupSize) {
+8|            result.push_back(currentPath);
+9|            return;
+10|        }
+11|
+12|        for (int number = start; number <= maxNumber; number++) {
+13|            currentPath.push_back(number);
+14|            backtrack(number + 1);
+15|            currentPath.pop_back();
+16|        }
+17|    };
+18|
+19|    backtrack(1);
+20|    return result;
+21|}
+22|
+-|int main() {
+23|    for (auto& c : combine(4, 2)) { cout << "["; for (int x : c) cout << x << " "; cout << "] "; }
+-|}
+`,
+  },
+  "combination-sum": {
+    python: `
+1|def combination_sum(candidates, target):
+2|    result = []
+3|    current_path = []
+4|
+5|    def backtrack(start, remaining):
+6|        if remaining == 0:
+7|            result.append(list(current_path))
+8|            return
+10|        if remaining < 0: return
+11|
+12|        for candidate_index in range(start, len(candidates)):
+13|            current_path.append(candidates[candidate_index])
+14|            backtrack(candidate_index, remaining - candidates[candidate_index])
+15|            current_path.pop()
+18|
+19|    backtrack(0, target)
+20|    return result
+22|
+23|print(combination_sum([2, 3, 5], 8))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static List<List<Integer>> combinationSum(int[] candidates, int target) {
+2|        List<List<Integer>> result = new ArrayList<>();
+3|        List<Integer> currentPath = new ArrayList<>();
+4|
+5|        class Walker { void backtrack(int start, int remaining) {
+6|            if (remaining == 0) {
+7|                result.add(new ArrayList<>(currentPath));
+8|                return;
+9|            }
+10|            if (remaining < 0) return;
+11|
+12|            for (int candidateIndex = start; candidateIndex < candidates.length; candidateIndex++) {
+13|                currentPath.add(candidates[candidateIndex]);
+14|                backtrack(candidateIndex, remaining - candidates[candidateIndex]);
+15|                currentPath.remove(currentPath.size() - 1);
+16|            }
+17|        } }
+18|
+19|        new Walker().backtrack(0, target);
+20|        return result;
+21|    }
+22|
+-|    public static void main(String[] args) {
+23|        System.out.println(combinationSum(new int[]{2, 3, 5}, 8));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<vector<int>> combinationSum(vector<int> candidates, int target) {
+2|    vector<vector<int>> result;
+3|    vector<int> currentPath;
+4|
+5|    function<void(int, int)> backtrack = [&](int start, int remaining) {
+6|        if (remaining == 0) {
+7|            result.push_back(currentPath);
+8|            return;
+9|        }
+10|        if (remaining < 0) return;
+11|
+12|        for (int candidateIndex = start; candidateIndex < candidates.size(); candidateIndex++) {
+13|            currentPath.push_back(candidates[candidateIndex]);
+14|            backtrack(candidateIndex, remaining - candidates[candidateIndex]);
+15|            currentPath.pop_back();
+16|        }
+17|    };
+18|
+19|    backtrack(0, target);
+20|    return result;
+21|}
+22|
+-|int main() {
+23|    for (auto& c : combinationSum({2, 3, 5}, 8)) { cout << "["; for (int x : c) cout << x << " "; cout << "] "; }
+-|}
+`,
+  },
+  "combination-sum-ii": {
+    python: `
+1|def combination_sum2(candidates, target):
+2|    numbers = sorted(candidates)
+3|    result = []
+4|    current_path = []
+5|
+6|    def backtrack(start, remaining):
+7|        if remaining == 0:
+8|            result.append(list(current_path))
+9|            return
+11|
+12|        for number_index in range(start, len(numbers)):
+13|            if number_index > start and numbers[number_index] == numbers[number_index - 1]: continue
+14|            if numbers[number_index] > remaining: break
+15|
+16|            current_path.append(numbers[number_index])
+17|            backtrack(number_index + 1, remaining - numbers[number_index])
+18|            current_path.pop()
+21|
+22|    backtrack(0, target)
+23|    return result
+25|
+26|print(combination_sum2([2, 1, 1, 3], 4))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static List<List<Integer>> combinationSum2(int[] candidates, int target) {
+2|        int[] numbers = candidates.clone(); Arrays.sort(numbers);
+3|        List<List<Integer>> result = new ArrayList<>();
+4|        List<Integer> currentPath = new ArrayList<>();
+5|
+6|        class Walker { void backtrack(int start, int remaining) {
+7|            if (remaining == 0) {
+8|                result.add(new ArrayList<>(currentPath));
+9|                return;
+10|            }
+11|
+12|            for (int numberIndex = start; numberIndex < numbers.length; numberIndex++) {
+13|                if (numberIndex > start && numbers[numberIndex] == numbers[numberIndex - 1]) continue;
+14|                if (numbers[numberIndex] > remaining) break;
+15|
+16|                currentPath.add(numbers[numberIndex]);
+17|                backtrack(numberIndex + 1, remaining - numbers[numberIndex]);
+18|                currentPath.remove(currentPath.size() - 1);
+19|            }
+20|        } }
+21|
+22|        new Walker().backtrack(0, target);
+23|        return result;
+24|    }
+25|
+-|    public static void main(String[] args) {
+26|        System.out.println(combinationSum2(new int[]{2, 1, 1, 3}, 4));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<vector<int>> combinationSum2(vector<int> candidates, int target) {
+2|    vector<int> numbers = candidates; sort(numbers.begin(), numbers.end());
+3|    vector<vector<int>> result;
+4|    vector<int> currentPath;
+5|
+6|    function<void(int, int)> backtrack = [&](int start, int remaining) {
+7|        if (remaining == 0) {
+8|            result.push_back(currentPath);
+9|            return;
+10|        }
+11|
+12|        for (int numberIndex = start; numberIndex < numbers.size(); numberIndex++) {
+13|            if (numberIndex > start && numbers[numberIndex] == numbers[numberIndex - 1]) continue;
+14|            if (numbers[numberIndex] > remaining) break;
+15|
+16|            currentPath.push_back(numbers[numberIndex]);
+17|            backtrack(numberIndex + 1, remaining - numbers[numberIndex]);
+18|            currentPath.pop_back();
+19|        }
+20|    };
+21|
+22|    backtrack(0, target);
+23|    return result;
+24|}
+25|
+-|int main() {
+26|    for (auto& c : combinationSum2({2, 1, 1, 3}, 4)) { cout << "["; for (int x : c) cout << x << " "; cout << "] "; }
+-|}
+`,
+  },
+  "letter-combinations-of-a-phone-number": {
+    python: `
+1|KEYS = {"2": "abc", "3": "def", "4": "ghi", "5": "jkl", "6": "mno", "7": "pqrs", "8": "tuv", "9": "wxyz"}
+2|
+3|def letter_combinations(digits):
+4|    if len(digits) == 0: return []
+5|    result = []
+6|    current_path = []
+7|
+8|    def backtrack(digit_position):
+9|
+10|        if digit_position == len(digits):
+11|            result.append("".join(current_path))
+12|            return
+14|
+15|        letters = KEYS[digits[digit_position]]
+16|        for character in letters:
+17|            current_path.append(character)
+18|            backtrack(digit_position + 1)
+19|            current_path.pop()
+22|
+23|    backtrack(0)
+24|    return result
+26|
+27|print(letter_combinations("23"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static Map<Character, String> KEYS = Map.of('2', "abc", '3', "def", '4', "ghi", '5', "jkl", '6', "mno", '7', "pqrs", '8', "tuv", '9', "wxyz");
+2|
+3|    static List<String> letterCombinations(String digits) {
+4|        if (digits.length() == 0) return new ArrayList<>();
+5|        List<String> result = new ArrayList<>();
+6|        StringBuilder currentPath = new StringBuilder();
+7|
+8|        class Walker { void backtrack(int digitPosition) {
+9|
+10|            if (digitPosition == digits.length()) {
+11|                result.add(currentPath.toString());
+12|                return;
+13|            }
+14|
+15|            String letters = KEYS.get(digits.charAt(digitPosition));
+16|            for (char character : letters.toCharArray()) {
+17|                currentPath.append(character);
+18|                backtrack(digitPosition + 1);
+19|                currentPath.deleteCharAt(currentPath.length() - 1);
+20|            }
+21|        } }
+22|
+23|        new Walker().backtrack(0);
+24|        return result;
+25|    }
+26|
+-|    public static void main(String[] args) {
+27|        System.out.println(letterCombinations("23"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|map<char, string> KEYS = {{'2', "abc"}, {'3', "def"}, {'4', "ghi"}, {'5', "jkl"}, {'6', "mno"}, {'7', "pqrs"}, {'8', "tuv"}, {'9', "wxyz"}};
+2|
+3|vector<string> letterCombinations(string digits) {
+4|    if (digits.size() == 0) return {};
+5|    vector<string> result;
+6|    string currentPath;
+7|
+8|    function<void(int)> backtrack = [&](int digitPosition) {
+9|
+10|        if (digitPosition == digits.size()) {
+11|            result.push_back(currentPath);
+12|            return;
+13|        }
+14|
+15|        string letters = KEYS[digits[digitPosition]];
+16|        for (char character : letters) {
+17|            currentPath.push_back(character);
+18|            backtrack(digitPosition + 1);
+19|            currentPath.pop_back();
+20|        }
+21|    };
+22|
+23|    backtrack(0);
+24|    return result;
+25|}
+26|
+-|int main() {
+27|    for (string s : letterCombinations("23")) cout << s << " ";
+-|}
+`,
+  },
+  "generate-parentheses": {
+    python: `
+1|def generate_parenthesis(pair_count):
+2|    result = []
+3|    current_path = []
+4|
+5|    def backtrack(open_count, close_count):
+6|
+7|        if len(current_path) == 2 * pair_count:
+8|            result.append("".join(current_path))
+9|            return
+11|
+12|        if open_count < pair_count:
+13|            current_path.append("(")
+14|            backtrack(open_count + 1, close_count)
+15|            current_path.pop()
+17|        if close_count < open_count:
+18|            current_path.append(")")
+19|            backtrack(open_count, close_count + 1)
+20|            current_path.pop()
+23|
+24|    backtrack(0, 0)
+25|    return result
+27|
+28|print(generate_parenthesis(3))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static List<String> generateParenthesis(int pairCount) {
+2|        List<String> result = new ArrayList<>();
+3|        StringBuilder currentPath = new StringBuilder();
+4|
+5|        class Walker { void backtrack(int open, int close) {
+6|
+7|            if (currentPath.length() == 2 * pairCount) {
+8|                result.add(currentPath.toString());
+9|                return;
+10|            }
+11|
+12|            if (open < pairCount) {
+13|                currentPath.append('(');
+14|                backtrack(open + 1, close);
+15|                currentPath.deleteCharAt(currentPath.length() - 1);
+16|            }
+17|            if (close < open) {
+18|                currentPath.append(')');
+19|                backtrack(open, close + 1);
+20|                currentPath.deleteCharAt(currentPath.length() - 1);
+21|            }
+22|        } }
+23|
+24|        new Walker().backtrack(0, 0);
+25|        return result;
+26|    }
+27|
+-|    public static void main(String[] args) {
+28|        System.out.println(generateParenthesis(3));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<string> generateParenthesis(int pairCount) {
+2|    vector<string> result;
+3|    string currentPath;
+4|
+5|    function<void(int, int)> backtrack = [&](int open, int close) {
+6|
+7|        if (currentPath.size() == 2 * pairCount) {
+8|            result.push_back(currentPath);
+9|            return;
+10|        }
+11|
+12|        if (open < pairCount) {
+13|            currentPath.push_back('(');
+14|            backtrack(open + 1, close);
+15|            currentPath.pop_back();
+16|        }
+17|        if (close < open) {
+18|            currentPath.push_back(')');
+19|            backtrack(open, close + 1);
+20|            currentPath.pop_back();
+21|        }
+22|    };
+23|
+24|    backtrack(0, 0);
+25|    return result;
+26|}
+27|
+-|int main() {
+28|    for (string s : generateParenthesis(3)) cout << s << " ";
+-|}
+`,
+  },
+  "word-search": {
+    python: `
+1|def exist(board, word):
+2|    row_count = len(board)
+3|    column_count = len(board[0])
+4|
+5|    def dfs(row_index, column_index, letter_position):
+6|        if letter_position == len(word): return True
+7|        if row_index < 0 or row_index >= row_count or column_index < 0 or column_index >= column_count: return False
+8|        if board[row_index][column_index] != word[letter_position]: return False
+9|
+10|        letter = board[row_index][column_index]
+11|        board[row_index][column_index] = "#"
+12|
+13|
+14|        found = (
+15|            dfs(row_index + 1, column_index, letter_position + 1) or
+16|            dfs(row_index - 1, column_index, letter_position + 1) or
+17|            dfs(row_index, column_index + 1, letter_position + 1) or
+18|            dfs(row_index, column_index - 1, letter_position + 1))
+19|
+20|        board[row_index][column_index] = letter
+21|        return found
+23|
+24|    for row_index in range(row_count):
+25|        for column_index in range(column_count):
+26|            if dfs(row_index, column_index, 0): return True
+29|    return False
+31|
+32|board = [
+33|    ["A", "B", "C", "E"],
+34|    ["S", "F", "C", "S"],
+35|    ["A", "D", "E", "E"],
+36|]
+37|print(exist(board, "SEE"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static boolean exist(char[][] board, String word) {
+2|        int rowCount = board.length;
+3|        int columnCount = board[0].length;
+4|
+5|        class Searcher { boolean dfs(int rowIndex, int columnIndex, int letterPosition) {
+6|            if (letterPosition == word.length()) return true;
+7|            if (rowIndex < 0 || rowIndex >= rowCount || columnIndex < 0 || columnIndex >= columnCount) return false;
+8|            if (board[rowIndex][columnIndex] != word.charAt(letterPosition)) return false;
+9|
+10|            char letter = board[rowIndex][columnIndex];
+11|            board[rowIndex][columnIndex] = '#';
+12|
+13|
+14|            boolean found =
+15|                dfs(rowIndex + 1, columnIndex, letterPosition + 1) ||
+16|                dfs(rowIndex - 1, columnIndex, letterPosition + 1) ||
+17|                dfs(rowIndex, columnIndex + 1, letterPosition + 1) ||
+18|                dfs(rowIndex, columnIndex - 1, letterPosition + 1);
+19|
+20|            board[rowIndex][columnIndex] = letter;
+21|            return found;
+22|        } }
+23|
+24|        for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+25|            for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+26|                if (new Searcher().dfs(rowIndex, columnIndex, 0)) return true;
+27|            }
+28|        }
+29|        return false;
+30|    }
+31|
+-|    public static void main(String[] args) {
+32|        char[][] board = {
+33|            {'A', 'B', 'C', 'E'},
+34|            {'S', 'F', 'C', 'S'},
+35|            {'A', 'D', 'E', 'E'},
+36|        };
+37|        System.out.println(exist(board, "SEE"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|bool exist(vector<vector<char>>& board, string word) {
+2|    int rowCount = board.size();
+3|    int columnCount = board[0].size();
+4|
+5|    function<bool(int, int, int)> dfs = [&](int rowIndex, int columnIndex, int letterPosition) -> bool {
+6|        if (letterPosition == word.size()) return true;
+7|        if (rowIndex < 0 || rowIndex >= rowCount || columnIndex < 0 || columnIndex >= columnCount) return false;
+8|        if (board[rowIndex][columnIndex] != word[letterPosition]) return false;
+9|
+10|        char letter = board[rowIndex][columnIndex];
+11|        board[rowIndex][columnIndex] = '#';
+12|
+13|
+14|        bool found =
+15|            dfs(rowIndex + 1, columnIndex, letterPosition + 1) ||
+16|            dfs(rowIndex - 1, columnIndex, letterPosition + 1) ||
+17|            dfs(rowIndex, columnIndex + 1, letterPosition + 1) ||
+18|            dfs(rowIndex, columnIndex - 1, letterPosition + 1);
+19|
+20|        board[rowIndex][columnIndex] = letter;
+21|        return found;
+22|    };
+23|
+24|    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+25|        for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+26|            if (dfs(rowIndex, columnIndex, 0)) return true;
+27|        }
+28|    }
+29|    return false;
+30|}
+31|
+-|int main() {
+32|    vector<vector<char>> board = {
+33|        {'A', 'B', 'C', 'E'},
+34|        {'S', 'F', 'C', 'S'},
+35|        {'A', 'D', 'E', 'E'},
+36|    };
+37|    cout << boolalpha << exist(board, "SEE") << endl;
+-|}
+`,
+  },
+  "palindrome-partitioning": {
+    python: `
+2|def is_palindrome(text, left, right):
+3|    while left < right:
+4|        if text[left] != text[right]: return False
+5|        left += 1
+6|        right -= 1
+8|    return True
+10|
+11|def partition(text):
+12|    result = []
+13|    current_path = []
+14|
+15|    def backtrack(start):
+16|
+17|        if start == len(text):
+18|            result.append(list(current_path))
+19|            return
+21|
+22|        for end in range(start, len(text)):
+23|            if not is_palindrome(text, start, end): continue
+24|            current_path.append(text[start:end + 1])
+25|            backtrack(end + 1)
+26|            current_path.pop()
+29|
+30|    backtrack(0)
+31|    return result
+33|
+34|print(partition("aab"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+2|    static boolean isPalindrome(String text, int left, int right) {
+3|        while (left < right) {
+4|            if (text.charAt(left) != text.charAt(right)) return false;
+5|            left++;
+6|            right--;
+7|        }
+8|        return true;
+9|    }
+10|
+11|    static List<List<String>> partition(String text) {
+12|        List<List<String>> result = new ArrayList<>();
+13|        List<String> currentPath = new ArrayList<>();
+14|
+15|        class Walker { void backtrack(int start) {
+16|
+17|            if (start == text.length()) {
+18|                result.add(new ArrayList<>(currentPath));
+19|                return;
+20|            }
+21|
+22|            for (int end = start; end < text.length(); end++) {
+23|                if (!isPalindrome(text, start, end)) continue;
+24|                currentPath.add(text.substring(start, end + 1));
+25|                backtrack(end + 1);
+26|                currentPath.remove(currentPath.size() - 1);
+27|            }
+28|        } }
+29|
+30|        new Walker().backtrack(0);
+31|        return result;
+32|    }
+33|
+-|    public static void main(String[] args) {
+34|        System.out.println(partition("aab"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+2|bool isPalindrome(string& text, int left, int right) {
+3|    while (left < right) {
+4|        if (text[left] != text[right]) return false;
+5|        left++;
+6|        right--;
+7|    }
+8|    return true;
+9|}
+10|
+11|vector<vector<string>> partition(string text) {
+12|    vector<vector<string>> result;
+13|    vector<string> currentPath;
+14|
+15|    function<void(int)> backtrack = [&](int start) {
+16|
+17|        if (start == text.size()) {
+18|            result.push_back(currentPath);
+19|            return;
+20|        }
+21|
+22|        for (int end = start; end < text.size(); end++) {
+23|            if (!isPalindrome(text, start, end)) continue;
+24|            currentPath.push_back(text.substr(start, end - start + 1));
+25|            backtrack(end + 1);
+26|            currentPath.pop_back();
+27|        }
+28|    };
+29|
+30|    backtrack(0);
+31|    return result;
+32|}
+33|
+-|int main() {
+34|    for (auto& p : partition("aab")) { cout << "["; for (string s : p) cout << s << " "; cout << "] "; }
+-|}
+`,
+  },
 };
