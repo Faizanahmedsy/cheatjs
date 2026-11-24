@@ -54,14 +54,14 @@ export default function AWSLayoutClient({
   );
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)]">
+    <div className="flex h-[calc(100vh-3.5rem-var(--mbar))]">
       {/* Mobile Sidebar Toggle */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button
             variant="outline"
             size="icon"
-            className="lg:hidden fixed bottom-4 right-4 z-40 h-12 w-12 rounded-full shadow-lg bg-slate-800 border-slate-700 hover:bg-slate-700"
+            className="lg:hidden fixed bottom-[calc(1rem+var(--mbar))] right-4 z-40 h-12 w-12 rounded-full shadow-lg bg-slate-800 border-slate-700 hover:bg-slate-700"
           >
             <Menu className="h-6 w-6" />
             <span className="sr-only">Toggle sidebar</span>

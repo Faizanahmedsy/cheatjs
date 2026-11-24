@@ -247,7 +247,9 @@ export function VisualLab() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        // This page has its own topic search; stop the site-wide search opening too.
         e.preventDefault();
+        e.stopImmediatePropagation();
         setPaletteOpen((o) => !o);
         return;
       }
@@ -271,8 +273,8 @@ export function VisualLab() {
         reset();
       }
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
   }, [next, pause, play, playing, prev, reset, paletteOpen]);
 
   const onPalettePick = (t: PaletteTarget) => {

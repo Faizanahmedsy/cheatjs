@@ -220,7 +220,7 @@ export function ReaderShell({ children }: { children: React.ReactNode }) {
       <div className="container mx-auto lg:flex lg:h-full">{children}</div>
 
       {/* Floating buttons */}
-      <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2">
+      <div className="fixed bottom-[calc(1rem+var(--mbar))] right-4 z-40 flex flex-col items-end gap-2">
         {showTop ? (
           <button
             type="button"
@@ -246,7 +246,7 @@ export function ReaderShell({ children }: { children: React.ReactNode }) {
         <div
           role="dialog"
           aria-label="Reading settings"
-          className="fixed bottom-20 right-4 z-50 max-h-[75dvh] w-[min(22rem,calc(100vw-2rem))] overflow-y-auto rounded-xl border border-slate-600 bg-slate-900 p-4 text-slate-200 shadow-2xl"
+          className="fixed bottom-[calc(5rem+var(--mbar))] right-4 z-50 max-h-[75dvh] w-[min(22rem,calc(100vw-2rem))] overflow-y-auto rounded-xl border border-slate-600 bg-slate-900 p-4 text-slate-200 shadow-2xl"
           style={{ colorScheme: "dark" }}
         >
           <div className="mb-3 flex items-center justify-between">

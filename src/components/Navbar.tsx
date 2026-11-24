@@ -34,6 +34,7 @@ export function Navbar() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setSearchOpen((v) => !v);
@@ -235,6 +236,47 @@ export function Navbar() {
           </div>
         </div>
       </header>
+
+      {/* Phones: two-row bottom bar — subjects on top, search underneath. */}
+      <nav aria-label="Quick navigation" className="mobile-bar fixed inset-x-3 bottom-3 z-50 flex flex-col gap-2 md:hidden">
+        <div className="flex items-stretch gap-2">
+          <ul className="flex flex-1 items-center justify-around rounded-full border border-slate-700 bg-slate-900/95 p-1 shadow-lg shadow-black/30 backdrop-blur">
+            {SUBJECTS.map((subject) => {
+              const on = current?.subject.id === subject.id;
+              return (
+                <li key={subject.id} className="flex-1">
+                  <Link
+                    href={subject.tabs[0].href}
+                    aria-current={on ? "page" : undefined}
+                    className={`flex flex-col items-center rounded-full px-1 py-1.5 text-[11px] font-semibold leading-tight transition-colors ${
+                      on ? "bg-cyan-500 text-white" : "text-slate-300 hover:bg-slate-800"
+                    }`}
+                  >
+                    <span aria-hidden="true" className="text-lg leading-none">{subject.emoji}</span>
+                    {subject.label === "JavaScript" ? "JS" : subject.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <a
+            href={BILLU.site}
+            className="flex w-[4.75rem] shrink-0 flex-col items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg shadow-black/30"
+          >
+            <span aria-hidden="true" className="text-lg leading-none">🏠</span>
+            <span className="text-[11px] font-semibold leading-tight">Billu</span>
+            <span className="sr-only"> — back to the Ustad Billu home page</span>
+          </a>
+        </div>
+        <button
+          type="button"
+          onClick={() => setSearchOpen(true)}
+          className="flex h-11 w-full items-center gap-2.5 rounded-full border border-slate-700 bg-slate-900/95 px-4 text-left text-sm text-slate-400 shadow-lg shadow-black/30 backdrop-blur"
+        >
+          <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="truncate">Search lessons, AWS services, DSA…</span>
+        </button>
+      </nav>
 
       <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
       {/* PDF Download Modal */}

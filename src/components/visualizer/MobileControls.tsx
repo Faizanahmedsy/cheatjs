@@ -19,7 +19,7 @@ export function MobileControls({ index, total, playing, onChange, onTogglePlay }
     <div
       role="toolbar"
       aria-label="Step controls"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-700 bg-slate-900/95 px-4 py-2 backdrop-blur-sm lg:hidden"
+      className="fixed inset-x-0 bottom-[var(--mbar)] z-40 border-t border-slate-700 bg-slate-900/95 px-4 py-2 backdrop-blur-sm lg:hidden"
       style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
     >
       <div className="mx-auto flex max-w-xl items-center gap-2">
