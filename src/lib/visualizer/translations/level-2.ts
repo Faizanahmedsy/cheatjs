@@ -2019,4 +2019,609 @@ export const LEVEL_2_TRANSLATIONS: Record<string, TranslationSet> = {
 -|}
 `,
   },
+  "koko-eating-bananas": {
+    python: `
+-|import math
+-|
+1|def min_eating_speed(piles, hours_allowed):
+2|    low_index = 1
+3|    high_index = max(piles)
+4|
+5|    while low_index < high_index:
+6|        middle_index = (low_index + high_index) // 2
+7|
+8|        hours = 0
+9|        for pile_index in range(len(piles)):
+10|            hours += math.ceil(piles[pile_index] / middle_index)
+12|        if hours <= hours_allowed:
+13|            high_index = middle_index
+14|        else:
+15|            low_index = middle_index + 1
+18|    return low_index
+20|
+21|print(min_eating_speed([3, 6, 7, 11], 8))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int minEatingSpeed(int[] piles, int hoursAllowed) {
+2|        int lowIndex = 1;
+3|        int highIndex = Arrays.stream(piles).max().getAsInt();
+4|
+5|        while (lowIndex < highIndex) {
+6|            int middleIndex = (lowIndex + highIndex) / 2;
+7|
+8|            int hours = 0;
+9|            for (int pileIndex = 0; pileIndex < piles.length; pileIndex++) {
+10|                hours += (piles[pileIndex] + middleIndex - 1) / middleIndex;
+11|            }
+12|            if (hours <= hoursAllowed) {
+13|                highIndex = middleIndex;
+14|            } else {
+15|                lowIndex = middleIndex + 1;
+16|            }
+17|        }
+18|        return lowIndex;
+19|    }
+20|
+-|    public static void main(String[] args) {
+21|        System.out.println(minEatingSpeed(new int[]{3, 6, 7, 11}, 8));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int minEatingSpeed(vector<int> piles, int hoursAllowed) {
+2|    int lowIndex = 1;
+3|    int highIndex = *max_element(piles.begin(), piles.end());
+4|
+5|    while (lowIndex < highIndex) {
+6|        int middleIndex = (lowIndex + highIndex) / 2;
+7|
+8|        int hours = 0;
+9|        for (int pileIndex = 0; pileIndex < piles.size(); pileIndex++) {
+10|            hours += (piles[pileIndex] + middleIndex - 1) / middleIndex;
+11|        }
+12|        if (hours <= hoursAllowed) {
+13|            highIndex = middleIndex;
+14|        } else {
+15|            lowIndex = middleIndex + 1;
+16|        }
+17|    }
+18|    return lowIndex;
+19|}
+20|
+-|int main() {
+21|    cout << minEatingSpeed({3, 6, 7, 11}, 8) << endl;
+-|}
+`,
+  },
+  "reverse-words-in-a-string": {
+    python: `
+1|def reverse_words(text):
+2|    words = []
+3|    char_index = len(text) - 1
+4|    while char_index >= 0:
+5|
+6|        while char_index >= 0 and text[char_index] == " ": char_index -= 1
+7|        if char_index < 0: break
+8|        end = char_index
+9|
+10|        while char_index >= 0 and text[char_index] != " ": char_index -= 1
+11|        words.append(text[char_index + 1:end + 1])
+13|    return " ".join(words)
+15|
+16|print(repr(reverse_words("  the sky  is blue ")))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static String reverseWords(String text) {
+2|        List<String> words = new ArrayList<>();
+3|        int charIndex = text.length() - 1;
+4|        while (charIndex >= 0) {
+5|
+6|            while (charIndex >= 0 && text.charAt(charIndex) == ' ') charIndex--;
+7|            if (charIndex < 0) break;
+8|            int end = charIndex;
+9|
+10|            while (charIndex >= 0 && text.charAt(charIndex) != ' ') charIndex--;
+11|            words.add(text.substring(charIndex + 1, end + 1));
+12|        }
+13|        return String.join(" ", words);
+14|    }
+15|
+-|    public static void main(String[] args) {
+16|        System.out.println(reverseWords("  the sky  is blue "));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|string reverseWords(string text) {
+2|    vector<string> words;
+3|    int charIndex = text.size() - 1;
+4|    while (charIndex >= 0) {
+5|
+6|        while (charIndex >= 0 && text[charIndex] == ' ') charIndex--;
+7|        if (charIndex < 0) break;
+8|        int end = charIndex;
+9|
+10|        while (charIndex >= 0 && text[charIndex] != ' ') charIndex--;
+11|        words.push_back(text.substr(charIndex + 1, end - charIndex));
+12|    }
+13|    string result; for (int i = 0; i < words.size(); i++) result += (i ? " " : "") + words[i]; return result;
+14|}
+15|
+-|int main() {
+16|    cout << reverseWords("  the sky  is blue ") << endl;
+-|}
+`,
+  },
+  "zigzag-conversion": {
+    python: `
+1|def convert(text, num_rows):
+2|    if num_rows == 1: return text
+3|    row_strings = []
+4|    for row_number in range(num_rows): row_strings.append("")
+5|    current_row_index = 0
+6|    step = 1
+7|    for character in text:
+8|        row_strings[current_row_index] += character
+9|
+10|        if current_row_index == 0: step = 1
+11|        elif current_row_index == num_rows - 1: step = -1
+12|        current_row_index += step
+14|    return "".join(row_strings)
+16|
+17|print(convert("PAYPALISHIRING", 3))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static String convert(String text, int numRows) {
+2|        if (numRows == 1) return text;
+3|        List<StringBuilder> rowStrings = new ArrayList<>();
+4|        for (int rowNumber = 0; rowNumber < numRows; rowNumber++) rowStrings.add(new StringBuilder());
+5|        int currentRowIndex = 0;
+6|        int step = 1;
+7|        for (char character : text.toCharArray()) {
+8|            rowStrings.get(currentRowIndex).append(character);
+9|
+10|            if (currentRowIndex == 0) step = 1;
+11|            else if (currentRowIndex == numRows - 1) step = -1;
+12|            currentRowIndex += step;
+13|        }
+14|        return String.join("", rowStrings);
+15|    }
+16|
+-|    public static void main(String[] args) {
+17|        System.out.println(convert("PAYPALISHIRING", 3));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|string convert(string text, int numRows) {
+2|    if (numRows == 1) return text;
+3|    vector<string> rowStrings;
+4|    for (int rowNumber = 0; rowNumber < numRows; rowNumber++) rowStrings.push_back("");
+5|    int currentRowIndex = 0;
+6|    int step = 1;
+7|    for (char character : text) {
+8|        rowStrings[currentRowIndex] += character;
+9|
+10|        if (currentRowIndex == 0) step = 1;
+11|        else if (currentRowIndex == numRows - 1) step = -1;
+12|        currentRowIndex += step;
+13|    }
+14|    string result; for (string row : rowStrings) result += row; return result;
+15|}
+16|
+-|int main() {
+17|    cout << convert("PAYPALISHIRING", 3) << endl;
+-|}
+`,
+  },
+  "string-to-integer-atoi": {
+    python: `
+1|def my_atoi(text):
+2|    char_index = 0
+3|
+4|    while char_index < len(text) and text[char_index] == " ": char_index += 1
+5|
+6|    sign = 1
+7|    if char_index < len(text) and (text[char_index] == "-" or text[char_index] == "+"):
+8|        if text[char_index] == "-": sign = -1
+9|        char_index += 1
+11|
+12|    result = 0
+13|    while char_index < len(text) and "0" <= text[char_index] <= "9":
+14|        result = result * 10 + int(text[char_index])
+15|        char_index += 1
+17|    result = sign * result
+18|
+19|    INT_MAX = 2147483647
+20|    INT_MIN = -2147483648
+21|    if result > INT_MAX: return INT_MAX
+22|    if result < INT_MIN: return INT_MIN
+23|    return result
+25|
+26|print(my_atoi("   -42abc"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int myAtoi(String text) {
+2|        int charIndex = 0;
+3|
+4|        while (charIndex < text.length() && text.charAt(charIndex) == ' ') charIndex++;
+5|
+6|        int sign = 1;
+7|        if (charIndex < text.length() && (text.charAt(charIndex) == '-' || text.charAt(charIndex) == '+')) {
+8|            if (text.charAt(charIndex) == '-') sign = -1;
+9|            charIndex++;
+10|        }
+11|
+12|        long result = 0;
+13|        while (charIndex < text.length() && text.charAt(charIndex) >= '0' && text.charAt(charIndex) <= '9' && result <= Integer.MAX_VALUE + 1L) {
+14|            result = result * 10 + (text.charAt(charIndex) - '0');
+15|            charIndex++;
+16|        }
+17|        result = sign * result;
+18|
+19|        final long INT_MAX = 2147483647;
+20|        final long INT_MIN = -2147483648;
+21|        if (result > INT_MAX) return (int) INT_MAX;
+22|        if (result < INT_MIN) return (int) INT_MIN;
+23|        return (int) result;
+24|    }
+25|
+-|    public static void main(String[] args) {
+26|        System.out.println(myAtoi("   -42abc"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int myAtoi(string text) {
+2|    int charIndex = 0;
+3|
+4|    while (charIndex < text.size() && text[charIndex] == ' ') charIndex++;
+5|
+6|    int sign = 1;
+7|    if (charIndex < text.size() && (text[charIndex] == '-' || text[charIndex] == '+')) {
+8|        if (text[charIndex] == '-') sign = -1;
+9|        charIndex++;
+10|    }
+11|
+12|    long long result = 0;
+13|    while (charIndex < text.size() && text[charIndex] >= '0' && text[charIndex] <= '9' && result <= INT_MAX + 1LL) {
+14|        result = result * 10 + (text[charIndex] - '0');
+15|        charIndex++;
+16|    }
+17|    result = sign * result;
+18|
+19|    const long long MAX_INT = 2147483647;
+20|    const long long MIN_INT = -2147483648LL;
+21|    if (result > MAX_INT) return MAX_INT;
+22|    if (result < MIN_INT) return MIN_INT;
+23|    return result;
+24|}
+25|
+-|int main() {
+26|    cout << myAtoi("   -42abc") << endl;
+-|}
+`,
+  },
+  "multiply-strings": {
+    python: `
+1|def multiply(num1, num2):
+2|    first_length = len(num1)
+3|    second_length = len(num2)
+4|    digit_slots = []
+5|    for slot_index in range(first_length + second_length): digit_slots.append(0)
+6|    for first_digit_index in range(first_length - 1, -1, -1):
+7|        for second_digit_index in range(second_length - 1, -1, -1):
+8|            product = int(num1[first_digit_index]) * int(num2[second_digit_index])
+9|            column_sum = product + digit_slots[first_digit_index + second_digit_index + 1]
+10|            digit_slots[first_digit_index + second_digit_index + 1] = column_sum % 10
+11|            digit_slots[first_digit_index + second_digit_index] += column_sum // 10
+14|
+15|    result = ""
+16|    for digit_slot in digit_slots:
+17|        if result == "" and digit_slot == 0: continue
+18|        result += str(digit_slot)
+20|    return "0" if result == "" else result
+22|
+23|print(multiply("123", "45"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static String multiply(String num1, String num2) {
+2|        int firstLength = num1.length();
+3|        int secondLength = num2.length();
+4|        int[] digitSlots = new int[firstLength + secondLength];
+5|        for (int slotIndex = 0; slotIndex < firstLength + secondLength; slotIndex++) digitSlots[slotIndex] = 0;
+6|        for (int firstDigitIndex = firstLength - 1; firstDigitIndex >= 0; firstDigitIndex--) {
+7|            for (int secondDigitIndex = secondLength - 1; secondDigitIndex >= 0; secondDigitIndex--) {
+8|                int product = (num1.charAt(firstDigitIndex) - '0') * (num2.charAt(secondDigitIndex) - '0');
+9|                int columnSum = product + digitSlots[firstDigitIndex + secondDigitIndex + 1];
+10|                digitSlots[firstDigitIndex + secondDigitIndex + 1] = columnSum % 10;
+11|                digitSlots[firstDigitIndex + secondDigitIndex] += columnSum / 10;
+12|            }
+13|        }
+14|
+15|        StringBuilder result = new StringBuilder();
+16|        for (int digitSlot : digitSlots) {
+17|            if (result.length() == 0 && digitSlot == 0) continue;
+18|            result.append(digitSlot);
+19|        }
+20|        return result.length() == 0 ? "0" : result.toString();
+21|    }
+22|
+-|    public static void main(String[] args) {
+23|        System.out.println(multiply("123", "45"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|string multiply(string num1, string num2) {
+2|    int firstLength = num1.size();
+3|    int secondLength = num2.size();
+4|    vector<int> digitSlots;
+5|    for (int slotIndex = 0; slotIndex < firstLength + secondLength; slotIndex++) digitSlots.push_back(0);
+6|    for (int firstDigitIndex = firstLength - 1; firstDigitIndex >= 0; firstDigitIndex--) {
+7|        for (int secondDigitIndex = secondLength - 1; secondDigitIndex >= 0; secondDigitIndex--) {
+8|            int product = (num1[firstDigitIndex] - '0') * (num2[secondDigitIndex] - '0');
+9|            int columnSum = product + digitSlots[firstDigitIndex + secondDigitIndex + 1];
+10|            digitSlots[firstDigitIndex + secondDigitIndex + 1] = columnSum % 10;
+11|            digitSlots[firstDigitIndex + secondDigitIndex] += columnSum / 10;
+12|        }
+13|    }
+14|
+15|    string result = "";
+16|    for (int digitSlot : digitSlots) {
+17|        if (result == "" && digitSlot == 0) continue;
+18|        result += to_string(digitSlot);
+19|    }
+20|    return result == "" ? "0" : result;
+21|}
+22|
+-|int main() {
+23|    cout << multiply("123", "45") << endl;
+-|}
+`,
+  },
+  "simplify-path": {
+    python: `
+1|def simplify_path(input_path):
+2|    parts = input_path.split("/")
+3|    stack = []
+4|    for part in parts:
+5|        if part == "" or part == ".": continue
+6|        if part == "..":
+7|            if len(stack) > 0: stack.pop()
+8|        else:
+9|            stack.append(part)
+12|    return "/" + "/".join(stack)
+14|
+15|print(simplify_path("/home//foo/../bar/./"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static String simplifyPath(String inputPath) {
+2|        String[] parts = inputPath.split("/");
+3|        List<String> stack = new ArrayList<>();
+4|        for (String part : parts) {
+5|            if (part.equals("") || part.equals(".")) continue;
+6|            if (part.equals("..")) {
+7|                if (stack.size() > 0) stack.remove(stack.size() - 1);
+8|            } else {
+9|                stack.add(part);
+10|            }
+11|        }
+12|        return "/" + String.join("/", stack);
+13|    }
+14|
+-|    public static void main(String[] args) {
+15|        System.out.println(simplifyPath("/home//foo/../bar/./"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|string simplifyPath(string inputPath) {
+2|    vector<string> parts; stringstream ss(inputPath); string p; while (getline(ss, p, '/')) parts.push_back(p);
+3|    vector<string> stack;
+4|    for (string part : parts) {
+5|        if (part == "" || part == ".") continue;
+6|        if (part == "..") {
+7|            if (stack.size() > 0) stack.pop_back();
+8|        } else {
+9|            stack.push_back(part);
+10|        }
+11|    }
+12|    string result = ""; for (string s : stack) result += "/" + s; return result == "" ? "/" : result;
+13|}
+14|
+-|int main() {
+15|    cout << simplifyPath("/home//foo/../bar/./") << endl;
+-|}
+`,
+  },
+  "compare-version-numbers": {
+    python: `
+1|def compare_version(version1, version2):
+2|    first_parts = version1.split(".")
+3|    second_parts = version2.split(".")
+4|    part_count = max(len(first_parts), len(second_parts))
+5|    for part_index in range(part_count):
+6|
+7|        first_part = int(first_parts[part_index]) if part_index < len(first_parts) else 0
+8|        second_part = int(second_parts[part_index]) if part_index < len(second_parts) else 0
+9|        if first_part < second_part: return -1
+10|        if first_part > second_part: return 1
+12|    return 0
+14|
+15|print(compare_version("1.2", "1.10"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int compareVersion(String version1, String version2) {
+2|        String[] firstParts = version1.split("\\\\.");
+3|        String[] secondParts = version2.split("\\\\.");
+4|        int partCount = Math.max(firstParts.length, secondParts.length);
+5|        for (int partIndex = 0; partIndex < partCount; partIndex++) {
+6|
+7|            int firstPart = partIndex < firstParts.length ? Integer.parseInt(firstParts[partIndex]) : 0;
+8|            int secondPart = partIndex < secondParts.length ? Integer.parseInt(secondParts[partIndex]) : 0;
+9|            if (firstPart < secondPart) return -1;
+10|            if (firstPart > secondPart) return 1;
+11|        }
+12|        return 0;
+13|    }
+14|
+-|    public static void main(String[] args) {
+15|        System.out.println(compareVersion("1.2", "1.10"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int compareVersion(string version1, string version2) {
+2|    vector<string> firstParts; { stringstream ss(version1); string p; while (getline(ss, p, '.')) firstParts.push_back(p); }
+3|    vector<string> secondParts; { stringstream ss(version2); string p; while (getline(ss, p, '.')) secondParts.push_back(p); }
+4|    int partCount = max(firstParts.size(), secondParts.size());
+5|    for (int partIndex = 0; partIndex < partCount; partIndex++) {
+6|
+7|        int firstPart = partIndex < firstParts.size() ? stoi(firstParts[partIndex]) : 0;
+8|        int secondPart = partIndex < secondParts.size() ? stoi(secondParts[partIndex]) : 0;
+9|        if (firstPart < secondPart) return -1;
+10|        if (firstPart > secondPart) return 1;
+11|    }
+12|    return 0;
+13|}
+14|
+-|int main() {
+15|    cout << compareVersion("1.2", "1.10") << endl;
+-|}
+`,
+  },
+  "decode-string": {
+    python: `
+1|def decode_string(text):
+2|    counts = []
+3|    texts = []
+4|    current_text = ""
+5|    current_number = 0
+6|    for character in text:
+7|        if "0" <= character <= "9":
+8|            current_number = current_number * 10 + int(character)
+9|        elif character == "[":
+10|            counts.append(current_number)
+11|            texts.append(current_text)
+12|            current_number = 0
+13|            current_text = ""
+14|        elif character == "]":
+15|            repeat_count = counts.pop()
+16|            before = texts.pop()
+17|            current_text = before + current_text * repeat_count
+18|        else:
+19|            current_text += character
+22|    return current_text
+24|
+25|print(decode_string("3[a2[c]]"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static String decodeString(String text) {
+2|        Deque<Integer> counts = new ArrayDeque<>();
+3|        Deque<String> texts = new ArrayDeque<>();
+4|        String currentText = "";
+5|        int currentNumber = 0;
+6|        for (char character : text.toCharArray()) {
+7|            if (character >= '0' && character <= '9') {
+8|                currentNumber = currentNumber * 10 + (character - '0');
+9|            } else if (character == '[') {
+10|                counts.push(currentNumber);
+11|                texts.push(currentText);
+12|                currentNumber = 0;
+13|                currentText = "";
+14|            } else if (character == ']') {
+15|                int repeatCount = counts.pop();
+16|                String before = texts.pop();
+17|                currentText = before + currentText.repeat(repeatCount);
+18|            } else {
+19|                currentText += character;
+20|            }
+21|        }
+22|        return currentText;
+23|    }
+24|
+-|    public static void main(String[] args) {
+25|        System.out.println(decodeString("3[a2[c]]"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|string decodeString(string text) {
+2|    vector<int> counts;
+3|    vector<string> texts;
+4|    string currentText = "";
+5|    int currentNumber = 0;
+6|    for (char character : text) {
+7|        if (character >= '0' && character <= '9') {
+8|            currentNumber = currentNumber * 10 + (character - '0');
+9|        } else if (character == '[') {
+10|            counts.push_back(currentNumber);
+11|            texts.push_back(currentText);
+12|            currentNumber = 0;
+13|            currentText = "";
+14|        } else if (character == ']') {
+15|            int repeatCount = counts.back(); counts.pop_back();
+16|            string before = texts.back(); texts.pop_back();
+17|            string repeated; for (int i = 0; i < repeatCount; i++) repeated += currentText; currentText = before + repeated;
+18|        } else {
+19|            currentText += character;
+20|        }
+21|    }
+22|    return currentText;
+23|}
+24|
+-|int main() {
+25|    cout << decodeString("3[a2[c]]") << endl;
+-|}
+`,
+  },
 };

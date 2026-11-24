@@ -1815,3 +1815,535 @@ vector<vector<int>> matrix = {
     {23, 30, 34, 60},
 };
 cout << boolalpha << searchMatrix(matrix, 3) << endl;
+
+## koko-eating-bananas
+@python
+~import math
+~
+def min_eating_speed(piles, hours_allowed):
+    low_index = 1
+    high_index = max(piles)
+_
+    while low_index < high_index:
+        middle_index = (low_index + high_index) // 2
+_
+        hours = 0
+        for pile_index in range(len(piles)):
+            hours += math.ceil(piles[pile_index] / middle_index)
+.
+        if hours <= hours_allowed:
+            high_index = middle_index
+        else:
+            low_index = middle_index + 1
+.
+.
+    return low_index
+.
+_
+print(min_eating_speed([3, 6, 7, 11], 8))
+@java
+static int minEatingSpeed(int[] piles, int hoursAllowed) {
+    int lowIndex = 1;
+    int highIndex = Arrays.stream(piles).max().getAsInt();
+_
+    while (lowIndex < highIndex) {
+        int middleIndex = (lowIndex + highIndex) / 2;
+_
+        int hours = 0;
+        for (int pileIndex = 0; pileIndex < piles.length; pileIndex++) {
+            hours += (piles[pileIndex] + middleIndex - 1) / middleIndex;
+        }
+        if (hours <= hoursAllowed) {
+            highIndex = middleIndex;
+        } else {
+            lowIndex = middleIndex + 1;
+        }
+    }
+    return lowIndex;
+}
+_
+~M
+System.out.println(minEatingSpeed(new int[]{3, 6, 7, 11}, 8));
+@cpp
+int minEatingSpeed(vector<int> piles, int hoursAllowed) {
+    int lowIndex = 1;
+    int highIndex = *max_element(piles.begin(), piles.end());
+_
+    while (lowIndex < highIndex) {
+        int middleIndex = (lowIndex + highIndex) / 2;
+_
+        int hours = 0;
+        for (int pileIndex = 0; pileIndex < piles.size(); pileIndex++) {
+            hours += (piles[pileIndex] + middleIndex - 1) / middleIndex;
+        }
+        if (hours <= hoursAllowed) {
+            highIndex = middleIndex;
+        } else {
+            lowIndex = middleIndex + 1;
+        }
+    }
+    return lowIndex;
+}
+_
+~M
+cout << minEatingSpeed({3, 6, 7, 11}, 8) << endl;
+
+## reverse-words-in-a-string
+@python
+def reverse_words(text):
+    words = []
+    char_index = len(text) - 1
+    while char_index >= 0:
+_
+        while char_index >= 0 and text[char_index] == " ": char_index -= 1
+        if char_index < 0: break
+        end = char_index
+_
+        while char_index >= 0 and text[char_index] != " ": char_index -= 1
+        words.append(text[char_index + 1:end + 1])
+.
+    return " ".join(words)
+.
+_
+print(repr(reverse_words("  the sky  is blue ")))
+@java
+static String reverseWords(String text) {
+    List<String> words = new ArrayList<>();
+    int charIndex = text.length() - 1;
+    while (charIndex >= 0) {
+_
+        while (charIndex >= 0 && text.charAt(charIndex) == ' ') charIndex--;
+        if (charIndex < 0) break;
+        int end = charIndex;
+_
+        while (charIndex >= 0 && text.charAt(charIndex) != ' ') charIndex--;
+        words.add(text.substring(charIndex + 1, end + 1));
+    }
+    return String.join(" ", words);
+}
+_
+~M
+System.out.println(reverseWords("  the sky  is blue "));
+@cpp
+string reverseWords(string text) {
+    vector<string> words;
+    int charIndex = text.size() - 1;
+    while (charIndex >= 0) {
+_
+        while (charIndex >= 0 && text[charIndex] == ' ') charIndex--;
+        if (charIndex < 0) break;
+        int end = charIndex;
+_
+        while (charIndex >= 0 && text[charIndex] != ' ') charIndex--;
+        words.push_back(text.substr(charIndex + 1, end - charIndex));
+    }
+    string result; for (int i = 0; i < words.size(); i++) result += (i ? " " : "") + words[i]; return result;
+}
+_
+~M
+cout << reverseWords("  the sky  is blue ") << endl;
+
+## zigzag-conversion
+@python
+def convert(text, num_rows):
+    if num_rows == 1: return text
+    row_strings = []
+    for row_number in range(num_rows): row_strings.append("")
+    current_row_index = 0
+    step = 1
+    for character in text:
+        row_strings[current_row_index] += character
+_
+        if current_row_index == 0: step = 1
+        elif current_row_index == num_rows - 1: step = -1
+        current_row_index += step
+.
+    return "".join(row_strings)
+.
+_
+print(convert("PAYPALISHIRING", 3))
+@java
+static String convert(String text, int numRows) {
+    if (numRows == 1) return text;
+    List<StringBuilder> rowStrings = new ArrayList<>();
+    for (int rowNumber = 0; rowNumber < numRows; rowNumber++) rowStrings.add(new StringBuilder());
+    int currentRowIndex = 0;
+    int step = 1;
+    for (char character : text.toCharArray()) {
+        rowStrings.get(currentRowIndex).append(character);
+_
+        if (currentRowIndex == 0) step = 1;
+        else if (currentRowIndex == numRows - 1) step = -1;
+        currentRowIndex += step;
+    }
+    return String.join("", rowStrings);
+}
+_
+~M
+System.out.println(convert("PAYPALISHIRING", 3));
+@cpp
+string convert(string text, int numRows) {
+    if (numRows == 1) return text;
+    vector<string> rowStrings;
+    for (int rowNumber = 0; rowNumber < numRows; rowNumber++) rowStrings.push_back("");
+    int currentRowIndex = 0;
+    int step = 1;
+    for (char character : text) {
+        rowStrings[currentRowIndex] += character;
+_
+        if (currentRowIndex == 0) step = 1;
+        else if (currentRowIndex == numRows - 1) step = -1;
+        currentRowIndex += step;
+    }
+    string result; for (string row : rowStrings) result += row; return result;
+}
+_
+~M
+cout << convert("PAYPALISHIRING", 3) << endl;
+
+## string-to-integer-atoi
+@python
+def my_atoi(text):
+    char_index = 0
+_
+    while char_index < len(text) and text[char_index] == " ": char_index += 1
+_
+    sign = 1
+    if char_index < len(text) and (text[char_index] == "-" or text[char_index] == "+"):
+        if text[char_index] == "-": sign = -1
+        char_index += 1
+.
+_
+    result = 0
+    while char_index < len(text) and "0" <= text[char_index] <= "9":
+        result = result * 10 + int(text[char_index])
+        char_index += 1
+.
+    result = sign * result
+_
+    INT_MAX = 2147483647
+    INT_MIN = -2147483648
+    if result > INT_MAX: return INT_MAX
+    if result < INT_MIN: return INT_MIN
+    return result
+.
+_
+print(my_atoi("   -42abc"))
+@java
+static int myAtoi(String text) {
+    int charIndex = 0;
+_
+    while (charIndex < text.length() && text.charAt(charIndex) == ' ') charIndex++;
+_
+    int sign = 1;
+    if (charIndex < text.length() && (text.charAt(charIndex) == '-' || text.charAt(charIndex) == '+')) {
+        if (text.charAt(charIndex) == '-') sign = -1;
+        charIndex++;
+    }
+_
+    long result = 0;
+    while (charIndex < text.length() && text.charAt(charIndex) >= '0' && text.charAt(charIndex) <= '9' && result <= Integer.MAX_VALUE + 1L) {
+        result = result * 10 + (text.charAt(charIndex) - '0');
+        charIndex++;
+    }
+    result = sign * result;
+_
+    final long INT_MAX = 2147483647;
+    final long INT_MIN = -2147483648;
+    if (result > INT_MAX) return (int) INT_MAX;
+    if (result < INT_MIN) return (int) INT_MIN;
+    return (int) result;
+}
+_
+~M
+System.out.println(myAtoi("   -42abc"));
+@cpp
+int myAtoi(string text) {
+    int charIndex = 0;
+_
+    while (charIndex < text.size() && text[charIndex] == ' ') charIndex++;
+_
+    int sign = 1;
+    if (charIndex < text.size() && (text[charIndex] == '-' || text[charIndex] == '+')) {
+        if (text[charIndex] == '-') sign = -1;
+        charIndex++;
+    }
+_
+    long long result = 0;
+    while (charIndex < text.size() && text[charIndex] >= '0' && text[charIndex] <= '9' && result <= INT_MAX + 1LL) {
+        result = result * 10 + (text[charIndex] - '0');
+        charIndex++;
+    }
+    result = sign * result;
+_
+    const long long MAX_INT = 2147483647;
+    const long long MIN_INT = -2147483648LL;
+    if (result > MAX_INT) return MAX_INT;
+    if (result < MIN_INT) return MIN_INT;
+    return result;
+}
+_
+~M
+cout << myAtoi("   -42abc") << endl;
+
+## multiply-strings
+@python
+def multiply(num1, num2):
+    first_length = len(num1)
+    second_length = len(num2)
+    digit_slots = []
+    for slot_index in range(first_length + second_length): digit_slots.append(0)
+    for first_digit_index in range(first_length - 1, -1, -1):
+        for second_digit_index in range(second_length - 1, -1, -1):
+            product = int(num1[first_digit_index]) * int(num2[second_digit_index])
+            column_sum = product + digit_slots[first_digit_index + second_digit_index + 1]
+            digit_slots[first_digit_index + second_digit_index + 1] = column_sum % 10
+            digit_slots[first_digit_index + second_digit_index] += column_sum // 10
+.
+.
+_
+    result = ""
+    for digit_slot in digit_slots:
+        if result == "" and digit_slot == 0: continue
+        result += str(digit_slot)
+.
+    return "0" if result == "" else result
+.
+_
+print(multiply("123", "45"))
+@java
+static String multiply(String num1, String num2) {
+    int firstLength = num1.length();
+    int secondLength = num2.length();
+    int[] digitSlots = new int[firstLength + secondLength];
+    for (int slotIndex = 0; slotIndex < firstLength + secondLength; slotIndex++) digitSlots[slotIndex] = 0;
+    for (int firstDigitIndex = firstLength - 1; firstDigitIndex >= 0; firstDigitIndex--) {
+        for (int secondDigitIndex = secondLength - 1; secondDigitIndex >= 0; secondDigitIndex--) {
+            int product = (num1.charAt(firstDigitIndex) - '0') * (num2.charAt(secondDigitIndex) - '0');
+            int columnSum = product + digitSlots[firstDigitIndex + secondDigitIndex + 1];
+            digitSlots[firstDigitIndex + secondDigitIndex + 1] = columnSum % 10;
+            digitSlots[firstDigitIndex + secondDigitIndex] += columnSum / 10;
+        }
+    }
+_
+    StringBuilder result = new StringBuilder();
+    for (int digitSlot : digitSlots) {
+        if (result.length() == 0 && digitSlot == 0) continue;
+        result.append(digitSlot);
+    }
+    return result.length() == 0 ? "0" : result.toString();
+}
+_
+~M
+System.out.println(multiply("123", "45"));
+@cpp
+string multiply(string num1, string num2) {
+    int firstLength = num1.size();
+    int secondLength = num2.size();
+    vector<int> digitSlots;
+    for (int slotIndex = 0; slotIndex < firstLength + secondLength; slotIndex++) digitSlots.push_back(0);
+    for (int firstDigitIndex = firstLength - 1; firstDigitIndex >= 0; firstDigitIndex--) {
+        for (int secondDigitIndex = secondLength - 1; secondDigitIndex >= 0; secondDigitIndex--) {
+            int product = (num1[firstDigitIndex] - '0') * (num2[secondDigitIndex] - '0');
+            int columnSum = product + digitSlots[firstDigitIndex + secondDigitIndex + 1];
+            digitSlots[firstDigitIndex + secondDigitIndex + 1] = columnSum % 10;
+            digitSlots[firstDigitIndex + secondDigitIndex] += columnSum / 10;
+        }
+    }
+_
+    string result = "";
+    for (int digitSlot : digitSlots) {
+        if (result == "" && digitSlot == 0) continue;
+        result += to_string(digitSlot);
+    }
+    return result == "" ? "0" : result;
+}
+_
+~M
+cout << multiply("123", "45") << endl;
+
+## simplify-path
+@python
+def simplify_path(input_path):
+    parts = input_path.split("/")
+    stack = []
+    for part in parts:
+        if part == "" or part == ".": continue
+        if part == "..":
+            if len(stack) > 0: stack.pop()
+        else:
+            stack.append(part)
+.
+.
+    return "/" + "/".join(stack)
+.
+_
+print(simplify_path("/home//foo/../bar/./"))
+@java
+static String simplifyPath(String inputPath) {
+    String[] parts = inputPath.split("/");
+    List<String> stack = new ArrayList<>();
+    for (String part : parts) {
+        if (part.equals("") || part.equals(".")) continue;
+        if (part.equals("..")) {
+            if (stack.size() > 0) stack.remove(stack.size() - 1);
+        } else {
+            stack.add(part);
+        }
+    }
+    return "/" + String.join("/", stack);
+}
+_
+~M
+System.out.println(simplifyPath("/home//foo/../bar/./"));
+@cpp
+string simplifyPath(string inputPath) {
+    vector<string> parts; stringstream ss(inputPath); string p; while (getline(ss, p, '/')) parts.push_back(p);
+    vector<string> stack;
+    for (string part : parts) {
+        if (part == "" || part == ".") continue;
+        if (part == "..") {
+            if (stack.size() > 0) stack.pop_back();
+        } else {
+            stack.push_back(part);
+        }
+    }
+    string result = ""; for (string s : stack) result += "/" + s; return result == "" ? "/" : result;
+}
+_
+~M
+cout << simplifyPath("/home//foo/../bar/./") << endl;
+
+## compare-version-numbers
+@python
+def compare_version(version1, version2):
+    first_parts = version1.split(".")
+    second_parts = version2.split(".")
+    part_count = max(len(first_parts), len(second_parts))
+    for part_index in range(part_count):
+_
+        first_part = int(first_parts[part_index]) if part_index < len(first_parts) else 0
+        second_part = int(second_parts[part_index]) if part_index < len(second_parts) else 0
+        if first_part < second_part: return -1
+        if first_part > second_part: return 1
+.
+    return 0
+.
+_
+print(compare_version("1.2", "1.10"))
+@java
+static int compareVersion(String version1, String version2) {
+    String[] firstParts = version1.split("\\.");
+    String[] secondParts = version2.split("\\.");
+    int partCount = Math.max(firstParts.length, secondParts.length);
+    for (int partIndex = 0; partIndex < partCount; partIndex++) {
+_
+        int firstPart = partIndex < firstParts.length ? Integer.parseInt(firstParts[partIndex]) : 0;
+        int secondPart = partIndex < secondParts.length ? Integer.parseInt(secondParts[partIndex]) : 0;
+        if (firstPart < secondPart) return -1;
+        if (firstPart > secondPart) return 1;
+    }
+    return 0;
+}
+_
+~M
+System.out.println(compareVersion("1.2", "1.10"));
+@cpp
+int compareVersion(string version1, string version2) {
+    vector<string> firstParts; { stringstream ss(version1); string p; while (getline(ss, p, '.')) firstParts.push_back(p); }
+    vector<string> secondParts; { stringstream ss(version2); string p; while (getline(ss, p, '.')) secondParts.push_back(p); }
+    int partCount = max(firstParts.size(), secondParts.size());
+    for (int partIndex = 0; partIndex < partCount; partIndex++) {
+_
+        int firstPart = partIndex < firstParts.size() ? stoi(firstParts[partIndex]) : 0;
+        int secondPart = partIndex < secondParts.size() ? stoi(secondParts[partIndex]) : 0;
+        if (firstPart < secondPart) return -1;
+        if (firstPart > secondPart) return 1;
+    }
+    return 0;
+}
+_
+~M
+cout << compareVersion("1.2", "1.10") << endl;
+
+## decode-string
+@python
+def decode_string(text):
+    counts = []
+    texts = []
+    current_text = ""
+    current_number = 0
+    for character in text:
+        if "0" <= character <= "9":
+            current_number = current_number * 10 + int(character)
+        elif character == "[":
+            counts.append(current_number)
+            texts.append(current_text)
+            current_number = 0
+            current_text = ""
+        elif character == "]":
+            repeat_count = counts.pop()
+            before = texts.pop()
+            current_text = before + current_text * repeat_count
+        else:
+            current_text += character
+.
+.
+    return current_text
+.
+_
+print(decode_string("3[a2[c]]"))
+@java
+static String decodeString(String text) {
+    Deque<Integer> counts = new ArrayDeque<>();
+    Deque<String> texts = new ArrayDeque<>();
+    String currentText = "";
+    int currentNumber = 0;
+    for (char character : text.toCharArray()) {
+        if (character >= '0' && character <= '9') {
+            currentNumber = currentNumber * 10 + (character - '0');
+        } else if (character == '[') {
+            counts.push(currentNumber);
+            texts.push(currentText);
+            currentNumber = 0;
+            currentText = "";
+        } else if (character == ']') {
+            int repeatCount = counts.pop();
+            String before = texts.pop();
+            currentText = before + currentText.repeat(repeatCount);
+        } else {
+            currentText += character;
+        }
+    }
+    return currentText;
+}
+_
+~M
+System.out.println(decodeString("3[a2[c]]"));
+@cpp
+string decodeString(string text) {
+    vector<int> counts;
+    vector<string> texts;
+    string currentText = "";
+    int currentNumber = 0;
+    for (char character : text) {
+        if (character >= '0' && character <= '9') {
+            currentNumber = currentNumber * 10 + (character - '0');
+        } else if (character == '[') {
+            counts.push_back(currentNumber);
+            texts.push_back(currentText);
+            currentNumber = 0;
+            currentText = "";
+        } else if (character == ']') {
+            int repeatCount = counts.back(); counts.pop_back();
+            string before = texts.back(); texts.pop_back();
+            string repeated; for (int i = 0; i < repeatCount; i++) repeated += currentText; currentText = before + repeated;
+        } else {
+            currentText += character;
+        }
+    }
+    return currentText;
+}
+_
+~M
+cout << decodeString("3[a2[c]]") << endl;
