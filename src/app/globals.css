@@ -397,7 +397,7 @@ html[data-mode="light"] body {
 /* Phones: room for the fixed two-row bottom bar (tabs + search). Floating buttons sit above it via --mbar. */
 :root { --mbar: 0px; }
 @media (max-width: 767px) {
-  :root { --mbar: calc(7.75rem + env(safe-area-inset-bottom)); }
+  :root { --mbar: calc(4.75rem + env(safe-area-inset-bottom)); }
   body { padding-bottom: var(--mbar); }
   .mobile-bar { bottom: max(0.75rem, env(safe-area-inset-bottom)); }
 }

@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Archive, ArrowLeft, BarChart3, ChevronDown, Download, Menu, Search, Youtube } from "lucide-react";
 import { ARCHIVED, BILLU, SITE_NAME, SUBJECTS, findSubject } from "@/lib/subjects";
 import { SearchDialog } from "./SearchDialog";
+import { MobileBar } from "./MobileBar";
 import { ModeToggle } from "./ModeToggle";
 import { cn } from "@/lib/utils";
 import { PDFDownloadModal } from "./PDFDownloadModal";
@@ -56,7 +57,7 @@ export function Navbar() {
               href={BILLU.site}
               title="Back to the Ustad Billu home page"
               aria-label="Back to the Ustad Billu home page"
-              className="-mr-1 inline-flex h-8 items-center gap-1 rounded-full border border-slate-700 px-2 text-xs font-medium text-slate-300 transition-colors hover:border-slate-500 hover:bg-slate-800 hover:text-slate-50 sm:px-2.5"
+              className="-mr-1 hidden h-8 items-center gap-1 rounded-full border border-slate-700 px-2 md:inline-flex text-xs font-medium text-slate-300 transition-colors hover:border-slate-500 hover:bg-slate-800 hover:text-slate-50 sm:px-2.5"
             >
               <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
               <span className="hidden sm:inline">Ustad Billu</span>
@@ -119,7 +120,7 @@ export function Navbar() {
             <button
               onClick={() => setSearchOpen(true)}
               aria-label="Search (Ctrl+K)"
-              className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-400 hover:text-slate-200"
+              className="hidden items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-400 hover:text-slate-200 md:flex"
             >
               <Search size={16} />
               <span className="hidden xl:inline">Search</span>
@@ -166,7 +167,7 @@ export function Navbar() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="lg:hidden text-slate-400 hover:text-slate-200"
+                  className="hidden text-slate-400 hover:text-slate-200 md:inline-flex lg:hidden"
                 >
                   <Menu className="h-6 w-6" />
                   <span className="sr-only">Toggle menu</span>
@@ -237,46 +238,11 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Phones: two-row bottom bar — subjects on top, search underneath. */}
-      <nav aria-label="Quick navigation" className="mobile-bar fixed inset-x-3 bottom-3 z-50 flex flex-col gap-2 md:hidden">
-        <div className="flex items-stretch gap-2">
-          <ul className="flex flex-1 items-center justify-around rounded-full border border-slate-700 bg-slate-900/95 p-1 shadow-lg shadow-black/30 backdrop-blur">
-            {SUBJECTS.map((subject) => {
-              const on = current?.subject.id === subject.id;
-              return (
-                <li key={subject.id} className="flex-1">
-                  <Link
-                    href={subject.tabs[0].href}
-                    aria-current={on ? "page" : undefined}
-                    className={`flex flex-col items-center rounded-full px-1 py-1.5 text-[11px] font-semibold leading-tight transition-colors ${
-                      on ? "bg-cyan-500 text-white" : "text-slate-300 hover:bg-slate-800"
-                    }`}
-                  >
-                    <span aria-hidden="true" className="text-lg leading-none">{subject.emoji}</span>
-                    {subject.label === "JavaScript" ? "JS" : subject.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-          <a
-            href={BILLU.site}
-            className="flex w-[4.75rem] shrink-0 flex-col items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg shadow-black/30"
-          >
-            <span aria-hidden="true" className="text-lg leading-none">🏠</span>
-            <span className="text-[11px] font-semibold leading-tight">Billu</span>
-            <span className="sr-only"> — back to the Ustad Billu home page</span>
-          </a>
-        </div>
-        <button
-          type="button"
-          onClick={() => setSearchOpen(true)}
-          className="flex h-11 w-full items-center gap-2.5 rounded-full border border-slate-700 bg-slate-900/95 px-4 text-left text-sm text-slate-400 shadow-lg shadow-black/30 backdrop-blur"
-        >
-          <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
-          <span className="truncate">Search lessons, AWS services, DSA…</span>
-        </button>
-      </nav>
+      <MobileBar
+        current={current?.subject ?? null}
+        onSearch={() => setSearchOpen(true)}
+        onPdf={pathname === "/javascript" ? () => setIsModalOpen(true) : undefined}
+      />
 
       <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
       {/* PDF Download Modal */}
