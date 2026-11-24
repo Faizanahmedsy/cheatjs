@@ -3328,3 +3328,474 @@ vector<vector<int>> image = {
     {1, 0, 1},
 };
 for (auto& row : floodFill(image, 1, 1, 2)) { for (int x : row) cout << x << " "; cout << "| "; }
+
+## meeting-rooms
+@python
+def can_attend_meetings(intervals):
+    intervals.sort(key=lambda meeting: meeting[0])
+_
+    for interval_index in range(1, len(intervals)):
+_
+        if intervals[interval_index][0] < intervals[interval_index - 1][1]:
+            return False
+.
+.
+    return True
+.
+_
+intervals = [[0, 30], [5, 10], [15, 20]]
+print(can_attend_meetings(intervals))
+@java
+static boolean canAttendMeetings(int[][] intervals) {
+    Arrays.sort(intervals, (firstMeeting, secondMeeting) -> firstMeeting[0] - secondMeeting[0]);
+_
+    for (int intervalIndex = 1; intervalIndex < intervals.length; intervalIndex++) {
+_
+        if (intervals[intervalIndex][0] < intervals[intervalIndex - 1][1]) {
+            return false;
+        }
+    }
+    return true;
+}
+_
+~M
+int[][] intervals = {{0, 30}, {5, 10}, {15, 20}};
+System.out.println(canAttendMeetings(intervals));
+@cpp
+bool canAttendMeetings(vector<vector<int>>& intervals) {
+    sort(intervals.begin(), intervals.end(), [](auto& firstMeeting, auto& secondMeeting) { return firstMeeting[0] < secondMeeting[0]; });
+_
+    for (int intervalIndex = 1; intervalIndex < intervals.size(); intervalIndex++) {
+_
+        if (intervals[intervalIndex][0] < intervals[intervalIndex - 1][1]) {
+            return false;
+        }
+    }
+    return true;
+}
+_
+~M
+vector<vector<int>> intervals = {{0, 30}, {5, 10}, {15, 20}};
+cout << boolalpha << canAttendMeetings(intervals) << endl;
+
+## merge-sorted-array
+@python
+def merge(nums1, nums1_count, nums2, nums2_count):
+    nums1_last_index = nums1_count - 1
+    nums2_last_index = nums2_count - 1
+    write_index = nums1_count + nums2_count - 1
+_
+    while nums2_last_index >= 0:
+        if nums1_last_index >= 0 and nums1[nums1_last_index] > nums2[nums2_last_index]:
+            nums1[write_index] = nums1[nums1_last_index]
+            nums1_last_index -= 1
+        else:
+            nums1[write_index] = nums2[nums2_last_index]
+            nums2_last_index -= 1
+.
+        write_index -= 1
+.
+    return nums1
+.
+_
+nums1 = [1, 2, 3, 0, 0, 0]
+nums2 = [2, 5, 6]
+print(merge(nums1, 3, nums2, 3))
+@java
+static int[] merge(int[] nums1, int nums1Count, int[] nums2, int nums2Count) {
+    int nums1LastIndex = nums1Count - 1;
+    int nums2LastIndex = nums2Count - 1;
+    int writeIndex = nums1Count + nums2Count - 1;
+_
+    while (nums2LastIndex >= 0) {
+        if (nums1LastIndex >= 0 && nums1[nums1LastIndex] > nums2[nums2LastIndex]) {
+            nums1[writeIndex] = nums1[nums1LastIndex];
+            nums1LastIndex--;
+        } else {
+            nums1[writeIndex] = nums2[nums2LastIndex];
+            nums2LastIndex--;
+        }
+        writeIndex--;
+    }
+    return nums1;
+}
+_
+~M
+int[] nums1 = {1, 2, 3, 0, 0, 0};
+int[] nums2 = {2, 5, 6};
+System.out.println(Arrays.toString(merge(nums1, 3, nums2, 3)));
+@cpp
+vector<int> merge(vector<int>& nums1, int nums1Count, vector<int>& nums2, int nums2Count) {
+    int nums1LastIndex = nums1Count - 1;
+    int nums2LastIndex = nums2Count - 1;
+    int writeIndex = nums1Count + nums2Count - 1;
+_
+    while (nums2LastIndex >= 0) {
+        if (nums1LastIndex >= 0 && nums1[nums1LastIndex] > nums2[nums2LastIndex]) {
+            nums1[writeIndex] = nums1[nums1LastIndex];
+            nums1LastIndex--;
+        } else {
+            nums1[writeIndex] = nums2[nums2LastIndex];
+            nums2LastIndex--;
+        }
+        writeIndex--;
+    }
+    return nums1;
+}
+_
+~M
+vector<int> nums1 = {1, 2, 3, 0, 0, 0};
+vector<int> nums2 = {2, 5, 6};
+for (int x : merge(nums1, 3, nums2, 3)) cout << x << " ";
+
+## climbing-stairs
+@python
+def climb_stairs(stair_count):
+    if stair_count <= 2: return stair_count
+    ways_to_reach = [0] * (stair_count + 1)
+    ways_to_reach[1] = 1
+    ways_to_reach[2] = 2
+_
+    for step_number in range(3, stair_count + 1):
+        ways_to_reach[step_number] = ways_to_reach[step_number - 1] + ways_to_reach[step_number - 2]
+.
+    return ways_to_reach[stair_count]
+.
+_
+print(climb_stairs(5))
+@java
+static int climbStairs(int stairCount) {
+    if (stairCount <= 2) return stairCount;
+    int[] waysToReach = new int[stairCount + 1];
+    waysToReach[1] = 1;
+    waysToReach[2] = 2;
+_
+    for (int stepNumber = 3; stepNumber <= stairCount; stepNumber++) {
+        waysToReach[stepNumber] = waysToReach[stepNumber - 1] + waysToReach[stepNumber - 2];
+    }
+    return waysToReach[stairCount];
+}
+_
+~M
+System.out.println(climbStairs(5));
+@cpp
+int climbStairs(int stairCount) {
+    if (stairCount <= 2) return stairCount;
+    vector<int> waysToReach(stairCount + 1, 0);
+    waysToReach[1] = 1;
+    waysToReach[2] = 2;
+_
+    for (int stepNumber = 3; stepNumber <= stairCount; stepNumber++) {
+        waysToReach[stepNumber] = waysToReach[stepNumber - 1] + waysToReach[stepNumber - 2];
+    }
+    return waysToReach[stairCount];
+}
+_
+~M
+cout << climbStairs(5) << endl;
+
+## min-cost-climbing-stairs
+@python
+def min_cost_climbing_stairs(step_costs):
+    step_count = len(step_costs)
+    cheapest_cost = [0] * (step_count + 1)
+_
+_
+    for step_number in range(2, step_count + 1):
+        one_step = cheapest_cost[step_number - 1] + step_costs[step_number - 1]
+        two_steps = cheapest_cost[step_number - 2] + step_costs[step_number - 2]
+        cheapest_cost[step_number] = min(one_step, two_steps)
+.
+    return cheapest_cost[step_count]
+.
+_
+step_costs = [1, 100, 1, 1, 1, 100, 1]
+print(min_cost_climbing_stairs(step_costs))
+@java
+static int minCostClimbingStairs(int[] stepCosts) {
+    int stepCount = stepCosts.length;
+    int[] cheapestCost = new int[stepCount + 1];
+_
+_
+    for (int stepNumber = 2; stepNumber <= stepCount; stepNumber++) {
+        int oneStep = cheapestCost[stepNumber - 1] + stepCosts[stepNumber - 1];
+        int twoSteps = cheapestCost[stepNumber - 2] + stepCosts[stepNumber - 2];
+        cheapestCost[stepNumber] = Math.min(oneStep, twoSteps);
+    }
+    return cheapestCost[stepCount];
+}
+_
+~M
+int[] stepCosts = {1, 100, 1, 1, 1, 100, 1};
+System.out.println(minCostClimbingStairs(stepCosts));
+@cpp
+int minCostClimbingStairs(vector<int>& stepCosts) {
+    int stepCount = stepCosts.size();
+    vector<int> cheapestCost(stepCount + 1, 0);
+_
+_
+    for (int stepNumber = 2; stepNumber <= stepCount; stepNumber++) {
+        int oneStep = cheapestCost[stepNumber - 1] + stepCosts[stepNumber - 1];
+        int twoSteps = cheapestCost[stepNumber - 2] + stepCosts[stepNumber - 2];
+        cheapestCost[stepNumber] = min(oneStep, twoSteps);
+    }
+    return cheapestCost[stepCount];
+}
+_
+~M
+vector<int> stepCosts = {1, 100, 1, 1, 1, 100, 1};
+cout << minCostClimbingStairs(stepCosts) << endl;
+
+## pascals-triangle
+@python
+def generate(num_rows):
+    triangle = [[1]]
+_
+    for row_index in range(1, num_rows):
+        row_above = triangle[row_index - 1]
+        new_row = [1] * (row_index + 1)
+        for column_index in range(1, row_index):
+            new_row[column_index] = row_above[column_index - 1] + row_above[column_index]
+.
+        triangle.append(new_row)
+.
+    return triangle
+.
+_
+print(generate(5))
+@java
+static List<List<Integer>> generate(int numRows) {
+    List<List<Integer>> triangle = new ArrayList<>(List.of(List.of(1)));
+_
+    for (int rowIndex = 1; rowIndex < numRows; rowIndex++) {
+        List<Integer> rowAbove = triangle.get(rowIndex - 1);
+        List<Integer> newRow = new ArrayList<>(Collections.nCopies(rowIndex + 1, 1));
+        for (int columnIndex = 1; columnIndex < rowIndex; columnIndex++) {
+            newRow.set(columnIndex, rowAbove.get(columnIndex - 1) + rowAbove.get(columnIndex));
+        }
+        triangle.add(newRow);
+    }
+    return triangle;
+}
+_
+~M
+System.out.println(generate(5));
+@cpp
+vector<vector<int>> generate(int numRows) {
+    vector<vector<int>> triangle = {{1}};
+_
+    for (int rowIndex = 1; rowIndex < numRows; rowIndex++) {
+        vector<int> rowAbove = triangle[rowIndex - 1];
+        vector<int> newRow(rowIndex + 1, 1);
+        for (int columnIndex = 1; columnIndex < rowIndex; columnIndex++) {
+            newRow[columnIndex] = rowAbove[columnIndex - 1] + rowAbove[columnIndex];
+        }
+        triangle.push_back(newRow);
+    }
+    return triangle;
+}
+_
+~M
+for (auto& row : generate(5)) { for (int x : row) cout << x << " "; cout << "| "; }
+
+## pascals-triangle-ii
+@python
+def get_row(row_index):
+    row_values = [0] * (row_index + 1)
+    row_values[0] = 1
+_
+    for row_number in range(1, row_index + 1):
+_
+        for column_index in range(row_number, 0, -1):
+            row_values[column_index] = row_values[column_index] + row_values[column_index - 1]
+.
+.
+    return row_values
+.
+_
+print(get_row(4))
+@java
+static int[] getRow(int rowIndex) {
+    int[] rowValues = new int[rowIndex + 1];
+    rowValues[0] = 1;
+_
+    for (int rowNumber = 1; rowNumber <= rowIndex; rowNumber++) {
+_
+        for (int columnIndex = rowNumber; columnIndex >= 1; columnIndex--) {
+            rowValues[columnIndex] = rowValues[columnIndex] + rowValues[columnIndex - 1];
+        }
+    }
+    return rowValues;
+}
+_
+~M
+System.out.println(Arrays.toString(getRow(4)));
+@cpp
+vector<int> getRow(int rowIndex) {
+    vector<int> rowValues(rowIndex + 1, 0);
+    rowValues[0] = 1;
+_
+    for (int rowNumber = 1; rowNumber <= rowIndex; rowNumber++) {
+_
+        for (int columnIndex = rowNumber; columnIndex >= 1; columnIndex--) {
+            rowValues[columnIndex] = rowValues[columnIndex] + rowValues[columnIndex - 1];
+        }
+    }
+    return rowValues;
+}
+_
+~M
+for (int x : getRow(4)) cout << x << " ";
+
+## longest-common-prefix
+@python
+def longest_common_prefix(strs):
+    first = strs[0]
+    for character_index in range(len(first)):
+        character = first[character_index]
+        for word_index in range(1, len(strs)):
+_
+            if character_index >= len(strs[word_index]) or strs[word_index][character_index] != character:
+                return first[0:character_index]
+.
+.
+.
+    return first
+.
+_
+strs = ["flower", "flow", "flight"]
+print(longest_common_prefix(strs))
+@java
+static String longestCommonPrefix(String[] strs) {
+    String first = strs[0];
+    for (int characterIndex = 0; characterIndex < first.length(); characterIndex++) {
+        char character = first.charAt(characterIndex);
+        for (int wordIndex = 1; wordIndex < strs.length; wordIndex++) {
+_
+            if (characterIndex >= strs[wordIndex].length() || strs[wordIndex].charAt(characterIndex) != character) {
+                return first.substring(0, characterIndex);
+            }
+        }
+    }
+    return first;
+}
+_
+~M
+String[] strs = {"flower", "flow", "flight"};
+System.out.println(longestCommonPrefix(strs));
+@cpp
+string longestCommonPrefix(vector<string>& strs) {
+    string first = strs[0];
+    for (int characterIndex = 0; characterIndex < first.size(); characterIndex++) {
+        char character = first[characterIndex];
+        for (int wordIndex = 1; wordIndex < strs.size(); wordIndex++) {
+_
+            if (characterIndex >= strs[wordIndex].size() || strs[wordIndex][characterIndex] != character) {
+                return first.substr(0, characterIndex);
+            }
+        }
+    }
+    return first;
+}
+_
+~M
+vector<string> strs = {"flower", "flow", "flight"};
+cout << longestCommonPrefix(strs) << endl;
+
+## length-of-last-word
+@python
+def length_of_last_word(text):
+    char_index = len(text) - 1
+_
+    while char_index >= 0 and text[char_index] == " ": char_index -= 1
+    length = 0
+_
+    while char_index >= 0 and text[char_index] != " ":
+        length += 1
+        char_index -= 1
+.
+    return length
+.
+_
+print(length_of_last_word("fly me   to the moon  "))
+@java
+static int lengthOfLastWord(String text) {
+    int charIndex = text.length() - 1;
+_
+    while (charIndex >= 0 && text.charAt(charIndex) == ' ') charIndex--;
+    int length = 0;
+_
+    while (charIndex >= 0 && text.charAt(charIndex) != ' ') {
+        length++;
+        charIndex--;
+    }
+    return length;
+}
+_
+~M
+System.out.println(lengthOfLastWord("fly me   to the moon  "));
+@cpp
+int lengthOfLastWord(string text) {
+    int charIndex = text.size() - 1;
+_
+    while (charIndex >= 0 && text[charIndex] == ' ') charIndex--;
+    int length = 0;
+_
+    while (charIndex >= 0 && text[charIndex] != ' ') {
+        length++;
+        charIndex--;
+    }
+    return length;
+}
+_
+~M
+cout << lengthOfLastWord("fly me   to the moon  ") << endl;
+
+## find-the-index-of-the-first-occurrence-in-a-string
+@python
+def str_str(haystack, needle):
+_
+    for start_position in range(len(haystack) - len(needle) + 1):
+        matched_length = 0
+_
+        while matched_length < len(needle) and haystack[start_position + matched_length] == needle[matched_length]:
+            matched_length += 1
+.
+        if matched_length == len(needle): return start_position
+.
+    return -1
+.
+_
+print(str_str("sadbutsad", "but"))
+@java
+static int strStr(String haystack, String needle) {
+_
+    for (int startPosition = 0; startPosition <= haystack.length() - needle.length(); startPosition++) {
+        int matchedLength = 0;
+_
+        while (matchedLength < needle.length() && haystack.charAt(startPosition + matchedLength) == needle.charAt(matchedLength)) {
+            matchedLength++;
+        }
+        if (matchedLength == needle.length()) return startPosition;
+    }
+    return -1;
+}
+_
+~M
+System.out.println(strStr("sadbutsad", "but"));
+@cpp
+int strStr(string haystack, string needle) {
+_
+    for (int startPosition = 0; startPosition <= (int) haystack.size() - (int) needle.size(); startPosition++) {
+        int matchedLength = 0;
+_
+        while (matchedLength < needle.size() && haystack[startPosition + matchedLength] == needle[matchedLength]) {
+            matchedLength++;
+        }
+        if (matchedLength == needle.size()) return startPosition;
+    }
+    return -1;
+}
+_
+~M
+cout << strStr("sadbutsad", "but") << endl;

@@ -4009,4 +4009,558 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|}
 `,
   },
+  "meeting-rooms": {
+    python: `
+1|def can_attend_meetings(intervals):
+2|    intervals.sort(key=lambda meeting: meeting[0])
+3|
+4|    for interval_index in range(1, len(intervals)):
+5|
+6|        if intervals[interval_index][0] < intervals[interval_index - 1][1]:
+7|            return False
+10|    return True
+12|
+13|intervals = [[0, 30], [5, 10], [15, 20]]
+14|print(can_attend_meetings(intervals))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static boolean canAttendMeetings(int[][] intervals) {
+2|        Arrays.sort(intervals, (firstMeeting, secondMeeting) -> firstMeeting[0] - secondMeeting[0]);
+3|
+4|        for (int intervalIndex = 1; intervalIndex < intervals.length; intervalIndex++) {
+5|
+6|            if (intervals[intervalIndex][0] < intervals[intervalIndex - 1][1]) {
+7|                return false;
+8|            }
+9|        }
+10|        return true;
+11|    }
+12|
+-|    public static void main(String[] args) {
+13|        int[][] intervals = {{0, 30}, {5, 10}, {15, 20}};
+14|        System.out.println(canAttendMeetings(intervals));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|bool canAttendMeetings(vector<vector<int>>& intervals) {
+2|    sort(intervals.begin(), intervals.end(), [](auto& firstMeeting, auto& secondMeeting) { return firstMeeting[0] < secondMeeting[0]; });
+3|
+4|    for (int intervalIndex = 1; intervalIndex < intervals.size(); intervalIndex++) {
+5|
+6|        if (intervals[intervalIndex][0] < intervals[intervalIndex - 1][1]) {
+7|            return false;
+8|        }
+9|    }
+10|    return true;
+11|}
+12|
+-|int main() {
+13|    vector<vector<int>> intervals = {{0, 30}, {5, 10}, {15, 20}};
+14|    cout << boolalpha << canAttendMeetings(intervals) << endl;
+-|}
+`,
+  },
+  "merge-sorted-array": {
+    python: `
+1|def merge(nums1, nums1_count, nums2, nums2_count):
+2|    nums1_last_index = nums1_count - 1
+3|    nums2_last_index = nums2_count - 1
+4|    write_index = nums1_count + nums2_count - 1
+5|
+6|    while nums2_last_index >= 0:
+7|        if nums1_last_index >= 0 and nums1[nums1_last_index] > nums2[nums2_last_index]:
+8|            nums1[write_index] = nums1[nums1_last_index]
+9|            nums1_last_index -= 1
+10|        else:
+11|            nums1[write_index] = nums2[nums2_last_index]
+12|            nums2_last_index -= 1
+14|        write_index -= 1
+16|    return nums1
+18|
+19|nums1 = [1, 2, 3, 0, 0, 0]
+20|nums2 = [2, 5, 6]
+21|print(merge(nums1, 3, nums2, 3))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int[] merge(int[] nums1, int nums1Count, int[] nums2, int nums2Count) {
+2|        int nums1LastIndex = nums1Count - 1;
+3|        int nums2LastIndex = nums2Count - 1;
+4|        int writeIndex = nums1Count + nums2Count - 1;
+5|
+6|        while (nums2LastIndex >= 0) {
+7|            if (nums1LastIndex >= 0 && nums1[nums1LastIndex] > nums2[nums2LastIndex]) {
+8|                nums1[writeIndex] = nums1[nums1LastIndex];
+9|                nums1LastIndex--;
+10|            } else {
+11|                nums1[writeIndex] = nums2[nums2LastIndex];
+12|                nums2LastIndex--;
+13|            }
+14|            writeIndex--;
+15|        }
+16|        return nums1;
+17|    }
+18|
+-|    public static void main(String[] args) {
+19|        int[] nums1 = {1, 2, 3, 0, 0, 0};
+20|        int[] nums2 = {2, 5, 6};
+21|        System.out.println(Arrays.toString(merge(nums1, 3, nums2, 3)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<int> merge(vector<int>& nums1, int nums1Count, vector<int>& nums2, int nums2Count) {
+2|    int nums1LastIndex = nums1Count - 1;
+3|    int nums2LastIndex = nums2Count - 1;
+4|    int writeIndex = nums1Count + nums2Count - 1;
+5|
+6|    while (nums2LastIndex >= 0) {
+7|        if (nums1LastIndex >= 0 && nums1[nums1LastIndex] > nums2[nums2LastIndex]) {
+8|            nums1[writeIndex] = nums1[nums1LastIndex];
+9|            nums1LastIndex--;
+10|        } else {
+11|            nums1[writeIndex] = nums2[nums2LastIndex];
+12|            nums2LastIndex--;
+13|        }
+14|        writeIndex--;
+15|    }
+16|    return nums1;
+17|}
+18|
+-|int main() {
+19|    vector<int> nums1 = {1, 2, 3, 0, 0, 0};
+20|    vector<int> nums2 = {2, 5, 6};
+21|    for (int x : merge(nums1, 3, nums2, 3)) cout << x << " ";
+-|}
+`,
+  },
+  "climbing-stairs": {
+    python: `
+1|def climb_stairs(stair_count):
+2|    if stair_count <= 2: return stair_count
+3|    ways_to_reach = [0] * (stair_count + 1)
+4|    ways_to_reach[1] = 1
+5|    ways_to_reach[2] = 2
+6|
+7|    for step_number in range(3, stair_count + 1):
+8|        ways_to_reach[step_number] = ways_to_reach[step_number - 1] + ways_to_reach[step_number - 2]
+10|    return ways_to_reach[stair_count]
+12|
+13|print(climb_stairs(5))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int climbStairs(int stairCount) {
+2|        if (stairCount <= 2) return stairCount;
+3|        int[] waysToReach = new int[stairCount + 1];
+4|        waysToReach[1] = 1;
+5|        waysToReach[2] = 2;
+6|
+7|        for (int stepNumber = 3; stepNumber <= stairCount; stepNumber++) {
+8|            waysToReach[stepNumber] = waysToReach[stepNumber - 1] + waysToReach[stepNumber - 2];
+9|        }
+10|        return waysToReach[stairCount];
+11|    }
+12|
+-|    public static void main(String[] args) {
+13|        System.out.println(climbStairs(5));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int climbStairs(int stairCount) {
+2|    if (stairCount <= 2) return stairCount;
+3|    vector<int> waysToReach(stairCount + 1, 0);
+4|    waysToReach[1] = 1;
+5|    waysToReach[2] = 2;
+6|
+7|    for (int stepNumber = 3; stepNumber <= stairCount; stepNumber++) {
+8|        waysToReach[stepNumber] = waysToReach[stepNumber - 1] + waysToReach[stepNumber - 2];
+9|    }
+10|    return waysToReach[stairCount];
+11|}
+12|
+-|int main() {
+13|    cout << climbStairs(5) << endl;
+-|}
+`,
+  },
+  "min-cost-climbing-stairs": {
+    python: `
+1|def min_cost_climbing_stairs(step_costs):
+2|    step_count = len(step_costs)
+3|    cheapest_cost = [0] * (step_count + 1)
+4|
+5|
+6|    for step_number in range(2, step_count + 1):
+7|        one_step = cheapest_cost[step_number - 1] + step_costs[step_number - 1]
+8|        two_steps = cheapest_cost[step_number - 2] + step_costs[step_number - 2]
+9|        cheapest_cost[step_number] = min(one_step, two_steps)
+11|    return cheapest_cost[step_count]
+13|
+14|step_costs = [1, 100, 1, 1, 1, 100, 1]
+15|print(min_cost_climbing_stairs(step_costs))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int minCostClimbingStairs(int[] stepCosts) {
+2|        int stepCount = stepCosts.length;
+3|        int[] cheapestCost = new int[stepCount + 1];
+4|
+5|
+6|        for (int stepNumber = 2; stepNumber <= stepCount; stepNumber++) {
+7|            int oneStep = cheapestCost[stepNumber - 1] + stepCosts[stepNumber - 1];
+8|            int twoSteps = cheapestCost[stepNumber - 2] + stepCosts[stepNumber - 2];
+9|            cheapestCost[stepNumber] = Math.min(oneStep, twoSteps);
+10|        }
+11|        return cheapestCost[stepCount];
+12|    }
+13|
+-|    public static void main(String[] args) {
+14|        int[] stepCosts = {1, 100, 1, 1, 1, 100, 1};
+15|        System.out.println(minCostClimbingStairs(stepCosts));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int minCostClimbingStairs(vector<int>& stepCosts) {
+2|    int stepCount = stepCosts.size();
+3|    vector<int> cheapestCost(stepCount + 1, 0);
+4|
+5|
+6|    for (int stepNumber = 2; stepNumber <= stepCount; stepNumber++) {
+7|        int oneStep = cheapestCost[stepNumber - 1] + stepCosts[stepNumber - 1];
+8|        int twoSteps = cheapestCost[stepNumber - 2] + stepCosts[stepNumber - 2];
+9|        cheapestCost[stepNumber] = min(oneStep, twoSteps);
+10|    }
+11|    return cheapestCost[stepCount];
+12|}
+13|
+-|int main() {
+14|    vector<int> stepCosts = {1, 100, 1, 1, 1, 100, 1};
+15|    cout << minCostClimbingStairs(stepCosts) << endl;
+-|}
+`,
+  },
+  "pascals-triangle": {
+    python: `
+1|def generate(num_rows):
+2|    triangle = [[1]]
+3|
+4|    for row_index in range(1, num_rows):
+5|        row_above = triangle[row_index - 1]
+6|        new_row = [1] * (row_index + 1)
+7|        for column_index in range(1, row_index):
+8|            new_row[column_index] = row_above[column_index - 1] + row_above[column_index]
+10|        triangle.append(new_row)
+12|    return triangle
+14|
+15|print(generate(5))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static List<List<Integer>> generate(int numRows) {
+2|        List<List<Integer>> triangle = new ArrayList<>(List.of(List.of(1)));
+3|
+4|        for (int rowIndex = 1; rowIndex < numRows; rowIndex++) {
+5|            List<Integer> rowAbove = triangle.get(rowIndex - 1);
+6|            List<Integer> newRow = new ArrayList<>(Collections.nCopies(rowIndex + 1, 1));
+7|            for (int columnIndex = 1; columnIndex < rowIndex; columnIndex++) {
+8|                newRow.set(columnIndex, rowAbove.get(columnIndex - 1) + rowAbove.get(columnIndex));
+9|            }
+10|            triangle.add(newRow);
+11|        }
+12|        return triangle;
+13|    }
+14|
+-|    public static void main(String[] args) {
+15|        System.out.println(generate(5));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<vector<int>> generate(int numRows) {
+2|    vector<vector<int>> triangle = {{1}};
+3|
+4|    for (int rowIndex = 1; rowIndex < numRows; rowIndex++) {
+5|        vector<int> rowAbove = triangle[rowIndex - 1];
+6|        vector<int> newRow(rowIndex + 1, 1);
+7|        for (int columnIndex = 1; columnIndex < rowIndex; columnIndex++) {
+8|            newRow[columnIndex] = rowAbove[columnIndex - 1] + rowAbove[columnIndex];
+9|        }
+10|        triangle.push_back(newRow);
+11|    }
+12|    return triangle;
+13|}
+14|
+-|int main() {
+15|    for (auto& row : generate(5)) { for (int x : row) cout << x << " "; cout << "| "; }
+-|}
+`,
+  },
+  "pascals-triangle-ii": {
+    python: `
+1|def get_row(row_index):
+2|    row_values = [0] * (row_index + 1)
+3|    row_values[0] = 1
+4|
+5|    for row_number in range(1, row_index + 1):
+6|
+7|        for column_index in range(row_number, 0, -1):
+8|            row_values[column_index] = row_values[column_index] + row_values[column_index - 1]
+11|    return row_values
+13|
+14|print(get_row(4))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int[] getRow(int rowIndex) {
+2|        int[] rowValues = new int[rowIndex + 1];
+3|        rowValues[0] = 1;
+4|
+5|        for (int rowNumber = 1; rowNumber <= rowIndex; rowNumber++) {
+6|
+7|            for (int columnIndex = rowNumber; columnIndex >= 1; columnIndex--) {
+8|                rowValues[columnIndex] = rowValues[columnIndex] + rowValues[columnIndex - 1];
+9|            }
+10|        }
+11|        return rowValues;
+12|    }
+13|
+-|    public static void main(String[] args) {
+14|        System.out.println(Arrays.toString(getRow(4)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<int> getRow(int rowIndex) {
+2|    vector<int> rowValues(rowIndex + 1, 0);
+3|    rowValues[0] = 1;
+4|
+5|    for (int rowNumber = 1; rowNumber <= rowIndex; rowNumber++) {
+6|
+7|        for (int columnIndex = rowNumber; columnIndex >= 1; columnIndex--) {
+8|            rowValues[columnIndex] = rowValues[columnIndex] + rowValues[columnIndex - 1];
+9|        }
+10|    }
+11|    return rowValues;
+12|}
+13|
+-|int main() {
+14|    for (int x : getRow(4)) cout << x << " ";
+-|}
+`,
+  },
+  "longest-common-prefix": {
+    python: `
+1|def longest_common_prefix(strs):
+2|    first = strs[0]
+3|    for character_index in range(len(first)):
+4|        character = first[character_index]
+5|        for word_index in range(1, len(strs)):
+6|
+7|            if character_index >= len(strs[word_index]) or strs[word_index][character_index] != character:
+8|                return first[0:character_index]
+12|    return first
+14|
+15|strs = ["flower", "flow", "flight"]
+16|print(longest_common_prefix(strs))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static String longestCommonPrefix(String[] strs) {
+2|        String first = strs[0];
+3|        for (int characterIndex = 0; characterIndex < first.length(); characterIndex++) {
+4|            char character = first.charAt(characterIndex);
+5|            for (int wordIndex = 1; wordIndex < strs.length; wordIndex++) {
+6|
+7|                if (characterIndex >= strs[wordIndex].length() || strs[wordIndex].charAt(characterIndex) != character) {
+8|                    return first.substring(0, characterIndex);
+9|                }
+10|            }
+11|        }
+12|        return first;
+13|    }
+14|
+-|    public static void main(String[] args) {
+15|        String[] strs = {"flower", "flow", "flight"};
+16|        System.out.println(longestCommonPrefix(strs));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|string longestCommonPrefix(vector<string>& strs) {
+2|    string first = strs[0];
+3|    for (int characterIndex = 0; characterIndex < first.size(); characterIndex++) {
+4|        char character = first[characterIndex];
+5|        for (int wordIndex = 1; wordIndex < strs.size(); wordIndex++) {
+6|
+7|            if (characterIndex >= strs[wordIndex].size() || strs[wordIndex][characterIndex] != character) {
+8|                return first.substr(0, characterIndex);
+9|            }
+10|        }
+11|    }
+12|    return first;
+13|}
+14|
+-|int main() {
+15|    vector<string> strs = {"flower", "flow", "flight"};
+16|    cout << longestCommonPrefix(strs) << endl;
+-|}
+`,
+  },
+  "length-of-last-word": {
+    python: `
+1|def length_of_last_word(text):
+2|    char_index = len(text) - 1
+3|
+4|    while char_index >= 0 and text[char_index] == " ": char_index -= 1
+5|    length = 0
+6|
+7|    while char_index >= 0 and text[char_index] != " ":
+8|        length += 1
+9|        char_index -= 1
+11|    return length
+13|
+14|print(length_of_last_word("fly me   to the moon  "))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int lengthOfLastWord(String text) {
+2|        int charIndex = text.length() - 1;
+3|
+4|        while (charIndex >= 0 && text.charAt(charIndex) == ' ') charIndex--;
+5|        int length = 0;
+6|
+7|        while (charIndex >= 0 && text.charAt(charIndex) != ' ') {
+8|            length++;
+9|            charIndex--;
+10|        }
+11|        return length;
+12|    }
+13|
+-|    public static void main(String[] args) {
+14|        System.out.println(lengthOfLastWord("fly me   to the moon  "));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int lengthOfLastWord(string text) {
+2|    int charIndex = text.size() - 1;
+3|
+4|    while (charIndex >= 0 && text[charIndex] == ' ') charIndex--;
+5|    int length = 0;
+6|
+7|    while (charIndex >= 0 && text[charIndex] != ' ') {
+8|        length++;
+9|        charIndex--;
+10|    }
+11|    return length;
+12|}
+13|
+-|int main() {
+14|    cout << lengthOfLastWord("fly me   to the moon  ") << endl;
+-|}
+`,
+  },
+  "find-the-index-of-the-first-occurrence-in-a-string": {
+    python: `
+1|def str_str(haystack, needle):
+2|
+3|    for start_position in range(len(haystack) - len(needle) + 1):
+4|        matched_length = 0
+5|
+6|        while matched_length < len(needle) and haystack[start_position + matched_length] == needle[matched_length]:
+7|            matched_length += 1
+9|        if matched_length == len(needle): return start_position
+11|    return -1
+13|
+14|print(str_str("sadbutsad", "but"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int strStr(String haystack, String needle) {
+2|
+3|        for (int startPosition = 0; startPosition <= haystack.length() - needle.length(); startPosition++) {
+4|            int matchedLength = 0;
+5|
+6|            while (matchedLength < needle.length() && haystack.charAt(startPosition + matchedLength) == needle.charAt(matchedLength)) {
+7|                matchedLength++;
+8|            }
+9|            if (matchedLength == needle.length()) return startPosition;
+10|        }
+11|        return -1;
+12|    }
+13|
+-|    public static void main(String[] args) {
+14|        System.out.println(strStr("sadbutsad", "but"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int strStr(string haystack, string needle) {
+2|
+3|    for (int startPosition = 0; startPosition <= (int) haystack.size() - (int) needle.size(); startPosition++) {
+4|        int matchedLength = 0;
+5|
+6|        while (matchedLength < needle.size() && haystack[startPosition + matchedLength] == needle[matchedLength]) {
+7|            matchedLength++;
+8|        }
+9|        if (matchedLength == needle.size()) return startPosition;
+10|    }
+11|    return -1;
+12|}
+13|
+-|int main() {
+14|    cout << strStr("sadbutsad", "but") << endl;
+-|}
+`,
+  },
 };
