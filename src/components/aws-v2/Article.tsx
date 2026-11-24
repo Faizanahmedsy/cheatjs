@@ -1,4 +1,5 @@
 import GithubSlugger from "github-slugger";
+import { CrumbLeaf } from "@/components/MobileCrumbs";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { Markdown } from "./Markdown";
@@ -49,6 +50,7 @@ export async function Article({
       <div className="relative min-w-0 lg:h-full lg:min-h-0 lg:overflow-hidden">
       <div data-reader-scroll className="no-native-scrollbar min-w-0 px-4 pb-24 pt-8 sm:px-8 lg:h-full lg:overflow-y-auto xl:pr-12">
       <article className="reader-article mx-auto w-full min-w-0 max-w-3xl">
+        <CrumbLeaf label={page.title} />
         <header className="mb-8">
           <p className="text-sm font-medium text-slate-500">{page.subtitle}</p>
           <h1 className="mt-1 font-body text-[2.25rem] font-semibold leading-tight tracking-tight text-slate-50 md:text-[2.6rem]">{page.title}</h1>

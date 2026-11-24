@@ -7,8 +7,9 @@ import { awsGroups } from "@/lib/aws-saa";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { CrumbLeaf } from "@/components/MobileCrumbs";
 import { Menu } from "lucide-react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 export default function AWSLayoutClient({
   children,
@@ -18,6 +19,8 @@ export default function AWSLayoutClient({
   const searchParams = useSearchParams();
   const currentTopic = searchParams.get("topic") || "ec2";
   const [isOpen, setIsOpen] = useState(false);
+  const currentLabel = awsGroups.flatMap((g) => g.topics).find((t) => t.id === currentTopic)?.label;
+  const openTopics = useCallback(() => setIsOpen(true), []);
 
   const SidebarContent = () => (
     <ScrollArea className="h-full p-4">
@@ -55,6 +58,7 @@ export default function AWSLayoutClient({
 
   return (
     <div className="flex h-[calc(100vh-3.5rem-var(--mbar))]">
+      {currentLabel && <CrumbLeaf label={currentLabel} onOpen={openTopics} />}
       {/* Mobile Sidebar Toggle */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
@@ -81,7 +85,7 @@ export default function AWSLayoutClient({
       </aside>
 
       {/* Main Content */}
-      <ScrollArea className="flex-1 bg-slate-900">
+      <ScrollArea className="min-w-0 flex-1 bg-slate-900 [&_[data-radix-scroll-area-viewport]>div]:!block">
         <main>{children}</main>
       </ScrollArea>
     </div>

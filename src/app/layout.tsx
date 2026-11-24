@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/components/ui/toaster";
 import { Navbar } from "@/components/Navbar";
 import { SubjectBar } from "@/components/SubjectBar";
+import { MobileCrumbs } from "@/components/MobileCrumbs";
 import { SiteFooter } from "@/components/SiteFooter";
 import { FooterGate } from "@/components/FooterGate";
 import { BilluPeek } from "@/components/BilluPeek";
@@ -75,6 +76,7 @@ export default function RootLayout({
         <div className="flex flex-col min-h-screen">
           <Navbar />
           <SubjectBar />
+          <MobileCrumbs />
           <div className="flex-grow">{children}</div>
           <FooterGate>
             <SiteFooter />

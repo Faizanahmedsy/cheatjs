@@ -56,7 +56,7 @@ export function ProblemBrowser({ currentId, done, onPick }: { currentId: string 
       <DialogTrigger asChild>
         <button
           type="button"
-          className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-slate-600 bg-slate-800 px-3 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+          className="inline-flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-slate-600 bg-slate-800 px-3 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
         >
           <LayoutGrid className="h-4 w-4" aria-hidden="true" />
           All questions

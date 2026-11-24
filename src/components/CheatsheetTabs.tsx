@@ -94,7 +94,7 @@ export function CheatsheetTabs() {
 
   return (
     <Tabs value={categoryTab} onValueChange={setCategoryTab} className="w-full">
-      <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-2 sm:grid-cols-4 bg-slate-800/50 border border-slate-700/50 mb-6 md:mb-8 gap-1">
+      <TabsList className="grid h-auto w-full max-w-2xl mx-auto grid-cols-2 sm:grid-cols-4 bg-slate-800/50 border border-slate-700/50 mb-6 md:mb-8 gap-1">
         <TabsTrigger
           value="React"
           className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300 text-xs sm:text-sm"
@@ -124,7 +124,7 @@ export function CheatsheetTabs() {
       <TabsContent value="React">
         {isClient && (
           <Tabs value={reactTab} onValueChange={setReactTab} className="w-full">
-            <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 bg-slate-800/50 border border-slate-700/50 mb-6 md:mb-8">
+            <TabsList className="grid h-auto w-full max-w-lg mx-auto grid-cols-3 bg-slate-800/50 border border-slate-700/50 mb-6 md:mb-8">
               <TabsTrigger
                 value="Beginner"
                 className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300 text-xs sm:text-sm"
@@ -252,7 +252,7 @@ export function CheatsheetTabs() {
       <TabsContent value="DSA">
         {isClient && (
           <Tabs value={dsaTab} onValueChange={setDsaTab} className="w-full">
-            <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 bg-slate-800/50 border border-slate-700/50 mb-6 md:mb-8">
+            <TabsList className="grid h-auto w-full max-w-lg mx-auto grid-cols-3 bg-slate-800/50 border border-slate-700/50 mb-6 md:mb-8">
               <TabsTrigger
                 value="Visualizations"
                 className="data-[state=active]:bg-slate-700 data-[state=active]:text-red-300 text-xs sm:text-sm"

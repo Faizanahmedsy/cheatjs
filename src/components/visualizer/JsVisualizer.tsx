@@ -20,6 +20,7 @@ import type { TraceSuccess } from "@/lib/visualizer/types";
 import { CodeEditor } from "./CodeEditor";
 import { CodeTraceView } from "./CodeTraceView";
 import { FocusPlayer } from "./FocusPlayer";
+import { CrumbLeaf } from "@/components/MobileCrumbs";
 import { LANGS, availableLangs, getTranslation, translationKey, type CodeLang } from "@/lib/visualizer/translations";
 import { ExamplePicker } from "./ExamplePicker";
 import { Legend } from "./Legend";
@@ -283,11 +284,14 @@ export function JsVisualizer() {
   return (
     <TooltipProvider delayDuration={200}>
       <div className={viewing ? "mx-auto w-full max-w-[1500px] px-4 pb-24 pt-6 sm:px-6 lg:py-8" : "mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6 lg:py-8"}>
+        {entry && <CrumbLeaf label={entry.label} />}
         <header className="mb-4 space-y-3">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-            <h1 className="font-headline text-2xl font-bold text-slate-100 md:text-3xl">DSA Visualizer</h1>
-            <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center lg:max-w-2xl">
-              <ExamplePicker value={selection} onChange={choose} done={done} />
+            <h1 className="w-full font-headline text-2xl font-bold text-slate-100 sm:w-auto md:text-3xl">DSA Visualizer</h1>
+            <div className="grid w-full min-w-0 grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-1 sm:flex-row sm:items-center lg:max-w-2xl [&>*]:min-w-0 [&>button]:justify-center">
+              <div className="col-span-2 sm:contents">
+                <ExamplePicker value={selection} onChange={choose} done={done} />
+              </div>
               <ProblemBrowser currentId={problem?.id ?? null} done={done} onPick={(id) => choose({ kind: "problem", id })} />
               {mode === "view" ? (
                 <button
@@ -313,16 +317,21 @@ export function JsVisualizer() {
                 </button>
               )}
             </div>
-            <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-cyan-400/50 bg-cyan-400/10 px-3 py-1.5 text-sm font-semibold text-slate-100 sm:ml-auto">
-              <Maximize2 className="h-4 w-4 text-cyan-300" aria-hidden="true" />
-              Focus mode
+            <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:ml-auto">
+            <label className="flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-cyan-400/50 bg-cyan-400/10 px-3 py-1.5 text-sm font-semibold text-slate-100">
+              <span className="flex items-center gap-2">
+                <Maximize2 className="h-4 w-4 text-cyan-300" aria-hidden="true" />
+                Focus mode
+              </span>
               <Switch checked={focusOn} onCheckedChange={setFocusOn} aria-label="Focus mode: full screen, simple view" />
             </label>
-            <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5 text-sm text-slate-200">
-              <GraduationCap className="h-4 w-4 text-cyan-300" aria-hidden="true" />
-              Big text and tips
+            <label className="flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5 text-sm text-slate-200">
+              <GraduationCap className="hidden h-4 w-4 text-cyan-300 sm:block" aria-hidden="true" />
+              <span className="sm:hidden">Big text</span>
+              <span className="hidden sm:inline">Big text and tips</span>
               <Switch checked={beginner} onCheckedChange={setBeginner} aria-label="Big text and tips" />
             </label>
+            </div>
           </div>
           <Collapsible>
             <p className="text-sm text-slate-400">
