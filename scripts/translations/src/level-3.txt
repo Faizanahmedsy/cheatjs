@@ -1,0 +1,694 @@
+## remove-nth-node-from-end-of-list
+@python
+%LIST
+_
+def remove_nth_from_end(list_head, position_from_end):
+    dummy = ListNode(0, list_head)
+    fast_pointer = dummy
+    slow_pointer = dummy
+_
+    for step_count in range(position_from_end + 1): fast_pointer = fast_pointer.next
+_
+    while fast_pointer:
+        fast_pointer = fast_pointer.next
+        slow_pointer = slow_pointer.next
+.
+    slow_pointer.next = slow_pointer.next.next
+    return dummy.next
+.
+_
+%FROMARRAY
+_
+%TOARRAY
+_
+list_head = from_array([1, 2, 3, 4, 5])
+print(to_array(remove_nth_from_end(list_head, 2)))
+@java
+%LIST
+_
+static ListNode removeNthFromEnd(ListNode listHead, int positionFromEnd) {
+    ListNode dummy = new ListNode(0, listHead);
+    ListNode fastPointer = dummy;
+    ListNode slowPointer = dummy;
+_
+    for (int stepCount = 0; stepCount <= positionFromEnd; stepCount++) fastPointer = fastPointer.next;
+_
+    while (fastPointer != null) {
+        fastPointer = fastPointer.next;
+        slowPointer = slowPointer.next;
+    }
+    slowPointer.next = slowPointer.next.next;
+    return dummy.next;
+}
+_
+%FROMARRAY
+_
+%TOARRAY
+_
+~M
+ListNode listHead = fromArray(new int[]{1, 2, 3, 4, 5});
+System.out.println(toArray(removeNthFromEnd(listHead, 2)));
+@cpp
+%LIST
+_
+ListNode* removeNthFromEnd(ListNode* listHead, int positionFromEnd) {
+    ListNode* dummy = new ListNode(0, listHead);
+    ListNode* fastPointer = dummy;
+    ListNode* slowPointer = dummy;
+_
+    for (int stepCount = 0; stepCount <= positionFromEnd; stepCount++) fastPointer = fastPointer->next;
+_
+    while (fastPointer) {
+        fastPointer = fastPointer->next;
+        slowPointer = slowPointer->next;
+    }
+    slowPointer->next = slowPointer->next->next;
+    return dummy->next;
+}
+_
+%FROMARRAY
+_
+%TOARRAY
+_
+~M
+ListNode* listHead = fromArray({1, 2, 3, 4, 5});
+for (int x : toArray(removeNthFromEnd(listHead, 2))) cout << x << " ";
+
+## add-two-numbers
+@python
+%LIST
+_
+def add_two_numbers(first_number, second_number):
+    dummy = ListNode(0)
+    tail_node = dummy
+    first_node = first_number
+    second_node = second_number
+    carry = 0
+    while first_node or second_node or carry:
+        column_sum = (first_node.val if first_node else 0) + (second_node.val if second_node else 0) + carry
+        carry = column_sum // 10
+        tail_node.next = ListNode(column_sum % 10)
+        tail_node = tail_node.next
+        if first_node: first_node = first_node.next
+        if second_node: second_node = second_node.next
+.
+    return dummy.next
+.
+_
+%TOARRAY
+_
+first_number = ListNode(2, ListNode(4, ListNode(3)))
+second_number = ListNode(5, ListNode(6, ListNode(4)))
+print(to_array(add_two_numbers(first_number, second_number)))
+@java
+%LIST
+_
+static ListNode addTwoNumbers(ListNode firstNumber, ListNode secondNumber) {
+    ListNode dummy = new ListNode(0);
+    ListNode tailNode = dummy;
+    ListNode firstNode = firstNumber;
+    ListNode secondNode = secondNumber;
+    int carry = 0;
+    while (firstNode != null || secondNode != null || carry != 0) {
+        int columnSum = (firstNode != null ? firstNode.val : 0) + (secondNode != null ? secondNode.val : 0) + carry;
+        carry = columnSum / 10;
+        tailNode.next = new ListNode(columnSum % 10);
+        tailNode = tailNode.next;
+        if (firstNode != null) firstNode = firstNode.next;
+        if (secondNode != null) secondNode = secondNode.next;
+    }
+    return dummy.next;
+}
+_
+%TOARRAY
+_
+~M
+ListNode firstNumber = new ListNode(2, new ListNode(4, new ListNode(3)));
+ListNode secondNumber = new ListNode(5, new ListNode(6, new ListNode(4)));
+System.out.println(toArray(addTwoNumbers(firstNumber, secondNumber)));
+@cpp
+%LIST
+_
+ListNode* addTwoNumbers(ListNode* firstNumber, ListNode* secondNumber) {
+    ListNode* dummy = new ListNode(0);
+    ListNode* tailNode = dummy;
+    ListNode* firstNode = firstNumber;
+    ListNode* secondNode = secondNumber;
+    int carry = 0;
+    while (firstNode || secondNode || carry) {
+        int columnSum = (firstNode ? firstNode->val : 0) + (secondNode ? secondNode->val : 0) + carry;
+        carry = columnSum / 10;
+        tailNode->next = new ListNode(columnSum % 10);
+        tailNode = tailNode->next;
+        if (firstNode) firstNode = firstNode->next;
+        if (secondNode) secondNode = secondNode->next;
+    }
+    return dummy->next;
+}
+_
+%TOARRAY
+_
+~M
+ListNode* firstNumber = new ListNode(2, new ListNode(4, new ListNode(3)));
+ListNode* secondNumber = new ListNode(5, new ListNode(6, new ListNode(4)));
+for (int x : toArray(addTwoNumbers(firstNumber, secondNumber))) cout << x << " ";
+
+## reorder-list
+@python
+%LIST
+_
+def reorder_list(list_head):
+_
+    slow_pointer = list_head
+    fast_pointer = list_head
+    while fast_pointer and fast_pointer.next:
+        slow_pointer = slow_pointer.next
+        fast_pointer = fast_pointer.next.next
+.
+_
+    previous_node = None
+    current_node = slow_pointer.next
+    slow_pointer.next = None
+    while current_node:
+        next_node = current_node.next
+        current_node.next = previous_node
+        previous_node = current_node
+        current_node = next_node
+.
+_
+    front_node = list_head
+    back_node = previous_node
+    while back_node:
+        front_next_node = front_node.next
+        back_next_node = back_node.next
+        front_node.next = back_node
+        back_node.next = front_next_node
+        front_node = front_next_node
+        back_node = back_next_node
+.
+.
+_
+%FROMARRAY
+_
+%TOARRAY
+_
+list_head = from_array([1, 2, 3, 4, 5])
+reorder_list(list_head)
+print(to_array(list_head))
+@java
+%LIST
+_
+static void reorderList(ListNode listHead) {
+_
+    ListNode slowPointer = listHead;
+    ListNode fastPointer = listHead;
+    while (fastPointer != null && fastPointer.next != null) {
+        slowPointer = slowPointer.next;
+        fastPointer = fastPointer.next.next;
+    }
+_
+    ListNode previousNode = null;
+    ListNode currentNode = slowPointer.next;
+    slowPointer.next = null;
+    while (currentNode != null) {
+        ListNode nextNode = currentNode.next;
+        currentNode.next = previousNode;
+        previousNode = currentNode;
+        currentNode = nextNode;
+    }
+_
+    ListNode frontNode = listHead;
+    ListNode backNode = previousNode;
+    while (backNode != null) {
+        ListNode frontNextNode = frontNode.next;
+        ListNode backNextNode = backNode.next;
+        frontNode.next = backNode;
+        backNode.next = frontNextNode;
+        frontNode = frontNextNode;
+        backNode = backNextNode;
+    }
+}
+_
+%FROMARRAY
+_
+%TOARRAY
+_
+~M
+ListNode listHead = fromArray(new int[]{1, 2, 3, 4, 5});
+reorderList(listHead);
+System.out.println(toArray(listHead));
+@cpp
+%LIST
+_
+void reorderList(ListNode* listHead) {
+_
+    ListNode* slowPointer = listHead;
+    ListNode* fastPointer = listHead;
+    while (fastPointer && fastPointer->next) {
+        slowPointer = slowPointer->next;
+        fastPointer = fastPointer->next->next;
+    }
+_
+    ListNode* previousNode = nullptr;
+    ListNode* currentNode = slowPointer->next;
+    slowPointer->next = nullptr;
+    while (currentNode) {
+        ListNode* nextNode = currentNode->next;
+        currentNode->next = previousNode;
+        previousNode = currentNode;
+        currentNode = nextNode;
+    }
+_
+    ListNode* frontNode = listHead;
+    ListNode* backNode = previousNode;
+    while (backNode) {
+        ListNode* frontNextNode = frontNode->next;
+        ListNode* backNextNode = backNode->next;
+        frontNode->next = backNode;
+        backNode->next = frontNextNode;
+        frontNode = frontNextNode;
+        backNode = backNextNode;
+    }
+}
+_
+%FROMARRAY
+_
+%TOARRAY
+_
+~M
+ListNode* listHead = fromArray({1, 2, 3, 4, 5});
+reorderList(listHead);
+for (int x : toArray(listHead)) cout << x << " ";
+
+## binary-tree-level-order-traversal
+@python
+%TREE
+_
+def level_order(tree_root):
+    result = []
+    queue = [tree_root]
+    queue_front_index = 0
+    while queue_front_index < len(queue):
+        size = len(queue) - queue_front_index
+        level = []
+        for level_position in range(size):
+            current_node = queue[queue_front_index]; queue_front_index += 1
+            level.append(current_node.val)
+            if current_node.left: queue.append(current_node.left)
+            if current_node.right: queue.append(current_node.right)
+.
+        result.append(level)
+.
+    return result
+.
+_
+tree_root = TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7)))
+print(level_order(tree_root))
+@java
+%TREE
+_
+static List<List<Integer>> levelOrder(TreeNode treeRoot) {
+    List<List<Integer>> result = new ArrayList<>();
+    List<TreeNode> queue = new ArrayList<>(List.of(treeRoot));
+    int queueFrontIndex = 0;
+    while (queueFrontIndex < queue.size()) {
+        int size = queue.size() - queueFrontIndex;
+        List<Integer> level = new ArrayList<>();
+        for (int levelPosition = 0; levelPosition < size; levelPosition++) {
+            TreeNode currentNode = queue.get(queueFrontIndex++);
+            level.add(currentNode.val);
+            if (currentNode.left != null) queue.add(currentNode.left);
+            if (currentNode.right != null) queue.add(currentNode.right);
+        }
+        result.add(level);
+    }
+    return result;
+}
+_
+~M
+TreeNode treeRoot = new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15), new TreeNode(7)));
+System.out.println(levelOrder(treeRoot));
+@cpp
+%TREE
+_
+vector<vector<int>> levelOrder(TreeNode* treeRoot) {
+    vector<vector<int>> result;
+    vector<TreeNode*> queue = {treeRoot};
+    int queueFrontIndex = 0;
+    while (queueFrontIndex < queue.size()) {
+        int size = queue.size() - queueFrontIndex;
+        vector<int> level;
+        for (int levelPosition = 0; levelPosition < size; levelPosition++) {
+            TreeNode* currentNode = queue[queueFrontIndex++];
+            level.push_back(currentNode->val);
+            if (currentNode->left) queue.push_back(currentNode->left);
+            if (currentNode->right) queue.push_back(currentNode->right);
+        }
+        result.push_back(level);
+    }
+    return result;
+}
+_
+~M
+TreeNode* treeRoot = new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15), new TreeNode(7)));
+for (auto& level : levelOrder(treeRoot)) { for (int x : level) cout << x << " "; cout << "| "; }
+
+## validate-binary-search-tree
+@python
+%TREE
+_
+def is_valid_bst(current_node, lower_bound=float("-inf"), upper_bound=float("inf")):
+    if current_node is None: return True
+    if current_node.val <= lower_bound or current_node.val >= upper_bound: return False
+_
+    return is_valid_bst(current_node.left, lower_bound, current_node.val) and is_valid_bst(current_node.right, current_node.val, upper_bound)
+.
+_
+.
+.
+.
+.
+.
+tree_root = TreeNode(5, TreeNode(3, TreeNode(1), TreeNode(6)), TreeNode(7))
+print(is_valid_bst(tree_root))
+@java
+%TREE
+_
+static boolean isValidBST(TreeNode currentNode, long lowerBound, long upperBound) {
+    if (currentNode == null) return true;
+    if (currentNode.val <= lowerBound || currentNode.val >= upperBound) return false;
+_
+    return isValidBST(currentNode.left, lowerBound, currentNode.val) && isValidBST(currentNode.right, currentNode.val, upperBound);
+}
+_
+~M
+.
+.
+.
+.
+.
+TreeNode treeRoot = new TreeNode(5, new TreeNode(3, new TreeNode(1), new TreeNode(6)), new TreeNode(7));
+System.out.println(isValidBST(treeRoot, Long.MIN_VALUE, Long.MAX_VALUE));
+@cpp
+%TREE
+_
+bool isValidBST(TreeNode* currentNode, long long lowerBound = LLONG_MIN, long long upperBound = LLONG_MAX) {
+    if (currentNode == nullptr) return true;
+    if (currentNode->val <= lowerBound || currentNode->val >= upperBound) return false;
+_
+    return isValidBST(currentNode->left, lowerBound, currentNode->val) && isValidBST(currentNode->right, currentNode->val, upperBound);
+}
+_
+~M
+.
+.
+.
+.
+.
+TreeNode* treeRoot = new TreeNode(5, new TreeNode(3, new TreeNode(1), new TreeNode(6)), new TreeNode(7));
+cout << boolalpha << isValidBST(treeRoot) << endl;
+
+## kth-smallest-element-in-a-bst
+@python
+%TREE
+_
+def kth_smallest(tree_root, target_rank):
+    stack = []
+    current_node = tree_root
+    count = 0
+    while current_node is not None or len(stack) > 0:
+        while current_node is not None:
+            stack.append(current_node)
+            current_node = current_node.left
+.
+        current_node = stack.pop()
+        count += 1
+        if count == target_rank: return current_node.val
+        current_node = current_node.right
+.
+    return -1
+.
+_
+.
+.
+.
+.
+.
+.
+.
+tree_root = TreeNode(5, TreeNode(3, TreeNode(2, TreeNode(1)), TreeNode(4)), TreeNode(6))
+print(kth_smallest(tree_root, 3))
+@java
+%TREE
+_
+static int kthSmallest(TreeNode treeRoot, int targetRank) {
+    Deque<TreeNode> stack = new ArrayDeque<>();
+    TreeNode currentNode = treeRoot;
+    int count = 0;
+    while (currentNode != null || stack.size() > 0) {
+        while (currentNode != null) {
+            stack.push(currentNode);
+            currentNode = currentNode.left;
+        }
+        currentNode = stack.pop();
+        count++;
+        if (count == targetRank) return currentNode.val;
+        currentNode = currentNode.right;
+    }
+    return -1;
+}
+_
+~M
+.
+.
+.
+.
+.
+.
+.
+TreeNode treeRoot = new TreeNode(5, new TreeNode(3, new TreeNode(2, new TreeNode(1), null), new TreeNode(4)), new TreeNode(6));
+System.out.println(kthSmallest(treeRoot, 3));
+@cpp
+%TREE
+_
+int kthSmallest(TreeNode* treeRoot, int targetRank) {
+    vector<TreeNode*> stack;
+    TreeNode* currentNode = treeRoot;
+    int count = 0;
+    while (currentNode != nullptr || stack.size() > 0) {
+        while (currentNode != nullptr) {
+            stack.push_back(currentNode);
+            currentNode = currentNode->left;
+        }
+        currentNode = stack.back(); stack.pop_back();
+        count++;
+        if (count == targetRank) return currentNode->val;
+        currentNode = currentNode->right;
+    }
+    return -1;
+}
+_
+~M
+.
+.
+.
+.
+.
+.
+.
+TreeNode* treeRoot = new TreeNode(5, new TreeNode(3, new TreeNode(2, new TreeNode(1)), new TreeNode(4)), new TreeNode(6));
+cout << kthSmallest(treeRoot, 3) << endl;
+
+## lowest-common-ancestor-of-a-bst
+@python
+%TREE
+_
+def lowest_common_ancestor(tree_root, first_target, second_target):
+    current_node = tree_root
+    while current_node is not None:
+        if first_target < current_node.val and second_target < current_node.val:
+            current_node = current_node.left
+        elif first_target > current_node.val and second_target > current_node.val:
+            current_node = current_node.right
+        else:
+            return current_node.val
+.
+.
+    return None
+.
+_
+.
+.
+.
+.
+.
+tree_root = TreeNode(
+    6,
+    TreeNode(2, TreeNode(0), TreeNode(4)),
+    TreeNode(8, TreeNode(7), TreeNode(9))
+)
+print(lowest_common_ancestor(tree_root, 0, 4))
+@java
+%TREE
+_
+static Integer lowestCommonAncestor(TreeNode treeRoot, int firstTarget, int secondTarget) {
+    TreeNode currentNode = treeRoot;
+    while (currentNode != null) {
+        if (firstTarget < currentNode.val && secondTarget < currentNode.val) {
+            currentNode = currentNode.left;
+        } else if (firstTarget > currentNode.val && secondTarget > currentNode.val) {
+            currentNode = currentNode.right;
+        } else {
+            return currentNode.val;
+        }
+    }
+    return null;
+}
+_
+~M
+.
+.
+.
+.
+.
+TreeNode treeRoot = new TreeNode(
+    6,
+    new TreeNode(2, new TreeNode(0), new TreeNode(4)),
+    new TreeNode(8, new TreeNode(7), new TreeNode(9))
+);
+System.out.println(lowestCommonAncestor(treeRoot, 0, 4));
+@cpp
+%TREE
+_
+int lowestCommonAncestor(TreeNode* treeRoot, int firstTarget, int secondTarget) {
+    TreeNode* currentNode = treeRoot;
+    while (currentNode != nullptr) {
+        if (firstTarget < currentNode->val && secondTarget < currentNode->val) {
+            currentNode = currentNode->left;
+        } else if (firstTarget > currentNode->val && secondTarget > currentNode->val) {
+            currentNode = currentNode->right;
+        } else {
+            return currentNode->val;
+        }
+    }
+    return -1;
+}
+_
+~M
+.
+.
+.
+.
+.
+TreeNode* treeRoot = new TreeNode(
+    6,
+    new TreeNode(2, new TreeNode(0), new TreeNode(4)),
+    new TreeNode(8, new TreeNode(7), new TreeNode(9))
+);
+cout << lowestCommonAncestor(treeRoot, 0, 4) << endl;
+
+## number-of-islands
+@python
+def num_islands(grid):
+    row_count = len(grid)
+    column_count = len(grid[0])
+_
+_
+    def sink(row_index, column_index):
+        if row_index < 0 or column_index < 0 or row_index >= row_count or column_index >= column_count: return
+        if grid[row_index][column_index] != "1": return
+        grid[row_index][column_index] = "0"
+        sink(row_index + 1, column_index)
+        sink(row_index - 1, column_index)
+        sink(row_index, column_index + 1)
+        sink(row_index, column_index - 1)
+.
+_
+    count = 0
+    for row_index in range(row_count):
+        for column_index in range(column_count):
+            if grid[row_index][column_index] == "1":
+                count += 1
+                sink(row_index, column_index)
+.
+.
+.
+    return count
+.
+_
+grid = [
+    ["1", "1", "0", "0"],
+    ["1", "0", "0", "1"],
+    ["0", "0", "1", "1"],
+]
+print(num_islands(grid))
+@java
+static int numIslands(char[][] grid) {
+    int rowCount = grid.length;
+    int columnCount = grid[0].length;
+_
+_
+    class Sinker { void sink(int rowIndex, int columnIndex) {
+        if (rowIndex < 0 || columnIndex < 0 || rowIndex >= rowCount || columnIndex >= columnCount) return;
+        if (grid[rowIndex][columnIndex] != '1') return;
+        grid[rowIndex][columnIndex] = '0';
+        sink(rowIndex + 1, columnIndex);
+        sink(rowIndex - 1, columnIndex);
+        sink(rowIndex, columnIndex + 1);
+        sink(rowIndex, columnIndex - 1);
+    } }
+_
+    int count = 0;
+    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+        for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+            if (grid[rowIndex][columnIndex] == '1') {
+                count++;
+                new Sinker().sink(rowIndex, columnIndex);
+            }
+        }
+    }
+    return count;
+}
+_
+~M
+char[][] grid = {
+    {'1', '1', '0', '0'},
+    {'1', '0', '0', '1'},
+    {'0', '0', '1', '1'},
+};
+System.out.println(numIslands(grid));
+@cpp
+int numIslands(vector<vector<char>>& grid) {
+    int rowCount = grid.size();
+    int columnCount = grid[0].size();
+_
+_
+    function<void(int, int)> sink = [&](int rowIndex, int columnIndex) {
+        if (rowIndex < 0 || columnIndex < 0 || rowIndex >= rowCount || columnIndex >= columnCount) return;
+        if (grid[rowIndex][columnIndex] != '1') return;
+        grid[rowIndex][columnIndex] = '0';
+        sink(rowIndex + 1, columnIndex);
+        sink(rowIndex - 1, columnIndex);
+        sink(rowIndex, columnIndex + 1);
+        sink(rowIndex, columnIndex - 1);
+    };
+_
+    int count = 0;
+    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+        for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+            if (grid[rowIndex][columnIndex] == '1') {
+                count++;
+                sink(rowIndex, columnIndex);
+            }
+        }
+    }
+    return count;
+}
+_
+~M
+vector<vector<char>> grid = {
+    {'1', '1', '0', '0'},
+    {'1', '0', '0', '1'},
+    {'0', '0', '1', '1'},
+};
+cout << numIslands(grid) << endl;
