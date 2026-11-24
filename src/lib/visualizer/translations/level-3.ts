@@ -2611,4 +2611,559 @@ export const LEVEL_3_TRANSLATIONS: Record<string, TranslationSet> = {
 -|}
 `,
   },
+  "house-robber": {
+    python: `
+1|def rob(numbers):
+2|    if len(numbers) == 1: return numbers[0]
+3|    best_loot = [0] * len(numbers)
+4|    best_loot[0] = numbers[0]
+5|    best_loot[1] = max(numbers[0], numbers[1])
+6|
+7|    for house_index in range(2, len(numbers)):
+8|        skip = best_loot[house_index - 1]
+9|        take = best_loot[house_index - 2] + numbers[house_index]
+10|        best_loot[house_index] = max(skip, take)
+12|    return best_loot[len(numbers) - 1]
+14|
+15|numbers = [2, 7, 9, 3, 1]
+16|print(rob(numbers))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int rob(int[] numbers) {
+2|        if (numbers.length == 1) return numbers[0];
+3|        int[] bestLoot = new int[numbers.length];
+4|        bestLoot[0] = numbers[0];
+5|        bestLoot[1] = Math.max(numbers[0], numbers[1]);
+6|
+7|        for (int houseIndex = 2; houseIndex < numbers.length; houseIndex++) {
+8|            int skip = bestLoot[houseIndex - 1];
+9|            int take = bestLoot[houseIndex - 2] + numbers[houseIndex];
+10|            bestLoot[houseIndex] = Math.max(skip, take);
+11|        }
+12|        return bestLoot[numbers.length - 1];
+13|    }
+14|
+-|    public static void main(String[] args) {
+15|        int[] numbers = {2, 7, 9, 3, 1};
+16|        System.out.println(rob(numbers));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int rob(vector<int>& numbers) {
+2|    if (numbers.size() == 1) return numbers[0];
+3|    vector<int> bestLoot(numbers.size(), 0);
+4|    bestLoot[0] = numbers[0];
+5|    bestLoot[1] = max(numbers[0], numbers[1]);
+6|
+7|    for (int houseIndex = 2; houseIndex < numbers.size(); houseIndex++) {
+8|        int skip = bestLoot[houseIndex - 1];
+9|        int take = bestLoot[houseIndex - 2] + numbers[houseIndex];
+10|        bestLoot[houseIndex] = max(skip, take);
+11|    }
+12|    return bestLoot[numbers.size() - 1];
+13|}
+14|
+-|int main() {
+15|    vector<int> numbers = {2, 7, 9, 3, 1};
+16|    cout << rob(numbers) << endl;
+-|}
+`,
+  },
+  "maximum-subarray": {
+    python: `
+1|def max_sub_array(numbers):
+2|    best_sum_ending_here = [0] * len(numbers)
+3|    best_sum_ending_here[0] = numbers[0]
+4|    best = best_sum_ending_here[0]
+5|
+6|    for number_index in range(1, len(numbers)):
+7|
+8|        best_sum_ending_here[number_index] = max(numbers[number_index], best_sum_ending_here[number_index - 1] + numbers[number_index])
+9|        best = max(best, best_sum_ending_here[number_index])
+11|    return best
+13|
+14|numbers = [-2, 1, -3, 4, -1, 2, 1, -5]
+15|print(max_sub_array(numbers))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int maxSubArray(int[] numbers) {
+2|        int[] bestSumEndingHere = new int[numbers.length];
+3|        bestSumEndingHere[0] = numbers[0];
+4|        int best = bestSumEndingHere[0];
+5|
+6|        for (int numberIndex = 1; numberIndex < numbers.length; numberIndex++) {
+7|
+8|            bestSumEndingHere[numberIndex] = Math.max(numbers[numberIndex], bestSumEndingHere[numberIndex - 1] + numbers[numberIndex]);
+9|            best = Math.max(best, bestSumEndingHere[numberIndex]);
+10|        }
+11|        return best;
+12|    }
+13|
+-|    public static void main(String[] args) {
+14|        int[] numbers = {-2, 1, -3, 4, -1, 2, 1, -5};
+15|        System.out.println(maxSubArray(numbers));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int maxSubArray(vector<int>& numbers) {
+2|    vector<int> bestSumEndingHere(numbers.size(), 0);
+3|    bestSumEndingHere[0] = numbers[0];
+4|    int best = bestSumEndingHere[0];
+5|
+6|    for (int numberIndex = 1; numberIndex < numbers.size(); numberIndex++) {
+7|
+8|        bestSumEndingHere[numberIndex] = max(numbers[numberIndex], bestSumEndingHere[numberIndex - 1] + numbers[numberIndex]);
+9|        best = max(best, bestSumEndingHere[numberIndex]);
+10|    }
+11|    return best;
+12|}
+13|
+-|int main() {
+14|    vector<int> numbers = {-2, 1, -3, 4, -1, 2, 1, -5};
+15|    cout << maxSubArray(numbers) << endl;
+-|}
+`,
+  },
+  "coin-change": {
+    python: `
+1|def coin_change(coins, amount):
+2|    fewest_coins = [float("inf")] * (amount + 1)
+3|    fewest_coins[0] = 0
+4|
+5|    for current_amount in range(1, amount + 1):
+6|        for coin in coins:
+7|            if coin <= current_amount:
+8|
+9|                fewest_coins[current_amount] = min(fewest_coins[current_amount], fewest_coins[current_amount - coin] + 1)
+13|    return -1 if fewest_coins[amount] == float("inf") else fewest_coins[amount]
+15|
+16|coins = [1, 2, 5]
+17|print(coin_change(coins, 7))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int coinChange(int[] coins, int amount) {
+2|        int[] fewestCoins = new int[amount + 1]; Arrays.fill(fewestCoins, Integer.MAX_VALUE);
+3|        fewestCoins[0] = 0;
+4|
+5|        for (int currentAmount = 1; currentAmount <= amount; currentAmount++) {
+6|            for (int coin : coins) {
+7|                if (coin <= currentAmount && fewestCoins[currentAmount - coin] != Integer.MAX_VALUE) {
+8|
+9|                    fewestCoins[currentAmount] = Math.min(fewestCoins[currentAmount], fewestCoins[currentAmount - coin] + 1);
+10|                }
+11|            }
+12|        }
+13|        return fewestCoins[amount] == Integer.MAX_VALUE ? -1 : fewestCoins[amount];
+14|    }
+15|
+-|    public static void main(String[] args) {
+16|        int[] coins = {1, 2, 5};
+17|        System.out.println(coinChange(coins, 7));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int coinChange(vector<int>& coins, int amount) {
+2|    vector<int> fewestCoins(amount + 1, INT_MAX);
+3|    fewestCoins[0] = 0;
+4|
+5|    for (int currentAmount = 1; currentAmount <= amount; currentAmount++) {
+6|        for (int coin : coins) {
+7|            if (coin <= currentAmount && fewestCoins[currentAmount - coin] != INT_MAX) {
+8|
+9|                fewestCoins[currentAmount] = min(fewestCoins[currentAmount], fewestCoins[currentAmount - coin] + 1);
+10|            }
+11|        }
+12|    }
+13|    return fewestCoins[amount] == INT_MAX ? -1 : fewestCoins[amount];
+14|}
+15|
+-|int main() {
+16|    vector<int> coins = {1, 2, 5};
+17|    cout << coinChange(coins, 7) << endl;
+-|}
+`,
+  },
+  "longest-increasing-subsequence": {
+    python: `
+1|def length_of_lis(numbers):
+2|    longest_ending_here = [1] * len(numbers)
+3|    best = 1
+4|
+5|    for end_index in range(1, len(numbers)):
+6|        for earlier_index in range(end_index):
+7|            if numbers[earlier_index] < numbers[end_index]:
+8|
+9|                longest_ending_here[end_index] = max(longest_ending_here[end_index], longest_ending_here[earlier_index] + 1)
+12|        best = max(best, longest_ending_here[end_index])
+14|    return best
+16|
+17|numbers = [10, 9, 2, 5, 3, 7, 101]
+18|print(length_of_lis(numbers))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int lengthOfLIS(int[] numbers) {
+2|        int[] longestEndingHere = new int[numbers.length]; Arrays.fill(longestEndingHere, 1);
+3|        int best = 1;
+4|
+5|        for (int endIndex = 1; endIndex < numbers.length; endIndex++) {
+6|            for (int earlierIndex = 0; earlierIndex < endIndex; earlierIndex++) {
+7|                if (numbers[earlierIndex] < numbers[endIndex]) {
+8|
+9|                    longestEndingHere[endIndex] = Math.max(longestEndingHere[endIndex], longestEndingHere[earlierIndex] + 1);
+10|                }
+11|            }
+12|            best = Math.max(best, longestEndingHere[endIndex]);
+13|        }
+14|        return best;
+15|    }
+16|
+-|    public static void main(String[] args) {
+17|        int[] numbers = {10, 9, 2, 5, 3, 7, 101};
+18|        System.out.println(lengthOfLIS(numbers));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int lengthOfLIS(vector<int>& numbers) {
+2|    vector<int> longestEndingHere(numbers.size(), 1);
+3|    int best = 1;
+4|
+5|    for (int endIndex = 1; endIndex < numbers.size(); endIndex++) {
+6|        for (int earlierIndex = 0; earlierIndex < endIndex; earlierIndex++) {
+7|            if (numbers[earlierIndex] < numbers[endIndex]) {
+8|
+9|                longestEndingHere[endIndex] = max(longestEndingHere[endIndex], longestEndingHere[earlierIndex] + 1);
+10|            }
+11|        }
+12|        best = max(best, longestEndingHere[endIndex]);
+13|    }
+14|    return best;
+15|}
+16|
+-|int main() {
+17|    vector<int> numbers = {10, 9, 2, 5, 3, 7, 101};
+18|    cout << lengthOfLIS(numbers) << endl;
+-|}
+`,
+  },
+  "longest-common-subsequence": {
+    python: `
+1|def longest_common_subsequence(text1, text2):
+2|    first_length = len(text1)
+3|    second_length = len(text2)
+4|
+5|    lcs_table = []
+6|    for first_prefix_length in range(first_length + 1): lcs_table.append([0] * (second_length + 1))
+7|
+8|    for first_prefix_length in range(1, first_length + 1):
+9|        for second_prefix_length in range(1, second_length + 1):
+10|            if text1[first_prefix_length - 1] == text2[second_prefix_length - 1]:
+11|                lcs_table[first_prefix_length][second_prefix_length] = lcs_table[first_prefix_length - 1][second_prefix_length - 1] + 1
+12|            else:
+13|                lcs_table[first_prefix_length][second_prefix_length] = max(lcs_table[first_prefix_length - 1][second_prefix_length], lcs_table[first_prefix_length][second_prefix_length - 1])
+17|    return lcs_table[first_length][second_length]
+19|
+20|print(longest_common_subsequence("abcde", "ace"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int longestCommonSubsequence(String text1, String text2) {
+2|        int firstLength = text1.length();
+3|        int secondLength = text2.length();
+4|
+5|        int[][] lcsTable = new int[firstLength + 1][];
+6|        for (int firstPrefixLength = 0; firstPrefixLength <= firstLength; firstPrefixLength++) lcsTable[firstPrefixLength] = new int[secondLength + 1];
+7|
+8|        for (int firstPrefixLength = 1; firstPrefixLength <= firstLength; firstPrefixLength++) {
+9|            for (int secondPrefixLength = 1; secondPrefixLength <= secondLength; secondPrefixLength++) {
+10|                if (text1.charAt(firstPrefixLength - 1) == text2.charAt(secondPrefixLength - 1)) {
+11|                    lcsTable[firstPrefixLength][secondPrefixLength] = lcsTable[firstPrefixLength - 1][secondPrefixLength - 1] + 1;
+12|                } else {
+13|                    lcsTable[firstPrefixLength][secondPrefixLength] = Math.max(lcsTable[firstPrefixLength - 1][secondPrefixLength], lcsTable[firstPrefixLength][secondPrefixLength - 1]);
+14|                }
+15|            }
+16|        }
+17|        return lcsTable[firstLength][secondLength];
+18|    }
+19|
+-|    public static void main(String[] args) {
+20|        System.out.println(longestCommonSubsequence("abcde", "ace"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int longestCommonSubsequence(string text1, string text2) {
+2|    int firstLength = text1.size();
+3|    int secondLength = text2.size();
+4|
+5|    vector<vector<int>> lcsTable;
+6|    for (int firstPrefixLength = 0; firstPrefixLength <= firstLength; firstPrefixLength++) lcsTable.push_back(vector<int>(secondLength + 1, 0));
+7|
+8|    for (int firstPrefixLength = 1; firstPrefixLength <= firstLength; firstPrefixLength++) {
+9|        for (int secondPrefixLength = 1; secondPrefixLength <= secondLength; secondPrefixLength++) {
+10|            if (text1[firstPrefixLength - 1] == text2[secondPrefixLength - 1]) {
+11|                lcsTable[firstPrefixLength][secondPrefixLength] = lcsTable[firstPrefixLength - 1][secondPrefixLength - 1] + 1;
+12|            } else {
+13|                lcsTable[firstPrefixLength][secondPrefixLength] = max(lcsTable[firstPrefixLength - 1][secondPrefixLength], lcsTable[firstPrefixLength][secondPrefixLength - 1]);
+14|            }
+15|        }
+16|    }
+17|    return lcsTable[firstLength][secondLength];
+18|}
+19|
+-|int main() {
+20|    cout << longestCommonSubsequence("abcde", "ace") << endl;
+-|}
+`,
+  },
+  "word-break": {
+    python: `
+1|def word_break(text, word_dict):
+2|    words = set(word_dict)
+3|    can_split = [False] * (len(text) + 1)
+4|    can_split[0] = True
+5|
+6|    for prefix_length in range(1, len(text) + 1):
+7|        for split_point in range(prefix_length):
+8|
+9|            if can_split[split_point] and text[split_point:prefix_length] in words:
+10|                can_split[prefix_length] = True
+11|                break
+15|    return can_split[len(text)]
+17|
+18|print(word_break("leetcode", ["leet", "code"]))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static boolean wordBreak(String text, List<String> wordDict) {
+2|        Set<String> words = new HashSet<>(wordDict);
+3|        boolean[] canSplit = new boolean[text.length() + 1];
+4|        canSplit[0] = true;
+5|
+6|        for (int prefixLength = 1; prefixLength <= text.length(); prefixLength++) {
+7|            for (int splitPoint = 0; splitPoint < prefixLength; splitPoint++) {
+8|
+9|                if (canSplit[splitPoint] && words.contains(text.substring(splitPoint, prefixLength))) {
+10|                    canSplit[prefixLength] = true;
+11|                    break;
+12|                }
+13|            }
+14|        }
+15|        return canSplit[text.length()];
+16|    }
+17|
+-|    public static void main(String[] args) {
+18|        System.out.println(wordBreak("leetcode", List.of("leet", "code")));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|bool wordBreak(string text, vector<string> wordDict) {
+2|    unordered_set<string> words(wordDict.begin(), wordDict.end());
+3|    vector<bool> canSplit(text.size() + 1, false);
+4|    canSplit[0] = true;
+5|
+6|    for (int prefixLength = 1; prefixLength <= text.size(); prefixLength++) {
+7|        for (int splitPoint = 0; splitPoint < prefixLength; splitPoint++) {
+8|
+9|            if (canSplit[splitPoint] && words.count(text.substr(splitPoint, prefixLength - splitPoint))) {
+10|                canSplit[prefixLength] = true;
+11|                break;
+12|            }
+13|        }
+14|    }
+15|    return canSplit[text.size()];
+16|}
+17|
+-|int main() {
+18|    cout << boolalpha << wordBreak("leetcode", {"leet", "code"}) << endl;
+-|}
+`,
+  },
+  "unique-paths": {
+    python: `
+1|def unique_paths(row_count, column_count):
+2|
+3|    path_count = []
+4|    for row_index in range(row_count): path_count.append([1] * column_count)
+5|
+6|    for row_index in range(1, row_count):
+7|        for column_index in range(1, column_count):
+8|            path_count[row_index][column_index] = path_count[row_index - 1][column_index] + path_count[row_index][column_index - 1]
+11|    return path_count[row_count - 1][column_count - 1]
+13|
+14|print(unique_paths(3, 4))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int uniquePaths(int rowCount, int columnCount) {
+2|
+3|        int[][] pathCount = new int[rowCount][];
+4|        for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) { pathCount[rowIndex] = new int[columnCount]; Arrays.fill(pathCount[rowIndex], 1); }
+5|
+6|        for (int rowIndex = 1; rowIndex < rowCount; rowIndex++) {
+7|            for (int columnIndex = 1; columnIndex < columnCount; columnIndex++) {
+8|                pathCount[rowIndex][columnIndex] = pathCount[rowIndex - 1][columnIndex] + pathCount[rowIndex][columnIndex - 1];
+9|            }
+10|        }
+11|        return pathCount[rowCount - 1][columnCount - 1];
+12|    }
+13|
+-|    public static void main(String[] args) {
+14|        System.out.println(uniquePaths(3, 4));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int uniquePaths(int rowCount, int columnCount) {
+2|
+3|    vector<vector<int>> pathCount;
+4|    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) pathCount.push_back(vector<int>(columnCount, 1));
+5|
+6|    for (int rowIndex = 1; rowIndex < rowCount; rowIndex++) {
+7|        for (int columnIndex = 1; columnIndex < columnCount; columnIndex++) {
+8|            pathCount[rowIndex][columnIndex] = pathCount[rowIndex - 1][columnIndex] + pathCount[rowIndex][columnIndex - 1];
+9|        }
+10|    }
+11|    return pathCount[rowCount - 1][columnCount - 1];
+12|}
+13|
+-|int main() {
+14|    cout << uniquePaths(3, 4) << endl;
+-|}
+`,
+  },
+  "minimum-path-sum": {
+    python: `
+1|def min_path_sum(grid):
+2|    row_count = len(grid)
+3|    column_count = len(grid[0])
+4|    cheapest_sum = []
+5|    for row_index in range(row_count): cheapest_sum.append([0] * column_count)
+6|    cheapest_sum[0][0] = grid[0][0]
+7|
+8|    for column_index in range(1, column_count): cheapest_sum[0][column_index] = cheapest_sum[0][column_index - 1] + grid[0][column_index]
+9|    for row_index in range(1, row_count): cheapest_sum[row_index][0] = cheapest_sum[row_index - 1][0] + grid[row_index][0]
+10|
+11|    for row_index in range(1, row_count):
+12|        for column_index in range(1, column_count):
+13|
+14|            cheapest_sum[row_index][column_index] = grid[row_index][column_index] + min(cheapest_sum[row_index - 1][column_index], cheapest_sum[row_index][column_index - 1])
+17|    return cheapest_sum[row_count - 1][column_count - 1]
+19|
+20|grid = [
+21|    [1, 3, 1],
+22|    [1, 5, 1],
+23|    [4, 2, 1],
+24|]
+25|print(min_path_sum(grid))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int minPathSum(int[][] grid) {
+2|        int rowCount = grid.length;
+3|        int columnCount = grid[0].length;
+4|        int[][] cheapestSum = new int[rowCount][];
+5|        for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) cheapestSum[rowIndex] = new int[columnCount];
+6|        cheapestSum[0][0] = grid[0][0];
+7|
+8|        for (int columnIndex = 1; columnIndex < columnCount; columnIndex++) cheapestSum[0][columnIndex] = cheapestSum[0][columnIndex - 1] + grid[0][columnIndex];
+9|        for (int rowIndex = 1; rowIndex < rowCount; rowIndex++) cheapestSum[rowIndex][0] = cheapestSum[rowIndex - 1][0] + grid[rowIndex][0];
+10|
+11|        for (int rowIndex = 1; rowIndex < rowCount; rowIndex++) {
+12|            for (int columnIndex = 1; columnIndex < columnCount; columnIndex++) {
+13|
+14|                cheapestSum[rowIndex][columnIndex] = grid[rowIndex][columnIndex] + Math.min(cheapestSum[rowIndex - 1][columnIndex], cheapestSum[rowIndex][columnIndex - 1]);
+15|            }
+16|        }
+17|        return cheapestSum[rowCount - 1][columnCount - 1];
+18|    }
+19|
+-|    public static void main(String[] args) {
+20|        int[][] grid = {
+21|            {1, 3, 1},
+22|            {1, 5, 1},
+23|            {4, 2, 1},
+24|        };
+25|        System.out.println(minPathSum(grid));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int minPathSum(vector<vector<int>>& grid) {
+2|    int rowCount = grid.size();
+3|    int columnCount = grid[0].size();
+4|    vector<vector<int>> cheapestSum;
+5|    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) cheapestSum.push_back(vector<int>(columnCount, 0));
+6|    cheapestSum[0][0] = grid[0][0];
+7|
+8|    for (int columnIndex = 1; columnIndex < columnCount; columnIndex++) cheapestSum[0][columnIndex] = cheapestSum[0][columnIndex - 1] + grid[0][columnIndex];
+9|    for (int rowIndex = 1; rowIndex < rowCount; rowIndex++) cheapestSum[rowIndex][0] = cheapestSum[rowIndex - 1][0] + grid[rowIndex][0];
+10|
+11|    for (int rowIndex = 1; rowIndex < rowCount; rowIndex++) {
+12|        for (int columnIndex = 1; columnIndex < columnCount; columnIndex++) {
+13|
+14|            cheapestSum[rowIndex][columnIndex] = grid[rowIndex][columnIndex] + min(cheapestSum[rowIndex - 1][columnIndex], cheapestSum[rowIndex][columnIndex - 1]);
+15|        }
+16|    }
+17|    return cheapestSum[rowCount - 1][columnCount - 1];
+18|}
+19|
+-|int main() {
+20|    vector<vector<int>> grid = {
+21|        {1, 3, 1},
+22|        {1, 5, 1},
+23|        {4, 2, 1},
+24|    };
+25|    cout << minPathSum(grid) << endl;
+-|}
+`,
+  },
 };
