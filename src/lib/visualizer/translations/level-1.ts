@@ -1041,4 +1041,693 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|}
 `,
   },
+  "squares-of-sorted-array": {
+    python: `
+1|def sorted_squares(numbers):
+2|    result = [0] * len(numbers)
+3|    left_index = 0
+4|    right_index = len(numbers) - 1
+5|    fill_index = len(numbers) - 1
+6|
+7|    while left_index <= right_index:
+8|        left_sq = numbers[left_index] * numbers[left_index]
+9|        right_sq = numbers[right_index] * numbers[right_index]
+10|
+11|        if left_sq > right_sq:
+12|            result[fill_index] = left_sq
+13|            left_index += 1
+14|        else:
+15|            result[fill_index] = right_sq
+16|            right_index -= 1
+18|        fill_index -= 1
+20|    return result
+22|
+23|numbers = [-4, -1, 0, 3, 10]
+24|print(sorted_squares(numbers))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int[] sortedSquares(int[] numbers) {
+2|        int[] result = new int[numbers.length];
+3|        int leftIndex = 0;
+4|        int rightIndex = numbers.length - 1;
+5|        int fillIndex = numbers.length - 1;
+6|
+7|        while (leftIndex <= rightIndex) {
+8|            int leftSq = numbers[leftIndex] * numbers[leftIndex];
+9|            int rightSq = numbers[rightIndex] * numbers[rightIndex];
+10|
+11|            if (leftSq > rightSq) {
+12|                result[fillIndex] = leftSq;
+13|                leftIndex++;
+14|            } else {
+15|                result[fillIndex] = rightSq;
+16|                rightIndex--;
+17|            }
+18|            fillIndex--;
+19|        }
+20|        return result;
+21|    }
+22|
+-|    public static void main(String[] args) {
+23|        int[] numbers = {-4, -1, 0, 3, 10};
+24|        System.out.println(Arrays.toString(sortedSquares(numbers)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<int> sortedSquares(vector<int>& numbers) {
+2|    vector<int> result(numbers.size(), 0);
+3|    int leftIndex = 0;
+4|    int rightIndex = numbers.size() - 1;
+5|    int fillIndex = numbers.size() - 1;
+6|
+7|    while (leftIndex <= rightIndex) {
+8|        int leftSq = numbers[leftIndex] * numbers[leftIndex];
+9|        int rightSq = numbers[rightIndex] * numbers[rightIndex];
+10|
+11|        if (leftSq > rightSq) {
+12|            result[fillIndex] = leftSq;
+13|            leftIndex++;
+14|        } else {
+15|            result[fillIndex] = rightSq;
+16|            rightIndex--;
+17|        }
+18|        fillIndex--;
+19|    }
+20|    return result;
+21|}
+22|
+-|int main() {
+23|    vector<int> numbers = {-4, -1, 0, 3, 10};
+24|    for (int x : sortedSquares(numbers)) cout << x << " ";
+-|}
+`,
+  },
+  "best-time-to-buy-and-sell-stock": {
+    python: `
+1|def max_profit(prices):
+2|    buy_day = 0
+3|    best = 0
+4|
+5|    for sell_day in range(1, len(prices)):
+6|        if prices[sell_day] < prices[buy_day]:
+7|            buy_day = sell_day
+8|        else:
+9|            profit = prices[sell_day] - prices[buy_day]
+10|            best = max(best, profit)
+13|    return best
+15|
+16|prices = [7, 1, 5, 3, 6, 4]
+17|print(max_profit(prices))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int maxProfit(int[] prices) {
+2|        int buyDay = 0;
+3|        int best = 0;
+4|
+5|        for (int sellDay = 1; sellDay < prices.length; sellDay++) {
+6|            if (prices[sellDay] < prices[buyDay]) {
+7|                buyDay = sellDay;
+8|            } else {
+9|                int profit = prices[sellDay] - prices[buyDay];
+10|                best = Math.max(best, profit);
+11|            }
+12|        }
+13|        return best;
+14|    }
+15|
+-|    public static void main(String[] args) {
+16|        int[] prices = {7, 1, 5, 3, 6, 4};
+17|        System.out.println(maxProfit(prices));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int maxProfit(vector<int>& prices) {
+2|    int buyDay = 0;
+3|    int best = 0;
+4|
+5|    for (int sellDay = 1; sellDay < prices.size(); sellDay++) {
+6|        if (prices[sellDay] < prices[buyDay]) {
+7|            buyDay = sellDay;
+8|        } else {
+9|            int profit = prices[sellDay] - prices[buyDay];
+10|            best = max(best, profit);
+11|        }
+12|    }
+13|    return best;
+14|}
+15|
+-|int main() {
+16|    vector<int> prices = {7, 1, 5, 3, 6, 4};
+17|    cout << maxProfit(prices) << endl;
+-|}
+`,
+  },
+  "contains-duplicate-ii": {
+    python: `
+1|def contains_nearby_duplicate(numbers, max_distance):
+2|    window = set()
+3|    left_index = 0
+4|
+5|    for right_index in range(len(numbers)):
+6|        if numbers[right_index] in window:
+7|            return True
+9|        window.add(numbers[right_index])
+10|
+11|        if len(window) > max_distance:
+12|            window.remove(numbers[left_index])
+13|            left_index += 1
+16|    return False
+18|
+19|numbers = [1, 2, 3, 1]
+20|print(contains_nearby_duplicate(numbers, 3))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static boolean containsNearbyDuplicate(int[] numbers, int maxDistance) {
+2|        Set<Integer> window = new HashSet<>();
+3|        int leftIndex = 0;
+4|
+5|        for (int rightIndex = 0; rightIndex < numbers.length; rightIndex++) {
+6|            if (window.contains(numbers[rightIndex])) {
+7|                return true;
+8|            }
+9|            window.add(numbers[rightIndex]);
+10|
+11|            if (window.size() > maxDistance) {
+12|                window.remove(numbers[leftIndex]);
+13|                leftIndex++;
+14|            }
+15|        }
+16|        return false;
+17|    }
+18|
+-|    public static void main(String[] args) {
+19|        int[] numbers = {1, 2, 3, 1};
+20|        System.out.println(containsNearbyDuplicate(numbers, 3));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|bool containsNearbyDuplicate(vector<int>& numbers, int maxDistance) {
+2|    unordered_set<int> window;
+3|    int leftIndex = 0;
+4|
+5|    for (int rightIndex = 0; rightIndex < numbers.size(); rightIndex++) {
+6|        if (window.count(numbers[rightIndex])) {
+7|            return true;
+8|        }
+9|        window.insert(numbers[rightIndex]);
+10|
+11|        if (window.size() > maxDistance) {
+12|            window.erase(numbers[leftIndex]);
+13|            leftIndex++;
+14|        }
+15|    }
+16|    return false;
+17|}
+18|
+-|int main() {
+19|    vector<int> numbers = {1, 2, 3, 1};
+20|    cout << boolalpha << containsNearbyDuplicate(numbers, 3) << endl;
+-|}
+`,
+  },
+  "maximum-average-subarray-i": {
+    python: `
+1|def find_max_average(numbers, window_size):
+2|    window_sum = 0
+3|
+4|    for index in range(window_size):
+5|        window_sum += numbers[index]
+7|    best = window_sum
+8|
+9|
+10|    for right in range(window_size, len(numbers)):
+11|        left = right - window_size
+12|        window_sum += numbers[right] - numbers[left]
+13|        best = max(best, window_sum)
+15|    return best / window_size
+17|
+18|numbers = [1, 12, -5, -6, 50, 3]
+19|print(find_max_average(numbers, 4))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static double findMaxAverage(int[] numbers, int windowSize) {
+2|        int windowSum = 0;
+3|
+4|        for (int index = 0; index < windowSize; index++) {
+5|            windowSum += numbers[index];
+6|        }
+7|        int best = windowSum;
+8|
+9|
+10|        for (int right = windowSize; right < numbers.length; right++) {
+11|            int left = right - windowSize;
+12|            windowSum += numbers[right] - numbers[left];
+13|            best = Math.max(best, windowSum);
+14|        }
+15|        return (double) best / windowSize;
+16|    }
+17|
+-|    public static void main(String[] args) {
+18|        int[] numbers = {1, 12, -5, -6, 50, 3};
+19|        System.out.println(findMaxAverage(numbers, 4));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|double findMaxAverage(vector<int>& numbers, int windowSize) {
+2|    int windowSum = 0;
+3|
+4|    for (int index = 0; index < windowSize; index++) {
+5|        windowSum += numbers[index];
+6|    }
+7|    int best = windowSum;
+8|
+9|
+10|    for (int right = windowSize; right < numbers.size(); right++) {
+11|        int left = right - windowSize;
+12|        windowSum += numbers[right] - numbers[left];
+13|        best = max(best, windowSum);
+14|    }
+15|    return (double) best / windowSize;
+16|}
+17|
+-|int main() {
+18|    vector<int> numbers = {1, 12, -5, -6, 50, 3};
+19|    cout << findMaxAverage(numbers, 4) << endl;
+-|}
+`,
+  },
+  "valid-parentheses": {
+    python: `
+1|def is_valid(text):
+2|
+3|    pairs = {")": "(", "]": "[", "}": "{"}
+4|    stack = []
+5|
+6|    for char_index in range(len(text)):
+7|        character = text[char_index]
+8|        if character == "(" or character == "[" or character == "{":
+9|            stack.append(character)
+10|        elif (stack.pop() if stack else None) != pairs.get(character):
+11|            return False
+14|    return len(stack) == 0
+16|
+17|print(is_valid("{[()]}()"))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static boolean isValid(String text) {
+2|
+3|        Map<Character, Character> pairs = Map.of(')', '(', ']', '[', '}', '{');
+4|        Deque<Character> stack = new ArrayDeque<>();
+5|
+6|        for (int charIndex = 0; charIndex < text.length(); charIndex++) {
+7|            char character = text.charAt(charIndex);
+8|            if (character == '(' || character == '[' || character == '{') {
+9|                stack.push(character);
+10|            } else if (stack.isEmpty() || !stack.pop().equals(pairs.get(character))) {
+11|                return false;
+12|            }
+13|        }
+14|        return stack.isEmpty();
+15|    }
+16|
+-|    public static void main(String[] args) {
+17|        System.out.println(isValid("{[()]}()"));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|bool isValid(string text) {
+2|
+3|    unordered_map<char, char> pairs = {{')', '('}, {']', '['}, {'}', '{'}};
+4|    stack<char> st;
+5|
+6|    for (int charIndex = 0; charIndex < text.size(); charIndex++) {
+7|        char character = text[charIndex];
+8|        if (character == '(' || character == '[' || character == '{') {
+9|            st.push(character);
+10|        } else if (st.empty() || st.top() != pairs[character]) {
+11|            return false;
+12|        } else {
+-|st.pop();
+-|}
+13|    }
+14|    return st.empty();
+15|}
+16|
+-|int main() {
+17|    cout << boolalpha << isValid("{[()]}()") << endl;
+-|}
+`,
+  },
+  "next-greater-element-i": {
+    python: `
+1|def next_greater_element(nums1, nums2):
+2|    next_greater_of = {}
+3|    stack = []
+4|
+5|    for nums2_index in range(len(nums2)):
+6|        current_number = nums2[nums2_index]
+7|
+8|        while stack and stack[-1] < current_number:
+9|            next_greater_of[stack.pop()] = current_number
+11|        stack.append(current_number)
+13|
+14|    result = []
+15|    for nums1_index in range(len(nums1)):
+16|        result.append(next_greater_of.get(nums1[nums1_index], -1))
+18|    return result
+20|
+21|print(next_greater_element([4, 1, 2], [1, 3, 4, 2]))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static List<Integer> nextGreaterElement(int[] nums1, int[] nums2) {
+2|        Map<Integer, Integer> nextGreaterOf = new HashMap<>();
+3|        Deque<Integer> stack = new ArrayDeque<>();
+4|
+5|        for (int nums2Index = 0; nums2Index < nums2.length; nums2Index++) {
+6|            int currentNumber = nums2[nums2Index];
+7|
+8|            while (!stack.isEmpty() && stack.peek() < currentNumber) {
+9|                nextGreaterOf.put(stack.pop(), currentNumber);
+10|            }
+11|            stack.push(currentNumber);
+12|        }
+13|
+14|        List<Integer> result = new ArrayList<>();
+15|        for (int nums1Index = 0; nums1Index < nums1.length; nums1Index++) {
+16|            result.add(nextGreaterOf.getOrDefault(nums1[nums1Index], -1));
+17|        }
+18|        return result;
+19|    }
+20|
+-|    public static void main(String[] args) {
+21|        System.out.println(nextGreaterElement(new int[]{4, 1, 2}, new int[]{1, 3, 4, 2}));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<int> nextGreaterElement(vector<int> nums1, vector<int> nums2) {
+2|    unordered_map<int, int> nextGreaterOf;
+3|    vector<int> stack;
+4|
+5|    for (int nums2Index = 0; nums2Index < nums2.size(); nums2Index++) {
+6|        int currentNumber = nums2[nums2Index];
+7|
+8|        while (!stack.empty() && stack.back() < currentNumber) {
+9|            nextGreaterOf[stack.back()] = currentNumber; stack.pop_back();
+10|        }
+11|        stack.push_back(currentNumber);
+12|    }
+13|
+14|    vector<int> result;
+15|    for (int nums1Index = 0; nums1Index < nums1.size(); nums1Index++) {
+16|        result.push_back(nextGreaterOf.count(nums1[nums1Index]) ? nextGreaterOf[nums1[nums1Index]] : -1);
+17|    }
+18|    return result;
+19|}
+20|
+-|int main() {
+21|    for (int x : nextGreaterElement({4, 1, 2}, {1, 3, 4, 2})) cout << x << " ";
+-|}
+`,
+  },
+  "implement-queue-using-stacks": {
+    python: `
+1|class MyQueue:
+2|    def __init__(self):
+3|        self.inbox = []
+4|        self.outbox = []
+6|    def push(self, value):
+7|        self.inbox.append(value)
+9|    def move(self):
+10|
+11|        if len(self.outbox) == 0:
+12|            while self.inbox: self.outbox.append(self.inbox.pop())
+15|    def pop(self):
+16|        self.move()
+17|        return self.outbox.pop()
+19|    def peek(self):
+20|        self.move()
+21|        return self.outbox[-1]
+23|    def empty(self):
+24|        return len(self.inbox) == 0 and len(self.outbox) == 0
+27|
+28|my_queue = MyQueue()
+29|results = []
+30|my_queue.push(1)
+31|my_queue.push(2)
+32|results.append(my_queue.peek())
+33|results.append(my_queue.pop())
+34|my_queue.push(3)
+35|results.append(my_queue.pop())
+36|results.append(my_queue.pop())
+37|results.append(my_queue.empty())
+38|print(results)
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class MyQueue {
+-|    Deque<Integer> inbox, outbox;
+2|        MyQueue() {
+3|            this.inbox = new ArrayDeque<>();
+4|            this.outbox = new ArrayDeque<>();
+5|        }
+6|        void push(int value) {
+7|            this.inbox.push(value);
+8|        }
+9|        void move() {
+10|
+11|            if (this.outbox.isEmpty()) {
+12|                while (!this.inbox.isEmpty()) this.outbox.push(this.inbox.pop());
+13|            }
+14|        }
+15|        int pop() {
+16|            this.move();
+17|            return this.outbox.pop();
+18|        }
+19|        int peek() {
+20|            this.move();
+21|            return this.outbox.peek();
+22|        }
+23|        boolean empty() {
+24|            return this.inbox.isEmpty() && this.outbox.isEmpty();
+25|        }
+26|    }
+27|
+-|    public static void main(String[] args) {
+28|        MyQueue myQueue = new MyQueue();
+29|        List<Object> results = new ArrayList<>();
+30|        myQueue.push(1);
+31|        myQueue.push(2);
+32|        results.add(myQueue.peek());
+33|        results.add(myQueue.pop());
+34|        myQueue.push(3);
+35|        results.add(myQueue.pop());
+36|        results.add(myQueue.pop());
+37|        results.add(myQueue.empty());
+38|        System.out.println(results);
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct MyQueue {
+-|vector<int> inbox, outbox;
+2|    MyQueue() {
+3|        inbox = {};
+4|        outbox = {};
+5|    }
+6|    void push(int value) {
+7|        inbox.push_back(value);
+8|    }
+9|    void move() {
+10|
+11|        if (outbox.empty()) {
+12|            while (!inbox.empty()) { outbox.push_back(inbox.back()); inbox.pop_back(); }
+13|        }
+14|    }
+15|    int pop() {
+16|        move();
+17|        int v = outbox.back(); outbox.pop_back(); return v;
+18|    }
+19|    int peek() {
+20|        move();
+21|        return outbox.back();
+22|    }
+23|    bool empty() {
+24|        return inbox.empty() && outbox.empty();
+25|    }
+26|};
+27|
+-|int main() {
+28|    MyQueue myQueue;
+29|    vector<string> results;
+30|    myQueue.push(1);
+31|    myQueue.push(2);
+32|    results.push_back(to_string(myQueue.peek()));
+33|    results.push_back(to_string(myQueue.pop()));
+34|    myQueue.push(3);
+35|    results.push_back(to_string(myQueue.pop()));
+36|    results.push_back(to_string(myQueue.pop()));
+37|    results.push_back(myQueue.empty() ? "true" : "false");
+38|    for (string r : results) cout << r << " ";
+-|}
+`,
+  },
+  "implement-stack-using-queues": {
+    python: `
+-|from collections import deque
+-|
+1|class MyStack:
+2|    def __init__(self):
+3|        self.queue = deque()
+5|    def push(self, value):
+6|        self.queue.append(value)
+7|
+8|        for rotation_index in range(len(self.queue) - 1):
+9|            self.queue.append(self.queue.popleft())
+12|    def pop(self):
+13|        return self.queue.popleft()
+15|    def top(self):
+16|        return self.queue[0]
+18|    def empty(self):
+19|        return len(self.queue) == 0
+22|
+23|my_stack = MyStack()
+24|results = []
+25|my_stack.push(1)
+26|my_stack.push(2)
+27|my_stack.push(3)
+28|results.append(my_stack.top())
+29|results.append(my_stack.pop())
+30|results.append(my_stack.pop())
+31|results.append(my_stack.empty())
+32|print(results)
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class MyStack {
+-|    Queue<Integer> queue;
+2|        MyStack() {
+3|            this.queue = new LinkedList<>();
+4|        }
+5|        void push(int value) {
+6|            this.queue.add(value);
+7|
+8|            for (int rotationIndex = 0; rotationIndex < this.queue.size() - 1; rotationIndex++) {
+9|                this.queue.add(this.queue.poll());
+10|            }
+11|        }
+12|        int pop() {
+13|            return this.queue.poll();
+14|        }
+15|        int top() {
+16|            return this.queue.peek();
+17|        }
+18|        boolean empty() {
+19|            return this.queue.isEmpty();
+20|        }
+21|    }
+22|
+-|    public static void main(String[] args) {
+23|        MyStack myStack = new MyStack();
+24|        List<Object> results = new ArrayList<>();
+25|        myStack.push(1);
+26|        myStack.push(2);
+27|        myStack.push(3);
+28|        results.add(myStack.top());
+29|        results.add(myStack.pop());
+30|        results.add(myStack.pop());
+31|        results.add(myStack.empty());
+32|        System.out.println(results);
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct MyStack {
+-|queue<int> q;
+2|    MyStack() {
+3|        q = queue<int>();
+4|    }
+5|    void push(int value) {
+6|        q.push(value);
+7|
+8|        for (int rotationIndex = 0; rotationIndex < (int) q.size() - 1; rotationIndex++) {
+9|            q.push(q.front()); q.pop();
+10|        }
+11|    }
+12|    int pop() {
+13|        int v = q.front(); q.pop(); return v;
+14|    }
+15|    int top() {
+16|        return q.front();
+17|    }
+18|    bool empty() {
+19|        return q.empty();
+20|    }
+21|};
+22|
+-|int main() {
+23|    MyStack myStack;
+24|    vector<string> results;
+25|    myStack.push(1);
+26|    myStack.push(2);
+27|    myStack.push(3);
+28|    results.push_back(to_string(myStack.top()));
+29|    results.push_back(to_string(myStack.pop()));
+30|    results.push_back(to_string(myStack.pop()));
+31|    results.push_back(myStack.empty() ? "true" : "false");
+32|    for (string r : results) cout << r << " ";
+-|}
+`,
+  },
 };
