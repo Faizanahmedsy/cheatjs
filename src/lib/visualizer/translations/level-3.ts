@@ -901,4 +901,952 @@ export const LEVEL_3_TRANSLATIONS: Record<string, TranslationSet> = {
 -|}
 `,
   },
+  "clone-graph": {
+    python: `
+1|class Node:
+2|    def __init__(self, value, neighbors=None):
+3|        self.val = value
+4|        self.neighbors = neighbors if neighbors is not None else []
+7|
+8|def clone_graph(start_node):
+9|    copies = {}
+10|    def clone(original):
+11|        if original in copies: return copies[original]
+12|        copy = Node(original.val)
+13|        copies[original] = copy
+14|        for neighbor_of_original in original.neighbors:
+15|            copy.neighbors.append(clone(neighbor_of_original))
+17|        return copy
+19|    return clone(start_node)
+21|
+23|node1 = Node(1)
+24|node2 = Node(2)
+25|node3 = Node(3)
+26|node4 = Node(4)
+27|node1.neighbors = [node2, node4]
+28|node2.neighbors = [node1, node3]
+29|node3.neighbors = [node2, node4]
+30|node4.neighbors = [node1, node3]
+31|
+32|copy1 = clone_graph(node1)
+34|copy2 = copy1.neighbors[0]
+35|copy3 = copy2.neighbors[1]
+36|copy4 = copy1.neighbors[1]
+37|copied_adjacency = [[neighbor_node.val for neighbor_node in graph_node.neighbors] for graph_node in [copy1, copy2, copy3, copy4]]
+38|print(copied_adjacency)
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class Node {
+-|        int val; List<Node> neighbors;
+2|        Node(int value) {
+3|            this.val = value;
+4|            this.neighbors = new ArrayList<>();
+5|        }
+6|    }
+7|
+8|    static Node cloneGraph(Node startNode) {
+9|        Map<Node, Node> copies = new HashMap<>();
+10|        class Cloner { Node clone(Node original) {
+11|            if (copies.containsKey(original)) return copies.get(original);
+12|            Node copy = new Node(original.val);
+13|            copies.put(original, copy);
+14|            for (Node neighborOfOriginal : original.neighbors) {
+15|                copy.neighbors.add(clone(neighborOfOriginal));
+16|            }
+17|            return copy;
+18|        } }
+19|        return new Cloner().clone(startNode);
+20|    }
+21|
+-|    public static void main(String[] args) {
+23|        Node node1 = new Node(1);
+24|        Node node2 = new Node(2);
+25|        Node node3 = new Node(3);
+26|        Node node4 = new Node(4);
+27|        node1.neighbors = List.of(node2, node4);
+28|        node2.neighbors = List.of(node1, node3);
+29|        node3.neighbors = List.of(node2, node4);
+30|        node4.neighbors = List.of(node1, node3);
+31|
+32|        Node copy1 = cloneGraph(node1);
+34|        Node copy2 = copy1.neighbors.get(0);
+35|        Node copy3 = copy2.neighbors.get(1);
+36|        Node copy4 = copy1.neighbors.get(1);
+37|        List<List<Integer>> copiedAdjacency = java.util.stream.Stream.of(copy1, copy2, copy3, copy4).map(graphNode -> graphNode.neighbors.stream().map(neighborNode -> neighborNode.val).toList()).toList();
+38|        System.out.println(copiedAdjacency);
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct Node {
+-|    int val; vector<Node*> neighbors;
+2|    Node(int value, vector<Node*> neighbors = {}) {
+3|        this->val = value;
+4|        this->neighbors = neighbors;
+5|    }
+6|};
+7|
+8|Node* cloneGraph(Node* startNode) {
+9|    unordered_map<Node*, Node*> copies;
+10|    function<Node*(Node*)> clone = [&](Node* original) -> Node* {
+11|        if (copies.count(original)) return copies[original];
+12|        Node* copy = new Node(original->val);
+13|        copies[original] = copy;
+14|        for (Node* neighborOfOriginal : original->neighbors) {
+15|            copy->neighbors.push_back(clone(neighborOfOriginal));
+16|        }
+17|        return copy;
+18|    };
+19|    return clone(startNode);
+20|}
+21|
+-|int main() {
+23|    Node* node1 = new Node(1);
+24|    Node* node2 = new Node(2);
+25|    Node* node3 = new Node(3);
+26|    Node* node4 = new Node(4);
+27|    node1->neighbors = {node2, node4};
+28|    node2->neighbors = {node1, node3};
+29|    node3->neighbors = {node2, node4};
+30|    node4->neighbors = {node1, node3};
+31|
+32|    Node* copy1 = cloneGraph(node1);
+34|    Node* copy2 = copy1->neighbors[0];
+35|    Node* copy3 = copy2->neighbors[1];
+36|    Node* copy4 = copy1->neighbors[1];
+37|    vector<vector<int>> copiedAdjacency; for (Node* graphNode : {copy1, copy2, copy3, copy4}) { vector<int> row; for (Node* neighborNode : graphNode->neighbors) row.push_back(neighborNode->val); copiedAdjacency.push_back(row); }
+38|    for (auto& row : copiedAdjacency) { for (int x : row) cout << x << " "; cout << "| "; }
+-|}
+`,
+  },
+  "max-area-of-island": {
+    python: `
+1|def max_area_of_island(grid):
+2|    row_count = len(grid)
+3|    column_count = len(grid[0])
+4|
+5|
+6|    def area(row_index, column_index):
+7|        if row_index < 0 or column_index < 0 or row_index >= row_count or column_index >= column_count: return 0
+8|        if grid[row_index][column_index] == 0: return 0
+9|        grid[row_index][column_index] = 0
+10|        return 1 + area(row_index + 1, column_index) + area(row_index - 1, column_index) + area(row_index, column_index + 1) + area(row_index, column_index - 1)
+12|
+13|    best = 0
+14|    for row_index in range(row_count):
+15|        for column_index in range(column_count):
+16|            if grid[row_index][column_index] == 1:
+17|                best = max(best, area(row_index, column_index))
+21|    return best
+23|
+24|grid = [
+25|    [1, 1, 0, 0],
+26|    [0, 1, 0, 1],
+27|    [0, 0, 1, 1],
+28|    [0, 0, 1, 0],
+29|]
+30|print(max_area_of_island(grid))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int maxAreaOfIsland(int[][] grid) {
+2|        int rowCount = grid.length;
+3|        int columnCount = grid[0].length;
+4|
+5|
+6|        class Measurer { int area(int rowIndex, int columnIndex) {
+7|            if (rowIndex < 0 || columnIndex < 0 || rowIndex >= rowCount || columnIndex >= columnCount) return 0;
+8|            if (grid[rowIndex][columnIndex] == 0) return 0;
+9|            grid[rowIndex][columnIndex] = 0;
+10|            return 1 + area(rowIndex + 1, columnIndex) + area(rowIndex - 1, columnIndex) + area(rowIndex, columnIndex + 1) + area(rowIndex, columnIndex - 1);
+11|        } }
+12|
+13|        int best = 0;
+14|        for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+15|            for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+16|                if (grid[rowIndex][columnIndex] == 1) {
+17|                    best = Math.max(best, new Measurer().area(rowIndex, columnIndex));
+18|                }
+19|            }
+20|        }
+21|        return best;
+22|    }
+23|
+-|    public static void main(String[] args) {
+24|        int[][] grid = {
+25|            {1, 1, 0, 0},
+26|            {0, 1, 0, 1},
+27|            {0, 0, 1, 1},
+28|            {0, 0, 1, 0},
+29|        };
+30|        System.out.println(maxAreaOfIsland(grid));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int maxAreaOfIsland(vector<vector<int>>& grid) {
+2|    int rowCount = grid.size();
+3|    int columnCount = grid[0].size();
+4|
+5|
+6|    function<int(int, int)> area = [&](int rowIndex, int columnIndex) -> int {
+7|        if (rowIndex < 0 || columnIndex < 0 || rowIndex >= rowCount || columnIndex >= columnCount) return 0;
+8|        if (grid[rowIndex][columnIndex] == 0) return 0;
+9|        grid[rowIndex][columnIndex] = 0;
+10|        return 1 + area(rowIndex + 1, columnIndex) + area(rowIndex - 1, columnIndex) + area(rowIndex, columnIndex + 1) + area(rowIndex, columnIndex - 1);
+11|    };
+12|
+13|    int best = 0;
+14|    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+15|        for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+16|            if (grid[rowIndex][columnIndex] == 1) {
+17|                best = max(best, area(rowIndex, columnIndex));
+18|            }
+19|        }
+20|    }
+21|    return best;
+22|}
+23|
+-|int main() {
+24|    vector<vector<int>> grid = {
+25|        {1, 1, 0, 0},
+26|        {0, 1, 0, 1},
+27|        {0, 0, 1, 1},
+28|        {0, 0, 1, 0},
+29|    };
+30|    cout << maxAreaOfIsland(grid) << endl;
+-|}
+`,
+  },
+  "rotting-oranges": {
+    python: `
+1|def oranges_rotting(grid):
+2|    row_count = len(grid)
+3|    column_count = len(grid[0])
+4|    queue = []
+5|    fresh = 0
+6|    for row_index in range(row_count):
+7|        for column_index in range(column_count):
+8|            if grid[row_index][column_index] == 2: queue.append([row_index, column_index])
+9|            if grid[row_index][column_index] == 1: fresh += 1
+12|
+13|    directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+14|    queue_front_index = 0
+15|    minutes = 0
+16|    while queue_front_index < len(queue) and fresh > 0:
+17|        size = len(queue) - queue_front_index
+18|        for batch_index in range(size):
+19|            row_index, column_index = queue[queue_front_index]; queue_front_index += 1
+20|            for row_step, column_step in directions:
+21|                neighbor_row = row_index + row_step
+22|                neighbor_column = column_index + column_step
+23|                if 0 <= neighbor_row < row_count and 0 <= neighbor_column < column_count and grid[neighbor_row][neighbor_column] == 1:
+24|                    grid[neighbor_row][neighbor_column] = 2
+25|                    fresh -= 1
+26|                    queue.append([neighbor_row, neighbor_column])
+30|        minutes += 1
+32|    return minutes if fresh == 0 else -1
+34|
+35|grid = [
+36|    [2, 1, 1],
+37|    [1, 1, 0],
+38|    [0, 1, 1],
+39|]
+40|print(oranges_rotting(grid))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int orangesRotting(int[][] grid) {
+2|        int rowCount = grid.length;
+3|        int columnCount = grid[0].length;
+4|        List<int[]> queue = new ArrayList<>();
+5|        int fresh = 0;
+6|        for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+7|            for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+8|                if (grid[rowIndex][columnIndex] == 2) queue.add(new int[]{rowIndex, columnIndex});
+9|                if (grid[rowIndex][columnIndex] == 1) fresh++;
+10|            }
+11|        }
+12|
+13|        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+14|        int queueFrontIndex = 0;
+15|        int minutes = 0;
+16|        while (queueFrontIndex < queue.size() && fresh > 0) {
+17|            int size = queue.size() - queueFrontIndex;
+18|            for (int batchIndex = 0; batchIndex < size; batchIndex++) {
+19|                int[] cell = queue.get(queueFrontIndex++); int rowIndex = cell[0], columnIndex = cell[1];
+20|                for (int[] step : directions) {
+21|                    int neighborRow = rowIndex + step[0];
+22|                    int neighborColumn = columnIndex + step[1];
+23|                    if (neighborRow >= 0 && neighborColumn >= 0 && neighborRow < rowCount && neighborColumn < columnCount && grid[neighborRow][neighborColumn] == 1) {
+24|                        grid[neighborRow][neighborColumn] = 2;
+25|                        fresh--;
+26|                        queue.add(new int[]{neighborRow, neighborColumn});
+27|                    }
+28|                }
+29|            }
+30|            minutes++;
+31|        }
+32|        return fresh == 0 ? minutes : -1;
+33|    }
+34|
+-|    public static void main(String[] args) {
+35|        int[][] grid = {
+36|            {2, 1, 1},
+37|            {1, 1, 0},
+38|            {0, 1, 1},
+39|        };
+40|        System.out.println(orangesRotting(grid));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int orangesRotting(vector<vector<int>>& grid) {
+2|    int rowCount = grid.size();
+3|    int columnCount = grid[0].size();
+4|    vector<pair<int, int>> queue;
+5|    int fresh = 0;
+6|    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+7|        for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+8|            if (grid[rowIndex][columnIndex] == 2) queue.push_back({rowIndex, columnIndex});
+9|            if (grid[rowIndex][columnIndex] == 1) fresh++;
+10|        }
+11|    }
+12|
+13|    vector<pair<int, int>> directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+14|    int queueFrontIndex = 0;
+15|    int minutes = 0;
+16|    while (queueFrontIndex < queue.size() && fresh > 0) {
+17|        int size = queue.size() - queueFrontIndex;
+18|        for (int batchIndex = 0; batchIndex < size; batchIndex++) {
+19|            auto [rowIndex, columnIndex] = queue[queueFrontIndex++];
+20|            for (auto [rowStep, columnStep] : directions) {
+21|                int neighborRow = rowIndex + rowStep;
+22|                int neighborColumn = columnIndex + columnStep;
+23|                if (neighborRow >= 0 && neighborColumn >= 0 && neighborRow < rowCount && neighborColumn < columnCount && grid[neighborRow][neighborColumn] == 1) {
+24|                    grid[neighborRow][neighborColumn] = 2;
+25|                    fresh--;
+26|                    queue.push_back({neighborRow, neighborColumn});
+27|                }
+28|            }
+29|        }
+30|        minutes++;
+31|    }
+32|    return fresh == 0 ? minutes : -1;
+33|}
+34|
+-|int main() {
+35|    vector<vector<int>> grid = {
+36|        {2, 1, 1},
+37|        {1, 1, 0},
+38|        {0, 1, 1},
+39|    };
+40|    cout << orangesRotting(grid) << endl;
+-|}
+`,
+  },
+  "01-matrix": {
+    python: `
+1|def update_matrix(matrix):
+2|    row_count = len(matrix)
+3|    column_count = len(matrix[0])
+4|    distance = []
+5|    queue = []
+6|    for row_index in range(row_count):
+7|        distance.append([])
+8|        for column_index in range(column_count):
+9|            if matrix[row_index][column_index] == 0:
+10|                distance[row_index].append(0)
+11|                queue.append([row_index, column_index])
+12|            else:
+13|                distance[row_index].append(-1)
+17|
+18|    directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+19|    queue_front_index = 0
+20|    while queue_front_index < len(queue):
+21|        row_index, column_index = queue[queue_front_index]; queue_front_index += 1
+22|        for row_step, column_step in directions:
+23|            neighbor_row = row_index + row_step
+24|            neighbor_column = column_index + column_step
+25|            if 0 <= neighbor_row < row_count and 0 <= neighbor_column < column_count and distance[neighbor_row][neighbor_column] == -1:
+26|                distance[neighbor_row][neighbor_column] = distance[row_index][column_index] + 1
+27|                queue.append([neighbor_row, neighbor_column])
+31|    return distance
+33|
+34|matrix = [
+35|    [0, 0, 0],
+36|    [0, 1, 0],
+37|    [1, 1, 1],
+38|]
+39|print(update_matrix(matrix))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int[][] updateMatrix(int[][] matrix) {
+2|        int rowCount = matrix.length;
+3|        int columnCount = matrix[0].length;
+4|        int[][] distance = new int[rowCount][columnCount];
+5|        List<int[]> queue = new ArrayList<>();
+6|        for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+7|            distance[rowIndex] = new int[columnCount];
+8|            for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+9|                if (matrix[rowIndex][columnIndex] == 0) {
+10|                    distance[rowIndex][columnIndex] = 0;
+11|                    queue.add(new int[]{rowIndex, columnIndex});
+12|                } else {
+13|                    distance[rowIndex][columnIndex] = -1;
+14|                }
+15|            }
+16|        }
+17|
+18|        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+19|        int queueFrontIndex = 0;
+20|        while (queueFrontIndex < queue.size()) {
+21|            int[] cell = queue.get(queueFrontIndex++); int rowIndex = cell[0], columnIndex = cell[1];
+22|            for (int[] step : directions) {
+23|                int neighborRow = rowIndex + step[0];
+24|                int neighborColumn = columnIndex + step[1];
+25|                if (neighborRow >= 0 && neighborColumn >= 0 && neighborRow < rowCount && neighborColumn < columnCount && distance[neighborRow][neighborColumn] == -1) {
+26|                    distance[neighborRow][neighborColumn] = distance[rowIndex][columnIndex] + 1;
+27|                    queue.add(new int[]{neighborRow, neighborColumn});
+28|                }
+29|            }
+30|        }
+31|        return distance;
+32|    }
+33|
+-|    public static void main(String[] args) {
+34|        int[][] matrix = {
+35|            {0, 0, 0},
+36|            {0, 1, 0},
+37|            {1, 1, 1},
+38|        };
+39|        System.out.println(Arrays.deepToString(updateMatrix(matrix)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<vector<int>> updateMatrix(vector<vector<int>>& matrix) {
+2|    int rowCount = matrix.size();
+3|    int columnCount = matrix[0].size();
+4|    vector<vector<int>> distance;
+5|    vector<pair<int, int>> queue;
+6|    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+7|        distance.push_back({});
+8|        for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+9|            if (matrix[rowIndex][columnIndex] == 0) {
+10|                distance[rowIndex].push_back(0);
+11|                queue.push_back({rowIndex, columnIndex});
+12|            } else {
+13|                distance[rowIndex].push_back(-1);
+14|            }
+15|        }
+16|    }
+17|
+18|    vector<pair<int, int>> directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+19|    int queueFrontIndex = 0;
+20|    while (queueFrontIndex < queue.size()) {
+21|        auto [rowIndex, columnIndex] = queue[queueFrontIndex++];
+22|        for (auto [rowStep, columnStep] : directions) {
+23|            int neighborRow = rowIndex + rowStep;
+24|            int neighborColumn = columnIndex + columnStep;
+25|            if (neighborRow >= 0 && neighborColumn >= 0 && neighborRow < rowCount && neighborColumn < columnCount && distance[neighborRow][neighborColumn] == -1) {
+26|                distance[neighborRow][neighborColumn] = distance[rowIndex][columnIndex] + 1;
+27|                queue.push_back({neighborRow, neighborColumn});
+28|            }
+29|        }
+30|    }
+31|    return distance;
+32|}
+33|
+-|int main() {
+34|    vector<vector<int>> matrix = {
+35|        {0, 0, 0},
+36|        {0, 1, 0},
+37|        {1, 1, 1},
+38|    };
+39|    for (auto& row : updateMatrix(matrix)) { for (int x : row) cout << x << " "; cout << "| "; }
+-|}
+`,
+  },
+  "course-schedule": {
+    python: `
+1|def can_finish(num_courses, prerequisites):
+2|    graph = []
+3|    indegree = []
+4|    for course_index in range(num_courses):
+5|        graph.append([])
+6|        indegree.append(0)
+8|    for dependent_course, required_course in prerequisites:
+9|        graph[required_course].append(dependent_course)
+10|        indegree[dependent_course] += 1
+12|
+13|    queue = []
+14|    for course_index in range(num_courses):
+15|        if indegree[course_index] == 0: queue.append(course_index)
+17|
+18|    queue_front_index = 0
+19|    taken = 0
+20|    while queue_front_index < len(queue):
+21|        course = queue[queue_front_index]; queue_front_index += 1
+22|        taken += 1
+23|        for neighbor_course in graph[course]:
+24|            indegree[neighbor_course] -= 1
+25|            if indegree[neighbor_course] == 0: queue.append(neighbor_course)
+28|    return taken == num_courses
+30|
+31|prerequisites = [[1, 0], [2, 0], [3, 1], [3, 2]]
+32|print(can_finish(4, prerequisites))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static boolean canFinish(int numCourses, int[][] prerequisites) {
+2|        List<List<Integer>> graph = new ArrayList<>();
+3|        int[] indegree = new int[numCourses];
+4|        for (int courseIndex = 0; courseIndex < numCourses; courseIndex++) {
+5|            graph.add(new ArrayList<>());
+6|            indegree[courseIndex] = 0;
+7|        }
+8|        for (int[] pair : prerequisites) {
+9|            graph.get(pair[1]).add(pair[0]);
+10|            indegree[pair[0]]++;
+11|        }
+12|
+13|        List<Integer> queue = new ArrayList<>();
+14|        for (int courseIndex = 0; courseIndex < numCourses; courseIndex++) {
+15|            if (indegree[courseIndex] == 0) queue.add(courseIndex);
+16|        }
+17|
+18|        int queueFrontIndex = 0;
+19|        int taken = 0;
+20|        while (queueFrontIndex < queue.size()) {
+21|            int course = queue.get(queueFrontIndex++);
+22|            taken++;
+23|            for (int neighborCourse : graph.get(course)) {
+24|                indegree[neighborCourse]--;
+25|                if (indegree[neighborCourse] == 0) queue.add(neighborCourse);
+26|            }
+27|        }
+28|        return taken == numCourses;
+29|    }
+30|
+-|    public static void main(String[] args) {
+31|        int[][] prerequisites = {{1, 0}, {2, 0}, {3, 1}, {3, 2}};
+32|        System.out.println(canFinish(4, prerequisites));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+2|    vector<vector<int>> graph;
+3|    vector<int> indegree;
+4|    for (int courseIndex = 0; courseIndex < numCourses; courseIndex++) {
+5|        graph.push_back({});
+6|        indegree.push_back(0);
+7|    }
+8|    for (auto& pair : prerequisites) {
+9|        graph[pair[1]].push_back(pair[0]);
+10|        indegree[pair[0]]++;
+11|    }
+12|
+13|    vector<int> queue;
+14|    for (int courseIndex = 0; courseIndex < numCourses; courseIndex++) {
+15|        if (indegree[courseIndex] == 0) queue.push_back(courseIndex);
+16|    }
+17|
+18|    int queueFrontIndex = 0;
+19|    int taken = 0;
+20|    while (queueFrontIndex < queue.size()) {
+21|        int course = queue[queueFrontIndex++];
+22|        taken++;
+23|        for (int neighborCourse : graph[course]) {
+24|            indegree[neighborCourse]--;
+25|            if (indegree[neighborCourse] == 0) queue.push_back(neighborCourse);
+26|        }
+27|    }
+28|    return taken == numCourses;
+29|}
+30|
+-|int main() {
+31|    vector<vector<int>> prerequisites = {{1, 0}, {2, 0}, {3, 1}, {3, 2}};
+32|    cout << boolalpha << canFinish(4, prerequisites) << endl;
+-|}
+`,
+  },
+  "course-schedule-ii": {
+    python: `
+1|def find_order(num_courses, prerequisites):
+2|    graph = []
+3|    indegree = []
+4|    for course_index in range(num_courses):
+5|        graph.append([])
+6|        indegree.append(0)
+8|    for dependent_course, required_course in prerequisites:
+9|        graph[required_course].append(dependent_course)
+10|        indegree[dependent_course] += 1
+12|
+13|    queue = []
+14|    for course_index in range(num_courses):
+15|        if indegree[course_index] == 0: queue.append(course_index)
+17|
+18|    queue_front_index = 0
+19|    while queue_front_index < len(queue):
+20|        course = queue[queue_front_index]; queue_front_index += 1
+21|        for neighbor_course in graph[course]:
+22|            indegree[neighbor_course] -= 1
+23|            if indegree[neighbor_course] == 0: queue.append(neighbor_course)
+26|    return queue if len(queue) == num_courses else []
+28|
+29|prerequisites = [[1, 0], [2, 0], [3, 1], [3, 2]]
+30|print(find_order(4, prerequisites))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static List<Integer> findOrder(int numCourses, int[][] prerequisites) {
+2|        List<List<Integer>> graph = new ArrayList<>();
+3|        int[] indegree = new int[numCourses];
+4|        for (int courseIndex = 0; courseIndex < numCourses; courseIndex++) {
+5|            graph.add(new ArrayList<>());
+6|            indegree[courseIndex] = 0;
+7|        }
+8|        for (int[] pair : prerequisites) {
+9|            graph.get(pair[1]).add(pair[0]);
+10|            indegree[pair[0]]++;
+11|        }
+12|
+13|        List<Integer> queue = new ArrayList<>();
+14|        for (int courseIndex = 0; courseIndex < numCourses; courseIndex++) {
+15|            if (indegree[courseIndex] == 0) queue.add(courseIndex);
+16|        }
+17|
+18|        int queueFrontIndex = 0;
+19|        while (queueFrontIndex < queue.size()) {
+20|            int course = queue.get(queueFrontIndex++);
+21|            for (int neighborCourse : graph.get(course)) {
+22|                indegree[neighborCourse]--;
+23|                if (indegree[neighborCourse] == 0) queue.add(neighborCourse);
+24|            }
+25|        }
+26|        return queue.size() == numCourses ? queue : new ArrayList<>();
+27|    }
+28|
+-|    public static void main(String[] args) {
+29|        int[][] prerequisites = {{1, 0}, {2, 0}, {3, 1}, {3, 2}};
+30|        System.out.println(findOrder(4, prerequisites));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
+2|    vector<vector<int>> graph;
+3|    vector<int> indegree;
+4|    for (int courseIndex = 0; courseIndex < numCourses; courseIndex++) {
+5|        graph.push_back({});
+6|        indegree.push_back(0);
+7|    }
+8|    for (auto& pair : prerequisites) {
+9|        graph[pair[1]].push_back(pair[0]);
+10|        indegree[pair[0]]++;
+11|    }
+12|
+13|    vector<int> queue;
+14|    for (int courseIndex = 0; courseIndex < numCourses; courseIndex++) {
+15|        if (indegree[courseIndex] == 0) queue.push_back(courseIndex);
+16|    }
+17|
+18|    int queueFrontIndex = 0;
+19|    while (queueFrontIndex < queue.size()) {
+20|        int course = queue[queueFrontIndex++];
+21|        for (int neighborCourse : graph[course]) {
+22|            indegree[neighborCourse]--;
+23|            if (indegree[neighborCourse] == 0) queue.push_back(neighborCourse);
+24|        }
+25|    }
+26|    return queue.size() == numCourses ? queue : vector<int>{};
+27|}
+28|
+-|int main() {
+29|    vector<vector<int>> prerequisites = {{1, 0}, {2, 0}, {3, 1}, {3, 2}};
+30|    for (int x : findOrder(4, prerequisites)) cout << x << " ";
+-|}
+`,
+  },
+  "pacific-atlantic-water-flow": {
+    python: `
+1|def pacific_atlantic(heights):
+2|    row_count = len(heights)
+3|    column_count = len(heights[0])
+4|    pacific = []
+5|    atlantic = []
+6|    for row_index in range(row_count):
+7|        pacific.append([False] * column_count)
+8|        atlantic.append([False] * column_count)
+10|
+11|
+12|    def climb(row_index, column_index, seen, previous_height):
+13|        if row_index < 0 or column_index < 0 or row_index >= row_count or column_index >= column_count: return
+14|        if seen[row_index][column_index] or heights[row_index][column_index] < previous_height: return
+15|        seen[row_index][column_index] = True
+16|        cell_height = heights[row_index][column_index]
+17|        climb(row_index + 1, column_index, seen, cell_height)
+18|        climb(row_index - 1, column_index, seen, cell_height)
+19|        climb(row_index, column_index + 1, seen, cell_height)
+20|        climb(row_index, column_index - 1, seen, cell_height)
+22|
+23|    for row_index in range(row_count):
+24|        climb(row_index, 0, pacific, 0)
+25|        climb(row_index, column_count - 1, atlantic, 0)
+27|    for column_index in range(column_count):
+28|        climb(0, column_index, pacific, 0)
+29|        climb(row_count - 1, column_index, atlantic, 0)
+31|
+32|    result = []
+33|    for row_index in range(row_count):
+34|        for column_index in range(column_count):
+35|            if pacific[row_index][column_index] and atlantic[row_index][column_index]: result.append([row_index, column_index])
+38|    return result
+40|
+41|heights = [
+42|    [1, 2, 3],
+43|    [8, 9, 4],
+44|]
+45|print(pacific_atlantic(heights))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static List<List<Integer>> pacificAtlantic(int[][] heights) {
+2|        int rowCount = heights.length;
+3|        int columnCount = heights[0].length;
+4|        boolean[][] pacific = new boolean[rowCount][];
+5|        boolean[][] atlantic = new boolean[rowCount][];
+6|        for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+7|            pacific[rowIndex] = new boolean[columnCount];
+8|            atlantic[rowIndex] = new boolean[columnCount];
+9|        }
+10|
+11|
+12|        class Climber { void climb(int rowIndex, int columnIndex, boolean[][] seen, int previousHeight) {
+13|            if (rowIndex < 0 || columnIndex < 0 || rowIndex >= rowCount || columnIndex >= columnCount) return;
+14|            if (seen[rowIndex][columnIndex] || heights[rowIndex][columnIndex] < previousHeight) return;
+15|            seen[rowIndex][columnIndex] = true;
+16|            int cellHeight = heights[rowIndex][columnIndex];
+17|            climb(rowIndex + 1, columnIndex, seen, cellHeight);
+18|            climb(rowIndex - 1, columnIndex, seen, cellHeight);
+19|            climb(rowIndex, columnIndex + 1, seen, cellHeight);
+20|            climb(rowIndex, columnIndex - 1, seen, cellHeight);
+21|        } }
+-|        Climber climber = new Climber();
+22|
+23|        for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+24|            climber.climb(rowIndex, 0, pacific, 0);
+25|            climber.climb(rowIndex, columnCount - 1, atlantic, 0);
+26|        }
+27|        for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+28|            climber.climb(0, columnIndex, pacific, 0);
+29|            climber.climb(rowCount - 1, columnIndex, atlantic, 0);
+30|        }
+31|
+32|        List<List<Integer>> result = new ArrayList<>();
+33|        for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+34|            for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+35|                if (pacific[rowIndex][columnIndex] && atlantic[rowIndex][columnIndex]) result.add(List.of(rowIndex, columnIndex));
+36|            }
+37|        }
+38|        return result;
+39|    }
+40|
+-|    public static void main(String[] args) {
+41|        int[][] heights = {
+42|            {1, 2, 3},
+43|            {8, 9, 4},
+44|        };
+45|        System.out.println(pacificAtlantic(heights));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {
+2|    int rowCount = heights.size();
+3|    int columnCount = heights[0].size();
+4|    vector<vector<bool>> pacific;
+5|    vector<vector<bool>> atlantic;
+6|    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+7|        pacific.push_back(vector<bool>(columnCount, false));
+8|        atlantic.push_back(vector<bool>(columnCount, false));
+9|    }
+10|
+11|
+12|    function<void(int, int, vector<vector<bool>>&, int)> climb = [&](int rowIndex, int columnIndex, vector<vector<bool>>& seen, int previousHeight) {
+13|        if (rowIndex < 0 || columnIndex < 0 || rowIndex >= rowCount || columnIndex >= columnCount) return;
+14|        if (seen[rowIndex][columnIndex] || heights[rowIndex][columnIndex] < previousHeight) return;
+15|        seen[rowIndex][columnIndex] = true;
+16|        int cellHeight = heights[rowIndex][columnIndex];
+17|        climb(rowIndex + 1, columnIndex, seen, cellHeight);
+18|        climb(rowIndex - 1, columnIndex, seen, cellHeight);
+19|        climb(rowIndex, columnIndex + 1, seen, cellHeight);
+20|        climb(rowIndex, columnIndex - 1, seen, cellHeight);
+21|    };
+22|
+23|    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+24|        climb(rowIndex, 0, pacific, 0);
+25|        climb(rowIndex, columnCount - 1, atlantic, 0);
+26|    }
+27|    for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+28|        climb(0, columnIndex, pacific, 0);
+29|        climb(rowCount - 1, columnIndex, atlantic, 0);
+30|    }
+31|
+32|    vector<vector<int>> result;
+33|    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+34|        for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+35|            if (pacific[rowIndex][columnIndex] && atlantic[rowIndex][columnIndex]) result.push_back({rowIndex, columnIndex});
+36|        }
+37|    }
+38|    return result;
+39|}
+40|
+-|int main() {
+41|    vector<vector<int>> heights = {
+42|        {1, 2, 3},
+43|        {8, 9, 4},
+44|    };
+45|    for (auto& cell : pacificAtlantic(heights)) cout << cell[0] << "," << cell[1] << " ";
+-|}
+`,
+  },
+  "shortest-path-in-binary-matrix": {
+    python: `
+1|def shortest_path_binary_matrix(grid):
+2|    grid_size = len(grid)
+3|    if grid[0][0] == 1 or grid[grid_size - 1][grid_size - 1] == 1: return -1
+4|    directions = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]
+5|    queue = [[0, 0, 1]]
+6|    grid[0][0] = 1
+7|    queue_front_index = 0
+8|    while queue_front_index < len(queue):
+9|        current_row, current_column, length = queue[queue_front_index]; queue_front_index += 1
+10|        if current_row == grid_size - 1 and current_column == grid_size - 1: return length
+11|        for row_step, column_step in directions:
+12|            neighbor_row = current_row + row_step
+13|            neighbor_column = current_column + column_step
+14|            if 0 <= neighbor_row < grid_size and 0 <= neighbor_column < grid_size and grid[neighbor_row][neighbor_column] == 0:
+15|                grid[neighbor_row][neighbor_column] = 1
+16|                queue.append([neighbor_row, neighbor_column, length + 1])
+20|    return -1
+22|
+23|grid = [
+24|    [0, 0, 0],
+25|    [1, 1, 0],
+26|    [1, 1, 0],
+27|]
+28|print(shortest_path_binary_matrix(grid))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int shortestPathBinaryMatrix(int[][] grid) {
+2|        int gridSize = grid.length;
+3|        if (grid[0][0] == 1 || grid[gridSize - 1][gridSize - 1] == 1) return -1;
+4|        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+5|        List<int[]> queue = new ArrayList<>(List.of(new int[]{0, 0, 1}));
+6|        grid[0][0] = 1;
+7|        int queueFrontIndex = 0;
+8|        while (queueFrontIndex < queue.size()) {
+9|            int[] cell = queue.get(queueFrontIndex++); int currentRow = cell[0], currentColumn = cell[1], length = cell[2];
+10|            if (currentRow == gridSize - 1 && currentColumn == gridSize - 1) return length;
+11|            for (int[] step : directions) {
+12|                int neighborRow = currentRow + step[0];
+13|                int neighborColumn = currentColumn + step[1];
+14|                if (neighborRow >= 0 && neighborColumn >= 0 && neighborRow < gridSize && neighborColumn < gridSize && grid[neighborRow][neighborColumn] == 0) {
+15|                    grid[neighborRow][neighborColumn] = 1;
+16|                    queue.add(new int[]{neighborRow, neighborColumn, length + 1});
+17|                }
+18|            }
+19|        }
+20|        return -1;
+21|    }
+22|
+-|    public static void main(String[] args) {
+23|        int[][] grid = {
+24|            {0, 0, 0},
+25|            {1, 1, 0},
+26|            {1, 1, 0},
+27|        };
+28|        System.out.println(shortestPathBinaryMatrix(grid));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int shortestPathBinaryMatrix(vector<vector<int>>& grid) {
+2|    int gridSize = grid.size();
+3|    if (grid[0][0] == 1 || grid[gridSize - 1][gridSize - 1] == 1) return -1;
+4|    vector<pair<int, int>> directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+5|    vector<array<int, 3>> queue = {{0, 0, 1}};
+6|    grid[0][0] = 1;
+7|    int queueFrontIndex = 0;
+8|    while (queueFrontIndex < queue.size()) {
+9|        auto [currentRow, currentColumn, length] = queue[queueFrontIndex++];
+10|        if (currentRow == gridSize - 1 && currentColumn == gridSize - 1) return length;
+11|        for (auto [rowStep, columnStep] : directions) {
+12|            int neighborRow = currentRow + rowStep;
+13|            int neighborColumn = currentColumn + columnStep;
+14|            if (neighborRow >= 0 && neighborColumn >= 0 && neighborRow < gridSize && neighborColumn < gridSize && grid[neighborRow][neighborColumn] == 0) {
+15|                grid[neighborRow][neighborColumn] = 1;
+16|                queue.push_back({neighborRow, neighborColumn, length + 1});
+17|            }
+18|        }
+19|    }
+20|    return -1;
+21|}
+22|
+-|int main() {
+23|    vector<vector<int>> grid = {
+24|        {0, 0, 0},
+25|        {1, 1, 0},
+26|        {1, 1, 0},
+27|    };
+28|    cout << shortestPathBinaryMatrix(grid) << endl;
+-|}
+`,
+  },
 };
