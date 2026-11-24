@@ -1730,4 +1730,637 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|}
 `,
   },
+  "remove-all-adjacent-duplicates-in-string": {
+    python: `
+1|def remove_duplicates(text):
+2|    stack = []
+3|
+4|    for char_index in range(len(text)):
+5|        character = text[char_index]
+6|        if stack and stack[-1] == character:
+7|            stack.pop()
+8|        else:
+9|            stack.append(character)
+12|    return "".join(stack)
+14|
+15|print(repr(remove_duplicates("abbaca")))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static String removeDuplicates(String text) {
+2|        StringBuilder stack = new StringBuilder();
+3|
+4|        for (int charIndex = 0; charIndex < text.length(); charIndex++) {
+5|            char character = text.charAt(charIndex);
+6|            if (stack.length() > 0 && stack.charAt(stack.length() - 1) == character) {
+7|                stack.deleteCharAt(stack.length() - 1);
+8|            } else {
+9|                stack.append(character);
+10|            }
+11|        }
+12|        return stack.toString();
+13|    }
+14|
+-|    public static void main(String[] args) {
+15|        System.out.println("\\"" + removeDuplicates("abbaca") + "\\"");
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|string removeDuplicates(string text) {
+2|    string stack = "";
+3|
+4|    for (int charIndex = 0; charIndex < text.size(); charIndex++) {
+5|        char character = text[charIndex];
+6|        if (!stack.empty() && stack.back() == character) {
+7|            stack.pop_back();
+8|        } else {
+9|            stack.push_back(character);
+10|        }
+11|    }
+12|    return stack;
+13|}
+14|
+-|int main() {
+15|    cout << "\\"" << removeDuplicates("abbaca") << "\\"" << endl;
+-|}
+`,
+  },
+  "binary-search": {
+    python: `
+1|def search(numbers, target):
+2|    low_index = 0
+3|    high_index = len(numbers) - 1
+4|
+5|    while low_index <= high_index:
+6|        middle_index = (low_index + high_index) // 2
+7|        if numbers[middle_index] == target:
+8|            return middle_index
+9|        elif numbers[middle_index] < target:
+10|            low_index = middle_index + 1
+11|        else:
+12|            high_index = middle_index - 1
+15|    return -1
+17|
+18|numbers = [-1, 0, 3, 5, 9, 12, 15]
+19|print(search(numbers, 9))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int search(int[] numbers, int target) {
+2|        int lowIndex = 0;
+3|        int highIndex = numbers.length - 1;
+4|
+5|        while (lowIndex <= highIndex) {
+6|            int middleIndex = (lowIndex + highIndex) / 2;
+7|            if (numbers[middleIndex] == target) {
+8|                return middleIndex;
+9|            } else if (numbers[middleIndex] < target) {
+10|                lowIndex = middleIndex + 1;
+11|            } else {
+12|                highIndex = middleIndex - 1;
+13|            }
+14|        }
+15|        return -1;
+16|    }
+17|
+-|    public static void main(String[] args) {
+18|        int[] numbers = {-1, 0, 3, 5, 9, 12, 15};
+19|        System.out.println(search(numbers, 9));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int search(vector<int>& numbers, int target) {
+2|    int lowIndex = 0;
+3|    int highIndex = numbers.size() - 1;
+4|
+5|    while (lowIndex <= highIndex) {
+6|        int middleIndex = (lowIndex + highIndex) / 2;
+7|        if (numbers[middleIndex] == target) {
+8|            return middleIndex;
+9|        } else if (numbers[middleIndex] < target) {
+10|            lowIndex = middleIndex + 1;
+11|        } else {
+12|            highIndex = middleIndex - 1;
+13|        }
+14|    }
+15|    return -1;
+16|}
+17|
+-|int main() {
+18|    vector<int> numbers = {-1, 0, 3, 5, 9, 12, 15};
+19|    cout << search(numbers, 9) << endl;
+-|}
+`,
+  },
+  "search-insert-position": {
+    python: `
+1|def search_insert(numbers, target):
+2|    low_index = 0
+3|    high_index = len(numbers) - 1
+4|
+5|    while low_index <= high_index:
+6|        middle_index = (low_index + high_index) // 2
+7|        if numbers[middle_index] == target: return middle_index
+8|        if numbers[middle_index] < target:
+9|            low_index = middle_index + 1
+10|        else:
+11|            high_index = middle_index - 1
+14|    return low_index
+16|
+17|numbers = [1, 3, 5, 6, 8]
+18|print(search_insert(numbers, 7))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int searchInsert(int[] numbers, int target) {
+2|        int lowIndex = 0;
+3|        int highIndex = numbers.length - 1;
+4|
+5|        while (lowIndex <= highIndex) {
+6|            int middleIndex = (lowIndex + highIndex) / 2;
+7|            if (numbers[middleIndex] == target) return middleIndex;
+8|            if (numbers[middleIndex] < target) {
+9|                lowIndex = middleIndex + 1;
+10|            } else {
+11|                highIndex = middleIndex - 1;
+12|            }
+13|        }
+14|        return lowIndex;
+15|    }
+16|
+-|    public static void main(String[] args) {
+17|        int[] numbers = {1, 3, 5, 6, 8};
+18|        System.out.println(searchInsert(numbers, 7));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int searchInsert(vector<int>& numbers, int target) {
+2|    int lowIndex = 0;
+3|    int highIndex = numbers.size() - 1;
+4|
+5|    while (lowIndex <= highIndex) {
+6|        int middleIndex = (lowIndex + highIndex) / 2;
+7|        if (numbers[middleIndex] == target) return middleIndex;
+8|        if (numbers[middleIndex] < target) {
+9|            lowIndex = middleIndex + 1;
+10|        } else {
+11|            highIndex = middleIndex - 1;
+12|        }
+13|    }
+14|    return lowIndex;
+15|}
+16|
+-|int main() {
+17|    vector<int> numbers = {1, 3, 5, 6, 8};
+18|    cout << searchInsert(numbers, 7) << endl;
+-|}
+`,
+  },
+  "first-bad-version": {
+    python: `
+2|bad = 5
+3|def is_bad_version(version):
+4|    return version >= bad
+6|
+7|def first_bad_version(last_version):
+8|    low_index = 1
+9|    high_index = last_version
+10|
+11|    while low_index < high_index:
+12|        middle_index = (low_index + high_index) // 2
+13|        if is_bad_version(middle_index):
+14|            high_index = middle_index
+15|        else:
+16|            low_index = middle_index + 1
+19|    return low_index
+21|
+22|print(first_bad_version(8))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+2|    static int bad = 5;
+3|    static boolean isBadVersion(int version) {
+4|        return version >= bad;
+5|    }
+6|
+7|    static int firstBadVersion(int lastVersion) {
+8|        int lowIndex = 1;
+9|        int highIndex = lastVersion;
+10|
+11|        while (lowIndex < highIndex) {
+12|            int middleIndex = (lowIndex + highIndex) / 2;
+13|            if (isBadVersion(middleIndex)) {
+14|                highIndex = middleIndex;
+15|            } else {
+16|                lowIndex = middleIndex + 1;
+17|            }
+18|        }
+19|        return lowIndex;
+20|    }
+21|
+-|    public static void main(String[] args) {
+22|        System.out.println(firstBadVersion(8));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+2|int bad = 5;
+3|bool isBadVersion(int version) {
+4|    return version >= bad;
+5|}
+6|
+7|int firstBadVersion(int lastVersion) {
+8|    int lowIndex = 1;
+9|    int highIndex = lastVersion;
+10|
+11|    while (lowIndex < highIndex) {
+12|        int middleIndex = (lowIndex + highIndex) / 2;
+13|        if (isBadVersion(middleIndex)) {
+14|            highIndex = middleIndex;
+15|        } else {
+16|            lowIndex = middleIndex + 1;
+17|        }
+18|    }
+19|    return lowIndex;
+20|}
+21|
+-|int main() {
+22|    cout << firstBadVersion(8) << endl;
+-|}
+`,
+  },
+  "sqrt-x": {
+    python: `
+1|def my_sqrt(number):
+2|    low_index = 0
+3|    high_index = number
+4|    best_root = 0
+5|
+6|    while low_index <= high_index:
+7|        middle_index = (low_index + high_index) // 2
+8|        if middle_index * middle_index <= number:
+9|            best_root = middle_index
+10|            low_index = middle_index + 1
+11|        else:
+12|            high_index = middle_index - 1
+15|    return best_root
+17|
+18|print(my_sqrt(20))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int mySqrt(int number) {
+2|        long lowIndex = 0;
+3|        long highIndex = number;
+4|        long bestRoot = 0;
+5|
+6|        while (lowIndex <= highIndex) {
+7|            long middleIndex = (lowIndex + highIndex) / 2;
+8|            if (middleIndex * middleIndex <= number) {
+9|                bestRoot = middleIndex;
+10|                lowIndex = middleIndex + 1;
+11|            } else {
+12|                highIndex = middleIndex - 1;
+13|            }
+14|        }
+15|        return (int) bestRoot;
+16|    }
+17|
+-|    public static void main(String[] args) {
+18|        System.out.println(mySqrt(20));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|int mySqrt(int number) {
+2|    long long lowIndex = 0;
+3|    long long highIndex = number;
+4|    long long bestRoot = 0;
+5|
+6|    while (lowIndex <= highIndex) {
+7|        long long middleIndex = (lowIndex + highIndex) / 2;
+8|        if (middleIndex * middleIndex <= number) {
+9|            bestRoot = middleIndex;
+10|            lowIndex = middleIndex + 1;
+11|        } else {
+12|            highIndex = middleIndex - 1;
+13|        }
+14|    }
+15|    return bestRoot;
+16|}
+17|
+-|int main() {
+18|    cout << mySqrt(20) << endl;
+-|}
+`,
+  },
+  "valid-perfect-square": {
+    python: `
+1|def is_perfect_square(number):
+2|    low_index = 1
+3|    high_index = number
+4|
+5|    while low_index <= high_index:
+6|        middle_index = (low_index + high_index) // 2
+7|        square = middle_index * middle_index
+8|        if square == number: return True
+9|        if square < number: low_index = middle_index + 1
+10|        else: high_index = middle_index - 1
+12|    return False
+14|
+15|print(is_perfect_square(49))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static boolean isPerfectSquare(int number) {
+2|        long lowIndex = 1;
+3|        long highIndex = number;
+4|
+5|        while (lowIndex <= highIndex) {
+6|            long middleIndex = (lowIndex + highIndex) / 2;
+7|            long square = middleIndex * middleIndex;
+8|            if (square == number) return true;
+9|            if (square < number) lowIndex = middleIndex + 1;
+10|            else highIndex = middleIndex - 1;
+11|        }
+12|        return false;
+13|    }
+14|
+-|    public static void main(String[] args) {
+15|        System.out.println(isPerfectSquare(49));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|bool isPerfectSquare(int number) {
+2|    long long lowIndex = 1;
+3|    long long highIndex = number;
+4|
+5|    while (lowIndex <= highIndex) {
+6|        long long middleIndex = (lowIndex + highIndex) / 2;
+7|        long long square = middleIndex * middleIndex;
+8|        if (square == number) return true;
+9|        if (square < number) lowIndex = middleIndex + 1;
+10|        else highIndex = middleIndex - 1;
+11|    }
+12|    return false;
+13|}
+14|
+-|int main() {
+15|    cout << boolalpha << isPerfectSquare(49) << endl;
+-|}
+`,
+  },
+  "reverse-linked-list": {
+    python: `
+1|class ListNode:
+2|    def __init__(self, value, next_node=None):
+3|        self.val = value
+4|        self.next = next_node
+7|
+8|def reverse_list(list_head):
+9|    previous_node = None
+10|    current_node = list_head
+11|    while current_node:
+12|        next_node = current_node.next
+13|        current_node.next = previous_node
+14|        previous_node = current_node
+15|        current_node = next_node
+17|    return previous_node
+19|
+21|def to_array(list_head):
+22|    result = []
+23|    current_node = list_head
+-|    while current_node: result.append(current_node.val); current_node = current_node.next
+24|    return result
+26|
+27|list_head = ListNode(1, ListNode(2, ListNode(3, ListNode(4))))
+28|print(to_array(reverse_list(list_head)))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class ListNode {
+-|    int val; ListNode next;
+2|        ListNode(int value, ListNode nextNode) {
+3|            this.val = value;
+4|            this.next = nextNode;
+5|        }
+6|    }
+7|
+8|    static ListNode reverseList(ListNode listHead) {
+9|        ListNode previousNode = null;
+10|        ListNode currentNode = listHead;
+11|        while (currentNode != null) {
+12|            ListNode nextNode = currentNode.next;
+13|            currentNode.next = previousNode;
+14|            previousNode = currentNode;
+15|            currentNode = nextNode;
+16|        }
+17|        return previousNode;
+18|    }
+19|
+21|    static List<Integer> toArray(ListNode listHead) {
+22|        List<Integer> result = new ArrayList<>();
+23|        for (ListNode currentNode = listHead; currentNode != null; currentNode = currentNode.next) result.add(currentNode.val);
+24|        return result;
+25|    }
+26|
+-|    public static void main(String[] args) {
+27|        ListNode listHead = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, null))));
+28|        System.out.println(toArray(reverseList(listHead)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct ListNode {
+-|int val; ListNode* next;
+2|    ListNode(int value, ListNode* nextNode = nullptr) {
+3|        this->val = value;
+4|        this->next = nextNode;
+5|    }
+6|};
+7|
+8|ListNode* reverseList(ListNode* listHead) {
+9|    ListNode* previousNode = nullptr;
+10|    ListNode* currentNode = listHead;
+11|    while (currentNode) {
+12|        ListNode* nextNode = currentNode->next;
+13|        currentNode->next = previousNode;
+14|        previousNode = currentNode;
+15|        currentNode = nextNode;
+16|    }
+17|    return previousNode;
+18|}
+19|
+21|vector<int> toArray(ListNode* listHead) {
+22|    vector<int> result;
+23|    for (ListNode* currentNode = listHead; currentNode; currentNode = currentNode->next) result.push_back(currentNode->val);
+24|    return result;
+25|}
+26|
+-|int main() {
+27|    ListNode* listHead = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4))));
+28|    for (int x : toArray(reverseList(listHead))) cout << x << " ";
+-|}
+`,
+  },
+  "merge-two-sorted-lists": {
+    python: `
+1|class ListNode:
+2|    def __init__(self, value, next_node=None):
+3|        self.val = value
+4|        self.next = next_node
+7|
+8|def merge_two_lists(list1, list2):
+9|    dummy = ListNode(0)
+10|    tail_node = dummy
+11|    first_node = list1
+12|    second_node = list2
+13|    while first_node and second_node:
+14|        if first_node.val <= second_node.val:
+15|            tail_node.next = first_node
+16|            first_node = first_node.next
+17|        else:
+18|            tail_node.next = second_node
+19|            second_node = second_node.next
+21|        tail_node = tail_node.next
+23|    tail_node.next = first_node if first_node else second_node
+24|    return dummy.next
+26|
+27|def to_array(list_head):
+28|    result = []
+29|    current_node = list_head
+-|    while current_node: result.append(current_node.val); current_node = current_node.next
+30|    return result
+32|
+33|list1 = ListNode(1, ListNode(3, ListNode(5)))
+34|list2 = ListNode(2, ListNode(3, ListNode(4)))
+35|print(to_array(merge_two_lists(list1, list2)))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class ListNode {
+-|    int val; ListNode next;
+2|        ListNode(int value, ListNode nextNode) {
+3|            this.val = value;
+4|            this.next = nextNode;
+5|        }
+6|    }
+7|
+8|    static ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+9|        ListNode dummy = new ListNode(0, null);
+10|        ListNode tailNode = dummy;
+11|        ListNode firstNode = list1;
+12|        ListNode secondNode = list2;
+13|        while (firstNode != null && secondNode != null) {
+14|            if (firstNode.val <= secondNode.val) {
+15|                tailNode.next = firstNode;
+16|                firstNode = firstNode.next;
+17|            } else {
+18|                tailNode.next = secondNode;
+19|                secondNode = secondNode.next;
+20|            }
+21|            tailNode = tailNode.next;
+22|        }
+23|        tailNode.next = firstNode != null ? firstNode : secondNode;
+24|        return dummy.next;
+25|    }
+26|
+27|    static List<Integer> toArray(ListNode listHead) {
+28|        List<Integer> result = new ArrayList<>();
+29|        for (ListNode currentNode = listHead; currentNode != null; currentNode = currentNode.next) result.add(currentNode.val);
+30|        return result;
+31|    }
+32|
+-|    public static void main(String[] args) {
+33|        ListNode list1 = new ListNode(1, new ListNode(3, new ListNode(5, null)));
+34|        ListNode list2 = new ListNode(2, new ListNode(3, new ListNode(4, null)));
+35|        System.out.println(toArray(mergeTwoLists(list1, list2)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct ListNode {
+-|int val; ListNode* next;
+2|    ListNode(int value, ListNode* nextNode = nullptr) {
+3|        this->val = value;
+4|        this->next = nextNode;
+5|    }
+6|};
+7|
+8|ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+9|    ListNode* dummy = new ListNode(0);
+10|    ListNode* tailNode = dummy;
+11|    ListNode* firstNode = list1;
+12|    ListNode* secondNode = list2;
+13|    while (firstNode && secondNode) {
+14|        if (firstNode->val <= secondNode->val) {
+15|            tailNode->next = firstNode;
+16|            firstNode = firstNode->next;
+17|        } else {
+18|            tailNode->next = secondNode;
+19|            secondNode = secondNode->next;
+20|        }
+21|        tailNode = tailNode->next;
+22|    }
+23|    tailNode->next = firstNode ? firstNode : secondNode;
+24|    return dummy->next;
+25|}
+26|
+27|vector<int> toArray(ListNode* listHead) {
+28|    vector<int> result;
+29|    for (ListNode* currentNode = listHead; currentNode; currentNode = currentNode->next) result.push_back(currentNode->val);
+30|    return result;
+31|}
+32|
+-|int main() {
+33|    ListNode* list1 = new ListNode(1, new ListNode(3, new ListNode(5)));
+34|    ListNode* list2 = new ListNode(2, new ListNode(3, new ListNode(4)));
+35|    for (int x : toArray(mergeTwoLists(list1, list2))) cout << x << " ";
+-|}
+`,
+  },
 };

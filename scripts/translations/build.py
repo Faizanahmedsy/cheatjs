@@ -41,7 +41,7 @@ def render(key, lang, body, nlines):
             elif lang == "cpp": out.append("-|int main() {")
             in_main = True; continue
         if s.startswith("~"):
-            t = s[1:].lstrip(" ") if s.strip() != "~" else ""
+            t = (s[1:] if lang == "python" else s[1:].lstrip(" ")) if s.strip() != "~" else ""
             out.append("-|" + (ind() + t if t else "")); continue
         n += 1
         t = jsl[n - 1].strip() if n <= len(jsl) else ""
@@ -79,7 +79,7 @@ for src in sorted((root / "scripts/translations/src").glob("*.txt")):
         nl = len(js[key].split("\n"))
         ts.append(f'  "{key}": {{')
         for lang, body in langs.items():
-            r = render(key, lang, body, nl)
+            r = render(key, lang, body, nl).replace("\\", "\\\\")
             assert "`" not in r and "${" not in r, key
             ts.append(f"    {lang}: `\n{r}\n`,")
         ts.append("  },")
