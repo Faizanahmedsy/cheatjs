@@ -3169,4 +3169,844 @@ export const LEVEL_1_TRANSLATIONS: Record<string, TranslationSet> = {
 -|}
 `,
   },
+  "symmetric-tree": {
+    python: `
+1|class TreeNode:
+2|    def __init__(self, value, left=None, right=None):
+3|        self.val = value
+4|        self.left = left
+5|        self.right = right
+8|
+9|def is_mirror(left_node, right_node):
+10|    if left_node is None and right_node is None: return True
+11|    if left_node is None or right_node is None: return False
+12|    if left_node.val != right_node.val: return False
+13|
+14|    return is_mirror(left_node.left, right_node.right) and is_mirror(left_node.right, right_node.left)
+16|
+17|def is_symmetric(tree_root):
+18|    return is_mirror(tree_root.left, tree_root.right)
+20|
+26|tree_root = TreeNode(
+27|    1,
+28|    TreeNode(2, TreeNode(3), TreeNode(4)),
+29|    TreeNode(2, TreeNode(4), TreeNode(3))
+30|)
+31|print(is_symmetric(tree_root))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class TreeNode {
+-|    int val; TreeNode left, right;
+-|    TreeNode(int value) { this(value, null, null); }
+2|        TreeNode(int value, TreeNode left, TreeNode right) {
+3|            this.val = value;
+4|            this.left = left;
+5|            this.right = right;
+6|        }
+7|    }
+8|
+9|    static boolean isMirror(TreeNode leftNode, TreeNode rightNode) {
+10|        if (leftNode == null && rightNode == null) return true;
+11|        if (leftNode == null || rightNode == null) return false;
+12|        if (leftNode.val != rightNode.val) return false;
+13|
+14|        return isMirror(leftNode.left, rightNode.right) && isMirror(leftNode.right, rightNode.left);
+15|    }
+16|
+17|    static boolean isSymmetric(TreeNode treeRoot) {
+18|        return isMirror(treeRoot.left, treeRoot.right);
+19|    }
+20|
+-|    public static void main(String[] args) {
+26|        TreeNode treeRoot = new TreeNode(
+27|            1,
+28|            new TreeNode(2, new TreeNode(3), new TreeNode(4)),
+29|            new TreeNode(2, new TreeNode(4), new TreeNode(3))
+30|        );
+31|        System.out.println(isSymmetric(treeRoot));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct TreeNode {
+-|int val; TreeNode *left, *right;
+2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
+3|        this->val = value;
+4|        this->left = left;
+5|        this->right = right;
+6|    }
+7|};
+8|
+9|bool isMirror(TreeNode* leftNode, TreeNode* rightNode) {
+10|    if (leftNode == nullptr && rightNode == nullptr) return true;
+11|    if (leftNode == nullptr || rightNode == nullptr) return false;
+12|    if (leftNode->val != rightNode->val) return false;
+13|
+14|    return isMirror(leftNode->left, rightNode->right) && isMirror(leftNode->right, rightNode->left);
+15|}
+16|
+17|bool isSymmetric(TreeNode* treeRoot) {
+18|    return isMirror(treeRoot->left, treeRoot->right);
+19|}
+20|
+-|int main() {
+26|    TreeNode* treeRoot = new TreeNode(
+27|        1,
+28|        new TreeNode(2, new TreeNode(3), new TreeNode(4)),
+29|        new TreeNode(2, new TreeNode(4), new TreeNode(3))
+30|    );
+31|    cout << boolalpha << isSymmetric(treeRoot) << endl;
+-|}
+`,
+  },
+  "path-sum": {
+    python: `
+1|class TreeNode:
+2|    def __init__(self, value, left=None, right=None):
+3|        self.val = value
+4|        self.left = left
+5|        self.right = right
+8|
+9|def has_path_sum(current_node, target):
+10|    if current_node is None: return False
+11|    remaining = target - current_node.val
+12|    if current_node.left is None and current_node.right is None:
+13|        return remaining == 0
+15|
+16|    return has_path_sum(current_node.left, remaining) or has_path_sum(current_node.right, remaining)
+18|
+24|tree_root = TreeNode(
+25|    5,
+26|    TreeNode(4, TreeNode(11)),
+27|    TreeNode(8, TreeNode(13), TreeNode(4))
+28|)
+29|print(has_path_sum(tree_root, 20))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class TreeNode {
+-|    int val; TreeNode left, right;
+-|    TreeNode(int value) { this(value, null, null); }
+2|        TreeNode(int value, TreeNode left, TreeNode right) {
+3|            this.val = value;
+4|            this.left = left;
+5|            this.right = right;
+6|        }
+7|    }
+8|
+9|    static boolean hasPathSum(TreeNode currentNode, int target) {
+10|        if (currentNode == null) return false;
+11|        int remaining = target - currentNode.val;
+12|        if (currentNode.left == null && currentNode.right == null) {
+13|            return remaining == 0;
+14|        }
+15|
+16|        return hasPathSum(currentNode.left, remaining) || hasPathSum(currentNode.right, remaining);
+17|    }
+18|
+-|    public static void main(String[] args) {
+24|        TreeNode treeRoot = new TreeNode(
+25|            5,
+26|            new TreeNode(4, new TreeNode(11), null),
+27|            new TreeNode(8, new TreeNode(13), new TreeNode(4))
+28|        );
+29|        System.out.println(hasPathSum(treeRoot, 20));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct TreeNode {
+-|int val; TreeNode *left, *right;
+2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
+3|        this->val = value;
+4|        this->left = left;
+5|        this->right = right;
+6|    }
+7|};
+8|
+9|bool hasPathSum(TreeNode* currentNode, int target) {
+10|    if (currentNode == nullptr) return false;
+11|    int remaining = target - currentNode->val;
+12|    if (currentNode->left == nullptr && currentNode->right == nullptr) {
+13|        return remaining == 0;
+14|    }
+15|
+16|    return hasPathSum(currentNode->left, remaining) || hasPathSum(currentNode->right, remaining);
+17|}
+18|
+-|int main() {
+24|    TreeNode* treeRoot = new TreeNode(
+25|        5,
+26|        new TreeNode(4, new TreeNode(11)),
+27|        new TreeNode(8, new TreeNode(13), new TreeNode(4))
+28|    );
+29|    cout << boolalpha << hasPathSum(treeRoot, 20) << endl;
+-|}
+`,
+  },
+  "binary-tree-preorder-traversal": {
+    python: `
+1|class TreeNode:
+2|    def __init__(self, value, left=None, right=None):
+3|        self.val = value
+4|        self.left = left
+5|        self.right = right
+8|
+9|def preorder_traversal(tree_root):
+10|    result = []
+11|    stack = [tree_root]
+12|    while len(stack) > 0:
+13|        current_node = stack.pop()
+14|        result.append(current_node.val)
+15|        if current_node.right: stack.append(current_node.right)
+16|        if current_node.left: stack.append(current_node.left)
+18|    return result
+20|
+26|tree_root = TreeNode(1, TreeNode(2, TreeNode(4), TreeNode(5)), TreeNode(3))
+27|print(preorder_traversal(tree_root))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class TreeNode {
+-|    int val; TreeNode left, right;
+-|    TreeNode(int value) { this(value, null, null); }
+2|        TreeNode(int value, TreeNode left, TreeNode right) {
+3|            this.val = value;
+4|            this.left = left;
+5|            this.right = right;
+6|        }
+7|    }
+8|
+9|    static List<Integer> preorderTraversal(TreeNode treeRoot) {
+10|        List<Integer> result = new ArrayList<>();
+11|        Deque<TreeNode> stack = new ArrayDeque<>(List.of(treeRoot));
+12|        while (stack.size() > 0) {
+13|            TreeNode currentNode = stack.pop();
+14|            result.add(currentNode.val);
+15|            if (currentNode.right != null) stack.push(currentNode.right);
+16|            if (currentNode.left != null) stack.push(currentNode.left);
+17|        }
+18|        return result;
+19|    }
+20|
+-|    public static void main(String[] args) {
+26|        TreeNode treeRoot = new TreeNode(1, new TreeNode(2, new TreeNode(4), new TreeNode(5)), new TreeNode(3));
+27|        System.out.println(preorderTraversal(treeRoot));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct TreeNode {
+-|int val; TreeNode *left, *right;
+2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
+3|        this->val = value;
+4|        this->left = left;
+5|        this->right = right;
+6|    }
+7|};
+8|
+9|vector<int> preorderTraversal(TreeNode* treeRoot) {
+10|    vector<int> result;
+11|    vector<TreeNode*> stack = {treeRoot};
+12|    while (stack.size() > 0) {
+13|        TreeNode* currentNode = stack.back(); stack.pop_back();
+14|        result.push_back(currentNode->val);
+15|        if (currentNode->right) stack.push_back(currentNode->right);
+16|        if (currentNode->left) stack.push_back(currentNode->left);
+17|    }
+18|    return result;
+19|}
+20|
+-|int main() {
+26|    TreeNode* treeRoot = new TreeNode(1, new TreeNode(2, new TreeNode(4), new TreeNode(5)), new TreeNode(3));
+27|    for (int x : preorderTraversal(treeRoot)) cout << x << " ";
+-|}
+`,
+  },
+  "binary-tree-inorder-traversal": {
+    python: `
+1|class TreeNode:
+2|    def __init__(self, value, left=None, right=None):
+3|        self.val = value
+4|        self.left = left
+5|        self.right = right
+8|
+9|def inorder_traversal(tree_root):
+10|    result = []
+11|    stack = []
+12|    current_node = tree_root
+13|    while current_node is not None or len(stack) > 0:
+14|
+15|        while current_node is not None:
+16|            stack.append(current_node)
+17|            current_node = current_node.left
+19|        current_node = stack.pop()
+20|        result.append(current_node.val)
+21|        current_node = current_node.right
+23|    return result
+25|
+31|tree_root = TreeNode(1, TreeNode(2, TreeNode(4), TreeNode(5)), TreeNode(3))
+32|print(inorder_traversal(tree_root))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class TreeNode {
+-|    int val; TreeNode left, right;
+-|    TreeNode(int value) { this(value, null, null); }
+2|        TreeNode(int value, TreeNode left, TreeNode right) {
+3|            this.val = value;
+4|            this.left = left;
+5|            this.right = right;
+6|        }
+7|    }
+8|
+9|    static List<Integer> inorderTraversal(TreeNode treeRoot) {
+10|        List<Integer> result = new ArrayList<>();
+11|        Deque<TreeNode> stack = new ArrayDeque<>();
+12|        TreeNode currentNode = treeRoot;
+13|        while (currentNode != null || stack.size() > 0) {
+14|
+15|            while (currentNode != null) {
+16|                stack.push(currentNode);
+17|                currentNode = currentNode.left;
+18|            }
+19|            currentNode = stack.pop();
+20|            result.add(currentNode.val);
+21|            currentNode = currentNode.right;
+22|        }
+23|        return result;
+24|    }
+25|
+-|    public static void main(String[] args) {
+31|        TreeNode treeRoot = new TreeNode(1, new TreeNode(2, new TreeNode(4), new TreeNode(5)), new TreeNode(3));
+32|        System.out.println(inorderTraversal(treeRoot));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct TreeNode {
+-|int val; TreeNode *left, *right;
+2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
+3|        this->val = value;
+4|        this->left = left;
+5|        this->right = right;
+6|    }
+7|};
+8|
+9|vector<int> inorderTraversal(TreeNode* treeRoot) {
+10|    vector<int> result;
+11|    vector<TreeNode*> stack;
+12|    TreeNode* currentNode = treeRoot;
+13|    while (currentNode != nullptr || stack.size() > 0) {
+14|
+15|        while (currentNode != nullptr) {
+16|            stack.push_back(currentNode);
+17|            currentNode = currentNode->left;
+18|        }
+19|        currentNode = stack.back(); stack.pop_back();
+20|        result.push_back(currentNode->val);
+21|        currentNode = currentNode->right;
+22|    }
+23|    return result;
+24|}
+25|
+-|int main() {
+31|    TreeNode* treeRoot = new TreeNode(1, new TreeNode(2, new TreeNode(4), new TreeNode(5)), new TreeNode(3));
+32|    for (int x : inorderTraversal(treeRoot)) cout << x << " ";
+-|}
+`,
+  },
+  "binary-tree-postorder-traversal": {
+    python: `
+1|class TreeNode:
+2|    def __init__(self, value, left=None, right=None):
+3|        self.val = value
+4|        self.left = left
+5|        self.right = right
+8|
+9|def postorder_traversal(tree_root):
+10|    result = []
+11|    def visit(current_node):
+12|        if current_node is None: return
+13|        visit(current_node.left)
+14|        visit(current_node.right)
+15|        result.append(current_node.val)
+17|    visit(tree_root)
+18|    return result
+20|
+26|tree_root = TreeNode(1, TreeNode(2, TreeNode(4), TreeNode(5)), TreeNode(3))
+27|print(postorder_traversal(tree_root))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class TreeNode {
+-|    int val; TreeNode left, right;
+-|    TreeNode(int value) { this(value, null, null); }
+2|        TreeNode(int value, TreeNode left, TreeNode right) {
+3|            this.val = value;
+4|            this.left = left;
+5|            this.right = right;
+6|        }
+7|    }
+8|
+9|    static List<Integer> postorderTraversal(TreeNode treeRoot) {
+10|        List<Integer> result = new ArrayList<>();
+11|        class Walker { void visit(TreeNode currentNode) {
+12|            if (currentNode == null) return;
+13|            visit(currentNode.left);
+14|            visit(currentNode.right);
+15|            result.add(currentNode.val);
+16|        } }
+17|        new Walker().visit(treeRoot);
+18|        return result;
+19|    }
+20|
+-|    public static void main(String[] args) {
+26|        TreeNode treeRoot = new TreeNode(1, new TreeNode(2, new TreeNode(4), new TreeNode(5)), new TreeNode(3));
+27|        System.out.println(postorderTraversal(treeRoot));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct TreeNode {
+-|int val; TreeNode *left, *right;
+2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
+3|        this->val = value;
+4|        this->left = left;
+5|        this->right = right;
+6|    }
+7|};
+8|
+9|vector<int> postorderTraversal(TreeNode* treeRoot) {
+10|    vector<int> result;
+11|    function<void(TreeNode*)> visit = [&](TreeNode* currentNode) {
+12|        if (currentNode == nullptr) return;
+13|        visit(currentNode->left);
+14|        visit(currentNode->right);
+15|        result.push_back(currentNode->val);
+16|    };
+17|    visit(treeRoot);
+18|    return result;
+19|}
+20|
+-|int main() {
+26|    TreeNode* treeRoot = new TreeNode(1, new TreeNode(2, new TreeNode(4), new TreeNode(5)), new TreeNode(3));
+27|    for (int x : postorderTraversal(treeRoot)) cout << x << " ";
+-|}
+`,
+  },
+  "diameter-of-binary-tree": {
+    python: `
+1|class TreeNode:
+2|    def __init__(self, value, left=None, right=None):
+3|        self.val = value
+4|        self.left = left
+5|        self.right = right
+8|
+9|def diameter_of_binary_tree(tree_root):
+10|    best = 0
+11|    def height(current_node):
+-|        nonlocal best
+12|        if current_node is None: return 0
+13|        left = height(current_node.left)
+14|        right = height(current_node.right)
+15|        best = max(best, left + right)
+16|        return 1 + max(left, right)
+18|    height(tree_root)
+19|    return best
+21|
+27|tree_root = TreeNode(1, TreeNode(2, TreeNode(4), TreeNode(5)), TreeNode(3))
+28|print(diameter_of_binary_tree(tree_root))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class TreeNode {
+-|    int val; TreeNode left, right;
+-|    TreeNode(int value) { this(value, null, null); }
+2|        TreeNode(int value, TreeNode left, TreeNode right) {
+3|            this.val = value;
+4|            this.left = left;
+5|            this.right = right;
+6|        }
+7|    }
+8|
+9|    static int diameterOfBinaryTree(TreeNode treeRoot) {
+10|        int[] best = {0};
+11|        class Walker { int height(TreeNode currentNode) {
+12|            if (currentNode == null) return 0;
+13|            int left = height(currentNode.left);
+14|            int right = height(currentNode.right);
+15|            best[0] = Math.max(best[0], left + right);
+16|            return 1 + Math.max(left, right);
+17|        } }
+18|        new Walker().height(treeRoot);
+19|        return best[0];
+20|    }
+21|
+-|    public static void main(String[] args) {
+27|        TreeNode treeRoot = new TreeNode(1, new TreeNode(2, new TreeNode(4), new TreeNode(5)), new TreeNode(3));
+28|        System.out.println(diameterOfBinaryTree(treeRoot));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct TreeNode {
+-|int val; TreeNode *left, *right;
+2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
+3|        this->val = value;
+4|        this->left = left;
+5|        this->right = right;
+6|    }
+7|};
+8|
+9|int diameterOfBinaryTree(TreeNode* treeRoot) {
+10|    int best = 0;
+11|    function<int(TreeNode*)> height = [&](TreeNode* currentNode) {
+12|        if (currentNode == nullptr) return 0;
+13|        int left = height(currentNode->left);
+14|        int right = height(currentNode->right);
+15|        best = max(best, left + right);
+16|        return 1 + max(left, right);
+17|    };
+18|    height(treeRoot);
+19|    return best;
+20|}
+21|
+-|int main() {
+27|    TreeNode* treeRoot = new TreeNode(1, new TreeNode(2, new TreeNode(4), new TreeNode(5)), new TreeNode(3));
+28|    cout << diameterOfBinaryTree(treeRoot) << endl;
+-|}
+`,
+  },
+  "balanced-binary-tree": {
+    python: `
+1|class TreeNode:
+2|    def __init__(self, value, left=None, right=None):
+3|        self.val = value
+4|        self.left = left
+5|        self.right = right
+8|
+10|def check(current_node):
+11|    if current_node is None: return 0
+12|    left = check(current_node.left)
+13|    if left == -1: return -1
+14|    right = check(current_node.right)
+15|    if right == -1: return -1
+16|    if abs(left - right) > 1: return -1
+17|    return 1 + max(left, right)
+19|
+20|def is_balanced(tree_root):
+21|    return check(tree_root) != -1
+23|
+24|tree_root = TreeNode(3, TreeNode(9), TreeNode(20, TreeNode(15), TreeNode(7)))
+25|print(is_balanced(tree_root))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class TreeNode {
+-|    int val; TreeNode left, right;
+-|    TreeNode(int value) { this(value, null, null); }
+2|        TreeNode(int value, TreeNode left, TreeNode right) {
+3|            this.val = value;
+4|            this.left = left;
+5|            this.right = right;
+6|        }
+7|    }
+8|
+10|    static int check(TreeNode currentNode) {
+11|        if (currentNode == null) return 0;
+12|        int left = check(currentNode.left);
+13|        if (left == -1) return -1;
+14|        int right = check(currentNode.right);
+15|        if (right == -1) return -1;
+16|        if (Math.abs(left - right) > 1) return -1;
+17|        return 1 + Math.max(left, right);
+18|    }
+19|
+20|    static boolean isBalanced(TreeNode treeRoot) {
+21|        return check(treeRoot) != -1;
+22|    }
+23|
+-|    public static void main(String[] args) {
+24|        TreeNode treeRoot = new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15), new TreeNode(7)));
+25|        System.out.println(isBalanced(treeRoot));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct TreeNode {
+-|int val; TreeNode *left, *right;
+2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
+3|        this->val = value;
+4|        this->left = left;
+5|        this->right = right;
+6|    }
+7|};
+8|
+10|int check(TreeNode* currentNode) {
+11|    if (currentNode == nullptr) return 0;
+12|    int left = check(currentNode->left);
+13|    if (left == -1) return -1;
+14|    int right = check(currentNode->right);
+15|    if (right == -1) return -1;
+16|    if (abs(left - right) > 1) return -1;
+17|    return 1 + max(left, right);
+18|}
+19|
+20|bool isBalanced(TreeNode* treeRoot) {
+21|    return check(treeRoot) != -1;
+22|}
+23|
+-|int main() {
+24|    TreeNode* treeRoot = new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15), new TreeNode(7)));
+25|    cout << boolalpha << isBalanced(treeRoot) << endl;
+-|}
+`,
+  },
+  "convert-sorted-array-to-bst": {
+    python: `
+1|class TreeNode:
+2|    def __init__(self, value, left=None, right=None):
+3|        self.val = value
+4|        self.left = left
+5|        self.right = right
+8|
+9|def sorted_array_to_bst(numbers):
+10|    def build(low_index, high_index):
+11|        if low_index > high_index: return None
+12|        middle_index = (low_index + high_index) // 2
+13|        current_node = TreeNode(numbers[middle_index])
+14|        current_node.left = build(low_index, middle_index - 1)
+15|        current_node.right = build(middle_index + 1, high_index)
+16|        return current_node
+18|    return build(0, len(numbers) - 1)
+20|
+22|def to_levels(tree_root):
+23|    result = []
+24|    queue = [tree_root]
+25|    queue_front_index = 0
+26|    while queue_front_index < len(queue):
+27|        current_node = queue[queue_front_index]; queue_front_index += 1
+28|        result.append(current_node.val)
+29|        if current_node.left: queue.append(current_node.left)
+30|        if current_node.right: queue.append(current_node.right)
+32|    return result
+34|
+35|numbers = [-10, -3, 0, 5, 9]
+36|print(to_levels(sorted_array_to_bst(numbers)))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static class TreeNode {
+-|    int val; TreeNode left, right;
+-|    TreeNode(int value) { this(value, null, null); }
+2|        TreeNode(int value, TreeNode left, TreeNode right) {
+3|            this.val = value;
+4|            this.left = left;
+5|            this.right = right;
+6|        }
+7|    }
+8|
+9|    static TreeNode sortedArrayToBST(int[] numbers) {
+10|        class Builder { TreeNode build(int lowIndex, int highIndex) {
+11|            if (lowIndex > highIndex) return null;
+12|            int middleIndex = (lowIndex + highIndex) / 2;
+13|            TreeNode currentNode = new TreeNode(numbers[middleIndex]);
+14|            currentNode.left = build(lowIndex, middleIndex - 1);
+15|            currentNode.right = build(middleIndex + 1, highIndex);
+16|            return currentNode;
+17|        } }
+18|        return new Builder().build(0, numbers.length - 1);
+19|    }
+20|
+22|    static List<Integer> toLevels(TreeNode treeRoot) {
+23|        List<Integer> result = new ArrayList<>();
+24|        List<TreeNode> queue = new ArrayList<>(List.of(treeRoot));
+25|        int queueFrontIndex = 0;
+26|        while (queueFrontIndex < queue.size()) {
+27|            TreeNode currentNode = queue.get(queueFrontIndex++);
+28|            result.add(currentNode.val);
+29|            if (currentNode.left != null) queue.add(currentNode.left);
+30|            if (currentNode.right != null) queue.add(currentNode.right);
+31|        }
+32|        return result;
+33|    }
+34|
+-|    public static void main(String[] args) {
+35|        int[] numbers = {-10, -3, 0, 5, 9};
+36|        System.out.println(toLevels(sortedArrayToBST(numbers)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|struct TreeNode {
+-|int val; TreeNode *left, *right;
+2|    TreeNode(int value, TreeNode* left = nullptr, TreeNode* right = nullptr) {
+3|        this->val = value;
+4|        this->left = left;
+5|        this->right = right;
+6|    }
+7|};
+8|
+9|TreeNode* sortedArrayToBST(vector<int>& numbers) {
+10|    function<TreeNode*(int, int)> build = [&](int lowIndex, int highIndex) -> TreeNode* {
+11|        if (lowIndex > highIndex) return nullptr;
+12|        int middleIndex = (lowIndex + highIndex) / 2;
+13|        TreeNode* currentNode = new TreeNode(numbers[middleIndex]);
+14|        currentNode->left = build(lowIndex, middleIndex - 1);
+15|        currentNode->right = build(middleIndex + 1, highIndex);
+16|        return currentNode;
+17|    };
+18|    return build(0, numbers.size() - 1);
+19|}
+20|
+22|vector<int> toLevels(TreeNode* treeRoot) {
+23|    vector<int> result;
+24|    vector<TreeNode*> queue = {treeRoot};
+25|    int queueFrontIndex = 0;
+26|    while (queueFrontIndex < queue.size()) {
+27|        TreeNode* currentNode = queue[queueFrontIndex++];
+28|        result.push_back(currentNode->val);
+29|        if (currentNode->left) queue.push_back(currentNode->left);
+30|        if (currentNode->right) queue.push_back(currentNode->right);
+31|    }
+32|    return result;
+33|}
+34|
+-|int main() {
+35|    vector<int> numbers = {-10, -3, 0, 5, 9};
+36|    for (int x : toLevels(sortedArrayToBST(numbers))) cout << x << " ";
+-|}
+`,
+  },
+  "flood-fill": {
+    python: `
+1|def flood_fill(image, start_row, start_column, color):
+2|    start = image[start_row][start_column]
+3|    if start == color: return image
+4|
+5|    def fill(current_row, current_column):
+6|        if current_row < 0 or current_column < 0 or current_row >= len(image) or current_column >= len(image[0]): return
+7|        if image[current_row][current_column] != start: return
+8|        image[current_row][current_column] = color
+9|        fill(current_row + 1, current_column)
+10|        fill(current_row - 1, current_column)
+11|        fill(current_row, current_column + 1)
+12|        fill(current_row, current_column - 1)
+14|
+15|    fill(start_row, start_column)
+16|    return image
+18|
+19|image = [
+20|    [1, 1, 1],
+21|    [1, 1, 0],
+22|    [1, 0, 1],
+23|]
+24|print(flood_fill(image, 1, 1, 2))
+`,
+    java: `
+-|import java.util.*;
+-|
+-|public class Main {
+1|    static int[][] floodFill(int[][] image, int startRow, int startColumn, int color) {
+2|        int start = image[startRow][startColumn];
+3|        if (start == color) return image;
+4|
+5|        class Filler { void fill(int currentRow, int currentColumn) {
+6|            if (currentRow < 0 || currentColumn < 0 || currentRow >= image.length || currentColumn >= image[0].length) return;
+7|            if (image[currentRow][currentColumn] != start) return;
+8|            image[currentRow][currentColumn] = color;
+9|            fill(currentRow + 1, currentColumn);
+10|            fill(currentRow - 1, currentColumn);
+11|            fill(currentRow, currentColumn + 1);
+12|            fill(currentRow, currentColumn - 1);
+13|        } }
+14|
+15|        new Filler().fill(startRow, startColumn);
+16|        return image;
+17|    }
+18|
+-|    public static void main(String[] args) {
+19|        int[][] image = {
+20|            {1, 1, 1},
+21|            {1, 1, 0},
+22|            {1, 0, 1},
+23|        };
+24|        System.out.println(Arrays.deepToString(floodFill(image, 1, 1, 2)));
+-|    }
+-|}
+`,
+    cpp: `
+-|#include <bits/stdc++.h>
+-|using namespace std;
+-|
+1|vector<vector<int>> floodFill(vector<vector<int>>& image, int startRow, int startColumn, int color) {
+2|    int start = image[startRow][startColumn];
+3|    if (start == color) return image;
+4|
+5|    function<void(int, int)> fill = [&](int currentRow, int currentColumn) {
+6|        if (currentRow < 0 || currentColumn < 0 || currentRow >= image.size() || currentColumn >= image[0].size()) return;
+7|        if (image[currentRow][currentColumn] != start) return;
+8|        image[currentRow][currentColumn] = color;
+9|        fill(currentRow + 1, currentColumn);
+10|        fill(currentRow - 1, currentColumn);
+11|        fill(currentRow, currentColumn + 1);
+12|        fill(currentRow, currentColumn - 1);
+13|    };
+14|
+15|    fill(startRow, startColumn);
+16|    return image;
+17|}
+18|
+-|int main() {
+19|    vector<vector<int>> image = {
+20|        {1, 1, 1},
+21|        {1, 1, 0},
+22|        {1, 0, 1},
+23|    };
+24|    for (auto& row : floodFill(image, 1, 1, 2)) { for (int x : row) cout << x << " "; cout << "| "; }
+-|}
+`,
+  },
 };
