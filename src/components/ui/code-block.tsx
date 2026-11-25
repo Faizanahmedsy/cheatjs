@@ -15,14 +15,20 @@ export function CodeBlock({
       <SyntaxHighlighter
         language={language}
         style={oneDark}
+        wrapLongLines
         customStyle={{
           margin: 0,
           padding: "1rem",
           backgroundColor: "transparent",
+          whiteSpace: "pre-wrap",
+          wordBreak: "break-word",
+          overflowX: "hidden",
         }}
         codeTagProps={{
           style: {
             fontFamily: "inherit",
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-word",
           },
         }}
       >

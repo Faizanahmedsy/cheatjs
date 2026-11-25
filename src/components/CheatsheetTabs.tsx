@@ -45,7 +45,7 @@ function FilteredGrid({
           </button>
         ))}
       </div>
-      <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3">
+      <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2">
         {shown.map((snippet) => (
           <CheatsheetCard key={snippet.title} snippet={snippet} color="red" />
         ))}
@@ -160,7 +160,7 @@ export function CheatsheetTabs() {
                           <h2 className="text-xl md:text-2xl font-bold text-cyan-300 mb-4 md:mb-6 text-center">
                             {section.heading}
                           </h2>
-                          <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3">
+                          <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
                             {section.snippets.map((snippet) => (
                               <CheatsheetCard
                                 key={snippet.title}
@@ -177,7 +177,7 @@ export function CheatsheetTabs() {
 
                 // Fallback for old structure without sections
                 return (
-                  <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3">
+                  <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
                     {beginnerCategory.snippets?.map((snippet) => (
                       <CheatsheetCard
                         key={snippet.title}
@@ -190,7 +190,7 @@ export function CheatsheetTabs() {
               })()}
             </TabsContent>
             <TabsContent value="Intermediate">
-              <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3">
+              <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
                 {reactCategory?.subCategories
                   ?.find((sc) => sc.name === "Intermediate")
                   ?.snippets?.map((snippet) => (
@@ -203,7 +203,7 @@ export function CheatsheetTabs() {
               </div>
             </TabsContent>
             <TabsContent value="Advanced">
-              <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3">
+              <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
                 {reactCategory?.subCategories
                   ?.find((sc) => sc.name === "Advanced")
                   ?.snippets?.map((snippet) => (
@@ -220,7 +220,7 @@ export function CheatsheetTabs() {
       </TabsContent>
 
       <TabsContent value="Next.js">
-        <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3">
+        <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
           {isClient &&
             cheatsheets
               .find((c) => c.name === "Next.js")
@@ -235,7 +235,7 @@ export function CheatsheetTabs() {
       </TabsContent>
 
       <TabsContent value="Frontend Concepts">
-        <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3">
+        <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
           {isClient &&
             cheatsheets
               .find((c) => c.name === "Frontend Concepts")
@@ -273,7 +273,7 @@ export function CheatsheetTabs() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="Visualizations">
-              <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3">
+              <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2">
                 {dsaCategory?.subCategories
                   ?.find((sc) => sc.name === "Visualizations")
                   ?.snippets?.map((snippet) => (
