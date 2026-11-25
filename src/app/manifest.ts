@@ -9,8 +9,8 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: `${BASE_PATH}/study`,
     scope: `${BASE_PATH}/`,
     display: "standalone",
-    background_color: "#0e0f0f",
-    theme_color: "#0e0f0f",
+    background_color: "#09090b",
+    theme_color: "#09090b",
     icons: [
       { src: `${BASE_PATH}/icons/192`, sizes: "192x192", type: "image/png" },
       { src: `${BASE_PATH}/icons/512`, sizes: "512x512", type: "image/png", purpose: "any" },

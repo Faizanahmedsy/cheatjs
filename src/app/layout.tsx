@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: "Billu Class", statusBarStyle: "black-translucent" },
 };
 
-export const viewport: Viewport = { themeColor: "#0e0f0f" };
+export const viewport: Viewport = { themeColor: "#09090b" };
 
 export default function RootLayout({
   children,

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
 
 const KEY = "site-mode";
 
@@ -27,9 +26,9 @@ export function ModeToggle() {
       onClick={flip}
       aria-label={light ? "Switch to dark mode" : "Switch to white mode"}
       title={light ? "Dark mode" : "White mode"}
-      className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700 text-slate-300 hover:text-slate-100"
+      className="rounded-md px-2.5 py-1.5 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100"
     >
-      {light ? <Moon size={16} /> : <Sun size={16} />}
+      {light ? "Dark" : "Light"}
     </button>
   );
 }

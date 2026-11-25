@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, ChevronsLeft, Flag, Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import type { TimelineMark } from "@/lib/visualizer/analysis";
@@ -54,50 +54,41 @@ export function PlaybackControls({ index, total, onChange, playing, onTogglePlay
   return (
     <div className="space-y-3 xl:flex xl:items-center xl:gap-4 xl:space-y-0">
       <div className="flex flex-wrap items-center gap-2 xl:flex-nowrap">
-        <NavButton label="First step" onClick={() => onChange(0)} disabled={atStart}>
-          <ChevronsLeft className="h-4 w-4" aria-hidden="true" />
-          <span className="hidden 2xl:inline">First</span>
-        </NavButton>
         <NavButton label="Back one step" onClick={() => onChange(index - 1)} disabled={atStart}>
-          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-          <span className="hidden sm:inline">Back</span>
+          Back
         </NavButton>
         <NavButton label={playing ? "Pause" : "Play"} onClick={onTogglePlay} disabled={atEnd && !playing} wide>
-          {playing ? <Pause className="h-4 w-4" aria-hidden="true" /> : <Play className="h-4 w-4" aria-hidden="true" />}
           {playing ? "Pause" : "Play"}
         </NavButton>
         <NavButton label="Next step" onClick={() => onChange(index + 1)} disabled={atEnd} primary>
-          <span className="hidden sm:inline">{atEnd ? "The end" : "Next step"}</span>
-          <ChevronRight className="h-4 w-4" aria-hidden="true" />
+          {atEnd ? "The end" : "Next step"}
         </NavButton>
-        <span className="mx-1 hidden h-6 w-px bg-slate-700 sm:block" aria-hidden="true" />
-        <NavButton label="Previous loop pass" onClick={() => prevPass !== undefined && onChange(prevPass)} disabled={prevPass === undefined}>
-          <SkipBack className="h-4 w-4" aria-hidden="true" />
-          <span className="hidden 2xl:inline">Pass</span>
-        </NavButton>
-        <NavButton label="Next loop pass" onClick={() => nextPass !== undefined && onChange(nextPass)} disabled={nextPass === undefined}>
-          <span className="hidden 2xl:inline">Pass</span>
-          <SkipForward className="h-4 w-4" aria-hidden="true" />
-        </NavButton>
-        <NavButton label="Skip to the answer (last step)" onClick={() => onChange(last)} disabled={atEnd}>
-          <Flag className="h-4 w-4" aria-hidden="true" />
-          <span className="hidden sm:inline">Answer</span>
-        </NavButton>
-        <label className="ml-auto flex lg:order-last lg:ml-0 items-center gap-2 text-sm text-slate-400">
-          Speed
-          <select
-            value={speed}
-            onChange={(event) => onSpeedChange(Number(event.target.value) as Speed)}
-            className="h-10 rounded-lg border border-slate-700 bg-slate-800 px-2 text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
-          >
-            {SPEEDS.map((value) => (
-              <option key={value} value={value}>
-                {value}×
-              </option>
-            ))}
-          </select>
-        </label>
-        {extra}
+        <Popover>
+          <PopoverTrigger className="h-10 rounded-lg px-3 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100">More</PopoverTrigger>
+          <PopoverContent align="start" className="w-64 space-y-3 border-slate-800 bg-slate-900 text-slate-200">
+            <div className="grid grid-cols-2 gap-2">
+              <NavButton label="First step" onClick={() => onChange(0)} disabled={atStart}>First step</NavButton>
+              <NavButton label="Skip to the answer (last step)" onClick={() => onChange(last)} disabled={atEnd}>Answer</NavButton>
+              <NavButton label="Previous loop pass" onClick={() => prevPass !== undefined && onChange(prevPass)} disabled={prevPass === undefined}>Prev pass</NavButton>
+              <NavButton label="Next loop pass" onClick={() => nextPass !== undefined && onChange(nextPass)} disabled={nextPass === undefined}>Next pass</NavButton>
+            </div>
+            <label className="flex items-center justify-between gap-2 text-sm text-slate-400">
+              Speed
+              <select
+                value={speed}
+                onChange={(event) => onSpeedChange(Number(event.target.value) as Speed)}
+                className="h-9 rounded-md border border-slate-700 bg-slate-800 px-2 text-slate-200"
+              >
+                {SPEEDS.map((value) => (
+                  <option key={value} value={value}>
+                    {value}×
+                  </option>
+                ))}
+              </select>
+            </label>
+            {extra}
+          </PopoverContent>
+        </Popover>
       </div>
 
       <div className="xl:min-w-[14rem] xl:flex-1">
@@ -126,7 +117,6 @@ export function PlaybackControls({ index, total, onChange, playing, onTogglePlay
           <span>
             Step <span className="font-code text-slate-200">{index + 1}</span> of <span className="font-code">{total}</span>
           </span>
-          <span className="hidden text-xs text-slate-500 sm:inline">← / → keys also work</span>
         </div>
       </div>
     </div>

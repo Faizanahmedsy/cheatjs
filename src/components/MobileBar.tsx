@@ -197,7 +197,7 @@ export function MobileBar({ current, onSearch, onPdf }: MobileBarProps) {
             aria-label="Choose a subject"
             className="flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full border border-slate-700 bg-slate-900/95 px-4 text-sm font-semibold text-slate-100 shadow-lg shadow-black/30 backdrop-blur"
           >
-            <span aria-hidden="true" className="text-lg leading-none">{current?.emoji ?? "📚"}</span>
+            <span aria-hidden="true" className="text-lg leading-none">{current?.emoji ?? ""}</span>
             <span className="truncate">{current?.label ?? "Subjects"}</span>
             <ChevronUp className={cn("h-4 w-4 shrink-0 text-slate-400 transition-transform", subjects ? "" : "rotate-180")} aria-hidden="true" />
           </button>

@@ -31,7 +31,6 @@ export default function DSALayoutClient({
               {group.name}
             </p>
             {group.topics.map((link) => {
-              const Icon = link.icon;
               const isActive = currentTopic === link.id;
               return (
                 <Link
@@ -45,7 +44,6 @@ export default function DSALayoutClient({
                       : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
                   )}
                 >
-                  <Icon className="h-4 w-4" />
                   <span>{link.label}</span>
                 </Link>
               );

@@ -35,6 +35,7 @@ import { cn } from "@/lib/utils";
 import { ProblemBrowser } from "./ProblemBrowser";
 import { QuizCard, type QuizState } from "./QuizCard";
 import { ViewOptions } from "./ViewOptions";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useProgress } from "./use-progress";
 import { useVizOptions } from "./use-viz-options";
 import { useBeginnerMode } from "./use-beginner-mode";
@@ -302,7 +303,6 @@ export function JsVisualizer() {
                   }}
                   className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-slate-600 bg-slate-800 px-4 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                 >
-                  <Pencil className="h-4 w-4" aria-hidden="true" />
                   Edit code
                 </button>
               ) : (
@@ -317,21 +317,19 @@ export function JsVisualizer() {
                 </button>
               )}
             </div>
-            <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:ml-auto [&>*]:sm:min-w-max">
-            <label className="flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-cyan-400/50 bg-cyan-400/10 px-3 py-1.5 text-sm font-semibold text-slate-100">
-              <span className="flex items-center gap-2">
-                <Maximize2 className="h-4 w-4 text-cyan-300" aria-hidden="true" />
-                Focus mode
-              </span>
-              <Switch checked={focusOn} onCheckedChange={setFocusOn} aria-label="Focus mode: full screen, simple view" />
-            </label>
-            <label className="flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5 text-sm text-slate-200">
-              <GraduationCap className="hidden h-4 w-4 text-cyan-300 sm:block" aria-hidden="true" />
-              <span className="sm:hidden">Big text</span>
-              <span className="hidden sm:inline">Big text and tips</span>
-              <Switch checked={beginner} onCheckedChange={setBeginner} aria-label="Big text and tips" />
-            </label>
-            </div>
+            <Popover>
+              <PopoverTrigger className="h-10 rounded-lg px-3 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100 sm:ml-auto">Options</PopoverTrigger>
+              <PopoverContent align="end" className="w-64 space-y-3 border-slate-800 bg-slate-900 text-slate-200">
+                <label className="flex cursor-pointer items-center justify-between gap-2 text-sm">
+                  Focus mode
+                  <Switch checked={focusOn} onCheckedChange={setFocusOn} aria-label="Focus mode: full screen, simple view" />
+                </label>
+                <label className="flex cursor-pointer items-center justify-between gap-2 text-sm">
+                  Big text and tips
+                  <Switch checked={beginner} onCheckedChange={setBeginner} aria-label="Big text and tips" />
+                </label>
+              </PopoverContent>
+            </Popover>
           </div>
           <Collapsible>
             <p className="text-sm text-slate-400">

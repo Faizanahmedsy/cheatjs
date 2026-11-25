@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { Archive, ArrowLeft, BarChart3, ChevronDown, Download, Menu, Search, Youtube } from "lucide-react";
 import { ARCHIVED, BILLU, SITE_NAME, SUBJECTS, findSubject } from "@/lib/subjects";
 import { SearchDialog } from "./SearchDialog";
 import { MobileBar } from "./MobileBar";
@@ -48,30 +47,17 @@ export function Navbar() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  const isActive = (href: string) => pathname === href;
   return (
     <>
       <header data-chrome className="sticky top-0 z-50 w-full border-b border-slate-800 bg-background/80 backdrop-blur-sm px-3 sm:px-4 lg:px-6 2xl:px-16">
         <div className="container mx-auto flex h-14 items-center justify-between">
-          <div className="flex items-center gap-4">
-            <a
-              href={BILLU.site}
-              title="Back to the Ustad Billu home page"
-              aria-label="Back to the Ustad Billu home page"
-              className="-mr-1 hidden h-8 items-center gap-1 rounded-full border border-slate-700 px-2 md:inline-flex text-xs font-medium text-slate-300 transition-colors hover:border-slate-500 hover:bg-slate-800 hover:text-slate-50 sm:px-2.5"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-              <span className="hidden sm:inline">Ustad Billu</span>
-            </a>
+          <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2">
-              <Image src={BILLU.mascot} alt="" width={30} height={30} className="h-8 w-8 rounded-full bg-[#fdf3dc] object-contain p-0.5" priority />
-              <span className="flex flex-col leading-none">
-                <span className="font-headline text-[15px] font-bold text-slate-100 whitespace-nowrap">{SITE_NAME}</span>
-                <span className="hidden whitespace-nowrap text-[10px] text-slate-500 xl:block">by Ustad Billu · formerly Cheat JS</span>
-              </span>
+              <Image src={BILLU.mascot} alt="" width={24} height={24} className="h-6 w-6 rounded-full bg-[#fdf3dc] object-contain p-0.5" priority />
+              <span className="text-[15px] font-semibold text-slate-100 whitespace-nowrap">{SITE_NAME}</span>
             </Link>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-1 text-sm whitespace-nowrap">
+            <nav className="hidden lg:flex items-center gap-0.5 text-sm whitespace-nowrap">
               {SUBJECTS.map((subject) => {
                 const active = current?.subject.id === subject.id;
                 return (
@@ -79,158 +65,84 @@ export function Navbar() {
                     key={subject.id}
                     href={subject.tabs[0].href}
                     className={cn(
-                      "rounded-lg px-3 py-1.5 transition-colors hover:bg-slate-800 hover:text-slate-100",
-                      active ? "bg-slate-800 font-semibold text-cyan-300" : "text-slate-300",
+                      "rounded-md px-3 py-1.5 transition-colors hover:text-slate-100",
+                      active ? "text-slate-50 font-medium" : "text-slate-400",
                     )}
                   >
-                    <span aria-hidden="true">{subject.emoji} </span>
                     {subject.label}
                   </Link>
                 );
               })}
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  className={cn(
-                    "flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs transition-colors hover:text-cyan-300 focus-visible:outline-none",
-                    archivedLinks.some((l) => pathname === l.href || (pathname.startsWith(l.href + "/") && !pathname.startsWith("/ai-engineering/visual-lab")))
-                      ? "text-cyan-400 font-medium"
-                      : "text-slate-500"
-                  )}
-                >
-                  <Archive className="h-3.5 w-3.5" aria-hidden="true" />
-                  Archived
-                  <ChevronDown className="h-3 w-3" aria-hidden="true" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-52 border-slate-700 bg-slate-900 text-slate-200">
-                  <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-slate-500">
-                    Old versions
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-slate-800" />
-                  {archivedLinks.map(({ href, label }) => (
-                    <DropdownMenuItem key={href} asChild className="cursor-pointer focus:bg-slate-800 focus:text-cyan-300">
-                      <Link href={href}>{label}</Link>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
             </nav>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <button
               onClick={() => setSearchOpen(true)}
               aria-label="Search (Ctrl+K)"
-              className="hidden items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-400 hover:text-slate-200 md:flex"
+              className="hidden items-center gap-3 rounded-md border border-slate-800 px-3 py-1.5 text-sm text-slate-500 hover:text-slate-200 md:flex"
             >
-              <Search size={16} />
-              <span className="hidden xl:inline">Search</span>
-              <kbd className="hidden whitespace-nowrap rounded border border-slate-600 px-1 text-[10px] 2xl:inline">Ctrl K</kbd>
+              Search
+              <kbd className="hidden whitespace-nowrap text-[10px] text-slate-600 xl:inline">Ctrl K</kbd>
             </button>
-            <ModeToggle />
-            {pathname === "/javascript" && (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                aria-label="Download PDF"
-                title="Download cheatsheets as PDF"
-                className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:text-slate-100"
-              >
-                <Download size={16} />
-                <span className="hidden 2xl:inline">PDF</span>
-              </button>
-            )}
-            <Link
-              href="/study"
-              title="My progress, bookmarks and flashcards"
-              className={cn(
-                "hidden items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm hover:text-slate-100 sm:flex",
-                pathname === "/study" ? "text-cyan-300" : "text-slate-400",
-              )}
-            >
-              <BarChart3 size={16} />
-              <span className="hidden xl:inline">My progress</span>
-            </Link>
-            <a
-              href={BILLU.youtube}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden items-center gap-1.5 rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 px-3 py-2 text-sm font-semibold text-white shadow-md shadow-rose-900/30 hover:brightness-110 md:flex"
-            >
-              <Youtube size={16} aria-hidden="true" />
-              <span className="hidden xl:inline">Ustad Billu</span>
-              <span className="sr-only xl:hidden">Ustad Billu on YouTube</span>
-              <span className="sr-only"> (opens in a new tab)</span>
-            </a>
+            <span className="hidden md:inline"><ModeToggle /></span>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="hidden rounded-md px-2.5 py-1.5 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100 focus-visible:outline-none md:block">
+                More
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 border-slate-800 bg-slate-900 text-slate-200">
+                <DropdownMenuItem asChild className="cursor-pointer focus:bg-slate-800">
+                  <Link href="/study" className={cn(isActive("/study") && "text-cyan-300")}>My progress</Link>
+                </DropdownMenuItem>
+                {pathname === "/javascript" && (
+                  <DropdownMenuItem onSelect={() => setIsModalOpen(true)} className="cursor-pointer focus:bg-slate-800">
+                    Download PDF
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem asChild className="cursor-pointer focus:bg-slate-800">
+                  <a href={BILLU.site}>Ustad Billu home</a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="cursor-pointer focus:bg-slate-800">
+                  <a href={BILLU.youtube} target="_blank" rel="noopener noreferrer">YouTube channel</a>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-slate-800" />
+                <DropdownMenuLabel className="text-[11px] font-normal text-slate-500">Old versions</DropdownMenuLabel>
+                {archivedLinks.map(({ href, label }) => (
+                  <DropdownMenuItem key={href} asChild className="cursor-pointer text-slate-400 focus:bg-slate-800">
+                    <Link href={href}>{label}</Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-            {/* Mobile Menu Button */}
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hidden text-slate-400 hover:text-slate-200 md:inline-flex lg:hidden"
-                >
-                  <Menu className="h-6 w-6" />
-                  <span className="sr-only">Toggle menu</span>
+                <Button variant="ghost" className="hidden text-sm text-slate-400 hover:text-slate-200 md:inline-flex lg:hidden">
+                  Menu
                 </Button>
               </SheetTrigger>
-              <SheetContent
-                side="right"
-                className="w-[280px] bg-slate-900 border-slate-800"
-              >
-                <nav className="flex flex-col gap-2 mt-8 overflow-y-auto">
-                  <a
-                    href={BILLU.site}
-                    className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800"
-                  >
-                    <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                    Back to Ustad Billu home
-                  </a>
+              <SheetContent side="right" className="w-[280px] bg-slate-900 border-slate-800">
+                <nav className="mt-8 flex flex-col gap-4 overflow-y-auto">
                   {SUBJECTS.map((subject) => (
-                    <div key={subject.id} className="rounded-lg bg-slate-800/40 p-2">
-                      <p className="px-2 pb-1 text-sm font-semibold text-slate-200">
-                        {subject.emoji} {subject.label}
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {subject.tabs.map((tab) => (
-                          <Link
-                            key={tab.href}
-                            href={tab.href}
-                            onClick={() => setIsSheetOpen(false)}
-                            className={cn(
-                              "rounded-md px-2.5 py-1.5 text-sm",
-                              current?.tab.href === tab.href ? "bg-cyan-400 text-slate-950" : "bg-slate-800 text-slate-300",
-                            )}
-                          >
-                            {tab.label}
-                          </Link>
-                        ))}
-                      </div>
+                    <div key={subject.id}>
+                      <p className="px-2 pb-1 text-xs text-slate-500">{subject.label}</p>
+                      {subject.tabs.map((tab) => (
+                        <Link
+                          key={tab.href}
+                          href={tab.href}
+                          onClick={() => setIsSheetOpen(false)}
+                          className={cn(
+                            "block rounded-md px-2 py-1.5 text-sm",
+                            current?.tab.href === tab.href ? "bg-slate-800 text-slate-50" : "text-slate-300 hover:bg-slate-800/60",
+                          )}
+                        >
+                          {tab.label}
+                        </Link>
+                      ))}
                     </div>
                   ))}
-                  <Link href="/study" onClick={() => setIsSheetOpen(false)} className="px-4 py-2 text-base text-slate-300">
-                    📊 My progress
-                  </Link>
-                  <a href={BILLU.youtube} target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-base text-orange-300">
-                    🐱 Ustad Billu on YouTube
-                  </a>
-                  <p className="mt-2 flex items-center gap-2 px-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-                    <Archive className="h-3.5 w-3.5" aria-hidden="true" /> Archived (old)
-                  </p>
-                  {archivedLinks.map(({ href, label }) => (
-                    <Link
-                      key={href}
-                      href={href}
-                      onClick={() => setIsSheetOpen(false)}
-                      className={cn(
-                        "px-4 py-3 rounded-lg text-base font-medium transition-colors",
-                        pathname === href
-                          ? "bg-slate-800 text-cyan-400"
-                          : "text-slate-500 hover:bg-slate-800/50 hover:text-slate-200"
-                      )}
-                    >
-                      {label}
-                    </Link>
-                  ))}
+                  <Link href="/study" onClick={() => setIsSheetOpen(false)} className="px-2 text-sm text-slate-300">My progress</Link>
+                  <a href={BILLU.site} className="px-2 text-sm text-slate-300">Ustad Billu home</a>
                 </nav>
               </SheetContent>
             </Sheet>

@@ -44,11 +44,12 @@ export const SUBJECTS: Subject[] = [
   {
     id: "dsa",
     label: "DSA",
-    emoji: "🧩",
+    emoji: "",
     blurb: "Pre-DSA warm-ups, then Levels 1–3. Watch 174 questions run line by line.",
     accent: "from-emerald-400/20 border-emerald-400/40 text-emerald-200",
     tabs: [
       { kind: "see", label: "Visualizer", href: "/visualizer" },
+      { kind: "see", label: "Deep Dive", href: "/deep-dive", match: ["/deep-dive/"] },
       { kind: "read", label: "Notes", href: "/dsa" },
     ],
     video: { label: "LeetCode Ki Soch on YouTube", href: BILLU.dsaPlaylist },
@@ -56,7 +57,7 @@ export const SUBJECTS: Subject[] = [
   {
     id: "gen-ai",
     label: "Gen AI",
-    emoji: "🤖",
+    emoji: "",
     blurb: "How LLMs, RAG and agents work, in plain words and pictures.",
     accent: "from-violet-400/20 border-violet-400/40 text-violet-200",
     tabs: [
@@ -69,7 +70,7 @@ export const SUBJECTS: Subject[] = [
   {
     id: "aws",
     label: "AWS",
-    emoji: "☁️",
+    emoji: "",
     blurb: "SAA exam notes plus 49 services you can break and watch recover.",
     accent: "from-amber-400/20 border-amber-400/40 text-amber-200",
     tabs: [
@@ -82,7 +83,7 @@ export const SUBJECTS: Subject[] = [
   {
     id: "javascript",
     label: "JavaScript",
-    emoji: "⚡",
+    emoji: "",
     blurb: "Frontend cheatsheets: JS, React, Next.js and more.",
     accent: "from-cyan-400/20 border-cyan-400/40 text-cyan-200",
     tabs: [{ kind: "read", label: "Cheatsheets", href: "/javascript" }],

@@ -12,7 +12,7 @@ export default async function OpenGraphImage() {
   const src = `data:image/png;base64,${png.toString("base64")}`;
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", gap: 56, padding: 72, background: "#0e0f0f", color: "#f6f4ef" }}>
+      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", gap: 56, padding: 72, background: "#09090b", color: "#f6f4ef" }}>
         <div style={{ display: "flex", width: 340, height: 340, borderRadius: 48, background: "#fdf3dc", alignItems: "center", justifyContent: "center" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={src} width={300} height={300} alt="" />
