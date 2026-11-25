@@ -47,7 +47,7 @@ export function BilluPeek() {
         <button type="button" onClick={() => setShow(false)} aria-label="Close" className="absolute -right-2 -top-2 rounded-full bg-slate-800 p-1 text-slate-400 hover:text-slate-100">
           <X className="h-3 w-3" />
         </button>
-        Shagird, stuck? I explain {subject ? subject.label : "this"} in easy Hinglish.{" "}
+        Stuck? I explain {subject ? subject.label : "this"} in easy Hinglish.{" "}
         <a href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-orange-300 hover:underline" onClick={() => setShow(false)}>
           Watch now 🎬
         </a>
