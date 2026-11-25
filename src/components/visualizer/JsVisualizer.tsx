@@ -36,6 +36,7 @@ import { ProblemBrowser } from "./ProblemBrowser";
 import { QuizCard, type QuizState } from "./QuizCard";
 import { ViewOptions } from "./ViewOptions";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { FullScreenIcon, InformationCircleIcon, PencilEdit01Icon } from "hugeicons-react";
 import { useProgress } from "./use-progress";
 import { useVizOptions } from "./use-viz-options";
 import { useBeginnerMode } from "./use-beginner-mode";
@@ -288,7 +289,7 @@ export function JsVisualizer() {
         {entry && <CrumbLeaf label={entry.label} />}
         <header className="mb-4 space-y-3">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-            <h1 className="w-full font-headline text-2xl font-bold text-slate-100 sm:w-auto md:text-3xl">DSA Visualizer</h1>
+            <h1 className="w-full text-xl font-semibold tracking-tight text-slate-100 sm:w-auto md:text-2xl">DSA Visualizer</h1>
             <div className="grid w-full min-w-0 grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-row sm:flex-wrap sm:items-center [&>*]:min-w-0 sm:[&>*]:min-w-max [&>button]:justify-center">
               <div className="col-span-2 sm:contents">
                 <ExamplePicker value={selection} onChange={choose} done={done} />
@@ -301,41 +302,45 @@ export function JsVisualizer() {
                     setPlaying(false);
                     setMode("edit");
                   }}
-                  className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-slate-600 bg-slate-800 px-4 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                  className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-slate-800 px-4 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                 >
-                  Edit code
+                  <PencilEdit01Icon size={16} /> Edit code
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={() => void visualize(code)}
                   disabled={running}
-                  className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-cyan-400 px-4 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-60"
+                  className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-cyan-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-60"
                 >
                   {running ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Play className="h-4 w-4" aria-hidden="true" />}
                   {running ? "Running…" : "Visualize"}
                 </button>
               )}
             </div>
-            <Popover>
-              <PopoverTrigger className="h-10 rounded-full px-4 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100 sm:ml-auto">Options</PopoverTrigger>
-              <PopoverContent align="end" className="w-64 space-y-3 rounded-2xl border-slate-800 bg-slate-900 text-slate-200">
-                <label className="flex cursor-pointer items-center justify-between gap-2 text-sm">
-                  Focus mode
-                  <Switch checked={focusOn} onCheckedChange={setFocusOn} aria-label="Focus mode: full screen, simple view" />
-                </label>
-                <label className="flex cursor-pointer items-center justify-between gap-2 text-sm">
-                  Big text and tips
-                  <Switch checked={beginner} onCheckedChange={setBeginner} aria-label="Big text and tips" />
-                </label>
-              </PopoverContent>
-            </Popover>
+            <div className="flex items-center gap-1 sm:ml-auto">
+              <button
+                type="button"
+                onClick={() => setFocusOn(true)}
+                className="inline-flex h-10 items-center gap-2 rounded-full bg-cyan-500 px-5 text-sm font-semibold text-white shadow-lg shadow-cyan-900/30 transition hover:bg-cyan-600"
+              >
+                <FullScreenIcon size={17} /> Focus mode
+              </button>
+              <Popover>
+                <PopoverTrigger className="h-10 rounded-full px-4 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100">Options</PopoverTrigger>
+                <PopoverContent align="end" className="w-64 space-y-3 rounded-2xl border-slate-800 bg-slate-900 text-slate-200">
+                  <label className="flex cursor-pointer items-center justify-between gap-2 text-sm">
+                    Big text and tips
+                    <Switch checked={beginner} onCheckedChange={setBeginner} aria-label="Big text and tips" />
+                  </label>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
           <Collapsible>
             <p className="text-sm text-slate-400">
-              Watch code run one line at a time, like a dry run on paper. 40 Pre-DSA warm-ups, then {PROBLEMS.length} questions in Levels 1–3.{" "}
-              <CollapsibleTrigger className="font-medium text-cyan-300 hover:text-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400">
-                How to read this screen?
+              <CollapsibleTrigger className="inline-flex items-center gap-1.5 font-medium text-slate-400 hover:text-slate-100 hover:text-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400">
+                <InformationCircleIcon size={15} /> How to read this screen?
               </CollapsibleTrigger>
             </p>
             <CollapsibleContent className="mt-3 space-y-3">

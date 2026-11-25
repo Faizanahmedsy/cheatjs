@@ -14,18 +14,8 @@ export default function JavaScriptPage() {
         <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-green-500/5 rounded-full filter blur-3xl opacity-20"></div>
 
         <main className="relative z-10">
-          <div className="container mx-auto px-4 max-w-screen-xl">
-            <div className="text-center py-8 md:py-12 lg:py-16">
-              <h1 className="font-headline text-3xl md:text-4xl lg:text-5xl font-bold text-slate-100">
-                JavaScript cheatsheets
-              </h1>
-              <p className="mt-4 text-base md:text-lg text-slate-400 max-w-2xl mx-auto px-4">
-                The easiest to understand resource to learn frontend development
-                on planet earth. Cheatsheets to help you learn and master modern
-                web technologies.
-              </p>
-            </div>
-
+          <div className="mx-auto w-full max-w-[1700px] px-4 pt-6 sm:px-6 lg:px-10">
+            <h1 className="sr-only">JavaScript cheatsheets</h1>
             <Suspense fallback={<div>Loading...</div>}>
               <CheatsheetTabs />
             </Suspense>

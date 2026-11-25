@@ -45,7 +45,7 @@ function FilteredGrid({
           </button>
         ))}
       </div>
-      <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2">
+      <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3">
         {shown.map((snippet) => (
           <CheatsheetCard key={snippet.title} snippet={snippet} color="red" />
         ))}
@@ -94,28 +94,28 @@ export function CheatsheetTabs() {
 
   return (
     <Tabs value={categoryTab} onValueChange={setCategoryTab} className="w-full">
-      <TabsList className="grid h-auto w-full max-w-2xl mx-auto grid-cols-2 sm:grid-cols-4 bg-slate-800/50 border border-slate-700/50 mb-6 md:mb-8 gap-1">
+      <TabsList className="grid h-auto w-full max-w-2xl mx-auto grid-cols-2 sm:grid-cols-4 rounded-full bg-slate-900 p-1 mb-6 md:mb-8 gap-1">
         <TabsTrigger
           value="React"
-          className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300 text-xs sm:text-sm"
+          className="rounded-full data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300 text-xs sm:text-sm"
         >
           React
         </TabsTrigger>
         <TabsTrigger
           value="Next.js"
-          className="data-[state=active]:bg-slate-700 data-[state=active]:text-green-300 text-xs sm:text-sm"
+          className="rounded-full data-[state=active]:bg-slate-700 data-[state=active]:text-green-300 text-xs sm:text-sm"
         >
           Next.js
         </TabsTrigger>
         <TabsTrigger
           value="Frontend Concepts"
-          className="data-[state=active]:bg-slate-700 data-[state=active]:text-yellow-300 text-xs sm:text-sm"
+          className="rounded-full data-[state=active]:bg-slate-700 data-[state=active]:text-yellow-300 text-xs sm:text-sm"
         >
           Frontend
         </TabsTrigger>
         <TabsTrigger
           value="DSA"
-          className="data-[state=active]:bg-slate-700 data-[state=active]:text-red-300 text-xs sm:text-sm"
+          className="rounded-full data-[state=active]:bg-slate-700 data-[state=active]:text-red-300 text-xs sm:text-sm"
         >
           DSA
         </TabsTrigger>
@@ -124,22 +124,22 @@ export function CheatsheetTabs() {
       <TabsContent value="React">
         {isClient && (
           <Tabs value={reactTab} onValueChange={setReactTab} className="w-full">
-            <TabsList className="grid h-auto w-full max-w-lg mx-auto grid-cols-3 bg-slate-800/50 border border-slate-700/50 mb-6 md:mb-8">
+            <TabsList className="grid h-auto w-full max-w-lg mx-auto grid-cols-3 rounded-full bg-slate-900 p-1 mb-6 md:mb-8">
               <TabsTrigger
                 value="Beginner"
-                className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300 text-xs sm:text-sm"
+                className="rounded-full data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300 text-xs sm:text-sm"
               >
                 Beginner
               </TabsTrigger>
               <TabsTrigger
                 value="Intermediate"
-                className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300 text-xs sm:text-sm"
+                className="rounded-full data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300 text-xs sm:text-sm"
               >
                 Intermediate
               </TabsTrigger>
               <TabsTrigger
                 value="Advanced"
-                className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300 text-xs sm:text-sm"
+                className="rounded-full data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-300 text-xs sm:text-sm"
               >
                 Advanced
               </TabsTrigger>
@@ -160,7 +160,7 @@ export function CheatsheetTabs() {
                           <h2 className="text-xl md:text-2xl font-bold text-cyan-300 mb-4 md:mb-6 text-center">
                             {section.heading}
                           </h2>
-                          <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
+                          <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3">
                             {section.snippets.map((snippet) => (
                               <CheatsheetCard
                                 key={snippet.title}
@@ -177,7 +177,7 @@ export function CheatsheetTabs() {
 
                 // Fallback for old structure without sections
                 return (
-                  <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
+                  <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3">
                     {beginnerCategory.snippets?.map((snippet) => (
                       <CheatsheetCard
                         key={snippet.title}
@@ -190,7 +190,7 @@ export function CheatsheetTabs() {
               })()}
             </TabsContent>
             <TabsContent value="Intermediate">
-              <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
+              <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3">
                 {reactCategory?.subCategories
                   ?.find((sc) => sc.name === "Intermediate")
                   ?.snippets?.map((snippet) => (
@@ -203,7 +203,7 @@ export function CheatsheetTabs() {
               </div>
             </TabsContent>
             <TabsContent value="Advanced">
-              <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
+              <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3">
                 {reactCategory?.subCategories
                   ?.find((sc) => sc.name === "Advanced")
                   ?.snippets?.map((snippet) => (
@@ -220,7 +220,7 @@ export function CheatsheetTabs() {
       </TabsContent>
 
       <TabsContent value="Next.js">
-        <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
+        <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3">
           {isClient &&
             cheatsheets
               .find((c) => c.name === "Next.js")
@@ -235,7 +235,7 @@ export function CheatsheetTabs() {
       </TabsContent>
 
       <TabsContent value="Frontend Concepts">
-        <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
+        <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3">
           {isClient &&
             cheatsheets
               .find((c) => c.name === "Frontend Concepts")
@@ -252,28 +252,28 @@ export function CheatsheetTabs() {
       <TabsContent value="DSA">
         {isClient && (
           <Tabs value={dsaTab} onValueChange={setDsaTab} className="w-full">
-            <TabsList className="grid h-auto w-full max-w-lg mx-auto grid-cols-3 bg-slate-800/50 border border-slate-700/50 mb-6 md:mb-8">
+            <TabsList className="grid h-auto w-full max-w-lg mx-auto grid-cols-3 rounded-full bg-slate-900 p-1 mb-6 md:mb-8">
               <TabsTrigger
                 value="Visualizations"
-                className="data-[state=active]:bg-slate-700 data-[state=active]:text-red-300 text-xs sm:text-sm"
+                className="rounded-full data-[state=active]:bg-slate-700 data-[state=active]:text-red-300 text-xs sm:text-sm"
               >
                 Visualizations
               </TabsTrigger>
               <TabsTrigger
                 value="Algorithms"
-                className="data-[state=active]:bg-slate-700 data-[state=active]:text-red-300 text-xs sm:text-sm"
+                className="rounded-full data-[state=active]:bg-slate-700 data-[state=active]:text-red-300 text-xs sm:text-sm"
               >
                 Algorithms
               </TabsTrigger>
               <TabsTrigger
                 value="Patterns"
-                className="data-[state=active]:bg-slate-700 data-[state=active]:text-red-300 text-xs sm:text-sm"
+                className="rounded-full data-[state=active]:bg-slate-700 data-[state=active]:text-red-300 text-xs sm:text-sm"
               >
                 Patterns
               </TabsTrigger>
             </TabsList>
             <TabsContent value="Visualizations">
-              <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2">
+              <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3">
                 {dsaCategory?.subCategories
                   ?.find((sc) => sc.name === "Visualizations")
                   ?.snippets?.map((snippet) => (
