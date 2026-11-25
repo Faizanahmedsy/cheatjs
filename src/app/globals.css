@@ -151,13 +151,13 @@
   --lab-mono: Inter, ui-sans-serif, system-ui, sans-serif; /* same font as the rest of the app (was a code font) */
   /* Ustad Billu palette: ink night, paper text, terra accent */
   --lab-bg: #09090b;
-  --lab-scene: #121313;
-  --lab-panel: #161717;
-  --lab-raised: #1f2020;
-  --lab-border: #2e2f2d;
-  --lab-grid: rgba(243, 189, 79, 0.08);
-  --lab-text: #f2ebdd;
-  --lab-muted: #a99d87;
+  --lab-scene: #101012;
+  --lab-panel: #141416;
+  --lab-raised: #1c1c1f;
+  --lab-border: #232326;
+  --lab-grid: rgba(255, 255, 255, 0.04);
+  --lab-text: #f4f4f5;
+  --lab-muted: #a1a1aa;
   --lab-accent: #f5793f;
   --t-blue: #7aa2f7;
   --t-cyan: #f5793f;
@@ -165,20 +165,20 @@
   --t-amber: #f3bd4f;
   --t-green: #3fc983;
   --t-rose: #f07a8a;
-  --t-slate: #a99d87;
+  --t-slate: #a1a1aa;
   color: var(--lab-text);
 }
 .ai-lab[data-theme="light"],
 .ai-lab-pop[data-theme="light"] {
   /* Billu's Warm Paper */
-  --lab-bg: #fbfaf7;
-  --lab-scene: #f4f2ec;
+  --lab-bg: #fafafa;
+  --lab-scene: #f4f4f5;
   --lab-panel: #ffffff;
-  --lab-raised: #f3f1eb;
-  --lab-border: #e2ddd2;
-  --lab-grid: rgba(27, 42, 34, 0.08);
-  --lab-text: #1b2a22;
-  --lab-muted: #6a6253;
+  --lab-raised: #f4f4f5;
+  --lab-border: #e4e4e7;
+  --lab-grid: rgba(0, 0, 0, 0.05);
+  --lab-text: #18181b;
+  --lab-muted: #71717a;
   --lab-accent: #c2532f;
   --t-blue: #2f5fbf;
   --t-cyan: #c2532f;
@@ -186,7 +186,7 @@
   --t-amber: #a06a10;
   --t-green: #0f7a46;
   --t-rose: #c0304a;
-  --t-slate: #6a6253;
+  --t-slate: #71717a;
 }
 @keyframes lab-dash {
   to {
@@ -440,4 +440,63 @@ html[data-reading-focus="1"] .chrome-h { height: calc(100dvh - 2.75rem) !importa
 }
 .dd-march {
   animation: dd-march 0.9s linear infinite;
+}
+
+/* Theme switch: let the View Transition reveal do the work, no cross-fade. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+@keyframes mode-spin {
+  from {
+    transform: rotate(-90deg) scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0) scale(1);
+    opacity: 1;
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.page-in {
+  animation: page-in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-in {
+    animation: none;
+  }
+}
+
+/* Labs: same calm look as Deep Dive. Sentence-case labels, soft round panels, fewer lines. */
+.ai-lab .uppercase,
+.ai-lab-pop .uppercase {
+  text-transform: none;
+  letter-spacing: 0;
+}
+.ai-lab .rounded,
+.ai-lab .rounded-md,
+.ai-lab .rounded-lg {
+  border-radius: 0.9rem;
+}
+.ai-lab .rounded-xl,
+.ai-lab .rounded-2xl {
+  border-radius: 1.5rem;
+}
+.ai-lab button.rounded,
+.ai-lab button.rounded-md,
+.ai-lab button.rounded-lg {
+  border-radius: 9999px;
+}
+.ai-lab .border-lab-border {
+  border-color: color-mix(in srgb, var(--lab-border) 70%, transparent);
 }

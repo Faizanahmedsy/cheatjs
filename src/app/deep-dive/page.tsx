@@ -1,37 +1,15 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { LessonIndex } from "@/components/deep-dive/LessonIndex";
 import { LESSONS } from "@/lib/deep-dive/lessons";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata: Metadata = pageMeta({
-  title: "Deep Dive: hard algorithms, animated",
-  description: "Dijkstra, Bellman-Ford, topological sort, Kruskal, Prim, Word Ladder, bridges and LRU cache, animated step by step in plain words.",
+  title: "Deep Dive: every DSA topic, animated",
+  description: "78 animated lessons: arrays, sorting, linked lists, stacks, hashing, trees, heaps, tries, backtracking, dynamic programming and graph algorithms, step by step in plain words.",
   path: "/deep-dive",
-  keywords: ["Dijkstra visualizer", "graph algorithms", "LRU cache", "Kruskal", "topological sort"],
+  keywords: ["Dijkstra visualizer", "DSA visualizer", "graph algorithms", "dynamic programming visualized", "LRU cache"],
 });
 
 export default function DeepDiveIndex() {
-  return (
-    <main className="mx-auto max-w-3xl px-4 py-12 text-slate-100">
-      <h1 className="text-3xl font-semibold tracking-tight">Deep Dive</h1>
-      <p className="mt-2 text-slate-400">The hard ones, one idea per step. Use ← → to move.</p>
-      <ol className="mt-8 space-y-2">
-        {LESSONS.map((l, i) => (
-          <li key={l.slug}>
-            <Link href={`/deep-dive/${l.slug}`} className="group flex items-baseline gap-4 rounded-2xl bg-slate-900/70 px-5 py-4 transition hover:bg-slate-800/80">
-              <span className="w-5 font-code text-xs text-slate-600">{i + 1}</span>
-              <span className="flex-1">
-                {(i === 0 || LESSONS[i - 1].group !== l.group) && <span className="mb-1 block text-[11px] uppercase tracking-wider text-cyan-400">{l.group}</span>}
-                <span className="font-medium group-hover:underline">{l.title}</span>
-                <span className="block text-sm text-slate-500">
-                  {l.blurb} · {l.question}
-                </span>
-              </span>
-              <span className="text-xs text-slate-600">{l.steps.length} steps</span>
-            </Link>
-          </li>
-        ))}
-      </ol>
-    </main>
-  );
+  return <LessonIndex lessons={LESSONS} base="/deep-dive" title="Deep Dive" intro="Every core topic, one idea per step. Use ← → to move." />;
 }

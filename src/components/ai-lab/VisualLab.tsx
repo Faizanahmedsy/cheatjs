@@ -49,16 +49,15 @@ type CentreView = "visual" | "scene" | "sequence";
 function StartOverlay({ s, onStart, onPlay, reduced }: { s: Scenario; onStart: () => void; onPlay: () => void; reduced: boolean }) {
   return (
     <div className="absolute inset-0 z-20 flex overflow-y-auto p-3 sm:p-6" style={{ background: "color-mix(in srgb, var(--lab-scene) 84%, transparent)", backdropFilter: "blur(3px)" }}>
-      <div className="m-auto w-full max-w-lg rounded-xl border bg-lab-panel p-4 shadow-xl sm:p-6" style={{ borderColor: toneVar("amber") }}>
-        <p className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: toneVar("amber") }}>
+      <div className="m-auto w-full max-w-lg rounded-3xl bg-lab-panel p-5 shadow-2xl sm:p-7">
+        <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-lab-accent">
           <Sparkles className="h-3.5 w-3.5" /> {s.title}
         </p>
         <RichText text={s.imagine ?? s.overview.plain ?? s.tagline} className="font-body text-[15px] leading-relaxed text-lab-text sm:text-[16px]" />
         <button
           onClick={onStart}
           autoFocus
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-[14px] font-bold uppercase tracking-wider"
-          style={{ background: toneVar("blue"), color: "var(--lab-bg)" }}
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#e5603a] px-4 py-3 text-[15px] font-medium text-white shadow-lg transition hover:bg-[#c2532f]"
         >
           <Play className="h-5 w-5" /> Start
         </button>

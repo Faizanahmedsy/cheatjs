@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { findSubject } from "@/lib/subjects";
 
@@ -29,10 +30,11 @@ export function SubjectBar() {
                   href={t.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "shrink-0 rounded-full px-3.5 py-1.5 text-[13px] transition-colors",
-                    active ? "bg-cyan-500/15 font-medium text-cyan-300" : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-100",
+                    "relative isolate shrink-0 rounded-full px-3.5 py-1.5 text-[13px] transition-colors",
+                    active ? "font-medium text-cyan-300" : "text-slate-400 hover:text-slate-100",
                   )}
                 >
+                  {active && <motion.span layoutId="subject-pill" className="absolute inset-0 -z-10 rounded-full bg-cyan-500/15" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
                   {t.label}
                 </Link>
               );

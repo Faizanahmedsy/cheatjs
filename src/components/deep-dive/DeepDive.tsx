@@ -3,13 +3,16 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { LESSONS, findLesson } from "@/lib/deep-dive/lessons";
+import type { Lesson } from "@/lib/deep-dive/types";
+import { LESSONS as ALL } from "@/lib/deep-dive/lessons";
 import { highlightLine } from "@/components/deep-dive/highlight";
 import { IsoStage } from "./IsoStage";
 import { cn } from "@/lib/utils";
 
-export function DeepDive({ slug }: { slug: string }) {
-  const lesson = findLesson(slug)!;
+/** The Deep Dive lesson screen: stage, step rail, step card, code and state. Shared by every lab. */
+export function LessonShell({ lessons, slug, base, home }: { lessons: Lesson[]; slug: string; base: string; home: string }) {
+  const LESSONS = lessons;
+  const lesson = lessons.find((l) => l.slug === slug)!;
   const [index, setIndex] = useState(0);
   const step = lesson.steps[index];
   const total = lesson.steps.length;
@@ -39,8 +42,8 @@ export function DeepDive({ slug }: { slug: string }) {
     <main className="mx-auto w-full max-w-[1500px] px-4 py-6 text-slate-100 sm:px-6">
       <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <Link href="/deep-dive" className="text-xs text-slate-500 hover:text-slate-300">
-            Deep Dive
+          <Link href={base} className="text-xs text-slate-500 hover:text-slate-300">
+            {home}
           </Link>
           <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{lesson.title}</h1>
         </div>
@@ -93,6 +96,7 @@ export function DeepDive({ slug }: { slug: string }) {
               <motion.div key={index} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
                 <h2 className="mt-1 text-lg font-semibold">{step.title}</h2>
                 <p className="mt-2 min-h-[7.5rem] text-[15px] leading-relaxed text-slate-300">{step.text}</p>
+                {step.note && <p className="mt-3 rounded-2xl bg-slate-800/60 px-4 py-3 text-sm text-slate-400">{step.note}</p>}
               </motion.div>
             </AnimatePresence>
             <div className="mt-3 flex gap-2">
@@ -104,17 +108,18 @@ export function DeepDive({ slug }: { slug: string }) {
                   Next: {lesson.steps[index + 1].title}
                 </button>
               ) : next ? (
-                <Link href={`/deep-dive/${next.slug}`} className="flex-1 truncate rounded-full bg-cyan-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-cyan-600">
+                <Link href={`${base}/${next.slug}`} className="flex-1 truncate rounded-full bg-cyan-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-cyan-600">
                   Next lesson: {next.title}
                 </Link>
               ) : (
-                <Link href="/deep-dive" className="flex-1 rounded-full bg-cyan-500 px-4 py-2.5 text-sm font-medium text-white">
+                <Link href={base} className="flex-1 rounded-full bg-cyan-500 px-4 py-2.5 text-sm font-medium text-white">
                   All lessons
                 </Link>
               )}
             </div>
           </section>
 
+          {lesson.code.length > 0 && (
           <section className="overflow-hidden rounded-3xl bg-slate-900/70">
             <p className="px-5 pt-4 pb-2 text-sm font-medium">Code</p>
             <div ref={codeRef} className="max-h-[300px] overflow-auto py-2 font-code text-[12.5px] leading-6">
@@ -129,9 +134,10 @@ export function DeepDive({ slug }: { slug: string }) {
               })}
             </div>
           </section>
+          )}
 
           <section className="rounded-3xl bg-slate-900/70 p-5">
-            <p className="mb-2 text-sm font-medium">State</p>
+            <p className="mb-2 text-sm font-medium">{lesson.stateTitle ?? "State"}</p>
             <div className="space-y-2.5">
               {step.state.map((row) => (
                 <div key={row.label} className="flex flex-wrap items-center gap-1.5">
@@ -160,4 +166,8 @@ export function DeepDive({ slug }: { slug: string }) {
       </details>
     </main>
   );
+}
+
+export function DeepDive({ slug }: { slug: string }) {
+  return <LessonShell lessons={ALL} slug={slug} base="/deep-dive" home="Deep Dive" />;
 }

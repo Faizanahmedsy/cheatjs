@@ -35,6 +35,8 @@ export interface Step {
   nodes: SceneNode[];
   edges: SceneEdge[];
   state: StateRow[];
+  /** Optional tip shown under the step text. */
+  note?: string;
 }
 
 export interface Lesson {
@@ -47,4 +49,6 @@ export interface Lesson {
   problem: string;
   code: string[];
   steps: Step[];
+  /** Title of the state panel (default "State"). */
+  stateTitle?: string;
 }

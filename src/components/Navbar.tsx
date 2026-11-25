@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { ArrowDown01Icon, Clock01Icon, Home01Icon, InstagramIcon, Search01Icon, YoutubeIcon } from "hugeicons-react";
+import { motion } from "framer-motion";
 import { ARCHIVED, BILLU, SITE_NAME, SUBJECTS, findSubject } from "@/lib/subjects";
 import { SearchDialog } from "./SearchDialog";
 import { MobileBar } from "./MobileBar";
@@ -65,10 +67,11 @@ export function Navbar() {
                     key={subject.id}
                     href={subject.tabs[0].href}
                     className={cn(
-                      "rounded-full px-3.5 py-1.5 transition-colors hover:bg-slate-800/70 hover:text-slate-100",
-                      active ? "bg-slate-800 text-slate-50 font-medium" : "text-slate-400",
+                      "relative isolate rounded-full px-3.5 py-1.5 transition-colors hover:text-slate-100",
+                      active ? "text-slate-50 font-medium" : "text-slate-400",
                     )}
                   >
+                    {active && <motion.span layoutId="nav-pill" className="absolute inset-0 -z-10 rounded-full bg-slate-800" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
                     {subject.label}
                   </Link>
                 );
@@ -82,17 +85,17 @@ export function Navbar() {
               aria-label="Search (Ctrl+K)"
               className="hidden min-w-[200px] items-center justify-between gap-3 rounded-full bg-slate-800/70 px-4 py-2 text-sm text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-200 md:flex"
             >
-              Search
+              <span className="flex items-center gap-2"><Search01Icon size={16} /> Search</span>
               <kbd className="hidden whitespace-nowrap text-[10px] text-slate-600 xl:inline">Ctrl K</kbd>
             </button>
             <span className="hidden md:inline"><ModeToggle /></span>
             <DropdownMenu>
               <DropdownMenuTrigger className="hidden rounded-full px-3.5 py-1.5 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100 focus-visible:outline-none md:block">
-                More
+                <span className="flex items-center gap-1">More <ArrowDown01Icon size={14} /></span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 rounded-2xl border-slate-800 bg-slate-900 p-1.5 text-slate-200 shadow-2xl">
                 <DropdownMenuItem asChild className="cursor-pointer focus:bg-slate-800">
-                  <Link href="/study" className={cn(isActive("/study") && "text-cyan-300")}>My progress</Link>
+                  <Link href="/study" className={cn("gap-2", isActive("/study") && "text-cyan-300")}><Clock01Icon size={16} /> My progress</Link>
                 </DropdownMenuItem>
                 {pathname === "/javascript" && (
                   <DropdownMenuItem onSelect={() => setIsModalOpen(true)} className="cursor-pointer focus:bg-slate-800">
@@ -100,10 +103,13 @@ export function Navbar() {
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem asChild className="cursor-pointer focus:bg-slate-800">
-                  <a href={BILLU.site}>Ustad Billu home</a>
+                  <a href={BILLU.site} className="gap-2"><Home01Icon size={16} /> Ustad Billu home</a>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="cursor-pointer focus:bg-slate-800">
-                  <a href={BILLU.youtube} target="_blank" rel="noopener noreferrer">YouTube channel</a>
+                  <a href={BILLU.youtube} target="_blank" rel="noopener noreferrer" className="gap-2"><YoutubeIcon size={16} className="text-[#ff3b30]" /> YouTube channel</a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="cursor-pointer focus:bg-slate-800">
+                  <a href={BILLU.instagram} target="_blank" rel="noopener noreferrer" className="gap-2"><InstagramIcon size={16} className="text-[#e1306c]" /> Instagram</a>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-slate-800" />
                 <DropdownMenuLabel className="text-[11px] font-normal text-slate-500">Old versions</DropdownMenuLabel>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowDown01Icon, ArrowRight01Icon, YoutubeIcon } from "hugeicons-react";
 import { BILLU, SITE_NAME, SUBJECTS } from "@/lib/subjects";
 import type { Metadata } from "next";
 import { HOME_FAQ } from "@/lib/faq";
@@ -51,11 +52,14 @@ export default function Home() {
         </p>
         <div className="mt-6 flex flex-wrap gap-2">
           <Link href="/visualizer" className="rounded-full bg-cyan-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-cyan-900/30 transition hover:bg-cyan-600">
-            Start with DSA
+            <span className="flex items-center gap-1.5">Start with DSA <ArrowRight01Icon size={16} /></span>
           </Link>
           <Link href="/deep-dive" className="rounded-full bg-slate-800/70 px-5 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-slate-800">
-            Deep Dive: hard algorithms
+            Deep Dive: 78 topics
           </Link>
+          <a href={BILLU.youtube} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-slate-800/70">
+            <YoutubeIcon size={18} className="text-[#ff3b30]" /> Watch on YouTube
+          </a>
         </div>
       </section>
 
@@ -79,8 +83,8 @@ export default function Home() {
 
       <section aria-labelledby="faq-title" className="mt-14">
         <details className="group">
-          <summary id="faq-title" className="cursor-pointer list-none text-sm text-slate-500 hover:text-slate-300 [&::-webkit-details-marker]:hidden">
-            Questions people ask
+          <summary id="faq-title" className="flex cursor-pointer list-none items-center gap-2 text-sm text-slate-500 hover:text-slate-300 [&::-webkit-details-marker]:hidden">
+            <ArrowDown01Icon size={16} className="-rotate-90 transition-transform duration-300 group-open:rotate-0" /> Questions people ask
           </summary>
           <div className="mt-4 divide-y divide-slate-800">
             {HOME_FAQ.map(({ q, a }) => (

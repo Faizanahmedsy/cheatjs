@@ -75,7 +75,7 @@ export const SUBJECTS: Subject[] = [
     accent: "from-amber-400/20 border-amber-400/40 text-amber-200",
     tabs: [
       { kind: "read", label: "SAA notes", href: "/aws-saa-v2", match: ["/aws-saa-v2/"] },
-      { kind: "see", label: "AWS Lab", href: "/aws-lab" },
+      { kind: "see", label: "AWS Lab", href: "/aws-lab", match: ["/aws-lab/"] },
       { kind: "practice", label: "Flashcards", href: "/flashcards?track=aws" },
     ],
     video: { label: "Billu on YouTube", href: BILLU.youtube },
