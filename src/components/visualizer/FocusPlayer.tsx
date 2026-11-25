@@ -463,10 +463,10 @@ export function FocusPlayer(props: FocusPlayerProps) {
       </header>
 
       {/* Middle: code + story/picture. Stacks on phones and iPad portrait. */}
-      <main className="min-h-0 flex-1 overflow-y-auto lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:overflow-hidden">
+      <main className="min-h-0 flex-1 overflow-y-auto lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:grid-rows-[minmax(0,1fr)] lg:overflow-hidden">
         <div className="flex flex-col gap-3 p-3 md:p-4 lg:hidden">{storyCard}</div>
         <div className="md:grid md:grid-cols-2 md:items-start lg:contents">
-        <div className="h-[30vh] px-3 md:sticky md:top-0 md:h-[62vh] md:pl-4 md:pr-2 lg:static lg:h-full lg:py-4 lg:pl-5 lg:pr-2">
+        <div className="h-[30vh] px-3 md:sticky md:top-0 md:h-[62vh] md:pl-4 md:pr-2 lg:static lg:h-full lg:min-h-0 lg:py-4 lg:pl-5 lg:pr-2">
           <CodeTraceView
             fill
             large={wide}
