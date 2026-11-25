@@ -54,7 +54,7 @@ export function Navbar() {
         <div className="container mx-auto flex h-14 items-center justify-between">
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2">
-              <Image src={BILLU.mascot} alt="" width={24} height={24} className="h-6 w-6 rounded-full bg-[#fdf3dc] object-contain p-0.5" priority />
+              <Image src={BILLU.mascot} alt="" width={24} height={24} className="h-7 w-7 rounded-full bg-[#fdf3dc] object-contain p-0.5" priority />
               <span className="text-[15px] font-semibold text-slate-100 whitespace-nowrap">{SITE_NAME}</span>
             </Link>
             <nav className="hidden lg:flex items-center gap-0.5 text-sm whitespace-nowrap">
@@ -65,8 +65,8 @@ export function Navbar() {
                     key={subject.id}
                     href={subject.tabs[0].href}
                     className={cn(
-                      "rounded-md px-3 py-1.5 transition-colors hover:text-slate-100",
-                      active ? "text-slate-50 font-medium" : "text-slate-400",
+                      "rounded-full px-3.5 py-1.5 transition-colors hover:bg-slate-800/70 hover:text-slate-100",
+                      active ? "bg-slate-800 text-slate-50 font-medium" : "text-slate-400",
                     )}
                   >
                     {subject.label}
@@ -80,17 +80,17 @@ export function Navbar() {
             <button
               onClick={() => setSearchOpen(true)}
               aria-label="Search (Ctrl+K)"
-              className="hidden items-center gap-3 rounded-md border border-slate-800 px-3 py-1.5 text-sm text-slate-500 hover:text-slate-200 md:flex"
+              className="hidden min-w-[200px] items-center justify-between gap-3 rounded-full bg-slate-800/70 px-4 py-2 text-sm text-slate-400 transition-colors hover:bg-slate-800 hover:text-slate-200 md:flex"
             >
               Search
               <kbd className="hidden whitespace-nowrap text-[10px] text-slate-600 xl:inline">Ctrl K</kbd>
             </button>
             <span className="hidden md:inline"><ModeToggle /></span>
             <DropdownMenu>
-              <DropdownMenuTrigger className="hidden rounded-md px-2.5 py-1.5 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100 focus-visible:outline-none md:block">
+              <DropdownMenuTrigger className="hidden rounded-full px-3.5 py-1.5 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100 focus-visible:outline-none md:block">
                 More
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 border-slate-800 bg-slate-900 text-slate-200">
+              <DropdownMenuContent align="end" className="w-56 rounded-2xl border-slate-800 bg-slate-900 p-1.5 text-slate-200 shadow-2xl">
                 <DropdownMenuItem asChild className="cursor-pointer focus:bg-slate-800">
                   <Link href="/study" className={cn(isActive("/study") && "text-cyan-300")}>My progress</Link>
                 </DropdownMenuItem>

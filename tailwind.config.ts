@@ -18,14 +18,14 @@ const FLIP: Record<string, string> = { '50': '950', '100': '900', '200': '800', 
  * site's main accent, becomes Billu's terra orange (#e5603a).
  */
 const BILLU_OVERRIDES: Record<string, Record<string, string>> = {
-  // Minimal neutral look: "slate" is a cool neutral grey, "cyan" (the site accent) is a calm sky blue.
+  // Minimal neutral look: "slate" is a cool neutral grey, "cyan" (the site accent) is a calm Ustad Billu's terra orange.
   slate: {
     '50': '#fafafa', '100': '#f4f4f5', '200': '#e4e4e7', '300': '#d4d4d8', '400': '#a1a1aa', '500': '#71717a',
     '600': '#52525b', '700': '#3f3f46', '800': '#27272a', '900': '#18181b', '950': '#09090b',
   },
   cyan: {
-    '50': '#f0f9ff', '100': '#e0f2fe', '200': '#bae6fd', '300': '#7dd3fc', '400': '#38bdf8', '500': '#0ea5e9',
-    '600': '#0284c7', '700': '#0369a1', '800': '#075985', '900': '#0c4a6e', '950': '#082f49',
+    '50': '#fff4ed', '100': '#ffe5d4', '200': '#fec7a8', '300': '#fca172', '400': '#f5793f', '500': '#e5603a',
+    '600': '#c2532f', '700': '#9c4127', '800': '#7c3624', '900': '#652f21', '950': '#37150e',
   },
 };
 

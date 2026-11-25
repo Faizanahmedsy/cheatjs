@@ -28,9 +28,9 @@ function NavButton({ label, onClick, disabled, children, wide, primary }: { labe
       aria-label={label}
       title={label}
       className={cn(
-        "inline-flex h-10 items-center justify-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-3 text-sm text-slate-200 transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:cursor-not-allowed disabled:opacity-40",
+        "inline-flex h-10 items-center justify-center gap-1 rounded-full bg-slate-800 px-4 text-sm text-slate-200 transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:cursor-not-allowed disabled:opacity-40",
         wide && "min-w-[6.5rem]",
-        primary && "h-11 min-w-[9rem] border-cyan-300 bg-cyan-400 px-5 text-base font-bold text-slate-950 shadow-lg shadow-cyan-400/20 hover:bg-cyan-300",
+        primary && "h-11 min-w-[9rem] bg-cyan-500 px-6 text-base font-semibold text-white shadow-lg shadow-cyan-900/30 hover:bg-cyan-600",
       )}
     >
       {children}
@@ -64,8 +64,8 @@ export function PlaybackControls({ index, total, onChange, playing, onTogglePlay
           {atEnd ? "The end" : "Next step"}
         </NavButton>
         <Popover>
-          <PopoverTrigger className="h-10 rounded-lg px-3 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100">More</PopoverTrigger>
-          <PopoverContent align="start" className="w-64 space-y-3 border-slate-800 bg-slate-900 text-slate-200">
+          <PopoverTrigger className="h-10 rounded-full px-4 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100">More</PopoverTrigger>
+          <PopoverContent align="start" className="w-64 space-y-3 rounded-2xl border-slate-800 bg-slate-900 text-slate-200">
             <div className="grid grid-cols-2 gap-2">
               <NavButton label="First step" onClick={() => onChange(0)} disabled={atStart}>First step</NavButton>
               <NavButton label="Skip to the answer (last step)" onClick={() => onChange(last)} disabled={atEnd}>Answer</NavButton>

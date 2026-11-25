@@ -51,14 +51,14 @@ export function DeepDive({ slug }: { slug: string }) {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex min-w-0 flex-col gap-4">
-          <div className="relative h-[46vh] min-h-[300px] overflow-hidden rounded-xl border border-slate-800 bg-slate-950 lg:h-[62vh]">
+          <div className="relative h-[46vh] min-h-[300px] overflow-hidden rounded-3xl bg-slate-900/40 ring-1 ring-slate-800/60 lg:h-[62vh]">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(255,255,255,0.04),transparent_70%)]" />
             <div className="relative h-full p-4">
               <IsoStage step={step} all={lesson.steps} />
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-800 p-3">
+          <div className="rounded-3xl bg-slate-900/70 p-3">
             <div className="mb-2 flex items-center justify-between text-xs text-slate-500">
               <span>In this lesson</span>
               <span>
@@ -72,8 +72,8 @@ export function DeepDive({ slug }: { slug: string }) {
                   data-i={i}
                   onClick={() => go(i)}
                   className={cn(
-                    "shrink-0 rounded-md px-2.5 py-1.5 text-left text-xs transition-colors",
-                    i === index ? "bg-slate-100 text-slate-950" : i < index ? "text-slate-300 hover:bg-slate-800" : "text-slate-500 hover:bg-slate-800",
+                    "shrink-0 rounded-full px-3 py-1.5 text-left text-xs transition-colors",
+                    i === index ? "bg-cyan-500 text-white" : i < index ? "text-slate-300 hover:bg-slate-800" : "text-slate-500 hover:bg-slate-800",
                   )}
                 >
                   <span className="mr-1.5 font-code opacity-60">{i + 1}</span>
@@ -85,7 +85,7 @@ export function DeepDive({ slug }: { slug: string }) {
         </div>
 
         <aside className="flex min-w-0 flex-col gap-4">
-          <section className="rounded-xl border border-slate-800 p-4">
+          <section className="rounded-3xl bg-slate-900/70 p-5">
             <p className="text-[11px] uppercase tracking-wider text-slate-500">
               Step {index + 1} / {total}
             </p>
@@ -96,32 +96,32 @@ export function DeepDive({ slug }: { slug: string }) {
               </motion.div>
             </AnimatePresence>
             <div className="mt-3 flex gap-2">
-              <button onClick={() => go(index - 1)} disabled={index === 0} className="rounded-md border border-slate-800 px-3 py-2 text-sm text-slate-300 hover:bg-slate-900 disabled:opacity-40">
+              <button onClick={() => go(index - 1)} disabled={index === 0} className="rounded-full bg-slate-800/80 px-4 py-2.5 text-sm text-slate-200 hover:bg-slate-800 disabled:opacity-40">
                 Back
               </button>
               {index < total - 1 ? (
-                <button onClick={() => go(index + 1)} className="flex-1 rounded-md bg-slate-100 px-3 py-2 text-left text-sm font-medium text-slate-950 hover:bg-white">
+                <button onClick={() => go(index + 1)} className="flex-1 truncate rounded-full bg-cyan-500 px-4 py-2.5 text-left text-sm font-medium text-white transition hover:bg-cyan-600">
                   Next: {lesson.steps[index + 1].title}
                 </button>
               ) : next ? (
-                <Link href={`/deep-dive/${next.slug}`} className="flex-1 rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-950 hover:bg-white">
+                <Link href={`/deep-dive/${next.slug}`} className="flex-1 truncate rounded-full bg-cyan-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-cyan-600">
                   Next lesson: {next.title}
                 </Link>
               ) : (
-                <Link href="/deep-dive" className="flex-1 rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-950">
+                <Link href="/deep-dive" className="flex-1 rounded-full bg-cyan-500 px-4 py-2.5 text-sm font-medium text-white">
                   All lessons
                 </Link>
               )}
             </div>
           </section>
 
-          <section className="rounded-xl border border-slate-800">
-            <p className="border-b border-slate-800 px-4 py-2.5 text-sm font-medium">Code</p>
+          <section className="overflow-hidden rounded-3xl bg-slate-900/70">
+            <p className="px-5 pt-4 pb-2 text-sm font-medium">Code</p>
             <div ref={codeRef} className="max-h-[300px] overflow-auto py-2 font-code text-[12.5px] leading-6">
               {lesson.code.map((line, i) => {
                 const hot = step.lines.includes(i + 1);
                 return (
-                  <div key={i} data-hot={hot || undefined} className={cn("flex border-l-2 pr-3 transition-colors duration-300", hot ? "border-cyan-400 bg-cyan-400/10" : "border-transparent")}>
+                  <div key={i} data-hot={hot || undefined} className={cn("flex border-l-2 pr-3 transition-colors duration-300", hot ? "border-cyan-500 bg-cyan-500/10" : "border-transparent")}>
                     <span className="w-8 shrink-0 select-none pr-2 text-right text-slate-600">{i + 1}</span>
                     <span className="whitespace-pre">{highlightLine(line)}</span>
                   </div>
@@ -130,7 +130,7 @@ export function DeepDive({ slug }: { slug: string }) {
             </div>
           </section>
 
-          <section className="rounded-xl border border-slate-800 p-4">
+          <section className="rounded-3xl bg-slate-900/70 p-5">
             <p className="mb-2 text-sm font-medium">State</p>
             <div className="space-y-2.5">
               {step.state.map((row) => (
@@ -142,7 +142,7 @@ export function DeepDive({ slug }: { slug: string }) {
                       layout
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="rounded border border-slate-800 bg-slate-900 px-1.5 py-0.5 font-code text-xs text-slate-200"
+                      className="rounded-full bg-slate-800 px-2.5 py-0.5 font-code text-xs text-slate-200"
                     >
                       {v}
                     </motion.span>

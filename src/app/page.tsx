@@ -47,28 +47,28 @@ export default function Home() {
       <section>
         <h1 className="text-4xl font-semibold tracking-tight text-slate-50 md:text-5xl">{SITE_NAME}</h1>
         <p className="mt-3 max-w-xl text-lg text-slate-400">
-          Free visual lessons by Ustad Billu. Watch code run, break AWS on purpose, and see how AI works.
+          Free visual lessons by <span className="text-cyan-400">Ustad Billu</span>. Watch code run, break AWS on purpose, and see how AI works.
         </p>
         <div className="mt-6 flex flex-wrap gap-2">
-          <Link href="/visualizer" className="rounded-md bg-slate-50 px-4 py-2 text-sm font-medium text-slate-950 hover:bg-slate-200">
+          <Link href="/visualizer" className="rounded-full bg-cyan-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-cyan-900/30 transition hover:bg-cyan-600">
             Start with DSA
           </Link>
-          <Link href="/deep-dive" className="rounded-md border border-slate-800 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-900">
+          <Link href="/deep-dive" className="rounded-full bg-slate-800/70 px-5 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-slate-800">
             Deep Dive: hard algorithms
           </Link>
         </div>
       </section>
 
-      <ul className="mt-14 divide-y divide-slate-800 border-y border-slate-800">
+      <ul className="mt-14 grid gap-3 sm:grid-cols-2">
         {SUBJECTS.map((subject) => (
-          <li key={subject.id} className="flex flex-col gap-2 py-5 sm:flex-row sm:items-center sm:justify-between">
+          <li key={subject.id} className="flex flex-col justify-between gap-4 rounded-3xl bg-slate-900 p-6 transition hover:bg-slate-800/80">
             <Link href={subject.tabs[0].href} className="group">
               <h2 className="text-lg font-medium text-slate-100 group-hover:underline">{subject.label}</h2>
               <p className="text-sm text-slate-500">{subject.blurb}</p>
             </Link>
             <div className="flex flex-wrap gap-3 text-sm">
               {subject.tabs.map((tab) => (
-                <Link key={tab.href} href={tab.href} className="text-slate-400 hover:text-slate-100">
+                <Link key={tab.href} href={tab.href} className="rounded-full bg-slate-800/80 px-3 py-1 text-slate-300 hover:text-cyan-300">
                   {tab.label}
                 </Link>
               ))}

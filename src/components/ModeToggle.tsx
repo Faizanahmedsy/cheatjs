@@ -26,7 +26,7 @@ export function ModeToggle() {
       onClick={flip}
       aria-label={light ? "Switch to dark mode" : "Switch to white mode"}
       title={light ? "Dark mode" : "White mode"}
-      className="rounded-md px-2.5 py-1.5 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+      className="rounded-full px-3.5 py-1.5 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100"
     >
       {light ? "Dark" : "Light"}
     </button>

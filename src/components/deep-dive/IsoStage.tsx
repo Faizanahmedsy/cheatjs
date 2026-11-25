@@ -16,8 +16,8 @@ const spring = { type: "spring", stiffness: 160, damping: 22, mass: 0.9 } as con
 
 const NODE: Record<NodeState, { top: string; left: string; right: string; ink: string; hatch?: boolean; opacity: number }> = {
   idle: { top: "#f4f4f5", left: "#d4d4d8", right: "#a1a1aa", ink: "#18181b", opacity: 1 },
-  frontier: { top: "#e0f2fe", left: "#bae6fd", right: "#7dd3fc", ink: "#0c4a6e", opacity: 1 },
-  current: { top: "#7dd3fc", left: "#38bdf8", right: "#0284c7", ink: "#082f49", hatch: true, opacity: 1 },
+  frontier: { top: "#ffe5d4", left: "#fec7a8", right: "#fca172", ink: "#652f21", opacity: 1 },
+  current: { top: "#f5793f", left: "#e5603a", right: "#c2532f", ink: "#fff4ed", hatch: true, opacity: 1 },
   done: { top: "#52525b", left: "#3f3f46", right: "#27272a", ink: "#fafafa", opacity: 1 },
   dim: { top: "#3f3f46", left: "#27272a", right: "#18181b", ink: "#a1a1aa", opacity: 0.45 },
   hidden: { top: "#3f3f46", left: "#27272a", right: "#18181b", ink: "#a1a1aa", opacity: 0 },
@@ -25,7 +25,7 @@ const NODE: Record<NodeState, { top: string; left: string; right: string; ink: s
 
 const EDGE: Record<EdgeState, { stroke: string; width: number; opacity: number; dash?: string }> = {
   idle: { stroke: "#71717a", width: 1.6, opacity: 0.9 },
-  active: { stroke: "#38bdf8", width: 3, opacity: 1, dash: "6 5" },
+  active: { stroke: "#f5793f", width: 3, opacity: 1, dash: "6 5" },
   chosen: { stroke: "#fafafa", width: 3.2, opacity: 1 },
   dim: { stroke: "#52525b", width: 1.2, opacity: 0.35 },
   hidden: { stroke: "#52525b", width: 1, opacity: 0 },

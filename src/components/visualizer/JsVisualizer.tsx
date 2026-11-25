@@ -318,8 +318,8 @@ export function JsVisualizer() {
               )}
             </div>
             <Popover>
-              <PopoverTrigger className="h-10 rounded-lg px-3 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100 sm:ml-auto">Options</PopoverTrigger>
-              <PopoverContent align="end" className="w-64 space-y-3 border-slate-800 bg-slate-900 text-slate-200">
+              <PopoverTrigger className="h-10 rounded-full px-4 text-sm text-slate-400 hover:bg-slate-800 hover:text-slate-100 sm:ml-auto">Options</PopoverTrigger>
+              <PopoverContent align="end" className="w-64 space-y-3 rounded-2xl border-slate-800 bg-slate-900 text-slate-200">
                 <label className="flex cursor-pointer items-center justify-between gap-2 text-sm">
                   Focus mode
                   <Switch checked={focusOn} onCheckedChange={setFocusOn} aria-label="Focus mode: full screen, simple view" />
