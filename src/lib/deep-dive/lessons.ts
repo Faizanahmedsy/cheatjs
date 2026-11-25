@@ -1,6 +1,12 @@
 import type { EdgeState, Lesson, StateRow } from "./types";
 import { Recorder, inf } from "./recorder";
 import { MORE_LESSONS } from "./lessons-more";
+import { ARRAY_LESSONS } from "./lessons-arrays";
+import { SORTING_LESSONS } from "./lessons-sorting";
+import { LINEAR_LESSONS } from "./lessons-linear";
+import { TREE_LESSONS } from "./lessons-trees";
+import { DP_LESSONS } from "./lessons-dp";
+import { GRAPH_BASIC_LESSONS } from "./lessons-graph-basics";
 
 /* ------------------------------------------------------------------ Dijkstra */
 function dijkstra(): Lesson {
@@ -698,9 +704,12 @@ function lru(): Lesson {
   };
 }
 
-const GROUPS = ["Shortest paths", "Ordering", "Spanning trees", "Graph search", "Design"];
+const GROUPS = [
+  "Arrays & Strings", "Binary Search", "Sorting", "Linked Lists", "Stacks & Queues", "Hashing", "Trees", "Heaps", "Tries & Range Trees",
+  "Backtracking", "Dynamic Programming", "Graph search", "Shortest paths", "Ordering", "Spanning trees", "Bit Manipulation", "Design",
+];
 
-export const LESSONS: Lesson[] = [dijkstra(), cheapestFlights(), courseSchedule(), kruskal(), prim(), wordLadder(), bridges(), lru(), ...MORE_LESSONS].sort(
+export const LESSONS: Lesson[] = [dijkstra(), cheapestFlights(), courseSchedule(), kruskal(), prim(), wordLadder(), bridges(), lru(), ...MORE_LESSONS, ...ARRAY_LESSONS, ...SORTING_LESSONS, ...LINEAR_LESSONS, ...TREE_LESSONS, ...DP_LESSONS, ...GRAPH_BASIC_LESSONS].sort(
   (a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group),
 );
 
