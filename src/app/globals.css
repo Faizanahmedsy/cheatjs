@@ -234,6 +234,19 @@
 .reader-root .reader-article p {
   margin-bottom: var(--reader-gap, 1rem);
 }
+/* A section label hugs the text under it. */
+.reader-root .reader-article p.nb-label {
+  margin-bottom: 0.25rem;
+}
+.reader-root .reader-article p.nb-label + * {
+  margin-top: 0.25rem;
+}
+/* A thin rule between topics on pages that do not write their own divider. */
+.reader-article > :not(hr, h2) + h3 {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgb(var(--c-slate-700) / 0.6);
+}
 .reader-root .reader-article :where(pre, code, pre *) {
   font-family: "Source Code Pro", ui-monospace, monospace !important;
   text-align: left;

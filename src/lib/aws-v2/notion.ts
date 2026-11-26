@@ -11,7 +11,6 @@ export type LoadedPage = {
   source: "notion" | "snapshot";
   /** ISO time the content was last edited in Notion (snapshot value when offline) */
   editedAt: string;
-  note?: string;
 };
 
 type MarkdownResponse = {
@@ -80,7 +79,7 @@ async function readSnapshot(page: V2Page, track: Track): Promise<string> {
   } catch {
     return [
       "<callout icon=\"🔌\" color=\"yellow_bg\">",
-      "<b>Not connected yet.</b> This page loads live from Notion. In Notion, open the page, click the ⋯ menu, choose Connections and add the <b>cheatjs</b> integration. The content appears here within 5 minutes.",
+      "<b>Coming soon.</b> These notes are not available right now. Please check back in a few minutes.",
       "</callout>",
     ].join("\n");
   }
@@ -97,13 +96,9 @@ export async function loadPage(page: V2Page, track: Track = AWS_TRACK): Promise<
       return { markdown, source: "notion", editedAt: editedAt ?? new Date().toISOString() };
     } catch (err) {
       const message = err instanceof Error ? err.message : "unknown error";
+      console.warn(`Live Notion fetch failed for ${page.slug} (${message}); showing the saved snapshot.`);
       const markdown = await readSnapshot(page, track);
-      return {
-        markdown,
-        source: "snapshot",
-        editedAt: page.snapshotEditedAt,
-        note: `Live Notion fetch failed (${message}); showing the saved snapshot.`,
-      };
+      return { markdown, source: "snapshot", editedAt: page.snapshotEditedAt };
     }
   }
   const markdown = await readSnapshot(page, track);

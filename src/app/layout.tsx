@@ -12,6 +12,7 @@ import { MODE_SCRIPT } from "@/components/ModeToggle";
 import { BASE_PATH } from "@/lib/base-path";
 import { JsonLd, ORGANIZATION_LD, SITE_ORIGIN, WEBSITE_LD, pageMeta } from "@/lib/seo";
 import { PwaRegister } from "@/components/PwaRegister";
+import { SiteAnalytics } from "@/components/SiteAnalytics";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -89,6 +90,7 @@ export default function RootLayout({
         <ReadingFocusExit />
         <Toaster />
         <PwaRegister />
+        <SiteAnalytics />
       </body>
     </html>
   );

@@ -2,11 +2,11 @@ import GithubSlugger from "github-slugger";
 import { CrumbLeaf } from "@/components/MobileCrumbs";
 import { ReadingFocusButton } from "@/components/ReadingFocusButton";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Markdown } from "./Markdown";
 import { extractToc, notionToMarkdown } from "@/lib/aws-v2/convert";
 import { loadPage } from "@/lib/aws-v2/notion";
-import { AWS_TRACK, notionUrlFor, type Track, type V2Page } from "@/lib/aws-v2/pages";
+import { AWS_TRACK, type Track, type V2Page } from "@/lib/aws-v2/pages";
 import { cn } from "@/lib/utils";
 import { PageActions } from "@/components/study/PageActions";
 import { hrefFor, neighboursOf } from "@/lib/aws-v2/pages";
@@ -54,8 +54,8 @@ export async function Article({
         <CrumbLeaf label={page.title} />
         <header className="mb-8">
           <p data-chrome className="text-sm font-medium text-slate-500">{page.subtitle}</p>
-          <h1 className="mt-1 font-body text-[2.25rem] font-semibold leading-tight tracking-tight text-slate-50 md:text-[2.6rem]">{page.title}</h1>
-          <p className="mt-3 max-w-2xl text-[1.0625rem] leading-relaxed text-slate-300">{page.blurb}</p>
+          <h1 className="mt-1 font-body text-[1.75rem] font-semibold leading-tight tracking-tight text-slate-50 md:text-[2rem]">{page.title}</h1>
+          <p className="mt-2 max-w-2xl text-[0.9375rem] leading-relaxed text-slate-300">{page.blurb}</p>
           <div data-chrome className="mt-4 flex flex-wrap items-center gap-3 text-xs">
             <span
               className={cn("inline-flex items-center gap-1.5", live ? "text-emerald-300" : "text-slate-400")}
@@ -64,21 +64,12 @@ export async function Article({
               {live ? "Live" : "Snapshot"} · updated {formatDate(loaded.editedAt)}
             </span>
             <span className="text-slate-500">~{Math.max(1, Math.round(markdown.split(/\s+/).length / 200))} min read</span>
-            <a
-              href={notionUrlFor(page)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-cyan-300 hover:underline"
-            >
-              Open in Notion <ExternalLink className="h-3 w-3" />
-            </a>
           </div>
           <div data-chrome className="mt-4 flex flex-wrap items-center gap-2">
             <AskLlm title={page.title} mdUrl={absolute(`/md/${track.id}/${page.slug}`)} pageUrl={absolute(hrefFor(page.slug, track))} />
             <ReadingFocusButton />
             <PageActions id={`${track.id}:${page.slug}`} title={page.title} href={hrefFor(page.slug, track)} track={track.id} />
           </div>
-          {loaded.note ? <p className="mt-3 text-xs text-amber-300">{loaded.note}</p> : null}
         </header>
 
         {before}

@@ -19,6 +19,8 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
   if (url.pathname.startsWith("/api/")) return;
+  // Analytics script must always come fresh from Vercel
+  if (url.pathname.startsWith("/_vercel/")) return;
 
   const accept = req.headers.get("accept") || "";
   const isPage = req.mode === "navigate" || accept.includes("text/html");

@@ -59,10 +59,6 @@ export function hrefFor(slug: string, track: Track = AWS_TRACK): string {
   return slug === "home" ? track.base : `${track.base}/${slug}`;
 }
 
-export function notionUrlFor(page: V2Page): string {
-  return `https://www.notion.so/${page.notionId.replace(/-/g, "")}`;
-}
-
 export function findPageBySlug(slug: string, track: Track = AWS_TRACK): V2Page | undefined {
   return track.pages.find((p) => p.slug === slug);
 }
