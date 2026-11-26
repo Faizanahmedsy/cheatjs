@@ -6,11 +6,11 @@ const nextConfig: NextConfig = {
   basePath: BASE_PATH || undefined,
   async redirects() {
     if (!BASE_PATH) return [];
-    // Old cheatjs.vercel.app links (no /class) go to the same page on the new address.
+    // Old cheatjs.vercel.app links (no /class) go to the same page on the new address (308, permanent).
     const host = [{ type: 'host' as const, value: 'cheatjs.vercel.app' }];
     return [
-      { source: '/', has: host, destination: `https://ustadbillu.vercel.app${BASE_PATH}`, basePath: false as const, permanent: false },
-      { source: `/:path((?!${BASE_PATH.slice(1)}(?:/|$)).*)`, has: host, destination: `https://ustadbillu.vercel.app${BASE_PATH}/:path`, basePath: false as const, permanent: false },
+      { source: '/', has: host, destination: `https://ustadbillu.vercel.app${BASE_PATH}`, basePath: false as const, permanent: true },
+      { source: `/:path((?!${BASE_PATH.slice(1)}(?:/|$)).*)`, has: host, destination: `https://ustadbillu.vercel.app${BASE_PATH}/:path`, basePath: false as const, permanent: true },
     ];
   },
   /* config options here */
