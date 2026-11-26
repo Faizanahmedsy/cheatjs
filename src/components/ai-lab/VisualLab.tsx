@@ -1,5 +1,6 @@
 "use client";
 
+import "@fontsource/baloo-2/700.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -382,7 +383,7 @@ export function VisualLab() {
                       {step.simple}
                     </p>
                   )}
-                  <div className="relative h-[min(62vh,440px)] min-h-[300px] lg:h-auto lg:min-h-[240px] lg:flex-1">
+                  <div className="lab-toy relative h-[min(62vh,440px)] min-h-[300px] lg:h-auto lg:min-h-[240px] lg:flex-1">
                     {!scenario ? (
                       <div className="grid h-full place-items-center text-xs text-lab-muted">loading {meta.title.toLowerCase()}…</div>
                     ) : view === "sequence" ? (

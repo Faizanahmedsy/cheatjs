@@ -37,7 +37,7 @@ export async function Article({
   track?: Track;
 }) {
   const loaded = await loadPage(page, track);
-  const noEmoji = !!track.plain && page.slug === "home";
+  const noEmoji = !!track.plain;
   const markdown = notionToMarkdown(loaded.markdown, track, { noEmoji });
   const toc = extractToc(markdown, new GithubSlugger());
   const live = loaded.source === "notion";

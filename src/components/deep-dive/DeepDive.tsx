@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { Lesson } from "@/lib/deep-dive/types";
 import { LESSONS as ALL } from "@/lib/deep-dive/lessons";
 import { highlightLine } from "@/components/deep-dive/highlight";
-import { IsoStage } from "./IsoStage";
+import { ToyStage } from "./ToyStage";
 import { cn } from "@/lib/utils";
 
 /** The Deep Dive lesson screen: stage, step rail, step card, code and state. Shared by every lab. */
@@ -54,12 +54,7 @@ export function LessonShell({ lessons, slug, base, home }: { lessons: Lesson[]; 
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex min-w-0 flex-col gap-4">
-          <div className="relative h-[46vh] min-h-[300px] overflow-hidden rounded-3xl bg-slate-900/40 ring-1 ring-slate-800/60 lg:h-[62vh]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(255,255,255,0.04),transparent_70%)]" />
-            <div className="relative h-full p-4">
-              <IsoStage step={step} all={lesson.steps} />
-            </div>
-          </div>
+          <ToyStage lesson={lesson} step={step} index={index} total={total} />
 
           <div className="rounded-3xl bg-slate-900/70 p-3">
             <div className="mb-2 flex items-center justify-between text-xs text-slate-500">

@@ -513,3 +513,41 @@ html[data-reading-focus="1"] .chrome-h { height: calc(100dvh - 2.75rem) !importa
 .ai-lab .border-lab-border {
   border-color: color-mix(in srgb, var(--lab-border) 70%, transparent);
 }
+
+/* Billu Toy Town stage (Deep Dive, AWS Lab) */
+@keyframes toy-march { to { stroke-dashoffset: -42; } }
+.toy-march { animation: toy-march 0.9s linear infinite; }
+@keyframes toy-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.toy-bob { animation: toy-bob 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .toy-march, .toy-bob { animation: none; } }
+
+/* Gen AI Visual Lab: the picture area uses Billu Toy Town paper and ink, in both themes. */
+.ai-lab .lab-toy {
+  --lab-bg: #fffbf2;
+  --lab-scene: #f6ecd9;
+  --lab-panel: #fffbf2;
+  --lab-raised: #efe2c8;
+  --lab-border: #1b2a22;
+  --lab-grid: rgba(27, 42, 34, 0.07);
+  --lab-text: #1b2a22;
+  --lab-muted: #5a5142;
+  --lab-accent: #b8432a;
+  --t-blue: #2f5fbf;
+  --t-cyan: #b8432a;
+  --t-violet: #6d3fc0;
+  --t-amber: #9a6510;
+  --t-green: #1e6b45;
+  --t-rose: #b42c45;
+  --t-slate: #5a5142;
+  background-color: #ebdcc0;
+  background-image: radial-gradient(ellipse at 50% 55%, #fbf4e6 0, #f8efdd 45%, rgba(248, 239, 221, 0) 80%);
+  border: 3px solid #1b2a22;
+  border-radius: 24px;
+  margin: 10px;
+  overflow: hidden;
+  color: #1b2a22;
+  font-family: 'Baloo 2', ui-rounded, system-ui, sans-serif;
+  --lab-mono: 'Baloo 2', ui-rounded, system-ui, sans-serif;
+}
+.ai-lab .lab-toy svg text { font-weight: 700; }
+.ai-lab .lab-toy svg [stroke-width="1"], .ai-lab .lab-toy svg [stroke-width="1.2"], .ai-lab .lab-toy svg [stroke-width="1.5"] { stroke-width: 2.2; }

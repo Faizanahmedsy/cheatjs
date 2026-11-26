@@ -90,11 +90,10 @@ export function tree(r: Recorder, values: (number | string | null)[], prefix = "
     const level = Math.floor(Math.log2(i + 1));
     const pos = i + 1 - 2 ** level;
     const span = 2 ** (depth - level);
-    // Screen-x follows the slot, screen-y follows the level: undo the isometric tilt.
-    const across = (pos * span + span / 2 - 2 ** (depth - 1)) * 1.05;
-    const down = level * 2.4;
+    const across = (pos * span + span / 2 - 2 ** (depth - 1)) * 1.3;
+    const down = level * 2.2;
     const id = `${prefix}${i}`;
-    r.add(id, (across + down) / 2 + 4, (down - across) / 2 + 4, String(v));
+    r.add(id, across + 6, down, String(v));
     ids.push(id);
     if (i > 0 && ids[Math.floor((i - 1) / 2)]) r.link(ids[Math.floor((i - 1) / 2)]!, id);
   });

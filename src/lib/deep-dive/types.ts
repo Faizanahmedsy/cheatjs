@@ -1,6 +1,9 @@
 /** Deep Dive: hand-written, step-by-step lessons for hard algorithms, drawn as an isometric scene. */
 
-export type NodeState = "idle" | "frontier" | "current" | "done" | "dim" | "hidden";
+export type NodeState = "idle" | "frontier" | "current" | "done" | "dim" | "broken" | "hidden";
+
+/** How a lesson's blocks are drawn: each kind of structure gets its own look. */
+export type Look = "cells" | "bars" | "tiles" | "tree" | "map" | "train" | "stack" | "cloud";
 export type EdgeState = "idle" | "active" | "chosen" | "dim" | "hidden";
 
 export interface SceneNode {
@@ -12,6 +15,8 @@ export interface SceneNode {
   state: NodeState;
   /** Small pill above the block, e.g. a distance. */
   tag?: string;
+  /** Icon name for service cards (AWS). */
+  icon?: string;
 }
 
 export interface SceneEdge {
@@ -51,4 +56,6 @@ export interface Lesson {
   steps: Step[];
   /** Title of the state panel (default "State"). */
   stateTitle?: string;
+  /** Drawing style; worked out from the group when missing. */
+  look?: Look;
 }

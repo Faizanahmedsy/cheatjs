@@ -70,7 +70,13 @@ function slidingWindow(): Lesson {
   for (let end = 0; end < s.length; end++) {
     const ch = s[end];
     const jumped = lastSeen[ch] !== undefined && lastSeen[ch] >= start;
-    if (jumped) start = lastSeen[ch] + 1;
+    if (jumped) {
+      paint(end);
+      r.node(`i${lastSeen[ch]}`, { state: "broken", tag: "twin" });
+      r.node(`i${end}`, { state: "broken", tag: "R" });
+      r.snap(`Stop! "${ch}" again`, `"${ch}" is already inside the window (at ${lastSeen[ch]}). A window can't hold the same letter twice, so the left edge must move.`, [4], st(end - 1));
+      start = lastSeen[ch] + 1;
+    }
     lastSeen[ch] = end;
     best = Math.max(best, end - start + 1);
     paint(end);
