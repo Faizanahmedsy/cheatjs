@@ -23,6 +23,8 @@ export type Track = {
   unitName: "Domain" | "Part";
   backHref: string;
   backLabel: string;
+  /** Show this track without emoji: no page icons, and an emoji-free home page. */
+  plain?: boolean;
   pages: V2Page[];
 };
 
@@ -49,6 +51,7 @@ export const GENAI_TRACK: Track = {
   unitName: "Part",
   backHref: "/ai-engineering",
   backLabel: "← AI Engineering cheat sheets",
+  plain: true,
   pages: genAiPagesJson as V2Page[],
 };
 

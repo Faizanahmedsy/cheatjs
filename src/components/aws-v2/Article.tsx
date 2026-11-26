@@ -37,7 +37,8 @@ export async function Article({
   track?: Track;
 }) {
   const loaded = await loadPage(page, track);
-  const markdown = notionToMarkdown(loaded.markdown, track);
+  const noEmoji = !!track.plain && page.slug === "home";
+  const markdown = notionToMarkdown(loaded.markdown, track, { noEmoji });
   const toc = extractToc(markdown, new GithubSlugger());
   const live = loaded.source === "notion";
   const { prev, next } = neighboursOf(page.slug, track);
@@ -90,7 +91,7 @@ export async function Article({
           </details>
         ) : null}
 
-        <Markdown>{markdown}</Markdown>
+        <Markdown noEmoji={noEmoji}>{markdown}</Markdown>
 
         {/* Previous / next page, in sidebar order */}
         {prev || next ? (

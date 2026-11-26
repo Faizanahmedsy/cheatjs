@@ -1,12 +1,22 @@
 import { AWS_TRACK, findPageByNotionId, hrefFor, type Track } from "./pages";
 
+const EMOJI = "(?![©®™\\u2194-\\u21AA])\\p{Extended_Pictographic}(?:[\\uFE0F\\u200D\\u{1F3FB}-\\u{1F3FF}]|\\p{Extended_Pictographic})*";
+
+/** Removes emoji, including brackets that held nothing but emoji. */
+export function stripEmoji(text: string): string {
+  return text
+    .replace(new RegExp(`[ \\t]*\\((?:\\s*${EMOJI})+\\s*\\)`, "gu"), "")
+    .replace(new RegExp(`${EMOJI}[ \\t]*`, "gu"), "");
+}
+
 /**
  * Turns Notion-flavored markdown into markdown that react-markdown + rehype-raw
  * can render. Only the Notion-specific block tags need work; <b>, <br /> and
  * friends are handled by rehype-raw.
  */
-export function notionToMarkdown(source: string, track: Track = AWS_TRACK): string {
+export function notionToMarkdown(source: string, track: Track = AWS_TRACK, options: { noEmoji?: boolean } = {}): string {
   let s = source.replace(/\r\n/g, "\n");
+  if (options.noEmoji) s = stripEmoji(s);
 
   // <callout icon="x" color="blue_bg">body</callout>  ->  styled div with markdown body
   s = s.replace(
@@ -25,7 +35,9 @@ export function notionToMarkdown(source: string, track: Track = AWS_TRACK): stri
     (_m, url: string, title: string) => {
       const id = /([0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i.exec(url)?.[1];
       const page = id ? findPageByNotionId(id, track) : undefined;
-      return page ? `- [${page.icon} ${title.trim()}](${hrefFor(page.slug, track)})` : "";
+      if (!page) return "";
+      const label = track.plain ? title.trim() : `${page.icon} ${title.trim()}`;
+      return `- [${label}](${hrefFor(page.slug, track)})`;
     }
   );
 

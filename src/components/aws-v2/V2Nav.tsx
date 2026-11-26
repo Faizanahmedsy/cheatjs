@@ -35,7 +35,9 @@ export function V2Nav({ trackId = "aws" }: { trackId?: Track["id"] }) {
                 : "border-slate-700 text-slate-400 hover:text-slate-200"
             )}
           >
-            <span className="mr-1">{mark(p.slug)}{p.icon}</span>
+            {mark(p.slug) || !track.plain ? (
+              <span className="mr-1">{mark(p.slug)}{track.plain ? null : p.icon}</span>
+            ) : null}
             {p.group === "Domains" || p.group === "Parts" ? `${track.unitName} ${p.slug.slice(-1)}` : p.title.replace("AWS ", "")}
           </Link>
         ))}

@@ -187,9 +187,11 @@ const components: Components = {
       const tone = TONES[String(p.dataTone ?? "default")] ?? TONES.default;
       return (
         <div className={cn("my-6 flex gap-3 rounded-xl border border-slate-700/50 px-4 py-3", tone)}>
-          <span className="text-lg leading-6" aria-hidden>
-            {icon}
-          </span>
+          {icon ? (
+            <span className="text-lg leading-6" aria-hidden>
+              {icon}
+            </span>
+          ) : null}
           <div className={cn("min-w-0 flex-1 [&>p]:my-1 [&>p]:text-slate-200", BODY)}>{children}</div>
         </div>
       );
@@ -202,13 +204,31 @@ const components: Components = {
   },
 };
 
-export function Markdown({ children }: { children: string }) {
+/** Drawn checkbox for pages shown without emoji. */
+const plainComponents: Components = {
+  ...components,
+  input: ({ node, type, checked }) =>
+    type === "checkbox" ? (
+      <span
+        role="img"
+        aria-label={checked ? "done" : "not done"}
+        className={cn(
+          "mt-[0.3rem] inline-flex h-3.5 w-3.5 shrink-0 select-none items-center justify-center rounded border text-[0.625rem] leading-none",
+          checked ? "border-emerald-400 text-emerald-300" : "border-slate-600"
+        )}
+      >
+        {checked ? "✓" : null}
+      </span>
+    ) : null,
+};
+
+export function Markdown({ children, noEmoji = false }: { children: string; noEmoji?: boolean }) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       rehypePlugins={[rehypeRaw, rehypeSlug]}
       disallowedElements={["script", "style", "iframe", "object", "embed"]}
-      components={components}
+      components={noEmoji ? plainComponents : components}
     >
       {children}
     </ReactMarkdown>

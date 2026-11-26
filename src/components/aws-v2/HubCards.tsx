@@ -16,6 +16,11 @@ export async function HubCards({ track = AWS_TRACK }: { track?: Track }) {
         {pages.map((p, i) => {
           const s = stats[i];
           const isDomain = p.group === "Domains" || p.group === "Parts";
+          const title = (
+            <h3 className="font-headline text-base font-bold text-slate-100 group-hover:text-cyan-300">
+              {p.title}
+            </h3>
+          );
           return (
             <Link
               key={p.slug}
@@ -23,16 +28,14 @@ export async function HubCards({ track = AWS_TRACK }: { track?: Track }) {
               className="group rounded-xl border border-slate-700/60 bg-slate-800/40 p-4 transition-colors hover:border-cyan-400/50 hover:bg-slate-800"
             >
               <div className="flex items-start justify-between gap-3">
-                <span className="text-2xl" aria-hidden>{p.icon}</span>
+                {track.plain ? title : <span className="text-2xl" aria-hidden>{p.icon}</span>}
                 {p.weight ? (
-                  <span className="rounded-full bg-cyan-400/10 px-2 py-0.5 text-xs font-semibold text-cyan-300">
+                  <span className="shrink-0 rounded-full bg-cyan-400/10 px-2 py-0.5 text-xs font-semibold text-cyan-300">
                     {p.weight}
                   </span>
                 ) : null}
               </div>
-              <h3 className="mt-2 font-headline text-base font-bold text-slate-100 group-hover:text-cyan-300">
-                {p.title}
-              </h3>
+              {track.plain ? null : <div className="mt-2">{title}</div>}
               <p className="mt-1 text-sm text-slate-400">{p.blurb}</p>
               {isDomain ? (
                 <p className="mt-3 text-xs text-slate-500">
