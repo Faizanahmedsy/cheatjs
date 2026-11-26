@@ -23,6 +23,8 @@ export type Track = {
   unitName: "Domain" | "Part";
   backHref: string;
   backLabel: string;
+  /** The hands-on lab for this subject, linked at the top of the notes menu. */
+  lab: { label: string; href: string };
   /** Show this track without emoji: no page icons, and an emoji-free home page. */
   plain?: boolean;
   pages: V2Page[];
@@ -37,6 +39,7 @@ export const AWS_TRACK: Track = {
   groups: ["Start here", "Domains", "Reference"],
   unitName: "Domain",
   backHref: "/aws-saa",
+  lab: { label: "Try the AWS Lab", href: "/aws-lab" },
   backLabel: "← Original AWS cheat sheets (v1)",
   pages: awsPagesJson as V2Page[],
 };
@@ -50,6 +53,7 @@ export const GENAI_TRACK: Track = {
   groups: ["Start here", "Parts", "Reference"],
   unitName: "Part",
   backHref: "/ai-engineering",
+  lab: { label: "Try the Gen AI Visual Lab", href: "/ai-engineering/visual-lab" },
   backLabel: "← AI Engineering cheat sheets",
   plain: true,
   pages: genAiPagesJson as V2Page[],
