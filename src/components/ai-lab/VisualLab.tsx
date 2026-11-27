@@ -2,11 +2,10 @@
 
 import "@fontsource/baloo-2/700.css";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MotionConfig, useReducedMotion } from "framer-motion";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import { ArrowLeft, Eye, GraduationCap, Moon, Network, Play, Search, Sparkles, Sun, Workflow } from "lucide-react";
+import { Eye, GraduationCap, Network, Play, Search, Sparkles, Workflow } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DEFAULT_SCENARIO, SCENARIOS } from "./scenarios";
 import type { Scenario } from "./engine/types";
@@ -21,14 +20,9 @@ import { TracePanel } from "./parts/TracePanel";
 import { RightPanel, StepProgress, type PanelTab } from "./parts/RightPanel";
 import { CommandPalette, type PaletteTarget } from "./parts/CommandPalette";
 
-const THEME_KEY = "ai-lab-theme";
-
+/** The lab follows the site's dark / white mode (set on <html data-mode>). */
 function readTheme(): LabTheme {
-  try {
-    return window.localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark";
-  } catch {
-    return "dark";
-  }
+  return document.documentElement.dataset.mode === "light" ? "light" : "dark";
 }
 
 /** Loaded scenario modules, kept for the session so switching back is instant. */
@@ -111,19 +105,13 @@ export function VisualLab() {
 
   useEffect(() => {
     setTheme(readTheme());
+    const watch = new MutationObserver(() => setTheme(readTheme()));
+    watch.observe(document.documentElement, { attributes: true, attributeFilter: ["data-mode"] });
     const m = readMode();
     setMode(m);
     setTraceOpen(m === "interview");
+    return () => watch.disconnect();
   }, []);
-  const toggleTheme = () => {
-    const next = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    try {
-      window.localStorage.setItem(THEME_KEY, next);
-    } catch {
-      /* private mode: theme just won't persist */
-    }
-  };
   const chooseMode = (m: LabMode) => {
     setMode(m);
     saveMode(m);
@@ -306,15 +294,9 @@ export function VisualLab() {
             <div data-theme={theme} className="ai-lab flex min-h-[calc(100dvh-6.375rem)] flex-col bg-lab-bg font-labmono text-lab-text lg:h-[calc(100dvh-6.375rem)] lg:min-h-0">
               {/* top bar */}
               <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-lab-border bg-lab-panel px-4 py-2">
-                <Link href="/ai-engineering" className="flex items-center gap-1 text-[11px] text-lab-muted hover:text-lab-text">
-                  <ArrowLeft className="h-3.5 w-3.5" /> AI Engineering
-                </Link>
-                <div className="flex min-w-0 items-center gap-2 text-[12px]">
-                  <span className="font-bold tracking-[0.2em] text-lab-accent">AI VISUAL LAB</span>
-                  <span className="text-lab-muted">/</span>
-                  <span className="truncate">
-                    {String(meta.num).padStart(2, "0")} {meta.title}
-                  </span>
+                <div className="flex min-w-0 items-baseline gap-2">
+                  <span className="text-[12px] text-lab-muted">Topic {meta.num}</span>
+                  <span className="truncate text-[15px] font-semibold">{meta.title}</span>
                 </div>
                 <div className="ml-auto flex flex-wrap items-center gap-2">
                   {/* Simple | Interview */}
@@ -360,9 +342,6 @@ export function VisualLab() {
                     <Search className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Search</span>
                     <kbd className="hidden rounded border border-lab-border px-1 text-[10px] sm:inline">Ctrl K</kbd>
-                  </button>
-                  <button onClick={toggleTheme} className="rounded-md border border-lab-border p-1.5 text-lab-muted hover:text-lab-text" aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>
-                    {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
                   </button>
                 </div>
               </header>
