@@ -78,7 +78,7 @@ export type BarsViz = {
   items: { label: string; value: number; tone?: Tone; note?: string }[];
   /** Max of the scale. Defaults to the largest value. */
   max?: number;
-  format?: "pct" | "fixed2" | "fixed3" | "fixed4" | "int";
+  format?: "pct" | "fixed1" | "fixed2" | "fixed3" | "fixed4" | "int";
   caption?: string;
 };
 
@@ -101,7 +101,7 @@ export type MatrixViz = {
   /** Rendered left-to-right with `ops[i]` drawn between matrix i and i+1. */
   items: { name: string; rowLabels?: string[]; colLabels?: string[]; values: number[][]; tone?: Tone }[];
   ops?: string[];
-  format?: "fixed1" | "fixed2" | "fixed3";
+  format?: "fixed1" | "fixed2" | "fixed3" | "int";
   caption?: string;
 };
 

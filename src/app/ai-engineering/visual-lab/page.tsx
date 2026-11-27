@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { VisualLab } from "@/components/ai-lab/VisualLab";
 
 import { pageMeta } from "@/lib/seo";
-export const metadata: Metadata = pageMeta({ title: "Gen AI Visual Lab", description: "Animated step-by-step scenes that explain how AI works: how models learn, neural networks, attention, inference, chat streaming, embeddings and RAG, with interview questions and quizzes.", path: "/ai-engineering/visual-lab", keywords: ["how LLMs work", "RAG explained", "embeddings", "attention", "AI engineering"] });
+export const metadata: Metadata = pageMeta({ title: "Gen AI Visual Lab", description: "19 animated step-by-step topics for AI/ML engineer interviews: classic ML, metrics, neural networks, training, CNNs and transformers, how LLMs are built, prompting, RAG, fine-tuning, agents and MCP, evals, MLOps and ML system design, with interview questions and quizzes.", path: "/ai-engineering/visual-lab", keywords: ["AI ML interview preparation", "how LLMs work", "RAG explained", "fine-tuning LoRA", "MCP agents", "ML system design", "MLOps"] });
 
 export default function VisualLabPage() {
   return (
