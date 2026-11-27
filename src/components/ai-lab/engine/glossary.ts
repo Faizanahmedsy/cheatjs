@@ -98,6 +98,50 @@ export const GLOSSARY: Record<string, { term: string; def: string }> = {
   ndcg: { term: "NDCG", def: "Normalised discounted cumulative gain: rewards putting the most relevant results highest, scaled so a perfect order = 1." },
   faithfulness: { term: "Faithfulness", def: "Does every claim in the answer follow from the retrieved context?" },
   "metadata-filter": { term: "Metadata filter", def: "A hard filter (e.g. year = 2024, team = HR) applied alongside vector search." },
+  // ---- fine-tuning
+  "fine-tuning": { term: "Fine-tuning", def: "Training a ready-made model a bit more on your own examples so it picks up a style, format or narrow skill." },
+  lora: { term: "LoRA", def: "Low-Rank Adaptation: freeze the big model and train two small matrices beside some layers. Well under 1% of the numbers." },
+  qlora: { term: "QLoRA", def: "LoRA on top of a base model stored in 4-bit, so a 7B model trains on one ordinary GPU." },
+  sft: { term: "SFT", def: "Supervised fine-tuning: train on prompt → ideal answer pairs." },
+  rlhf: { term: "RLHF", def: "Reinforcement learning from human feedback: learn a reward model from human preferences, then optimise the model against it." },
+  dpo: { term: "DPO", def: "Direct Preference Optimisation: learn from chosen vs rejected answer pairs directly, without a separate reward model." },
+  validation: { term: "Validation set", def: "Examples kept aside during training to check real learning and choose when to stop." },
+  forgetting: { term: "Catastrophic forgetting", def: "When training on a narrow task makes a model lose general skills it had before." },
+  // ---- agents
+  agent: { term: "Agent", def: "An LLM in a loop that can call tools: decide, act, read the result, repeat until done." },
+  "tool-use": { term: "Tool use", def: "The model outputs a structured request (name + JSON arguments); your code runs the tool and returns the result." },
+  react: { term: "ReAct", def: "Reason + Act: the model writes a short thought, then picks an action, then reads the observation." },
+  mcp: { term: "MCP", def: "Model Context Protocol: an open standard for AI apps to connect to servers that offer tools, resources and prompts." },
+  hitl: { term: "Human in the loop", def: "A person must approve risky steps (paying, deleting, sending) before the agent runs them." },
+  workflow: { term: "Workflow", def: "Fixed steps written in code that call the model where needed. Cheaper and easier to test than an agent." },
+  "prompt-injection": { term: "Prompt injection", def: "Text from a user, web page or document that tries to override the app's instructions." },
+  // ---- evals
+  eval: { term: "Eval", def: "A repeatable test of an AI app: fixed inputs, expected behaviour, and a score you can compare." },
+  "golden-set": { term: "Golden set", def: "A curated list of real inputs with what a good answer must contain, run on every change." },
+  "llm-judge": { term: "LLM-as-a-judge", def: "Using a second model with a written rubric to score answers code can't check." },
+  guardrails: { term: "Guardrails", def: "Live checks before and after the model: block attacks, hide private data, validate format." },
+  pii: { term: "PII", def: "Personally identifiable information: names, phone numbers, card numbers, addresses." },
+  // ---- classic ML
+  logistic: { term: "Logistic regression", def: "A weighted sum squashed by a sigmoid into a probability. Its boundary is a straight line." },
+  "decision-tree": { term: "Decision tree", def: "A flowchart of yes/no questions learned from data; each leaf gives a prediction." },
+  "random-forest": { term: "Random forest", def: "Hundreds of trees, each on random rows and columns, voting together." },
+  boosting: { term: "Gradient boosting", def: "Trees built one after another, each fixing the errors of the ones before (XGBoost, LightGBM)." },
+  kmeans: { term: "k-means", def: "Clustering: put k centres, assign each point to the nearest, move centres to the middle, repeat." },
+  regularisation: { term: "Regularisation", def: "A penalty for large weights that stops a model leaning too hard on any one input (L1, L2)." },
+  variance: { term: "Variance", def: "How much a model changes with the training sample. High variance = memorises noise." },
+  // ---- metrics
+  accuracy: { term: "Accuracy", def: "Share of all predictions that were right. Misleading when one class is rare." },
+  confusion: { term: "Confusion matrix", def: "A 2×2 count of true positives, false positives, false negatives and true negatives." },
+  f1: { term: "F1 score", def: "The harmonic mean of precision and recall: high only when both are high." },
+  roc: { term: "ROC curve", def: "Recall vs false-positive rate across all thresholds. Its area (AUC) measures ranking quality." },
+  imbalance: { term: "Class imbalance", def: "When one class is much rarer than the other, e.g. 2% fraud." },
+  "cross-validation": { term: "Cross-validation", def: "Split data into k parts; train on k−1, test on the last, rotate, and average the scores." },
+  // ---- MLOps
+  mlops: { term: "MLOps", def: "Practices for shipping and running ML: versioning, pipelines, serving, monitoring and safe releases." },
+  "feature-store": { term: "Feature store", def: "One place that defines features and serves the same values to training and to live predictions." },
+  skew: { term: "Training–serving skew", def: "Features computed differently in training and in production, so the model silently gets worse." },
+  drift: { term: "Drift", def: "Live data or its meaning moves away from what the model was trained on." },
+  shadow: { term: "Shadow mode", def: "The new model predicts on real traffic but users still see the old model's answers." },
 };
 
 export type GlossaryKey = keyof typeof GLOSSARY;
