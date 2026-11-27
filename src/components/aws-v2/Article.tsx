@@ -95,7 +95,7 @@ export async function Article({
 
         {/* Previous / next page, in sidebar order */}
         {prev || next ? (
-          <nav data-reader-hide aria-label="Previous and next page" className="mt-12 grid gap-3 border-t border-slate-700/60 pt-6 sm:grid-cols-2">
+          <nav aria-label="Previous and next page" className="mt-12 grid gap-3 border-t border-slate-700/60 pt-6 sm:grid-cols-2">
             {prev ? (
               <Link
                 data-shortcut="prev"

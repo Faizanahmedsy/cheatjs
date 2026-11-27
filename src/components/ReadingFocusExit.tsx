@@ -18,13 +18,15 @@ export function ReadingFocusExit() {
   }, [on]);
   if (!on) return null;
   return (
+    <div className="fixed inset-x-0 top-0 z-[60] flex h-11 items-center justify-end border-b border-slate-800/70 bg-background px-3">
     <button
       type="button"
       onClick={() => setReadingFocus(false)}
-      className="fixed right-3 top-3 z-[60] inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/80 px-3 py-1.5 text-xs font-medium text-slate-300 opacity-60 shadow-lg backdrop-blur transition-opacity hover:opacity-100 focus-visible:opacity-100"
+      className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:text-slate-50"
     >
       <Minimize2 className="h-3.5 w-3.5" aria-hidden="true" />
       Exit focus
     </button>
+    </div>
   );
 }

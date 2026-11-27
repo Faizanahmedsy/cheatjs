@@ -214,7 +214,7 @@ export function ReaderShell({ children }: { children: React.ReactNode }) {
       style={style}
     >
       {s.progress ? (
-        <div className="pointer-events-none fixed left-0 right-0 top-14 z-40 h-1 bg-transparent">
+        <div className={cn("pointer-events-none fixed left-0 right-0 z-[61] h-1 bg-transparent", readingFocus ? "top-0" : "top-14")}>
           <div className="h-full bg-cyan-400 transition-[width] duration-150" style={{ width: `${progress}%` }} />
         </div>
       ) : null}
