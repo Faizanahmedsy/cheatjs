@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MotionConfig, useReducedMotion } from "framer-motion";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import { Eye, GraduationCap, Headphones, Maximize2, Network, PanelLeftClose, PanelLeftOpen, Play, Search, Sparkles, Square, Workflow } from "lucide-react";
+import { Eye, GraduationCap, ListChecks, RotateCcw, SkipForward, X, Headphones, Maximize2, Network, PanelLeftClose, PanelLeftOpen, Play, Search, Sparkles, Square, Workflow } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { setReadingFocus, useReadingFocus } from "@/lib/reading-focus";
 import { DEFAULT_SCENARIO, SCENARIOS } from "./scenarios";
@@ -101,6 +101,8 @@ export function VisualLab() {
   const [traceOpen, setTraceOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [voice, setVoice] = useState(false);
+  const [endPrompt, setEndPrompt] = useState(false);
+  const autoplayNext = useRef(false);
   const [voiceOk, setVoiceOk] = useState(false);
   const [voiceList, setVoiceList] = useState<string[]>([]);
   const [voiceName, setVoiceName] = useState("");
@@ -178,7 +180,12 @@ export function VisualLab() {
       pendingStep.current = null;
       const savedTab = restoreTab.current;
       restoreTab.current = null;
-      if (target !== null) {
+      if (autoplayNext.current) {
+        autoplayNext.current = false;
+        setStepIndex(0);
+        setTab("step");
+        setPlaying(true);
+      } else if (target !== null) {
         setStepIndex(Math.min(target, s.steps.length - 1));
         setTab(savedTab ?? "step");
       } else {
@@ -215,6 +222,18 @@ export function VisualLab() {
       /* ignore */
     }
   }, [scenario, topicId]);
+
+  useEffect(() => {
+    setEndPrompt(false);
+  }, [topicId, stepIndex]);
+
+  const nextMeta = SCENARIOS[SCENARIOS.findIndex((x) => x.id === topicId) + 1];
+  const goNextTopic = () => {
+    if (!nextMeta) return;
+    setEndPrompt(false);
+    autoplayNext.current = voiceActive;
+    selectTopic(nextMeta.id);
+  };
 
   const steps = scenario?.steps ?? [];
   const step = stepIndex >= 0 ? steps[stepIndex] ?? null : null;
@@ -254,8 +273,10 @@ export function VisualLab() {
     if (!playing || !scenario || voiceActive) return;
     const ms = stepIndex < 0 ? 250 : Math.max(stepDurationMs(step ?? undefined), showStage ? stageDurationMs(step?.stage) : 0) / speed;
     const t = window.setTimeout(() => {
-      if (stepIndex >= scenario.steps.length - 1) setPlaying(false);
-      else goTo(stepIndex + 1);
+      if (stepIndex >= scenario.steps.length - 1) {
+        setPlaying(false);
+        setEndPrompt(true);
+      } else goTo(stepIndex + 1);
     }, ms);
     return () => window.clearTimeout(t);
   }, [playing, stepIndex, speed, scenario, step, goTo, run, showStage, voiceActive]);
@@ -270,7 +291,12 @@ export function VisualLab() {
     const stop = speak(stepIndex < 0 && playing ? "" : narrationFor(scenario, stepIndex), speed, () => {
       if (!playing) return;
       const wait = Math.max(0, minMs - (Date.now() - startedAt)) + 700;
-      timer = window.setTimeout(() => (stepIndex >= last ? setPlaying(false) : goTo(stepIndex + 1)), wait);
+      timer = window.setTimeout(() => {
+        if (stepIndex >= last) {
+          setPlaying(false);
+          setEndPrompt(true);
+        } else goTo(stepIndex + 1);
+      }, wait);
     });
     return () => {
       stop();
@@ -512,6 +538,46 @@ export function VisualLab() {
                     ) : (
                       <div className="h-full p-2 pt-4">
                         <IsoScene scenario={scenario} step={step} runKey={runKey} animate={animate} speed={speed} />
+                      </div>
+                    )}
+                    {endPrompt && scenario && (
+                      <div className="absolute inset-0 z-30 flex items-center justify-center p-4" style={{ background: "color-mix(in srgb, var(--lab-scene) 80%, transparent)", backdropFilter: "blur(3px)" }}>
+                        <div className="relative w-full max-w-sm rounded-3xl bg-lab-panel p-5 shadow-2xl">
+                          <button onClick={() => setEndPrompt(false)} aria-label="Close" className="absolute right-3 top-3 rounded-full p-1 text-lab-muted hover:text-lab-text">
+                            <X className="h-4 w-4" />
+                          </button>
+                          <p className="mb-1 flex items-center gap-1.5 text-xs font-medium text-lab-accent">
+                            <Sparkles className="h-3.5 w-3.5" /> Topic finished
+                          </p>
+                          <p className="font-body text-[16px] font-semibold leading-snug text-lab-text">{scenario.title}</p>
+                          <p className="mt-1 font-body text-[13px] text-lab-muted">What next?</p>
+                          <div className="mt-4 grid gap-2">
+                            <button
+                              onClick={() => {
+                                setEndPrompt(false);
+                                setTab("quiz");
+                              }}
+                              className="flex items-center justify-center gap-2 rounded-full bg-[#e5603a] px-4 py-2.5 text-[14px] font-medium text-white hover:bg-[#c2532f]"
+                            >
+                              <ListChecks className="h-4 w-4" /> Take the quiz
+                            </button>
+                            {nextMeta && (
+                              <button onClick={goNextTopic} className="flex items-center justify-center gap-2 rounded-full border border-lab-accent px-4 py-2.5 text-[14px] font-medium text-lab-accent hover:bg-lab-raised">
+                                <SkipForward className="h-4 w-4" /> Next: {nextMeta.title}
+                              </button>
+                            )}
+                            <button
+                              onClick={() => {
+                                setEndPrompt(false);
+                                goTo(0);
+                                setPlaying(true);
+                              }}
+                              className="flex items-center justify-center gap-2 rounded-full px-4 py-2 text-[13px] text-lab-muted hover:text-lab-text"
+                            >
+                              <RotateCcw className="h-3.5 w-3.5" /> Replay this topic
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     )}
                     {scenario && stepIndex < 0 && view === "visual" && <StartOverlay s={scenario} onStart={start} onPlay={play} reduced={reduced} />}
