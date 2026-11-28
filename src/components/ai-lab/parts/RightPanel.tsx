@@ -23,6 +23,9 @@ type Props = {
   onStep: (i: number) => void;
   openQuestion: string | null;
   onOpenQuestion: (id: string | null) => void;
+  /** The chapter after this one, offered on the last step. */
+  nextTopic?: NextTopic;
+  onNextTopic?: () => void;
   className?: string;
 };
 
@@ -151,7 +154,8 @@ function Toggle({ open, onClick, icon: Icon, children }: { open: boolean; onClic
   );
 }
 
-function StepDetails({ s, i, onPrev, onNext, onStart, onQuiz }: { s: Scenario; i: number; onPrev: () => void; onNext: () => void; onStart: () => void; onQuiz: () => void }) {
+type NextTopic = { num: number; title: string } | null;
+function StepDetails({ s, i, onPrev, onNext, onStart, onQuiz, nextTopic, onNextTopic }: { s: Scenario; i: number; onPrev: () => void; onNext: () => void; onStart: () => void; onQuiz: () => void; nextTopic: NextTopic; onNextTopic: () => void }) {
   const mode = useLabMode();
   const [maths, setMaths] = useState(false);
   const [code, setCode] = useState(false);
@@ -266,6 +270,7 @@ function StepDetails({ s, i, onPrev, onNext, onStart, onQuiz }: { s: Scenario; i
       )}
 
       {isLast ? (
+        <>
         <div className="mt-5 rounded-lg border px-3 py-3" style={{ borderColor: toneVar("green"), background: toneFill("green", 8) }}>
           <p className="mb-1.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: toneVar("green") }}>
             <ListChecks className="h-3.5 w-3.5" /> What you just learned
@@ -285,6 +290,21 @@ function StepDetails({ s, i, onPrev, onNext, onStart, onQuiz }: { s: Scenario; i
             Take the quiz <ArrowRight className="h-4 w-4" />
           </button>
         </div>
+        {nextTopic && (
+          <button
+            onClick={onNextTopic}
+            className="mt-3 flex w-full items-center justify-between gap-2 rounded-lg border border-lab-accent px-3 py-3 text-left text-lab-accent hover:bg-lab-raised"
+          >
+            <span className="min-w-0">
+              <span className="block text-[10px] font-semibold uppercase tracking-[0.16em]">Go to the next chapter</span>
+              <span className="block truncate font-body text-[14px] font-medium text-lab-text">
+                {String(nextTopic.num).padStart(2, "0")} · {nextTopic.title}
+              </span>
+            </span>
+            <ArrowRight className="h-5 w-5 shrink-0" />
+          </button>
+        )}
+        </>
       ) : (
         <button
           onClick={onNext}
@@ -475,7 +495,7 @@ function Quiz({ s }: { s: Scenario }) {
   );
 }
 
-export function RightPanel({ scenario, stepIndex, tab, onTab, onPrev, onNext, onStart, onStep, openQuestion, onOpenQuestion, className }: Props) {
+export function RightPanel({ scenario, stepIndex, tab, onTab, onPrev, onNext, onStart, onStep, openQuestion, onOpenQuestion, nextTopic = null, onNextTopic = () => {}, className }: Props) {
   const mode = useLabMode();
   const tabs: [PanelTab, string][] = [
     ["overview", "Overview"],
@@ -511,7 +531,7 @@ export function RightPanel({ scenario, stepIndex, tab, onTab, onPrev, onNext, on
             <InterviewOverview s={scenario} onStart={onStart} />
           )
         ) : tab === "step" ? (
-          <StepDetails s={scenario} i={stepIndex} onPrev={onPrev} onNext={onNext} onStart={onStart} onQuiz={() => onTab("quiz")} />
+          <StepDetails s={scenario} i={stepIndex} onPrev={onPrev} onNext={onNext} onStart={onStart} onQuiz={() => onTab("quiz")} nextTopic={nextTopic} onNextTopic={onNextTopic} />
         ) : tab === "interview" ? (
           <Interview s={scenario} openId={openQuestion} onOpen={onOpenQuestion} />
         ) : (
