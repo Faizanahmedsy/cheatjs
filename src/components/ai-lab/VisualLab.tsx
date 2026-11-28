@@ -14,7 +14,7 @@ import { IsoScene, stepDurationMs } from "./engine/IsoScene";
 import { LabThemeContext, RichText, type LabTheme } from "./engine/RichText";
 import { LabModeContext, readMode, saveMode, type LabMode } from "./engine/mode";
 import { toneFill, toneVar } from "./engine/tones";
-import { canSpeak, narrationFor, speak, stopSpeaking } from "./engine/narrator";
+import { canSpeak, narrationFor, rankVoices, readVoiceName, sampleVoice, saveVoiceName, speak, stopSpeaking } from "./engine/narrator";
 import { StageView, stageDurationMs } from "./stages/StageView";
 import { TopicList } from "./parts/TopicList";
 import { SequenceView } from "./parts/SequenceView";
@@ -101,6 +101,8 @@ export function VisualLab() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [voice, setVoice] = useState(false);
   const [voiceOk, setVoiceOk] = useState(false);
+  const [voiceList, setVoiceList] = useState<string[]>([]);
+  const [voiceName, setVoiceName] = useState("");
   const [listOpen, setListOpen] = useState(true);
   const focus = useReadingFocus();
   const pendingStep = useRef<number | null>(Number.isFinite(urlStep) && urlStep >= 1 ? urlStep - 1 : null);
@@ -117,6 +119,13 @@ export function VisualLab() {
     setMode(m);
     setTraceOpen(m === "interview");
     setVoiceOk(canSpeak());
+    const loadVoices = () => {
+      const r = rankVoices();
+      setVoiceList(r.map((v) => v.name));
+      setVoiceName(readVoiceName() || r[0]?.name || "");
+    };
+    loadVoices();
+    if (canSpeak()) window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
     try {
       setListOpen(window.localStorage.getItem("ai-lab-list") !== "0");
     } catch {
@@ -124,6 +133,7 @@ export function VisualLab() {
     }
     return () => {
       watch.disconnect();
+      if (canSpeak()) window.speechSynthesis.removeEventListener("voiceschanged", loadVoices);
       stopSpeaking();
     };
   }, []);
@@ -415,6 +425,25 @@ export function VisualLab() {
                       {voiceActive ? <Square className="h-3.5 w-3.5" /> : <Headphones className="h-3.5 w-3.5" />}
                       <span>{voiceActive ? "Stop voice" : "Listen"}</span>
                     </button>
+                  )}
+                  {mode === "simple" && voiceOk && voiceList.length > 1 && (
+                    <select
+                      value={voiceName}
+                      aria-label="Voice"
+                      title="Pick a voice. Names with Enhanced or Premium sound best."
+                      onChange={(e) => {
+                        setVoiceName(e.target.value);
+                        saveVoiceName(e.target.value);
+                        sampleVoice();
+                      }}
+                      className="max-w-[9.5rem] rounded-md border border-lab-border bg-lab-panel px-2 py-1.5 text-[11px] text-lab-muted"
+                    >
+                      {voiceList.map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
+                    </select>
                   )}
                   <button
                     onClick={() => setReadingFocus(!focus)}

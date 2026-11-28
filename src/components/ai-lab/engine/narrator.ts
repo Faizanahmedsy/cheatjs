@@ -72,9 +72,34 @@ function chunks(text: string): string[] {
   return out;
 }
 
+const NAME_KEY = "ai-lab-voice-name";
+export const englishVoices = (): SpeechSynthesisVoice[] => (canSpeak() ? window.speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith("en")) : []);
+export const readVoiceName = (): string => {
+  try {
+    return window.localStorage.getItem(NAME_KEY) ?? "";
+  } catch {
+    return "";
+  }
+};
+export const saveVoiceName = (n: string) => {
+  try {
+    window.localStorage.setItem(NAME_KEY, n);
+  } catch {
+    /* private mode */
+  }
+};
+/** Best-sounding voices first: enhanced / premium / neural ones, then the rest. */
+export const rankVoices = (): SpeechSynthesisVoice[] => {
+  const q = (v: SpeechSynthesisVoice) => (/enhanced|premium|neural|natural/i.test(v.name) ? 100 : 0) + (/google/i.test(v.name) ? 30 : 0) + (v.lang.toLowerCase() === "en-in" ? 3 : 0);
+  return [...englishVoices()].sort((a, b) => q(b) - q(a));
+};
+
 function pickVoice(): SpeechSynthesisVoice | null {
-  const voices = window.speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith("en"));
+  const voices = englishVoices();
   if (!voices.length) return null;
+  const chosen = readVoiceName();
+  const mine = voices.find((v) => v.name === chosen);
+  if (mine) return mine;
   const score = (v: SpeechSynthesisVoice) =>
     (/natural|neural|premium|enhanced/i.test(v.name) ? 40 : 0) +
     (/google|samantha|daniel|karen|aaron|rishi|veena|ravi|heera/i.test(v.name) ? 15 : 0) +
@@ -128,6 +153,11 @@ export function speak(text: string, rate: number, onDone: () => void): () => voi
     window.clearTimeout(guard);
     synth.cancel();
   };
+}
+
+/** Say a short sample so the learner can hear a voice before choosing it. */
+export function sampleVoice() {
+  speak("Hi, this is how I will explain things to you.", 1, () => {});
 }
 
 export function stopSpeaking() {
