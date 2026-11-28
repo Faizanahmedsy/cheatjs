@@ -549,5 +549,28 @@ html[data-reading-focus="1"] .chrome-h { height: calc(100dvh - 2.75rem) !importa
   font-family: 'Baloo 2', ui-rounded, system-ui, sans-serif;
   --lab-mono: 'Baloo 2', ui-rounded, system-ui, sans-serif;
 }
+/* Night version of the picture area: same Toy Town look, deep green-black "paper" so it does not glare. */
+.ai-lab[data-theme="dark"] .lab-toy {
+  --lab-bg: #16201b;
+  --lab-scene: #1b2721;
+  --lab-panel: #1d2923;
+  --lab-raised: #26362d;
+  --lab-border: #46604f;
+  --lab-grid: rgba(241, 234, 216, 0.07);
+  --lab-text: #f1ead8;
+  --lab-muted: #a9b5a6;
+  --lab-accent: #f08a6c;
+  --t-blue: #7ea6ff;
+  --t-cyan: #f08a6c;
+  --t-violet: #b9a0f5;
+  --t-amber: #e8b75a;
+  --t-green: #6fcf9a;
+  --t-rose: #f27c96;
+  --t-slate: #a9b5a6;
+  background-color: #17221c;
+  background-image: radial-gradient(ellipse at 50% 55%, #223229 0, #1c2922 45%, rgba(28, 41, 34, 0) 80%);
+  border-color: #46604f;
+  color: #f1ead8;
+}
 .ai-lab .lab-toy svg text { font-weight: 700; }
 .ai-lab .lab-toy svg [stroke-width="1"], .ai-lab .lab-toy svg [stroke-width="1.2"], .ai-lab .lab-toy svg [stroke-width="1.5"] { stroke-width: 2.2; }
