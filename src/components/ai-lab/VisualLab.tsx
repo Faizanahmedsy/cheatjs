@@ -84,6 +84,7 @@ export function VisualLab() {
   const topicId = SCENARIOS.some((s) => s.id === params.get("topic")) ? params.get("topic")! : DEFAULT_SCENARIO;
   const meta = SCENARIOS.find((s) => s.id === topicId)!;
 
+  const hadTopic = useRef(SCENARIOS.some((x) => x.id === params.get("topic")));
   const [scenario, setScenario] = useState<Scenario | null>(() => cache.get(topicId) ?? null);
   const [stepIndex, setStepIndex] = useState(-1);
   const [playing, setPlaying] = useState(false);
@@ -119,6 +120,15 @@ export function VisualLab() {
     setMode(m);
     setTraceOpen(m === "interview");
     setVoiceOk(canSpeak());
+    // A returning learner resumes at the topic they last had open.
+    if (!hadTopic.current) {
+      try {
+        const last = window.localStorage.getItem("ai-lab-last-topic");
+        if (last && SCENARIOS.some((x) => x.id === last) && last !== DEFAULT_SCENARIO) router.replace(`${pathname}?topic=${last}`, { scroll: false });
+      } catch {
+        /* ignore */
+      }
+    }
     const loadVoices = () => {
       const r = rankVoices();
       setVoiceList(r.map((v) => v.name));
@@ -136,6 +146,7 @@ export function VisualLab() {
       if (canSpeak()) window.speechSynthesis.removeEventListener("voiceschanged", loadVoices);
       stopSpeaking();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const toggleList = () =>
     setListOpen((o) => {
@@ -195,6 +206,15 @@ export function VisualLab() {
       window.history.replaceState(window.history.state, "", next);
     }
   }, [scenario, topicId, stepIndex, tab, view]);
+
+  useEffect(() => {
+    if (!scenario || scenario.id !== topicId) return;
+    try {
+      window.localStorage.setItem("ai-lab-last-topic", topicId);
+    } catch {
+      /* ignore */
+    }
+  }, [scenario, topicId]);
 
   const steps = scenario?.steps ?? [];
   const step = stepIndex >= 0 ? steps[stepIndex] ?? null : null;

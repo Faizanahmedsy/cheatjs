@@ -141,7 +141,7 @@ const scenario: Scenario = {
   ],
   overview: {
     plain:
-      "Machine learning means the computer finds the rule itself, from examples, instead of a person writing it. You show it many houses with their prices; it keeps guessing, checks how wrong it was, and adjusts. Once its guesses are good, you use it to price houses it has never seen.",
+      "You met this idea in pictures in the Start here topics. Here are the real numbers behind it. Machine learning means the computer finds the rule itself, from examples, instead of a person writing it. You show it many houses with their prices; it keeps guessing, checks how wrong it was, and adjusts. Once its guesses are good, you use it to price houses it has never seen.",
     definition:
       "**Machine learning** means letting a program find its own rule from examples instead of a person writing the rule. You give it {{feature|features}} (house size) and {{label|labels}} (the price it sold for); {{training}} adjusts the model's {{parameter|parameters}} until its predictions match the labels; then {{inference}} uses the frozen model on houses it has never seen.",
     analogy:

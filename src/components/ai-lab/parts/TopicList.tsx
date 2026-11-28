@@ -34,10 +34,12 @@ export function TopicList({ activeId, scenario, stepIndex, onTopic, onStep, clas
         ))}
       </div>
       <nav className="hidden pb-4 lg:block" aria-label="Topics">
-        {SCENARIOS.map((s) => {
+        {SCENARIOS.map((s, idx) => {
           const open = s.id === activeId;
+          const heading = s.group && s.group !== SCENARIOS[idx - 1]?.group ? (s.group === "start" ? "Start here · new to AI" : "Core path · go deeper") : null;
           return (
             <div key={s.id} className="px-2">
+              {heading && <p className="px-2 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-lab-accent">{heading}</p>}
               <button
                 onClick={() => onTopic(s.id)}
                 aria-expanded={open}

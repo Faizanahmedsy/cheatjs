@@ -440,6 +440,8 @@ export type Scenario = {
 
 export type ScenarioMeta = {
   id: string;
+  /** "start" = beginner topics shown first; "core" = the main path. */
+  group?: "start" | "core";
   num: number;
   title: string;
   short: string;
