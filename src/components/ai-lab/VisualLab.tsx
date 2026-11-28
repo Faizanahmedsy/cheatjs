@@ -5,14 +5,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MotionConfig, useReducedMotion } from "framer-motion";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import { Eye, GraduationCap, Network, Play, Search, Sparkles, Workflow } from "lucide-react";
+import { Eye, GraduationCap, Headphones, Maximize2, Network, PanelLeftClose, PanelLeftOpen, Play, Search, Sparkles, Square, Workflow } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { setReadingFocus, useReadingFocus } from "@/lib/reading-focus";
 import { DEFAULT_SCENARIO, SCENARIOS } from "./scenarios";
 import type { Scenario } from "./engine/types";
 import { IsoScene, stepDurationMs } from "./engine/IsoScene";
 import { LabThemeContext, RichText, type LabTheme } from "./engine/RichText";
 import { LabModeContext, readMode, saveMode, type LabMode } from "./engine/mode";
 import { toneFill, toneVar } from "./engine/tones";
+import { canSpeak, narrationFor, speak, stopSpeaking } from "./engine/narrator";
 import { StageView, stageDurationMs } from "./stages/StageView";
 import { TopicList } from "./parts/TopicList";
 import { SequenceView } from "./parts/SequenceView";
@@ -97,6 +99,10 @@ export function VisualLab() {
   const [mode, setMode] = useState<LabMode>("simple");
   const [traceOpen, setTraceOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [voice, setVoice] = useState(false);
+  const [voiceOk, setVoiceOk] = useState(false);
+  const [listOpen, setListOpen] = useState(true);
+  const focus = useReadingFocus();
   const pendingStep = useRef<number | null>(Number.isFinite(urlStep) && urlStep >= 1 ? urlStep - 1 : null);
   const restoreTab = useRef<PanelTab | null>(urlTab);
 
@@ -110,8 +116,28 @@ export function VisualLab() {
     const m = readMode();
     setMode(m);
     setTraceOpen(m === "interview");
-    return () => watch.disconnect();
+    setVoiceOk(canSpeak());
+    try {
+      setListOpen(window.localStorage.getItem("ai-lab-list") !== "0");
+    } catch {
+      /* ignore */
+    }
+    return () => {
+      watch.disconnect();
+      stopSpeaking();
+    };
   }, []);
+  const toggleList = () =>
+    setListOpen((o) => {
+      try {
+        window.localStorage.setItem("ai-lab-list", o ? "0" : "1");
+      } catch {
+        /* ignore */
+      }
+      return !o;
+    });
+  // The voice only exists in Simple mode.
+  const voiceActive = voice && voiceOk && mode === "simple";
   const chooseMode = (m: LabMode) => {
     setMode(m);
     saveMode(m);
@@ -195,14 +221,47 @@ export function VisualLab() {
 
   // Auto-advance while playing. A step with a big visual waits for it to finish.
   useEffect(() => {
-    if (!playing || !scenario) return;
+    if (!playing || !scenario || voiceActive) return;
     const ms = stepIndex < 0 ? 250 : Math.max(stepDurationMs(step ?? undefined), showStage ? stageDurationMs(step?.stage) : 0) / speed;
     const t = window.setTimeout(() => {
       if (stepIndex >= scenario.steps.length - 1) setPlaying(false);
       else goTo(stepIndex + 1);
     }, ms);
     return () => window.clearTimeout(t);
-  }, [playing, stepIndex, speed, scenario, step, goTo, run, showStage]);
+  }, [playing, stepIndex, speed, scenario, step, goTo, run, showStage, voiceActive]);
+
+  // Voiceover: read the step aloud. While playing, the next step starts once the voice and the picture have both finished.
+  useEffect(() => {
+    if (!voiceActive || !scenario || scenario.id !== topicId) return;
+    let timer = 0;
+    const startedAt = Date.now();
+    const minMs = stepIndex < 0 ? 0 : Math.max(stepDurationMs(step ?? undefined), showStage ? stageDurationMs(step?.stage) : 0) / speed;
+    const last = scenario.steps.length - 1;
+    const stop = speak(stepIndex < 0 && playing ? "" : narrationFor(scenario, stepIndex), speed, () => {
+      if (!playing) return;
+      const wait = Math.max(0, minMs - (Date.now() - startedAt)) + 700;
+      timer = window.setTimeout(() => (stepIndex >= last ? setPlaying(false) : goTo(stepIndex + 1)), wait);
+    });
+    return () => {
+      stop();
+      window.clearTimeout(timer);
+    };
+  }, [voiceActive, playing, scenario, topicId, stepIndex, run, speed, step, showStage, goTo]);
+
+  const listen = () => {
+    if (voice) {
+      setVoice(false);
+      stopSpeaking();
+      setPlaying(false);
+    } else {
+      setVoice(true);
+      if (!reduced && scenario) {
+        if (stepIndex >= scenario.steps.length - 1) goTo(0);
+        setPlaying(true);
+        setTab((t) => (t === "overview" ? "step" : t));
+      }
+    }
+  };
 
   const play = useCallback(() => {
     if (reduced || !scenario) return;
@@ -291,9 +350,18 @@ export function VisualLab() {
       <LabModeContext.Provider value={mode}>
         <TooltipPrimitive.Provider delayDuration={150}>
           <MotionConfig reducedMotion="user">
-            <div data-theme={theme} className="ai-lab flex min-h-[calc(100dvh-6.375rem)] flex-col bg-lab-bg font-labmono text-lab-text lg:h-[calc(100dvh-6.375rem)] lg:min-h-0">
+            <div data-theme={theme} className="ai-lab reader-root flex min-h-[calc(100dvh-6.375rem)] flex-col bg-lab-bg font-labmono text-lab-text lg:h-[calc(100dvh-6.375rem)] lg:min-h-0">
               {/* top bar */}
               <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-lab-border bg-lab-panel px-4 py-2">
+                <button
+                  onClick={toggleList}
+                  className="hidden items-center rounded-md border border-lab-border p-1.5 text-lab-muted hover:text-lab-text lg:flex"
+                  aria-label={listOpen && !focus ? "Hide the topic list" : "Show the topic list"}
+                  title={listOpen && !focus ? "Hide the topic list" : "Show the topic list"}
+                  style={focus ? { display: "none" } : undefined}
+                >
+                  {listOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
+                </button>
                 <div className="flex min-w-0 items-baseline gap-2">
                   <span className="text-[12px] text-lab-muted">Topic {meta.num}</span>
                   <span className="truncate text-[15px] font-semibold">{meta.title}</span>
@@ -334,9 +402,32 @@ export function VisualLab() {
                       </button>
                     ))}
                   </div>
+                  {mode === "simple" && voiceOk && (
+                    <button
+                      onClick={listen}
+                      aria-pressed={voiceActive}
+                      title={voiceActive ? "Stop the voice" : "Read every step aloud and move on by itself"}
+                      className={cn(
+                        "flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider",
+                        voiceActive ? "border-lab-accent bg-lab-raised text-lab-accent" : "border-lab-border text-lab-muted hover:text-lab-text",
+                      )}
+                    >
+                      {voiceActive ? <Square className="h-3.5 w-3.5" /> : <Headphones className="h-3.5 w-3.5" />}
+                      <span>{voiceActive ? "Stop voice" : "Listen"}</span>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setReadingFocus(!focus)}
+                    aria-pressed={focus}
+                    title="Focus: hide the site menus and the topic list"
+                    className="flex items-center gap-1.5 rounded-md border border-lab-border px-2.5 py-1.5 text-[11px] text-lab-muted hover:text-lab-text"
+                  >
+                    <Maximize2 className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline uppercase tracking-wider">{focus ? "Unfocus" : "Focus"}</span>
+                  </button>
                   <button
                     onClick={() => setPaletteOpen(true)}
-                    className="flex items-center gap-2 rounded-md border border-lab-border px-2.5 py-1.5 text-[11px] text-lab-muted hover:text-lab-text"
+                    className={cn("flex items-center gap-2 rounded-md border border-lab-border px-2.5 py-1.5 text-[11px] text-lab-muted hover:text-lab-text", focus && "hidden")}
                     aria-label="Search topics, steps, questions and terms"
                   >
                     <Search className="h-3.5 w-3.5" />
@@ -347,8 +438,8 @@ export function VisualLab() {
               </header>
 
               {/* Phones: topics → visual → explanation → trace. Desktop: topics | visual over trace | explanation. */}
-              <div className="grid min-h-0 flex-1 grid-cols-1 [grid-template-areas:'list'_'scene'_'panel'_'trace'] lg:grid-cols-[250px_minmax(0,1fr)_minmax(340px,390px)] lg:grid-rows-[minmax(0,1fr)_auto] lg:[grid-template-areas:'list_scene_panel'_'list_trace_panel']">
-                <TopicList className="[grid-area:list]" activeId={topicId} scenario={scenario} stepIndex={stepIndex} onTopic={(id) => selectTopic(id)} onStep={(i) => selectTopic(topicId, i)} />
+              <div className={cn("grid min-h-0 flex-1 grid-cols-1 [grid-template-areas:'list'_'scene'_'panel'_'trace'] lg:grid-rows-[minmax(0,1fr)_auto] lg:[grid-template-areas:'list_scene_panel'_'list_trace_panel']", listOpen && !focus ? "lg:grid-cols-[250px_minmax(0,1fr)_minmax(340px,390px)]" : "lg:grid-cols-[0px_minmax(0,1fr)_minmax(340px,390px)]")}>
+                <TopicList className={cn("[grid-area:list]", focus ? "hidden" : !listOpen && "lg:hidden")} activeId={topicId} scenario={scenario} stepIndex={stepIndex} onTopic={(id) => selectTopic(id)} onStep={(i) => selectTopic(topicId, i)} />
 
                 <section className="flex min-h-0 min-w-0 flex-col border-lab-border bg-lab-scene [grid-area:scene] lg:border-x">
                   <div className="flex items-center gap-3 border-b border-lab-border px-3 py-1.5">
