@@ -73,7 +73,17 @@ function chunks(text: string): string[] {
 }
 
 const NAME_KEY = "ai-lab-voice-name";
-export const englishVoices = (): SpeechSynthesisVoice[] => (canSpeak() ? window.speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith("en")) : []);
+/** Apple ships joke voices (Bells, Boing, Zarvox…) that Safari lists too; they are never wanted here. */
+const NOVELTY = /^(albert|bad news|bahh|bells|boing|bubbles|cellos|wobble|fred|good news|jester|organ|superstar|trinoids|whisper|zarvox|deranged|hysterical|junior|kathy|princess|ralph|grandma|grandpa|eddy|flo|reed|rocko|sandy|shelley)\b/i;
+export const englishVoices = (): SpeechSynthesisVoice[] => {
+  if (!canSpeak()) return [];
+  const seen = new Set<string>();
+  return window.speechSynthesis.getVoices().filter((v) => {
+    if (!v.lang.toLowerCase().startsWith("en") || NOVELTY.test(v.name) || seen.has(v.name)) return false;
+    seen.add(v.name);
+    return true;
+  });
+};
 export const readVoiceName = (): string => {
   try {
     return window.localStorage.getItem(NAME_KEY) ?? "";
