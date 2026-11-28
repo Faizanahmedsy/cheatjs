@@ -103,6 +103,8 @@ export function VisualLab() {
   const [voice, setVoice] = useState(false);
   const [endPrompt, setEndPrompt] = useState(false);
   const autoplayNext = useRef(false);
+  // True from the moment a topic finishes until the learner moves: the voice must not start the last step over.
+  const finished = useRef(false);
   const [voiceOk, setVoiceOk] = useState(false);
   const [voiceList, setVoiceList] = useState<string[]>([]);
   const [voiceName, setVoiceName] = useState("");
@@ -224,6 +226,7 @@ export function VisualLab() {
   }, [scenario, topicId]);
 
   useEffect(() => {
+    finished.current = false;
     setEndPrompt(false);
   }, [topicId, stepIndex]);
 
@@ -274,6 +277,7 @@ export function VisualLab() {
     const ms = stepIndex < 0 ? 250 : Math.max(stepDurationMs(step ?? undefined), showStage ? stageDurationMs(step?.stage) : 0) / speed;
     const t = window.setTimeout(() => {
       if (stepIndex >= scenario.steps.length - 1) {
+        finished.current = true;
         setPlaying(false);
         setEndPrompt(true);
       } else goTo(stepIndex + 1);
@@ -284,6 +288,7 @@ export function VisualLab() {
   // Voiceover: read the step aloud. While playing, the next step starts once the voice and the picture have both finished.
   useEffect(() => {
     if (!voiceActive || !scenario || scenario.id !== topicId) return;
+    if (finished.current && !playing) return;
     let timer = 0;
     const startedAt = Date.now();
     const minMs = stepIndex < 0 ? 0 : Math.max(stepDurationMs(step ?? undefined), showStage ? stageDurationMs(step?.stage) : 0) / speed;
@@ -293,6 +298,7 @@ export function VisualLab() {
       const wait = Math.max(0, minMs - (Date.now() - startedAt)) + 700;
       timer = window.setTimeout(() => {
         if (stepIndex >= last) {
+          finished.current = true;
           setPlaying(false);
           setEndPrompt(true);
         } else goTo(stepIndex + 1);
